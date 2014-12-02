@@ -1,7 +1,7 @@
 <html>  
 <head>  
 <script type="text/javascript" src="jquery-1.2.6.min.js"></script>  
-<title>Teach Children To Save</title>  
+<title>Teach Children To Save website</title>  
 </head>  
 <body>  
   
