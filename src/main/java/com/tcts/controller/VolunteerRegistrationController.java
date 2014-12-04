@@ -11,7 +11,7 @@ import com.tcts.manager.impl.VolunteerManagerImpl;
 import com.tcts.model.Volunteer;
 
 @Controller
-public class VolunteerRegistrationController {
+public class VolunteerRegistrationController extends AuthenticationController{
 	
 	/*@RequestMapping(value = "/volunteer", method = RequestMethod.GET)
 	   public ModelAndView volunteer() {
@@ -19,7 +19,6 @@ public class VolunteerRegistrationController {
 	      return new ModelAndView("volunteer", "volunteer", new Volunteer());
 	   }*/
 	   
-	
 	@RequestMapping(value = "/volunteer", method = RequestMethod.GET)
     public String newForm(Model model) {
         model.addAttribute("volunteer", new Volunteer());
@@ -34,6 +33,7 @@ public class VolunteerRegistrationController {
 		   VolunteerManagerImpl volunteerManager = new VolunteerManagerImpl();
 		   volunteerManager.addVolunteer(volunteer);
 		   
+		   
 	      model.addAttribute("firstName", volunteer.getFirstName());
 	      model.addAttribute("lastName", volunteer.getLastName());
 	      model.addAttribute("workPhoneNumber", volunteer.getWorkPhoneNumber());
@@ -47,7 +47,6 @@ public class VolunteerRegistrationController {
 	      model.addAttribute("emailAddress", volunteer.getEmailAddress());
 	      model.addAttribute("organization", volunteer.getOrganizatiom());
 	      
-	      
-	      return "result";
+	      return "volunteer_confirm";
 	   }
 }

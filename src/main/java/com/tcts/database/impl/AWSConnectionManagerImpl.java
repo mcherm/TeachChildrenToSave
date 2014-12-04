@@ -33,7 +33,7 @@ public class AWSConnectionManagerImpl implements AWSConnectionManager{
 
     public static Connection getConnection() {
     	try {	
-			return DriverManager.getConnection (dbUrl);
+			return DriverManager.getConnection (dbUrl,dbUrl,dbPassword);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
