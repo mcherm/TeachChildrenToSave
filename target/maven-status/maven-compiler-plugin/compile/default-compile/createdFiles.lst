@@ -1,6 +1,0 @@
-com\tcts\manager\AWSConnectionManager.class
-com\tcts\manager\impl\AWSConnectionManagerImpl.class
-com\tcts\controller\Home.class
-com\tcts\controller\VolunteerRegistrationController.class
-com\tcts\model\Volunteer.class
-com\tcts\manager\VolunteerManager.class
