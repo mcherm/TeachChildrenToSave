@@ -12,16 +12,16 @@ import com.tcts.model.Login;
 
 @Controller
 public class LoginController extends AuthenticationController{
-	
-	@RequestMapping(value = "/getLoginPage", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/getLoginPage", method = RequestMethod.GET)
     public String newLoginPage(Model model) {
         model.addAttribute("login", new Login());
         return "login";
     }
-	
-	   @RequestMapping(value = "/login", method = RequestMethod.POST)
-	   public String isUserAutherticated( @ModelAttribute("SpringWeb")Login login, 
-	   ModelMap model) {
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String isUserAutherticated( @ModelAttribute("SpringWeb")Login login,
+                                       ModelMap model) {
 		   
 		   
 		   /*VolunteerManagerImpl volunteerManager = new VolunteerManagerImpl();
@@ -30,8 +30,8 @@ public class LoginController extends AuthenticationController{
 	      
 	      model.addAttribute("emailAddress", volunteer.getEmailAddress());
 	      model.addAttribute("organization", volunteer.getOrganizatiom());*/
-	      
-	      //LoginManager loginManager = new LoginManagerImpl();
+
+        //LoginManager loginManager = new LoginManagerImpl();
 	      
 	     /* if (loginManager.isUserAuthenticated(login.getUserID(),  login.getPassword())) {
 	    	  return "index";
@@ -40,8 +40,20 @@ public class LoginController extends AuthenticationController{
 	    	  return "login";
 	      }*/
 
-          // FIXME: Here it should determine which type of user it is instead of hard-coding volunteer
-          UserType userType = UserType.VOLUNTEER;
-          return userType.getHomepage();
-	   }
+        // FIXME: Here it should determine which type of user it is instead selecting one based on the user's first name
+        String userId = login.getUserID().toString();
+        UserType userType;
+        if (userId == null || userId.length() == 0) {
+            userType = UserType.VOLUNTEER;
+        } else if (Character.toUpperCase(userId.charAt(0)) == 'T') {
+            userType = UserType.TEACHER;
+        } else if (Character.toUpperCase(userId.charAt(0)) == 'B') {
+            userType = UserType.BANK_ADMIN;
+        } else if (Character.toUpperCase(userId.charAt(0)) == 'S') {
+            userType = UserType.SITE_ADMIN;
+        } else {
+            userType = UserType.VOLUNTEER;
+        }
+        return userType.getHomepage();
+    }
 }
