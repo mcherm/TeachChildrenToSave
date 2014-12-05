@@ -1,5 +1,6 @@
 package com.tcts.controller;
 
+import com.tcts.model.UserType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -38,7 +39,9 @@ public class LoginController extends AuthenticationController{
 	      else {
 	    	  return "login";
 	      }*/
-	      
-	      return "index";
+
+          // FIXME: Here it should determine which type of user it is instead of hard-coding volunteer
+          UserType userType = UserType.VOLUNTEER;
+          return userType.getHomepage();
 	   }
 }
