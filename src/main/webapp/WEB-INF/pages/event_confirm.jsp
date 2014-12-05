@@ -19,6 +19,10 @@
         <div>Teacher User ID</div>
         <div>${teacherUserID}</div>
     </div>
+    <div>
+        <div>Event Notes</div>
+        <div>${eventNotes}</div>
+    </div>
 </div>  
 </body>
 </html>

@@ -12,14 +12,14 @@ import com.tcts.model.Volunteer;
 
 public class AWSConnectionManagerImpl implements AWSConnectionManager{
 	
-	static String dbUrl = "jdbc:mysql://mysqldb.cl0on6rirrkn.us-east-1.rds.amazonaws.com:3306/teachkidsde";
+	static String dbUrl = "jdbc:mysql://mysqldb.cl0on6rirrkn.us-east-1.rds.amazonaws.com:3306/teachkidsdb";
 	static String dbClass = "com.mysql.jdbc.Driver";
 	static String dbName ="teachkidsdb";
 	static String dbUsername="teachkidsde";
 	static String dbPassword ="Winter123";
-	static StringBuffer addVolunteerSQL = new StringBuffer("INSERT INTO users"
-			+ "(UserID,EmailID,Password,FirstName,LastName,AccessType,Organization,PhoneNumber,Active,Created_TS,Modified_TS,UserStatus) VALUES"
-			+ "(?,?,?,?,?,?,?,?,?,?,?,?)");
+	static StringBuffer addVolunteerSQL = new StringBuffer("INSERT INTO teachkidsdb.Users"
+			+ "(User_ID,Email_1,Email_2,Password,First_Name,Last_Name,Access_Type,Organization_ID,Phone_Number_1,Phone_number_2,Active,Created,User_Status) VALUES"
+			+ "(?,?,?,?,?,?,?,?,?,?,?,?,?);");
 	
 
     static {
@@ -33,7 +33,8 @@ public class AWSConnectionManagerImpl implements AWSConnectionManager{
 
     public static Connection getConnection() {
     	try {	
-			return DriverManager.getConnection (dbUrl,dbUrl,dbPassword);
+    		System.out.println("AWSConnectio");
+			return DriverManager.getConnection (dbUrl,dbUsername,dbPassword);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,16 +55,17 @@ public class AWSConnectionManagerImpl implements AWSConnectionManager{
 		PreparedStatement addVolunteerStatement = connection.prepareStatement(addVolunteerSQL.toString());
 		addVolunteerStatement.setString(1, volunteer.getVolunteerID());
 		addVolunteerStatement.setString(2, volunteer.getEmailAddress());
-		addVolunteerStatement.setString(3, volunteer.getPassword().toString());
-		addVolunteerStatement.setString(4, volunteer.getFirstName());
-		addVolunteerStatement.setString(5, volunteer.getLastName());
-		addVolunteerStatement.setString(6, volunteer.getAccessType());
-		addVolunteerStatement.setString(7, volunteer.getOrganizatiom());
-		addVolunteerStatement.setString(8, volunteer.getWorkPhoneNumber());
-		addVolunteerStatement.setString(9, "Y");
-		addVolunteerStatement.setTimestamp(10, new Timestamp(new Date().getTime()));
-		addVolunteerStatement.setTimestamp(11, new Timestamp(new Date().getTime()));
-		addVolunteerStatement.setString(12, "Locked");
+		addVolunteerStatement.setString(3, volunteer.getEmailAddress());
+		addVolunteerStatement.setString(4, volunteer.getPassword().toString());
+		addVolunteerStatement.setString(5, volunteer.getFirstName());
+		addVolunteerStatement.setString(6, volunteer.getLastName());
+		addVolunteerStatement.setString(7, volunteer.getAccessType());
+		addVolunteerStatement.setInt(8, 1);
+		addVolunteerStatement.setString(9, volunteer.getWorkPhoneNumber());
+		addVolunteerStatement.setString(10, volunteer.getWorkPhoneNumber());
+		addVolunteerStatement.setInt(11, 0);
+		addVolunteerStatement.setTimestamp(12, new Timestamp(new Date().getTime()));
+		addVolunteerStatement.setInt(13, 0);
 		
 		// execute insert SQL stetement
 		

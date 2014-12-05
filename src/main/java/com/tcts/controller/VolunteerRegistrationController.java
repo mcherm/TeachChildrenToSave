@@ -1,5 +1,6 @@
 package com.tcts.controller;
 
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -12,13 +13,15 @@ import com.tcts.model.Volunteer;
 
 @Controller
 public class VolunteerRegistrationController extends AuthenticationController{
-	
+
 	/*@RequestMapping(value = "/volunteer", method = RequestMethod.GET)
 	   public ModelAndView volunteer() {
 		  model.addAttribute("user", new User());
 	      return new ModelAndView("volunteer", "volunteer", new Volunteer());
 	   }*/
 	   
+	
+	
 	@RequestMapping(value = "/volunteer", method = RequestMethod.GET)
     public String newForm(Model model) {
         model.addAttribute("volunteer", new Volunteer());
@@ -49,4 +52,6 @@ public class VolunteerRegistrationController extends AuthenticationController{
 	      
 	      return "volunteer_confirm";
 	   }
+
+	    
 }
