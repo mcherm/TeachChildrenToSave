@@ -9,7 +9,6 @@
 <body id="teacherHome">
     <%@include file="include/header.jsp"%>
     <h1>Your Home Page</h1>
-    <div class="qa-notes">This page is a stub with fixed data</div>
     <div id="actions">
         <h2>Actions</h2>
         <ul>

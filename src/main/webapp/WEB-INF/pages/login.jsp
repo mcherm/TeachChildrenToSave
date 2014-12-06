@@ -9,7 +9,8 @@
     <%@include file="include/header.jsp"%>
     <h2>Teach Children To Save Login</h2>
     <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
-    <div class="qa-notes">Some valid logins (pwds) - "3" (Lucy), "4" (Harry), "5" (Moe)</div>
+    <div class="qa-notes">Some valid logins "user" (password; type) - "1"(Larry; volunteer), "2" (Jane; BankAdmin),
+        "3" (Lucy; Teacher), "4" (Harry; SiteAdmin), "5" (Moe; Volunteer)</div>
     <form:form method="POST" action="login.htm" modelAttribute="login">
         <div id="container">
             <div class="row_div">

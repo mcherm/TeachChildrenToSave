@@ -1,4 +1,4 @@
-package com.tcts.model;
+package com.tcts.common;
 
 /**
  * This exception is thrown when you attempt to perform an action

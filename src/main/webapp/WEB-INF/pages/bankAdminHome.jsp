@@ -8,7 +8,6 @@
 <body id="bankAdminHome">
     <%@include file="include/header.jsp"%>
     <h1>Your Home Page</h1>
-    <div class="qa-notes">This page is a stub with fixed data</div>
     <div id="actions">
         <h2>Actions</h2>
         <ul>
@@ -29,23 +28,21 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Patricia</td>
-                    <td>Anderson</td>
-                    <td>patricia.anderson@capitalone.com</td>
-                    <td><a href="approveVolunteer.htm?volunteerId=8847">Approve</a></td>
-                </tr>
-                <tr>
-                    <td>Arnold</td>
-                    <td>Jameson</td>
-                    <td>arnold.jameson@capitalone.com</td>
-                    <td><a href="approveVolunteer.htm?volunteerId=8843">Approve</a></td>
-                </tr>
+                <c:forEach var="volunteer" items="${volunteers}">
+                    <c:if test="${!volunteer.approved}">
+                        <tr>
+                            <td><c:out value="${volunteer.firstName}"/></td>
+                            <td><c:out value="${volunteer.lastName}"/></td>
+                            <td><c:out value="${volunteer.email}"/></td>
+                            <td><a href="approveVolunteer.htm?volunteerId=<c:out value="${volunteer.userId}"/>">Approve</a></td>
+                        </tr>
+                    </c:if>
+                </c:forEach>
             </tbody>
         </table>
 
         <h2>Approved Volunteers</h2>
-        <table id="unapprovedVolunteersTable" class="displayTable">
+        <table id="approvedVolunteersTable" class="displayTable">
             <thead>
                 <tr>
                     <th>First Name</th>
@@ -55,30 +52,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Jennifer</td>
-                    <td>Betts</td>
-                    <td>jennifer.betts@capitalone.com</td>
-                    <td>0</td>
-                </tr>
-                <tr>
-                    <td>Christine</td>
-                    <td>Ponce</td>
-                    <td>christine.ponce@capitalone.com</td>
-                    <td>0</td>
-                </tr>
-                <tr>
-                    <td>Herman</td>
-                    <td>Ellis</td>
-                    <td>herman.ellis@capitalone.com</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>Robert</td>
-                    <td>Rodgers</td>
-                    <td>bob.rodgers@capitalone.com</td>
-                    <td>0</td>
-                </tr>
+            <c:forEach var="volunteer" items="${volunteers}">
+                <c:if test="${volunteer.approved}">
+                    <tr>
+                        <td><c:out value="${volunteer.firstName}"/></td>
+                        <td><c:out value="${volunteer.lastName}"/></td>
+                        <td><c:out value="${volunteer.email}"/></td>
+                        <td><div class="qa-notes">not implemented yet</div></td>
+                    </tr>
+                </c:if>
+            </c:forEach>
             </tbody>
         </table>
     </div>

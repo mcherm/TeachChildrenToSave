@@ -8,7 +8,6 @@
 <body id="volunteerHome">
     <%@include file="include/header.jsp"%>
     <h1>Your Home Page</h1>
-    <div class="qa-notes">This page is a stub with fixed data</div>
     <div id="actions">
         <h2>Actions</h2>
         <ul>
@@ -30,22 +29,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>03/12</td>
-                    <td>9:00</td>
-                    <td>Henderson Elementary</td>
-                    <td>Mr. Toady</td>
-                    <td>3</td>
-                    <td>16</td>
-                </tr>
-                <tr>
-                    <td>03/12</td>
-                    <td>2:00</td>
-                    <td>St. Jude's</td>
-                    <td>Mrs. Tennnison</td>
-                    <td>3</td>
-                    <td>19</td>
-                </tr>
+                <c:forEach var="event" items="${events}">
+                    <tr>
+                        <td><c:out value="${event.eventDate}"/></td>
+                        <td><c:out value="${event.eventTime}"/></td>
+                        <td><div class="qa-notes">not implemented</div></td>
+                        <td><c:out value="${event.teacherId}"/></td>
+                        <td><c:out value="${event.grade}"/></td>
+                        <td><c:out value="${event.numberStudents}"/></td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>

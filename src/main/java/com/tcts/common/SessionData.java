@@ -1,5 +1,9 @@
-package com.tcts.model;
+package com.tcts.common;
 
+import com.tcts.model2.BankAdmin;
+import com.tcts.model2.SiteAdmin;
+import com.tcts.model2.Teacher;
+import com.tcts.model2.Volunteer;
 import com.tcts.model2.User;
 
 import javax.servlet.http.HttpSession;
@@ -38,9 +42,12 @@ public class SessionData {
     }
 
 
-	private Volunteer volunteer;
 	private boolean isAuthenticated;
-    private User user;
+    private User user; // Will be null if no one is logged in
+    private Teacher teacher; // Will be null unless a teacher is logged in.
+    private Volunteer volunteer; // Will be null unless a volunteer is logged in.
+    private BankAdmin bankAdmin; // Will be null unless a bank admin is logged in.
+    private SiteAdmin siteAdmin; // Will be null unless a site admin is logged in.
 
     /**
      * Constructor is private; use static methods beginNewSession() and/or
@@ -49,12 +56,6 @@ public class SessionData {
     private SessionData() {
     }
 
-	public Volunteer getVolunteer() {
-		return volunteer;
-	}
-	public void setVolunteer(Volunteer volunteer) {
-		this.volunteer = volunteer;
-	}
 	public boolean isAuthenticated() {
 		return isAuthenticated;
 	}
@@ -68,5 +69,37 @@ public class SessionData {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public Volunteer getVolunteer() {
+        return volunteer;
+    }
+
+    public void setVolunteer(Volunteer volunteer) {
+        this.volunteer = volunteer;
+    }
+
+    public BankAdmin getBankAdmin() {
+        return bankAdmin;
+    }
+
+    public void setBankAdmin(BankAdmin bankAdmin) {
+        this.bankAdmin = bankAdmin;
+    }
+
+    public SiteAdmin getSiteAdmin() {
+        return siteAdmin;
+    }
+
+    public void setSiteAdmin(SiteAdmin siteAdmin) {
+        this.siteAdmin = siteAdmin;
     }
 }

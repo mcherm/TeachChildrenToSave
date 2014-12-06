@@ -1,10 +1,14 @@
 package com.tcts.controller;
 
 import com.tcts.dao2.DatabaseFacade;
-import com.tcts.model.SessionData;
+import com.tcts.common.SessionData;
+import com.tcts.model2.BankAdmin;
 import com.tcts.model2.Event;
+import com.tcts.model2.SiteAdmin;
+import com.tcts.model2.Teacher;
 import com.tcts.model2.User;
 import com.tcts.model2.UserType;
+import com.tcts.model2.Volunteer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,12 +33,14 @@ public class UserHomePageController {
      * Render the home page for a volunteer.
      */
     @RequestMapping(value = "volunteerHome", method = RequestMethod.GET)
-    public String showVolunteerHomePage(HttpSession session) {
+    public String showVolunteerHomePage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        User user = sessionData.getUser();
-        if (user.getUserType() != UserType.VOLUNTEER) {
-            throw new RuntimeException("Internal error; this should no occur.");
+        Volunteer volunteer = sessionData.getVolunteer();
+        if (volunteer == null) {
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
+        List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
+        model.addAttribute("events", events);
         return "volunteerHome";
     }
 
@@ -44,11 +50,11 @@ public class UserHomePageController {
     @RequestMapping(value = "teacherHome", method = RequestMethod.GET)
     public String showTeacherHomePage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        User user = sessionData.getUser();
-        if (user.getUserType() != UserType.TEACHER) {
-            throw new RuntimeException("Internal error; this should no occur.");
+        Teacher teacher = sessionData.getTeacher();
+        if (teacher == null) {
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
-        List<Event> events = database.getEventsByTeacher(sessionData.getUser().getUserId());
+        List<Event> events = database.getEventsByTeacher(teacher.getUserId());
         model.addAttribute("events", events);
         return "teacherHome";
     }
@@ -57,12 +63,14 @@ public class UserHomePageController {
      * Render the home page for a volunteer.
      */
     @RequestMapping(value = "bankAdminHome", method = RequestMethod.GET)
-    public String showBankAdminHomePage(HttpSession session) {
+    public String showBankAdminHomePage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        User user = sessionData.getUser();
-        if (user.getUserType() != UserType.VOLUNTEER) {
-            throw new RuntimeException("Internal error; this should no occur.");
+        BankAdmin bankAdmin = sessionData.getBankAdmin();
+        if (bankAdmin == null) {
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in bank admin.");
         }
+        List<Volunteer> volunteers = database.getVolunteersByBank(bankAdmin.getBankId());
+        model.addAttribute("volunteers", volunteers);
         return "bankAdminHome";
     }
 
@@ -72,9 +80,9 @@ public class UserHomePageController {
     @RequestMapping(value = "siteAdminHome", method = RequestMethod.GET)
     public String showSiteAdminHomePage(HttpSession session) {
         SessionData sessionData = SessionData.fromSession(session);
-        User user = sessionData.getUser();
-        if (user.getUserType() != UserType.VOLUNTEER) {
-            throw new RuntimeException("Internal error; this should no occur.");
+        SiteAdmin siteAdmin = sessionData.getSiteAdmin();
+        if (siteAdmin == null) {
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in site admin.");
         }
         return "siteAdminHome";
     }
