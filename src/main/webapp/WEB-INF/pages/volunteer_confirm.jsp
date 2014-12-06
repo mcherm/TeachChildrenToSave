@@ -9,16 +9,31 @@
 <h2>Submitted Student Information</h2>
    <div>
     <div>
-        <div>FirstName</div>
-        <div>${firstName}</div>
+        <div>Name</div>
+        <div>${firstName} &nbsp; ${lastName}</div>
     </div>
     <div>
-        <div>LastName</div>
-        <div>${lastName}</div>
-    </div>
-    <div>
-        <div>Email Address</div>
+        <div>Email</div>
         <div>${emailAddress}</div>
+    </div>
+    <div>
+        <div>Work Address</div>
+        <div>${addressLine1}</div>
+        <div>${addressLine2}</div>
+        <div>${state}</div>
+        <div>${city} - ${zipcode}</div>
+    </div>
+    <div>
+        <div>Work Phone</div>
+        <div>${workPhoneNumber}</div>
+    </div>
+    <div>
+        <div>Mobile Phone</div>
+        <div>${mobilePhoneNumber}</div>
+    </div>
+    <div>
+        <div>Employer </div>
+        <div>${employerInfo}</div>
     </div>
 </div>  
 </body>
