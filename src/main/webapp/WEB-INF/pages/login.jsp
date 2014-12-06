@@ -9,7 +9,6 @@
 <h2>Volunteer Information</h2>
 <form:form method="POST" action="login.htm" modelAttribute="login">
    <div id="container">
-    <div class="qa-notes">For now, the letter of uses chooses type: V(olunteer), T(eacher), B(ankAdmin), S(iteAdmin)</div>
     <div class="row_div">
     	<div class="row_div_left">
 	        <div><form:label path="userID">User Name</form:label></div>

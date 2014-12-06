@@ -5,34 +5,30 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionFactory {
-	//static reference to itself
-    private static ConnectionFactory instance = new ConnectionFactory();
-    static String dbUrl = "jdbc:mysql://mysqldb.cl0on6rirrkn.us-east-1.rds.amazonaws.com:3306/teachkidsdb";
-	static String driverClass = "com.mysql.jdbc.Driver";
-	static String dbName ="teachkidsdb";
-	static String dbUsername="teachkidsde";
-	static String dbPassword ="Winter123";
-     
-    //private constructor
-    private ConnectionFactory() {
+    static {
+        // Do this at the TOP of the class so it will execute before anything else.
         try {
-            Class.forName(driverClass);
+            Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
+
+	//static reference to itself
+    private static final ConnectionFactory instance = new ConnectionFactory();
+    static final String dbUrl = "jdbc:mysql://mysqldb.cl0on6rirrkn.us-east-1.rds.amazonaws.com:3306/teachkidsdb";
+	static final String dbUsername="teachkidsde";
+	static final String dbPassword ="Winter123";
+
+    /** private constructor: use the ConnectionFactory.getConnection() to access the singleton instance. */
+    private ConnectionFactory() {
+    }
      
-    private Connection createConnection() {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
-        } catch (SQLException e) {
-            System.out.println("ERROR: Unable to Connect to Database.");
-        }
-        return connection;
-    }   
+    private Connection createConnection() throws SQLException {
+        return DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+    }
      
-    public static Connection getConnection() {
+    public static Connection getConnection() throws SQLException {
         return instance.createConnection();
     }
 }

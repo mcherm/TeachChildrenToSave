@@ -1,6 +1,12 @@
 package com.tcts.controller;
 
-import com.tcts.model.UserType;
+import com.tcts.dao2.DatabaseFacade;
+import com.tcts.dao2.InconsistentDatabaseException;
+import com.tcts.dao2.MySQLDatabase;
+import com.tcts.database.ConnectionFactory;
+import com.tcts.model.SessionData;
+import com.tcts.model2.User;
+import com.tcts.model2.UserType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -9,6 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.model.Login;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Controller
 public class LoginController extends AuthenticationController{
@@ -21,7 +32,7 @@ public class LoginController extends AuthenticationController{
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String isUserAutherticated( @ModelAttribute("SpringWeb")Login login,
-                                       ModelMap model) {
+                                       ModelMap model) throws SQLException, InconsistentDatabaseException {
 		   
 		   
 		   /*VolunteerManagerImpl volunteerManager = new VolunteerManagerImpl();
@@ -40,20 +51,22 @@ public class LoginController extends AuthenticationController{
 	    	  return "login";
 	      }*/
 
-        // FIXME: Here it should determine which type of user it is instead selecting one based on the user's first name
-        String userId = login.getUserID().toString();
-        UserType userType;
-        if (userId == null || userId.length() == 0) {
-            userType = UserType.VOLUNTEER;
-        } else if (Character.toUpperCase(userId.charAt(0)) == 'T') {
-            userType = UserType.TEACHER;
-        } else if (Character.toUpperCase(userId.charAt(0)) == 'B') {
-            userType = UserType.BANK_ADMIN;
-        } else if (Character.toUpperCase(userId.charAt(0)) == 'S') {
-            userType = UserType.SITE_ADMIN;
-        } else {
-            userType = UserType.VOLUNTEER;
+
+        // FIXME: This should be injected, not created.
+        DatabaseFacade databaseFacade = new MySQLDatabase();
+        User user = databaseFacade.getUserById(login.getUserID().toString());
+        if (user == null) {
+            // FIXME: Should show bad user/pwd message
+            throw new RuntimeException("bad user or pwd");
         }
-        return userType.getHomepage();
+        if (!user.getPassword().equals(login.getPassword().toString())) {
+            // FIXME: Should show bad user/pwd message
+            throw new RuntimeException("bad user or pwd");
+        }
+        SessionData sessionData = new SessionData();
+        sessionData.setUser(user);
+        sessionData.setAuthenticated(true);
+
+        return user.getUserType().getHomepage();
     }
 }
