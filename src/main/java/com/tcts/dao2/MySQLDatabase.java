@@ -3,6 +3,7 @@ package com.tcts.dao2;
 import com.tcts.database.ConnectionFactory;
 import com.tcts.model2.User;
 import com.tcts.model2.UserType;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.SQLException;
 /**
  * The (one and only) implementation of DatabaseFacade.
  */
+@Component
 public class MySQLDatabase implements DatabaseFacade {
     final static String selectUserSQL =
             "select user_id, email_1, password, first_name, last_name, access_type, organization_id, phone_number_1 " +

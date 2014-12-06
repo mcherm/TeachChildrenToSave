@@ -13,10 +13,10 @@ import java.util.Map;
  * different user types we can embed them in this class.
  */
 public enum UserType {
-    VOLUNTEER("V", "volunteerHome"),
-    TEACHER("T", "teacherHome"),
-    BANK_ADMIN("BA", "bankAdminHome"),
-    SITE_ADMIN("SA", "siteAdminHome");
+    VOLUNTEER("V", "volunteerHome.htm"),
+    TEACHER("T", "teacherHome.htm"),
+    BANK_ADMIN("BA", "bankAdminHome.htm"),
+    SITE_ADMIN("SA", "siteAdminHome.htm");
 
 
     private static Map<String,UserType> userTypeByDBValue = new HashMap<String,UserType>() {{
@@ -56,7 +56,7 @@ public enum UserType {
     }
 
     /**
-     * Returns the name of the page to show after this user logs in or when
+     * Returns the path for the page to show after this user logs in or when
      * they click on "home" from the navigation.
      */
     public String getHomepage() {

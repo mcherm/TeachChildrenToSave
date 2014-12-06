@@ -7,6 +7,7 @@ import com.tcts.database.ConnectionFactory;
 import com.tcts.model.SessionData;
 import com.tcts.model2.User;
 import com.tcts.model2.UserType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -22,11 +23,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Controller
-public class LoginController extends AuthenticationController{
+public class LoginController extends AuthenticationController {
+
+    @Autowired
+    private DatabaseFacade database;
 
     @RequestMapping(value = "/getLoginPage", method = RequestMethod.GET)
     public String newLoginPage(Model model) {
         model.addAttribute("login", new Login());
+        model.addAttribute("errorMessage", "");
         return "login";
     }
 
@@ -34,39 +39,17 @@ public class LoginController extends AuthenticationController{
     public String isUserAutherticated( @ModelAttribute("SpringWeb")Login login,
                                        ModelMap model) throws SQLException, InconsistentDatabaseException {
 		   
-		   
-		   /*VolunteerManagerImpl volunteerManager = new VolunteerManagerImpl();
-		   volunteerManager.addVolunteer(volunteer);
-		   
-	      
-	      model.addAttribute("emailAddress", volunteer.getEmailAddress());
-	      model.addAttribute("organization", volunteer.getOrganizatiom());*/
 
-        //LoginManager loginManager = new LoginManagerImpl();
-	      
-	     /* if (loginManager.isUserAuthenticated(login.getUserID(),  login.getPassword())) {
-	    	  return "index";
-	      }
-	      else {
-	    	  return "login";
-	      }*/
-
-
-        // FIXME: This should be injected, not created.
-        DatabaseFacade databaseFacade = new MySQLDatabase();
-        User user = databaseFacade.getUserById(login.getUserID().toString());
-        if (user == null) {
-            // FIXME: Should show bad user/pwd message
-            throw new RuntimeException("bad user or pwd");
-        }
-        if (!user.getPassword().equals(login.getPassword().toString())) {
-            // FIXME: Should show bad user/pwd message
-            throw new RuntimeException("bad user or pwd");
+        User user = database.getUserById(login.getUserID().toString());
+        if (user == null || !user.getPassword().equals(login.getPassword().toString())) {
+            model.addAttribute("login", new Login());
+            model.addAttribute("errorMessage", "Invalid user id or password.");
+            return "login";
         }
         SessionData sessionData = new SessionData();
         sessionData.setUser(user);
         sessionData.setAuthenticated(true);
 
-        return user.getUserType().getHomepage();
+        return "redirect:" + user.getUserType().getHomepage();
     }
 }

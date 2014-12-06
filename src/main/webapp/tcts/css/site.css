@@ -70,10 +70,14 @@ visibility:hidden;
 }
 
 div.qa-notes {
-    color: #FF0000;
+    color: #FF3333;
 }
 div.qa-notes::before {
     content: "QA Notes: ";
+}
+
+div.errorMessage {
+    color: #22FF22;
 }
 
 table.displayTable {
