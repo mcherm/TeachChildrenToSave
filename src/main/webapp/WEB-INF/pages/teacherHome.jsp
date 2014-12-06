@@ -1,3 +1,4 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%-- Home page for Teachers --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -30,22 +31,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>03/12</td>
-                    <td>9:00</td>
-                    <td>3</td>
-                    <td>16</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>03/12</td>
-                    <td>2:00</td>
-                    <td>3</td>
-                    <td>19</td>
-                    <td>Max Cowley</td>
-                    <td>Capital One</td>
-                </tr>
+                <c:forEach var="event" items="${events}">
+                    <tr>
+                        <td><c:out value="${event.eventDate}"/></td>
+                        <td><c:out value="${event.eventTime}"/></td>
+                        <td><c:out value="${event.grade}"/></td>
+                        <td><c:out value="${event.numberStudents}"/></td>
+                        <td><c:out value="${event.volunteerId}" default="no volunteer"/></td>
+                        <td>bank not implemented</td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>

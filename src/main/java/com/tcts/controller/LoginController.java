@@ -2,11 +2,8 @@ package com.tcts.controller;
 
 import com.tcts.dao2.DatabaseFacade;
 import com.tcts.dao2.InconsistentDatabaseException;
-import com.tcts.dao2.MySQLDatabase;
-import com.tcts.database.ConnectionFactory;
 import com.tcts.model.SessionData;
 import com.tcts.model2.User;
-import com.tcts.model2.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +11,14 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import javax.servlet.http.HttpSession;
 
 import com.tcts.model.Login;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * The controller that handles user login for all users.
+ */
 @Controller
 public class LoginController extends AuthenticationController {
 
@@ -37,16 +34,16 @@ public class LoginController extends AuthenticationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String isUserAutherticated( @ModelAttribute("SpringWeb")Login login,
-                                       ModelMap model) throws SQLException, InconsistentDatabaseException {
+                                       ModelMap model,
+                                       HttpSession session) throws SQLException, InconsistentDatabaseException {
 		   
-
         User user = database.getUserById(login.getUserID().toString());
         if (user == null || !user.getPassword().equals(login.getPassword().toString())) {
             model.addAttribute("login", new Login());
             model.addAttribute("errorMessage", "Invalid user id or password.");
             return "login";
         }
-        SessionData sessionData = new SessionData();
+        SessionData sessionData = SessionData.beginNewSession(session);
         sessionData.setUser(user);
         sessionData.setAuthenticated(true);
 
