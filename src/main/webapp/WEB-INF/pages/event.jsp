@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Teach Children To Save - Event registration</title>
+    <%@include file="include/commonHead.jsp"%>
 </head>
 <body>
 <%@include file="include/header.jsp"%>

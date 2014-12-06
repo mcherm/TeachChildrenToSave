@@ -68,3 +68,25 @@ visibility:hidden;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
+
+div.qa-notes {
+    color: #FF3333;
+}
+div.qa-notes::before {
+    content: "QA Notes: ";
+}
+
+div.errorMessage {
+    color: #22FF22;
+}
+
+table.displayTable {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table.displayTable th {
+    border: 1px solid black;
+}
+table.displayTable td {
+    border: 1px solid black;
+}

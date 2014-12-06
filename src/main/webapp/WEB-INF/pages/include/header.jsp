@@ -1,15 +1,9 @@
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Teach Children To Save</title>
-	<link href="<c:url value="/tcts/css/site.css" />" rel="stylesheet">
-	<script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
-</head>
-<body>
-<h2>Teach Children To Save Header</h2>
-</body>
-</html>
+<%-- contains the header which should go at the top of the body of nearly all pages --%>
+<h2>Page Header Will Appear Here</h2>
+<div id="navigation">
+    <ul>
+        <li>nav</li>
+        <li>goes</li>
+        <li>here</li>
+    </ul>
+</div>

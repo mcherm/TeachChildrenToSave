@@ -3,9 +3,10 @@
 <html>
 <head>
     <title>Teach Children To Save - Add Volunteer</title>
+    <%@include file="include/commonHead.jsp"%>
 </head>
 <body>
-<%@include file="include/header.jsp" %>
+<%@include file="include/header.jsp"%>
 <h2>Volunteer Information</h2>
 <form:form method="POST" action="addVolunteer.htm" modelAttribute="volunteer">
     <div id="container" class="sansserif">
