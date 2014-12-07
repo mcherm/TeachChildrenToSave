@@ -40,7 +40,8 @@ public class LoginController extends AuthenticationController {
     public String isUserAuthenticated( @ModelAttribute("SpringWeb")Login login,
                                        ModelMap model,
                                        HttpSession session) throws SQLException, InconsistentDatabaseException {
-		   
+        SessionData.ensureNoActiveSession(session);
+
         User user = database.getUserByLogin(login.getUserID().toString());
         if (user == null || !user.getPassword().equals(login.getPassword().toString())) {
             // --- Failed login ---

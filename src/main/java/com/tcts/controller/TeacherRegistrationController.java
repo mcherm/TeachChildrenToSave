@@ -36,10 +36,11 @@ public class TeacherRegistrationController {
     @RequestMapping(value="/registerTeacher", method=RequestMethod.POST)
     public String createNewTeacher(
             HttpSession session,
+            Model model,
             @ModelAttribute("teacherRegistrationFormData") TeacherRegistrationFormData formData
             ) throws SQLException
     {
-        // FIXME: Make sure we are NOT already logged in?
+        SessionData.ensureNoActiveSession(session);
         // --- Validation rules ---
         // FIXME: need some validation
         // --- Create object ---
@@ -51,10 +52,11 @@ public class TeacherRegistrationController {
             sessionData.setAuthenticated(true);
             return "redirect:" + teacher.getUserType().getHomepage();
         } catch (NoSuchSchoolException e) {
-            // FIXME: Need to handle
+            model.addAttribute("errorMessage", "That is not a valid school.");
+            return "registerTeacher";
         } catch (LoginAlreadyInUseException e) {
-            // FIXME: Need to handle
+            model.addAttribute("errorMessage", "That login is already in use; please choose another.");
+            return "registerTeacher";
         }
-        return null; // FIXME: Need actual destination
     }
 }

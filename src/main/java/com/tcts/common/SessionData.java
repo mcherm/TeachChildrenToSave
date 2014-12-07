@@ -32,6 +32,19 @@ public class SessionData {
     }
 
     /**
+     * This ensures that there is NOT an active session by throwing a
+     * ActiveSessionException if there is one and doing nothing if there isn't.
+     * It is placed in this class because SessionData.fromSession() is the
+     * standard way to ensure that there IS a session.
+     */
+    public static void ensureNoActiveSession(HttpSession session) {
+        Object sessionData = session.getAttribute(sessionKey);
+        if (sessionData != null) {
+            throw new ActiveSessionException();
+        }
+    }
+
+    /**
      * This is used to put a SessionData into the session which should be
      * done after a user has successfully logged in.
      */
