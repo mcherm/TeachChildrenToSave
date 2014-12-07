@@ -65,7 +65,7 @@
 	     
 	     <div class="row_div_right">  
 	        <div class="caption_div"><form:label path="volunteerAssigned">Volunteer Assigned</form:label></div>
-	        <%-- <div class="field_div"><form:input type="checkbox" path="volunteerAssigned" /></div> --%>
+	        <div class="field_div"><form:input type="checkbox" path="volunteerAssigned" /></div>
 	     </div>
     </div>
     
