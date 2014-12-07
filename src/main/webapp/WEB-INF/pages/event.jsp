@@ -1,10 +1,13 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<html>
-<head>
+<%@include file="include/html-head.jsp" %>
+
     <title>Teach Children To Save - Event registration</title>
+    
+	<link rel="stylesheet" href="tcts/css/master.css">
+    
 </head>
-<body>
-<%@include file="include/header.jsp"%>
+<body class="event_registration">
+
 <h2>Event Information</h2>
 <form:form method="POST" action="addEvent.htm" modelAttribute="event">
    <div>
@@ -62,7 +65,7 @@
 	     
 	     <div class="row_div_right">  
 	        <div class="caption_div"><form:label path="volunteerAssigned">Volunteer Assigned</form:label></div>
-	        <div class="field_div"><form:input type="checkbox" path="volunteerAssigned" /></div>
+	        <%-- <div class="field_div"><form:input type="checkbox" path="volunteerAssigned" /></div> --%>
 	     </div>
     </div>
     
