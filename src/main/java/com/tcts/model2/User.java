@@ -1,17 +1,34 @@
 package com.tcts.model2;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * An object that corresponds to the "Users" table in the database.
  */
-public class User {
+public abstract class User {
     private String userId;
+    private String login;
     private String email;
     private String password;
     private String firstName;
     private String lastName;
     private UserType userType;
-    private String organizationId;
     private String phoneNumber;
+
+    /**
+     * This can be called to populate fields from the current row of a resultSet.
+     */
+    protected void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
+        setUserId(resultSet.getString("user_id"));
+        setLogin(resultSet.getString("user_login"));
+        setEmail(resultSet.getString("email"));
+        setPassword(resultSet.getString("password_hash"));
+        setFirstName(resultSet.getString("first_name"));
+        setLastName(resultSet.getString("last_name"));
+        setPhoneNumber(resultSet.getString("phone_number"));
+        setUserType(UserType.fromDBValue(resultSet.getString("access_type")));
+    }
 
     public String getUserId() {
         return userId;
@@ -19,6 +36,14 @@ public class User {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getEmail() {
@@ -59,14 +84,6 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
-    }
-
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
     }
 
     public String getPhoneNumber() {
