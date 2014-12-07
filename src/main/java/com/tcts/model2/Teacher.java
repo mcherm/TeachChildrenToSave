@@ -1,6 +1,5 @@
 package com.tcts.model2;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -8,7 +7,12 @@ import java.sql.SQLException;
  * Represents a single teacher. Contains data from one row of the Users table.
  */
 public class Teacher extends User {
+    // --- Basic data fields ---
     private String schoolId;
+
+    // --- Linked data - loaded only when needed ---
+    private School linkedSchool;
+
 
     /**
      * This can be called to populate fields from the current row of a resultSet.
@@ -24,5 +28,13 @@ public class Teacher extends User {
 
     public void setSchoolId(String schoolId) {
         this.schoolId = schoolId;
+    }
+
+    public School getLinkedSchool() {
+        return linkedSchool;
+    }
+
+    public void setLinkedSchool(School linkedSchool) {
+        this.linkedSchool = linkedSchool;
     }
 }

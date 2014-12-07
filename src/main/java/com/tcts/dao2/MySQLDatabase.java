@@ -23,6 +23,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
             "bank_id, bank_name, bank_admin";
+    private final static String schoolFields =
+            "school_id, school_name, school_addr1, school_addr2, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible";
 
     private final static String getUserByIdSQL =
             "select " + userFields + " from User2 where user_id = ?";
@@ -36,6 +38,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event2 where volunteer_id = ?";
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank2 where bank_id = ?";
+    private final static String getSchoolByIdSQL =
+            "select " + schoolFields + " from School where school_id = ?";
 
 
     @Override
@@ -197,6 +201,36 @@ public class MySQLDatabase implements DatabaseFacade {
                 throw new InconsistentDatabaseException("Multiple rows for bank '" + bankId + "'.");
             } else {
                 return bank;
+            }
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+
+    @Override
+    public School getSchoolById(String schoolId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getSchoolByIdSQL);
+            preparedStatement.setString(1, schoolId);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            School school = null;
+            while (resultSet.next()) {
+                numberOfRows++;
+                school = new School();
+                school.populateFieldsFromResultSetRow(resultSet);
+            }
+            if (numberOfRows < 1) {
+                return null; // No school found
+            } else if (numberOfRows > 1) {
+                throw new InconsistentDatabaseException("Multiple rows for school '" + schoolId + "'.");
+            } else {
+                return school;
             }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);

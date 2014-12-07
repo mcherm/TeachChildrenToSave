@@ -33,8 +33,8 @@
                     <tr>
                         <td><c:out value="${event.eventDate}"/></td>
                         <td><c:out value="${event.eventTime}"/></td>
-                        <td><div class="qa-notes">not implemented</div></td>
-                        <td><c:out value="${event.teacherId}"/></td>
+                        <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
+                        <td><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
                         <td><c:out value="${event.grade}"/></td>
                         <td><c:out value="${event.numberStudents}"/></td>
                     </tr>

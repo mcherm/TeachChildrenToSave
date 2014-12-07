@@ -2,6 +2,7 @@ package com.tcts.dao2;
 
 import com.tcts.model2.Bank;
 import com.tcts.model2.Event;
+import com.tcts.model2.School;
 import com.tcts.model2.User;
 import com.tcts.model2.Volunteer;
 
@@ -32,4 +33,7 @@ public interface DatabaseFacade {
 
     /** Return the bank with this bankId, or null if there is none. */
     public Bank getBankById(String bankId) throws SQLException;
+
+    /** Return the school with this schoolId, or null if there is none. */
+    public School getSchoolById(String schoolId) throws SQLException;
 }

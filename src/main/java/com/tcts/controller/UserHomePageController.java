@@ -6,6 +6,7 @@ import com.tcts.dao2.InconsistentDatabaseException;
 import com.tcts.model2.Bank;
 import com.tcts.model2.BankAdmin;
 import com.tcts.model2.Event;
+import com.tcts.model2.School;
 import com.tcts.model2.SiteAdmin;
 import com.tcts.model2.Teacher;
 import com.tcts.model2.Volunteer;
@@ -40,6 +41,19 @@ public class UserHomePageController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
         List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
+        for (Event event : events) {
+            Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
+            if (teacher == null) {
+                throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
+            }
+            event.setLinkedTeacher(teacher);
+            String schoolId = teacher.getSchoolId();
+            if (schoolId == null) {
+                throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
+            }
+            School school = database.getSchoolById(schoolId);
+            teacher.setLinkedSchool(school);
+        }
         model.addAttribute("events", events);
         return "volunteerHome";
     }
