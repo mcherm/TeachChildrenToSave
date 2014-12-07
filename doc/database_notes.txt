@@ -47,3 +47,24 @@ insert into Event2
         2, 15, '',
         null
        );
+
+
+drop table Bank2;
+create table Bank2
+    (
+        bank_id INT,
+        bank_name VARCHAR(45),
+        bank_admin INT
+    );
+insert into Bank2
+   (bank_id, bank_name, bank_admin)
+    values (1, 'Capital One', 2);
+insert into Bank2
+   (bank_id, bank_name, bank_admin)
+    values (2, 'Bank of America', 2);
+insert into Bank2
+   (bank_id, bank_name, bank_admin)
+    values (3, 'Dauphin Trust', 2);
+insert into Bank2
+   (bank_id, bank_name, bank_admin)
+    values (4, 'WSFS', 2);

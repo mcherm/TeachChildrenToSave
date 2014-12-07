@@ -21,6 +21,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "user_id, email_1, password, first_name, last_name, access_type, organization_id, phone_number_1, user_status";
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
+    private final static String bankFields =
+            "bank_id, bank_name, bank_admin";
 
     private final static String getUserByIdSQL =
             "select " + userFields + " from Users where user_id = ?";
@@ -30,10 +32,12 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event2 where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
             "select " + eventFields + " from Event2 where volunteer_id = ?";
+    private final static String getBankByIdSQL =
+            "select " + bankFields + " from Bank2 where bank_id = ?";
 
 
     @Override
-    public User getUserById(String userId) throws SQLException, InconsistentDatabaseException{
+    public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -153,6 +157,35 @@ public class MySQLDatabase implements DatabaseFacade {
                 volunteers.add(volunteer);
             }
             return volunteers;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+    @Override
+    public Bank getBankById(String bankId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getBankByIdSQL);
+            preparedStatement.setString(1, bankId);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            Bank bank = null;
+            while (resultSet.next()) {
+                numberOfRows++;
+                bank = new Bank();
+                bank.populateFieldsFromResultSetRow(resultSet);
+            }
+            if (numberOfRows < 1) {
+                return null; // No bank found
+            } else if (numberOfRows > 1) {
+                throw new InconsistentDatabaseException("Multiple rows for bank '" + bankId + "'.");
+            } else {
+                return bank;
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }

@@ -2,12 +2,12 @@ package com.tcts.controller;
 
 import com.tcts.dao2.DatabaseFacade;
 import com.tcts.common.SessionData;
+import com.tcts.dao2.InconsistentDatabaseException;
+import com.tcts.model2.Bank;
 import com.tcts.model2.BankAdmin;
 import com.tcts.model2.Event;
 import com.tcts.model2.SiteAdmin;
 import com.tcts.model2.Teacher;
-import com.tcts.model2.User;
-import com.tcts.model2.UserType;
 import com.tcts.model2.Volunteer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,13 +48,25 @@ public class UserHomePageController {
      * Render the home page for a teacher.
      */
     @RequestMapping(value = "teacherHome", method = RequestMethod.GET)
-    public String showTeacherHomePage(HttpSession session, Model model) throws SQLException {
+    public String showTeacherHomePage(HttpSession session, Model model) throws SQLException, InconsistentDatabaseException {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
         if (teacher == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         List<Event> events = database.getEventsByTeacher(teacher.getUserId());
+        for (Event event : events) {
+            String volunteerId = event.getVolunteerId();
+            if (volunteerId != null) {
+                Volunteer volunteer = (Volunteer) database.getUserById(volunteerId);
+                event.setLinkedVolunteer(volunteer);
+                Bank bank = database.getBankById(volunteer.getBankId());
+                if (bank == null) {
+                    throw new InconsistentDatabaseException("Volunteer " + volunteerId + " has no bank.");
+                }
+                volunteer.setLinkedBank(bank);
+            }
+        }
         model.addAttribute("events", events);
         return "teacherHome";
     }

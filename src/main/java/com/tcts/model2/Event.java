@@ -6,6 +6,7 @@ import java.util.Date;
  * An object that corresponds to the "Event2" table in the database.
  */
 public class Event {
+    // --- Basic data fields ---
     private String eventId;
     private String teacherId;
     private Date eventDate;
@@ -14,6 +15,11 @@ public class Event {
     private int numberStudents;
     private String notes;
     private String volunteerId;
+
+    // --- Linked data - loaded only when needed ---
+    private Teacher linkedTeacher;
+    private Volunteer linkedVolunteer;
+
 
     public String getEventId() {
         return eventId;
@@ -77,5 +83,22 @@ public class Event {
 
     public void setVolunteerId(String volunteerId) {
         this.volunteerId = volunteerId;
+    }
+
+
+    public Teacher getLinkedTeacher() {
+        return linkedTeacher;
+    }
+
+    public void setLinkedTeacher(Teacher linkedTeacher) {
+        this.linkedTeacher = linkedTeacher;
+    }
+
+    public Volunteer getLinkedVolunteer() {
+        return linkedVolunteer;
+    }
+
+    public void setLinkedVolunteer(Volunteer linkedVolunteer) {
+        this.linkedVolunteer = linkedVolunteer;
     }
 }

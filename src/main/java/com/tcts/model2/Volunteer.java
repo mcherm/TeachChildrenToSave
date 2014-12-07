@@ -8,9 +8,13 @@ import java.sql.SQLException;
  * Represents a single volunteer. Contains data from one row of the Users table.
  */
 public class Volunteer extends User {
+    // --- Basic data fields ---
     private String bankId;
     private boolean isApproved;
     private BigDecimal craHours;
+
+    // --- Linked data - loaded only when needed ---
+    private Bank linkedBank;
 
     /**
      * This can be called to populate fields from the current row of a resultSet.
@@ -44,5 +48,13 @@ public class Volunteer extends User {
 
     public void setCraHours(BigDecimal craHours) {
         this.craHours = craHours;
+    }
+
+    public Bank getLinkedBank() {
+        return linkedBank;
+    }
+
+    public void setLinkedBank(Bank linkedBank) {
+        this.linkedBank = linkedBank;
     }
 }

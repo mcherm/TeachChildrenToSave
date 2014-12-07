@@ -36,8 +36,11 @@
                         <td><c:out value="${event.eventTime}"/></td>
                         <td><c:out value="${event.grade}"/></td>
                         <td><c:out value="${event.numberStudents}"/></td>
-                        <td><c:out value="${event.volunteerId}" default="no volunteer"/></td>
-                        <td>bank not implemented</td>
+                        <td>
+                            <c:out value="${event.linkedVolunteer.firstName}" default="no volunteer"/>
+                            <c:out value="${event.linkedVolunteer.lastName}" default=""/>
+                        </td>
+                        <td><c:out value="${event.linkedVolunteer.linkedBank.bankName}" default=""/></td>
                     </tr>
                 </c:forEach>
             </tbody>
