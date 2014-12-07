@@ -1,6 +1,8 @@
 package com.tcts.dao2;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.tcts.database.ConnectionFactory;
+import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model2.*;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +42,10 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + bankFields + " from Bank2 where bank_id = ?";
     private final static String getSchoolByIdSQL =
             "select " + schoolFields + " from School where school_id = ?";
+    private final static String getLastInsertIdSQL =
+            "select last_insert_id() as last_id";
+    private final static String insertUserSQL =
+            "insert into User2 (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 
     @Override
@@ -236,6 +242,56 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
+
+
+    @Override
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(insertUserSQL);
+            preparedStatement.setString(1, formData.getLogin());
+            preparedStatement.setString(2, "dummy_salt"); // FIXME: Need actual salt someday
+            preparedStatement.setString(3, formData.getPassword()); // FIXME: Need actual hash someday
+            preparedStatement.setString(4, formData.getEmail());
+            preparedStatement.setString(5, formData.getFirstName());
+            preparedStatement.setString(6, formData.getLastName());
+            preparedStatement.setString(7, UserType.TEACHER.getDBValue());
+            preparedStatement.setString(8, formData.getSchoolId());
+            preparedStatement.setString(9, formData.getPhoneNumber());
+            preparedStatement.setInt(10, 0); // FIXME: This represents "not approved"
+            try {
+                boolean success = preparedStatement.execute();
+                // FIXME: What if it fails?
+                // FIXME: How do we detect school-does-not-exist problems?
+            } catch (MySQLIntegrityConstraintViolationException err) {
+                // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
+                throw new LoginAlreadyInUseException();
+            }
+            preparedStatement.close();
+            preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+            resultSet = preparedStatement.executeQuery();
+            String teacherId = null;
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+                numberOfRows++;
+                teacherId = resultSet.getString(1);
+            }
+            if (numberOfRows < 1) {
+                throw new RuntimeException("This should never happen.");
+            } else if (numberOfRows > 1) {
+                throw new RuntimeException("This should never happen.");
+            } else {
+                Teacher teacher = (Teacher) getUserById(teacherId);
+                return teacher;
+            }
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
 
     /**
      * Safely close several things that might be open or not or might not even exist.

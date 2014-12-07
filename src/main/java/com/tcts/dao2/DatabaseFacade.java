@@ -1,8 +1,10 @@
 package com.tcts.dao2;
 
+import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model2.Bank;
 import com.tcts.model2.Event;
 import com.tcts.model2.School;
+import com.tcts.model2.Teacher;
 import com.tcts.model2.User;
 import com.tcts.model2.Volunteer;
 
@@ -36,4 +38,13 @@ public interface DatabaseFacade {
 
     /** Return the school with this schoolId, or null if there is none. */
     public School getSchoolById(String schoolId) throws SQLException;
+
+    // FIXME: Will throw other things too.
+    /**
+     * Insert a new Teacher in the database, and return it. Expects that all
+     * fields have been checked for containing valid values. Will throw an
+     * exception if the login is not unique or if the school is not found.
+     */
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData)
+            throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException;
 }
