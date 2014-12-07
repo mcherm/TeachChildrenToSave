@@ -18,16 +18,18 @@ import java.util.List;
 @Component
 public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
-            "user_id, email_1, password, first_name, last_name, access_type, organization_id, phone_number_1, user_status";
+            "user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status";
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
             "bank_id, bank_name, bank_admin";
 
     private final static String getUserByIdSQL =
-            "select " + userFields + " from Users where user_id = ?";
+            "select " + userFields + " from User2 where user_id = ?";
+    private final static String getUserByLoginSQL =
+            "select " + userFields + " from User2 where user_login = ?";
     private final static String getVolunteersByBankSQL =
-            "select " + userFields + " from Users where access_type = 'V' and organization_id = ?";
+            "select " + userFields + " from User2 where access_type = 'V' and organization_id = ?";
     private final static String getEventsByTeacherSQL =
             "select " + eventFields + " from Event2 where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
@@ -38,13 +40,23 @@ public class MySQLDatabase implements DatabaseFacade {
 
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
+        return getUserByIdOrLogin(userId, getUserByIdSQL);
+    }
+
+
+    @Override
+    public User getUserByLogin(String login) throws SQLException, InconsistentDatabaseException {
+        return getUserByIdOrLogin(login, getUserByLoginSQL);
+    }
+
+    private User getUserByIdOrLogin(String key, String sql) throws SQLException, InconsistentDatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getUserByIdSQL);
-            preparedStatement.setString(1, userId);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, key);
             resultSet = preparedStatement.executeQuery();
             int numberOfRows = 0;
             User user = null;
@@ -80,7 +92,7 @@ public class MySQLDatabase implements DatabaseFacade {
             if (numberOfRows < 1) {
                 return null; // No user found
             } else if (numberOfRows > 1) {
-                throw new InconsistentDatabaseException("Multiple rows for user '" + userId + "'.");
+                throw new InconsistentDatabaseException("Multiple rows for ID or login of '" + key + "'.");
             } else {
                 return user;
             }

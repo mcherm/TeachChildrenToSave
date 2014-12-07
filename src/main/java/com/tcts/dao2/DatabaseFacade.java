@@ -18,6 +18,9 @@ public interface DatabaseFacade {
      */
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException;
 
+    /** Return the user with this login, or null if there is none. */
+    public User getUserByLogin(String login) throws SQLException, InconsistentDatabaseException;
+
     /** Return the list of events that have a particular teacher. */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
 

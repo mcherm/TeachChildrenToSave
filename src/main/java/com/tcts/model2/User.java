@@ -20,11 +20,11 @@ public abstract class User {
      */
     protected void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         setUserId(resultSet.getString("user_id"));
-        setEmail(resultSet.getString("email_1"));
-        setPassword(resultSet.getString("password"));
+        setEmail(resultSet.getString("email"));
+        setPassword(resultSet.getString("password_hash"));
         setFirstName(resultSet.getString("first_name"));
         setLastName(resultSet.getString("last_name"));
-        setPhoneNumber(resultSet.getString("phone_number_1"));
+        setPhoneNumber(resultSet.getString("phone_number"));
         setUserType(UserType.fromDBValue(resultSet.getString("access_type")));
     }
 

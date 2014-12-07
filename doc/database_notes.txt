@@ -68,3 +68,38 @@ insert into Bank2
 insert into Bank2
    (bank_id, bank_name, bank_admin)
     values (4, 'WSFS', 2);
+
+
+drop table User2;
+create table User2
+    (
+        user_id INT,
+        user_login VARCHAR(50),
+        password_salt VARCHAR(100),
+        password_hash VARCHAR(100),
+        email VARCHAR(50),
+        first_name VARCHAR(50),
+        last_name VARCHAR(50),
+        access_type VARCHAR(2),
+        organization_id INT,
+        phone_number VARCHAR(45),
+        user_status INT
+    );
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('1','larry','dummy_salt','pass','larry@foobar.com','Larry','Smith','V','1','1-800-234-1234','1');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('2','jane','dummy_salt','pass','janedoe@foobar.com','Jane','Jones','BA','1','1000001','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('3','lucy','dummy_salt','pass','lucy@foobar.com','Lucy','Adams','T','1','1-800-234-1234','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('4','harry','dummy_salt','pass','Harry@gmail.com','Harry','Wilson','SA',null,'1-800-234-1234','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('5','moe','dummy_salt','pass','moe@gmail.com','Moe','Carbine','V','3','1-800-234-1234','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('6','curley','dummy_salt','pass','curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('7','shemp','dummy_salt','pass','shemp@hulu.com','Shemp','Blacksmith ','V','1','1-800-234-1234','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('8','joshua','dummy_salt','pass','josuah@wintergreen.com','Joshua','Wordsmith','T','2','1-800-234-1234','0');
+insert into User2 (user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('9','allen','dummy_salt','pass','Allen@novel.com','Allen','James','T','3','1-800-234-1234','0');
