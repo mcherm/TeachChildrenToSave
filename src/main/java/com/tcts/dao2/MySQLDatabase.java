@@ -42,6 +42,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + bankFields + " from Bank2 where bank_id = ?";
     private final static String getSchoolByIdSQL =
             "select " + schoolFields + " from School where school_id = ?";
+    private final static String getAllSchoolsSQL =
+            "select " + schoolFields + " from School";
     private final static String getLastInsertIdSQL =
             "select last_insert_id() as last_id";
     private final static String insertUserSQL =
@@ -238,6 +240,28 @@ public class MySQLDatabase implements DatabaseFacade {
             } else {
                 return school;
             }
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+
+    @Override
+    public List<School> getAllSchools() throws SQLException {
+        List<School> schools = new ArrayList<School>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getAllSchoolsSQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                School school = new School();
+                school.populateFieldsFromResultSetRow(resultSet);
+                schools.add(school);
+            }
+            return schools;
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }

@@ -39,7 +39,9 @@ public interface DatabaseFacade {
     /** Return the school with this schoolId, or null if there is none. */
     public School getSchoolById(String schoolId) throws SQLException;
 
-    // FIXME: Will throw other things too.
+    /** Returns the full list of all schools. */
+    public List<School> getAllSchools() throws SQLException;
+
     /**
      * Insert a new Teacher in the database, and return it. Expects that all
      * fields have been checked for containing valid values. Will throw an
@@ -47,4 +49,5 @@ public interface DatabaseFacade {
      */
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData)
             throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException;
+
 }

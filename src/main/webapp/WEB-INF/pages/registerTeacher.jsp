@@ -10,7 +10,6 @@
     <%@include file="include/header.jsp"%>
     <h2>Register a New Teacher</h2>
     <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
-    <div class="qa-notes">Brand new page, doesn't work yet.</div>
     <div class="teacherRegistrationForm">
         <form:form method="POST" action="registerTeacher.htm" modelAttribute="teacherRegistrationFormData">
             <div>
@@ -40,7 +39,12 @@
             <div>
                 <div class="qa-notes">This needs to be a tool for selecting from the list.</div>
                 <div><form:label path="schoolId">School Id Code</form:label></div>
-                <div><form:input path="schoolId"/></div>
+                <div>
+                    <form:select path="schoolId">
+                        <form:option value="0" label="- Select School -" />
+                        <form:options items="${schools}" itemValue="schoolId" itemLabel="name" />
+                    </form:select>
+                </div>
             </div>
             <div>
                 <input type="submit" value="Register"/>
