@@ -13,7 +13,7 @@
         <ul>
             <li><a href="registerForEvent.htm">Register volunteers for classes</a></li>
             <li><a href="manageVolunteers.htm">Manage my bank's volunteers</a></li>
-            <li><a href="editData.htm">Edit my Data</a></li>
+            <li><a href="editPersonalData.htm">Edit my Data</a></li>
         </ul>
     </div>
     <div id="volunteers">

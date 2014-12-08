@@ -51,25 +51,8 @@ public class LoginController extends AuthenticationController {
         } else {
             // --- Successful login ---
             SessionData sessionData = SessionData.beginNewSession(session);
-            sessionData.setUser(user);
             sessionData.setAuthenticated(true);
-            switch(user.getUserType()) {
-                case VOLUNTEER: {
-                    sessionData.setVolunteer((Volunteer) user);
-                } break;
-                case TEACHER: {
-                    sessionData.setTeacher((Teacher) user);
-                } break;
-                case BANK_ADMIN: {
-                    sessionData.setBankAdmin((BankAdmin) user);
-                } break;
-                case SITE_ADMIN: {
-                    sessionData.setSiteAdmin((SiteAdmin) user);
-                } break;
-                default: {
-                    throw new RuntimeException("This should never occur.");
-                }
-            }
+            sessionData.setUser(user);
             return "redirect:" + user.getUserType().getHomepage();
         }
 

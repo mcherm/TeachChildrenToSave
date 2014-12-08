@@ -28,8 +28,9 @@ public class TeacherRegistrationController {
     private DatabaseFacade database;
 
     @RequestMapping(value="/registerTeacher", method=RequestMethod.GET)
-    public String showRegisterTeacherPage(Model model) throws SQLException {
-        model.addAttribute("teacherRegistrationFormData", new TeacherRegistrationFormData());
+    public String showRegisterTeacherPage(HttpSession session, Model model) throws SQLException {
+        SessionData.ensureNoActiveSession(session);
+        model.addAttribute("formData", new TeacherRegistrationFormData());
         return showFormWithErrorMessage(model, "");
     }
 
@@ -48,7 +49,7 @@ public class TeacherRegistrationController {
     public String createNewTeacher(
             HttpSession session,
             Model model,
-            @ModelAttribute("teacherRegistrationFormData") TeacherRegistrationFormData formData
+            @ModelAttribute("formData") TeacherRegistrationFormData formData
             ) throws SQLException
     {
         SessionData.ensureNoActiveSession(session);
@@ -66,7 +67,6 @@ public class TeacherRegistrationController {
             Teacher teacher = database.insertNewTeacher(formData);
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(teacher);
-            sessionData.setTeacher(teacher);
             sessionData.setAuthenticated(true);
             return "redirect:" + teacher.getUserType().getHomepage();
         } catch (NoSuchSchoolException e) {

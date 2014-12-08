@@ -1,5 +1,6 @@
 package com.tcts.dao2;
 
+import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model2.Bank;
 import com.tcts.model2.Event;
@@ -24,6 +25,22 @@ public interface DatabaseFacade {
     /** Return the user with this login, or null if there is none. */
     public User getUserByLogin(String login) throws SQLException, InconsistentDatabaseException;
 
+    /**
+     * Modify certain fields of a User. The user with the userId given will be edited
+     * to set their email, firstName, lastName, and phoneNumber to the values given
+     * in this data structure. Other fields are not modified. The newly modified
+     * user is returned.
+     */
+    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException;
+
+    /**
+     * Insert a new Teacher in the database, and return it. Expects that all
+     * fields have been checked for containing valid values. Will throw an
+     * exception if the login is not unique or if the school is not found.
+     */
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData)
+            throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException;
+
     /** Return the list of events that have a particular teacher. */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
 
@@ -41,13 +58,5 @@ public interface DatabaseFacade {
 
     /** Returns the full list of all schools. */
     public List<School> getAllSchools() throws SQLException;
-
-    /**
-     * Insert a new Teacher in the database, and return it. Expects that all
-     * fields have been checked for containing valid values. Will throw an
-     * exception if the login is not unique or if the school is not found.
-     */
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData)
-            throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException;
 
 }
