@@ -13,7 +13,7 @@
         <h2>Actions</h2>
         <ul>
             <li><a href="registerForEvent.htm">Create new class</a></li>
-            <li><a href="editData.htm">Edit my Data</a></li>
+            <li><a href="editPersonalData.htm">Edit my Data</a></li>
         </ul>
     </div>
     <div id="events">

@@ -82,37 +82,43 @@ public class SessionData {
 
     public void setUser(User user) {
         this.user = user;
+        volunteer = null;
+        teacher = null;
+        bankAdmin = null;
+        siteAdmin = null;
+        switch(user.getUserType()) {
+            case VOLUNTEER: {
+                volunteer = (Volunteer) user;
+            } break;
+            case TEACHER: {
+                teacher = (Teacher) user;
+            } break;
+            case BANK_ADMIN: {
+                bankAdmin = (BankAdmin) user;
+            } break;
+            case SITE_ADMIN: {
+                siteAdmin = (SiteAdmin) user;
+            } break;
+            default: {
+                throw new RuntimeException("This should never occur.");
+            }
+        }
     }
 
     public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
-
     public Volunteer getVolunteer() {
         return volunteer;
-    }
-
-    public void setVolunteer(Volunteer volunteer) {
-        this.volunteer = volunteer;
     }
 
     public BankAdmin getBankAdmin() {
         return bankAdmin;
     }
 
-    public void setBankAdmin(BankAdmin bankAdmin) {
-        this.bankAdmin = bankAdmin;
-    }
-
     public SiteAdmin getSiteAdmin() {
         return siteAdmin;
     }
 
-    public void setSiteAdmin(SiteAdmin siteAdmin) {
-        this.siteAdmin = siteAdmin;
-    }
 }

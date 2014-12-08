@@ -2,6 +2,7 @@ package com.tcts.dao2;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.tcts.database.ConnectionFactory;
+import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model2.*;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + schoolFields + " from School";
     private final static String getLastInsertIdSQL =
             "select last_insert_id() as last_id";
+    private final static String modifyUserPersonalFieldsSQL =
+            "update User2 set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
     private final static String insertUserSQL =
             "insert into User2 (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -113,6 +116,25 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
+
+    @Override
+    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(modifyUserPersonalFieldsSQL);
+            preparedStatement.setString(1, formData.getEmail());
+            preparedStatement.setString(2, formData.getFirstName());
+            preparedStatement.setString(3, formData.getLastName());
+            preparedStatement.setString(4, formData.getPhoneNumber());
+            preparedStatement.setString(5, userId);
+            preparedStatement.executeUpdate();
+        } finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+        return getUserById(userId);
+    }
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
@@ -287,8 +309,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(9, formData.getPhoneNumber());
             preparedStatement.setInt(10, 0); // FIXME: This represents "not approved"
             try {
-                boolean success = preparedStatement.execute();
-                // FIXME: What if it fails?
+                preparedStatement.execute();
                 // FIXME: How do we detect school-does-not-exist problems?
             } catch (MySQLIntegrityConstraintViolationException err) {
                 // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
