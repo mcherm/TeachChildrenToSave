@@ -1,11 +1,10 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <html>
 <head>
-    <title>Teach Children To Save - Add Volunteer</title>
-    <%@include file="include/commonHead.jsp"%>
+    <title>STeach Children To Save - Add Volunteer</title>
 </head>
 <body>
-<%@include file="include/header.jsp"%>
+
 <h2>Volunteer Information</h2>
 <form:form method="POST" action="/addVolunteer.htm">
    <div>

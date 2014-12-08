@@ -2,10 +2,9 @@
 <html>
 <head>
     <title>Teach Children To Save - volunteer confirmation</title>
-    <%@include file="include/commonHead.jsp"%>
 </head>
 <body>
-<%@include file="include/header.jsp"%>
+<%@include file="include/header.jsp" %>
 <h2>Submitted Student Information</h2>
    <div>
     <div>

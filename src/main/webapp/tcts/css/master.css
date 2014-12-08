@@ -1,0 +1,407 @@
+@CHARSET "ISO-8859-1";
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* apply a natural box layout model to all elements */
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.ada-read {
+  position: absolute;
+  left: -180701px;
+  overflow: hidden;
+  line-height: 0;
+  font-size: 0;
+  height: 0;
+  width: 0;
+  display: block;
+}
+
+.b {
+  font-weight: bold;
+}
+
+.block {
+  display: block;
+}
+
+em {
+  font-style: italic;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.hide {
+  visibility: hidden;
+  display: none;
+}
+
+ul {
+  list-style-position: inside;
+}
+
+/* Webfont: TeachKidsToSaveDE-Regular */
+@font-face {
+  font-family: 'TeachKidsToSaveDE';
+  src: url("../fonts/TeachKidsToSaveDE-Regular.eot");
+  /* IE9 Compat Modes */
+  src: url("../fonts/TeachKidsToSaveDE-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/TeachKidsToSaveDE-Regular.woff") format("woff"), url("../fonts/TeachKidsToSaveDE-Regular.ttf") format("truetype"), url("../fonts/TeachKidsToSaveDE-Regular.svg#TeachKidsToSaveDE-Regular") format("svg");
+  /* Legacy iOS */
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+.iconFont {
+  font-family: 'TeachKidsToSaveDE' !important;
+}
+
+.iconFont:before {
+  content: attr(data-icon);
+}
+
+body {
+  font: 100%/1em Verdana, Arial, sans-serif;
+}
+
+body {
+  padding-bottom: 20px;
+}
+
+.mainCnt {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.1em;
+  font-size: .9em;
+}
+.mainCnt:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+.mainCnt ul {
+  margin-top: .15em;
+  margin-bottom: .5em;
+}
+.mainCnt ul.program_highlights {
+  margin-top: .8em;
+}
+
+header, .mainCnt, footer {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+header {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+}
+header:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+header div:nth-child(1) {
+  width: 49.65035%;
+  float: left;
+}
+header div:nth-child(2) {
+  width: 49.65035%;
+  float: right;
+  text-align: right;
+}
+header img {
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+header .delc img {
+  max-width: 251px;
+}
+header .dba img {
+  max-width: 158px;
+}
+
+@media (min-width: 320px) {
+  .delc img {
+    margin-top: 15px;
+  }
+}
+@media (min-width: 768px) {
+  .delc img {
+    margin-top: 5px;
+  }
+}
+@media (min-width: 320px) {
+  nav ul {
+    list-style: none;
+    border-top: 1px solid #ccc;
+    margin-bottom: 1em;
+  }
+  nav li {
+    border-bottom: 1px solid #ccc;
+  }
+  nav button {
+    display: block;
+    height: 44px;
+    font-weight: bold;
+  }
+  nav button .iconFont {
+    font-size: .8em;
+    color: #8b6d09;
+    position: relative;
+    top: -1px;
+    display: inline-block;
+    width: 20px;
+    text-decoration: none !important;
+  }
+}
+@media (min-width: 768px) {
+  nav {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    background-color: #0c345a;
+    /* Fallback Color */
+    background-image: -webkit-gradient(linear, left, right, left, right);
+    /* Saf4+, Chrome */
+    background-image: -webkit-linear-gradient(to right, #315d87, #0c345a);
+    /* Chrome 10+, Saf5.1+, iOS 5+ */
+    background-image: -moz-linear-gradient(to right, #315d87, #0c345a);
+    /* FF3.6 */
+    background-image: -ms-linear-gradient(to right, #315d87, #0c345a);
+    /* IE10 */
+    background-image: -o-linear-gradient(to right, #315d87, #0c345a);
+    /* Opera 11.10+ */
+    background-image: linear-gradient(to right, #315d87, #0c345a);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#315d87', EndColorStr='#0c345a');
+    height: 38px;
+    color: #fff;
+    font-size: .9em;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+  nav button:hover {
+    text-decoration: underline;
+  }
+  nav ul {
+    padding-top: .85em;
+    border: 0;
+    margin-bottom: 0;
+  }
+  nav li {
+    display: inline-block;
+    padding-right: 6%;
+    border: 0;
+  }
+  nav li.last {
+    padding-right: 0;
+  }
+  nav button {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    height: auto;
+  }
+  nav button .iconFont {
+    font-size: .7em;
+    color: #ffe89b;
+    top: -2px;
+    display: inline;
+    width: auto;
+  }
+}
+body.home main {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+body.home aside {
+  text-align: center;
+}
+body.home aside img {
+  width: 100%;
+  max-width: 379px;
+}
+
+@media (min-width: 768px) {
+  body.home main {
+    width: 55.94406%;
+    float: right;
+    font-size: .9em;
+  }
+  body.home main li {
+    margin-bottom: .15em;
+  }
+
+  body.home aside {
+    width: 43.35664%;
+    float: left;
+    padding-top: 2em;
+  }
+}
+h1 {
+  font-weight: bold;
+  color: #0c345a;
+  font-size: 1.1em;
+  line-height: 1.8em;
+  text-align: center;
+  margin: .5em 0 1em 0;
+}
+
+body.home h3 {
+  margin-top: 1em;
+  font-weight: bold;
+}
+
+body {
+  color: #333;
+}
+
+main ul {
+  color: #9c1d20;
+}
+
+main ul span {
+  color: #333;
+}
+
+/* Webfont: TeachKidsToSaveDE-Regular */
+@font-face {
+  font-family: 'TeachKidsToSaveDE';
+  src: url("../fonts/TeachKidsToSaveDE-Regular.eot");
+  /* IE9 Compat Modes */
+  src: url("../fonts/TeachKidsToSaveDE-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/TeachKidsToSaveDE-Regular.woff") format("woff"), url("../fonts/TeachKidsToSaveDE-Regular.ttf") format("truetype"), url("../fonts/TeachKidsToSaveDE-Regular.svg#TeachKidsToSaveDE-Regular") format("svg");
+  /* Legacy iOS */
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+.iconFont {
+  font-family: 'TeachKidsToSaveDE' !important;
+}
+
+.iconFont:before {
+  content: attr(data-icon);
+}
+
+body {
+  font: 100%/1em Verdana, Arial, sans-serif;
+}
+
+button {
+  border: 0;
+  background-color: transparent;
+}
+
+/* moved to layout file */
+body.volunteer_registration nav li:nth-child(4) button .txt {
+  text-decoration: underline !important;
+}
+
+form input[type=text],
+form input[type=password] {
+  width: 300px;
+  height: 22px;
+}
+form button {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  /*		@include linear-gradient-horizontal(#315d87, #0c345a);*/
+  background-color: #31873f;
+  -webkit-appearance: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 2em;
+  border: 0;
+  height: 44px !important;
+  width: 300px;
+}
+form .formElementCnt {
+  margin-top: 1em;
+}
+form .inputCnt {
+  display: inline-block;
+}
+form .info {
+  font-weight: bold;
+  font-size: .9em;
+  /*margin-top:1em;*/
+}
+form .error {
+  border: 1px solid red;
+  padding: 2px;
+  display: inline-block;
+}
+form .errorText {
+  color: red;
+}
+
+body.volunteer_registration form {
+  width: 300px;
+  margin: 0 auto;
+}
+
+footer {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+}
+footer:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+footer small {
+  font-size: .8em;
+}
+
+.decor {
+  background-color: #0c345a;
+  height: 5px;
+}

@@ -12,11 +12,11 @@ import com.tcts.model.Volunteer;
 
 public class AWSConnectionManagerImpl implements AWSConnectionManager{
 	
-	static String dbUrl = "jdbc:mysql://mysqldb.cl0on6rirrkn.us-east-1.rds.amazonaws.com:3306/teachkidsdb";
+	static String dbUrl = "";
 	static String dbClass = "com.mysql.jdbc.Driver";
-	static String dbName ="teachkidsdb";
-	static String dbUsername="teachkidsde";
-	static String dbPassword ="Winter123";
+	static String dbName ="";
+	static String dbUsername="";
+	static String dbPassword ="";
 	static StringBuffer addVolunteerSQL = new StringBuffer("INSERT INTO teachkidsdb.Users"
 			+ "(User_ID,Email_1,Email_2,Password,First_Name,Last_Name,Access_Type,Organization_ID,Phone_Number_1,Phone_number_2,Active,Created,User_Status) VALUES"
 			+ "(?,?,?,?,?,?,?,?,?,?,?,?,?);");

@@ -16,9 +16,9 @@ public class ConnectionFactory {
 
 	//static reference to itself
     private static final ConnectionFactory instance = new ConnectionFactory();
-    static final String dbUrl = "jdbc:mysql://mysqldb.cl0on6rirrkn.us-east-1.rds.amazonaws.com:3306/teachkidsdb";
-	static final String dbUsername="teachkidsde";
-	static final String dbPassword ="Winter123";
+    static final String dbUrl = "Enter db url";
+	static final String dbUsername="user name";
+	static final String dbPassword ="password";
 
     /** private constructor: use the ConnectionFactory.getConnection() to access the singleton instance. */
     private ConnectionFactory() {

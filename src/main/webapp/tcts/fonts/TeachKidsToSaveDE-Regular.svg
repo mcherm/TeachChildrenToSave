@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" >
+<font id="TeachKidsToSaveDE Regular">
+<font-face  font-family="TeachKidsToSaveDE" units-per-em="1000" ascent="800" descent="-200" font-style="normal" font-weight="400" font-stretch="normal" cap-height="1000" x-height="400" underline-position="-75" underline-thickness="50" />
+<missing-glyph  horiz-adv-x="500" d="M125 63 L125 738 L375 738 L375 63 L125 63 L125 63 Z M63 0 L438 0 L438 800 L63 800 L63 0 L63 0 Z " />
+<glyph glyph-name="NULL" d="" />
+<glyph glyph-name="CR" unicode="&#xd;" horiz-adv-x="250" d="" />
+<glyph glyph-name="space" unicode="&#x20;" horiz-adv-x="250" d="" />
+<glyph glyph-name="A" unicode="A" horiz-adv-x="556" d="M0 -200 L556 356 L0 800 L0 -200 Z " />
+<glyph glyph-name="B" unicode="B" horiz-adv-x="1000" d="M503 135 L488 135 L452 466 C450 480 449 491 449 498 C449 507 451 515 453 522 C456 529 459 535 463 540 C467 545 472 548 478 551 C483 554 489 555 496 555 C509 555 520 550 529 540 C537 529 542 514 542 493 C542 490 542 486 541 482 C541 477 541 472 540 466 L503 135 Z M495 67 C499 67 503 66 506 64 C510 63 513 61 516 58 C518 55 521 52 522 49 C524 45 525 41 525 37 C525 33 524 30 522 26 C521 23 518 20 516 17 C513 14 510 12 507 11 C503 9 499 8 495 8 C491 8 487 9 484 11 C480 12 477 14 475 17 C472 20 470 23 468 26 C467 30 466 33 466 37 C466 42 467 45 468 49 C470 52 472 55 475 58 C477 61 480 63 484 64 C487 66 491 67 495 67 L495 67 Z M709 -200 L1000 94 L1000 509 L709 800 L294 800 L0 509 L0 94 L294 -200 L709 -200 Z " />
+<glyph glyph-name="C" unicode="C" horiz-adv-x="1000" d="" />
+</font>
+</svg>
