@@ -1,0 +1,6 @@
+##AWS RDS config
+aws.access_key=
+aws.secret_access_key=
+db.url=
+db.user=
+db.pass=
