@@ -1,262 +1,183 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@include file="include/html-head.jsp" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+    <head>
+        <title>Teach Children To Save - Add Volunteer</title>
+        <%@include file="include/commonHead.jsp"%>
+        <script type="text/javascript" src="tcts/js/scripts.js"></script>
 
-    <title>Teach Children To Save - Add Volunteer</title>
+    </head>
+    <body class="volunteer_registration">
+        <%@include file="include/header.jsp"%>
 
-	<link rel="stylesheet" href="tcts/css/master.css">
+        <a href="#main" class="ada-read">Skip to main content</a>
 
-	<script type="text/javascript" src="tcts/js/scripts.js"></script>
-	
-</head>
-<body class="volunteer_registration">
+        <div class="decor"></div>
 
-	<a href="#main" class="ada-read">Skip to main content</a>
-	
-	<div class="decor"></div>
-	
-	<%@include file="include/header.jsp" %>
-	
-	<div class="mainCnt">
-	
-	<%@include file="include/navigation.jsp" %>	
+        <%@include file="include/header.jsp" %>
 
-		<main id="main">
+        <div class="mainCnt">
 
-			<h1>Volunteer Information</h1>
-			
-			<form:form method="POST" action="addVolunteer.htm" modelAttribute="volunteer">
+        <%@include file="include/navigation.jsp" %>
 
-				<%-- error example...if executing this is possible, given our timelines --%>
-				<%-- 1. add the css class 'error' to the label --%>
-				<%-- 2. include 'errorText' span --%>
-				<%-- we should (if possible) also update the H1 tag as well, appending something like: ", form has errors" --%>
-				
-				<div class="formElementCnt">
-					<label class="error">
-						<div class="inputCnt">
-							<div class="info">
-							<span class="errorText">
-								Error: 
-							</span>
-								First Name
-							</div>
-							<input type="text" />
-						</div>
-					</label>
-				</div>
-				
-			
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								First Name
-							</div>
-							<form:input path="firstName" />
-						</div>
-					</label>
-				</div>
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Last Name
-							</div>
-							<form:input path="lastName" />
-						</div>
-					</label>
-				</div>				
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Email Address
-							</div>
-							<form:input path="emailAddress" />
-						</div>
-					</label>
-				</div>								
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Confirm Email Address
-							</div>
-							<form:input path="confirmEmailAddress" />
-						</div>
-					</label>
-				</div>			
+            <main id="main">
 
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Password
-							</div>
-							<form:input type="password" path="password" />
-						</div>
-					</label>
-				</div>
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Confirm Password
-							</div>
-							<form:input type="password" path="confirmPassword" />
-						</div>
-					</label>
-				</div>						
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Work Address Line 1
-							</div>
-							<form:input path="addressLine1" />
-						</div>
-					</label>
-				</div>	
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Work Address Line 2
-							</div>
-							<form:input path="addressLine2" />
-						</div>
-					</label>
-				</div>								
-			
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								City
-							</div>
-							<form:input path="city" />
-						</div>
-					</label>
-				</div>				
-				
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								State
-							</div>
-							<form:input path="state" />
-						</div>
-					</label>
-				</div>	
+                <h1>Volunteer Information</h1>
 
-				<div class="formElementCnt">
-					<label>
-						<div class="inputCnt">
-							<div class="info">
-								Zip
-							</div>
-							<form:input path="zipcode" />
-						</div>
-					</label>
-				</div>	
-				
-				<div>
-					<button type="submit" value="Submit">Submit</button>
-				</div>
-			  
-			</form:form>
+                <form:form method="POST" action="addVolunteer.htm" modelAttribute="volunteer">
 
-		</main>
-		
-	</div><%-- .mainCnt --%>
+                    <%-- error example...if executing this is possible, given our timelines --%>
+                    <%-- 1. add the css class 'error' to the label --%>
+                    <%-- 2. include 'errorText' span --%>
+                    <%-- we should (if possible) also update the H1 tag as well, appending something like: ", form has errors" --%>
 
-	<%@include file="include/footer.jsp" %>
+                    <div class="formElementCnt">
+                        <label class="error">
+                            <div class="inputCnt">
+                                <div class="info">
+                                <span class="errorText">
+                                    Error:
+                                </span>
+                                    First Name
+                                </div>
+                                <input type="text" />
+                            </div>
+                        </label>
+                    </div>
 
-</body>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    First Name
+                                </div>
+                                <form:input path="firstName" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Last Name
+                                </div>
+                                <form:input path="lastName" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Email Address
+                                </div>
+                                <form:input path="emailAddress" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Confirm Email Address
+                                </div>
+                                <form:input path="confirmEmailAddress" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Password
+                                </div>
+                                <form:input type="password" path="password" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Confirm Password
+                                </div>
+                                <form:input type="password" path="confirmPassword" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Work Address Line 1
+                                </div>
+                                <form:input path="addressLine1" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Work Address Line 2
+                                </div>
+                                <form:input path="addressLine2" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    City
+                                </div>
+                                <form:input path="city" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    State
+                                </div>
+                                <form:input path="state" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Zip
+                                </div>
+                                <form:input path="zipcode" />
+                            </div>
+                        </label>
+                    </div>
+
+                    <div>
+                        <button type="submit" value="Submit">Submit</button>
+                    </div>
+
+                </form:form>
+
+            </main>
+
+        </div><%-- .mainCnt --%>
+
+        <%@include file="include/footer.jsp" %>
+
+    </body>
 </html>
-
-
-
-	<%-- original form JIC --%>
-	<%--
-    <div id="container" class="sansserif">
-    	<div class="row_div">
-	    	<div class="row_div_left">
-		        <div class="caption_div"><form:label path="firstName">First Name</form:label></div>
-		        <div class="field_div row_div_field_left_joint"><form:input path="firstName" /></div>
-		     </div>
-	        <div class="row_div_right">
-	        	<div class="row_div_right"><form:label path="lastName">Last Name</form:label></div>
-	        	<div class="field_div"><form:input path="lastName" /></div>
-	        </div>
-        </div>
-    
-    <div class="row_div">
-    	<div class="row_div_left">
-	        <div class="caption_div"><form:label path="emailAddress">Email Address</form:label></div>
-	        <div class="field_div row_div_field_left_joint"><form:input path="emailAddress" /></div>
-		</div>        
-    
-	    <div class="row_div_right">
-	        <div class="caption_div"><form:label path="confirmEmailAddress">Confirm Email Address</form:label></div>
-	        <div class="field_div"><form:input path="confirmEmailAddress" /></div>
-	    </div>
-    </div>
-    
-    <div class="row_div">
-    	<div class="row_div_left">
-            <div class="caption_div"><form:label path="password">password</form:label></div>
-	        <div class="field_div row_div_field_left_joint"><form:input type="password" path="password" /></div>
-    	</div>
-    
-    	<div class="row_div_right">
-	        <div class="caption_div"><form:label path="confirmPassword">Re-Enter Password</form:label></div>
-	        <div class="field_div"><form:input type="password" path="confirmPassword" /></div>
-    	</div>
-    </div>
-    
-    <div class="row_div">
-    	<div class="row_div_left">
-	        <div class="caption_div"><form:label path="addressLine1">Work Address Line1</form:label></div>
-	        <div class="field_div row_div_field_left_joint"><form:input path="addressLine1" /></div>
-        </div>
-       
-        <div class="row_div_right">
-	        <div class="caption_div"><form:label path="addressLine2">Work Address Line2</form:label></div>
-	        <div class="field_div"><form:input path="addressLine2" /></div>
-    	</div>
-    </div>
-    
-    <div class="row_div">
-	    <div class="row_div_left">
-	        <div class="caption_div"><form:label path="city">City</form:label></div>
-	        <div class="field_div row_div_field_left_joint"><form:input path="city" /></div>
-	    </div>
-    
-	    <div class="row_div_right">
-	        <div class="caption_div"><form:label path="state">State</form:label></div>
-	        <div class="field_div"><form:input path="state" /></div>
-	    </div>
-    </div>
-    
-    <div class="row_div">
-    	<div class="row_div_left">
-	        <div><form:label path="zipcode">zip</form:label></div>
-	        <div><form:input path="zipcode" /></div>
-        </div>
-    </div>
-    
-    <div class="row_div">
-        <div>
-            <input type="submit" value="Submit"/>
-        </div>
-    </div>
-  </div>
-  --%>
