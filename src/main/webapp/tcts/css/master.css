@@ -73,6 +73,12 @@ em {
   display: none;
 }
 
+sup {
+  font-size: 75%;
+  position: relative;
+  top: -.3em;
+}
+
 ul {
   list-style-position: inside;
 }
@@ -81,9 +87,7 @@ ul {
 @font-face {
   font-family: 'TeachKidsToSaveDE';
   src: url("../fonts/TeachKidsToSaveDE-Regular.eot");
-  /* IE9 Compat Modes */
   src: url("../fonts/TeachKidsToSaveDE-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/TeachKidsToSaveDE-Regular.woff") format("woff"), url("../fonts/TeachKidsToSaveDE-Regular.ttf") format("truetype"), url("../fonts/TeachKidsToSaveDE-Regular.svg#TeachKidsToSaveDE-Regular") format("svg");
-  /* Legacy iOS */
   font-style: normal;
   font-weight: normal;
   text-rendering: optimizeLegibility;
@@ -221,7 +225,7 @@ header .dba img {
     text-align: center;
     margin-bottom: 1em;
   }
-  nav button:hover {
+  nav button:hover .txt {
     text-decoration: underline;
   }
   nav ul {
@@ -310,9 +314,7 @@ main ul span {
 @font-face {
   font-family: 'TeachKidsToSaveDE';
   src: url("../fonts/TeachKidsToSaveDE-Regular.eot");
-  /* IE9 Compat Modes */
   src: url("../fonts/TeachKidsToSaveDE-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/TeachKidsToSaveDE-Regular.woff") format("woff"), url("../fonts/TeachKidsToSaveDE-Regular.ttf") format("truetype"), url("../fonts/TeachKidsToSaveDE-Regular.svg#TeachKidsToSaveDE-Regular") format("svg");
-  /* Legacy iOS */
   font-style: normal;
   font-weight: normal;
   text-rendering: optimizeLegibility;
@@ -334,7 +336,30 @@ button {
   background-color: transparent;
 }
 
+button:hover {
+  cursor: pointer !important;
+}
+
+body.home main button {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  font-size: .9em;
+  background-color: #31873f;
+  -webkit-appearance: none;
+  text-transform: uppercase;
+  color: #fff;
+  border: 0;
+  height: 30px;
+  width: 225px;
+}
+
 /* moved to layout file */
+body.about nav li:nth-child(1) button .txt {
+  text-decoration: underline !important;
+}
+
 body.volunteer_registration nav li:nth-child(4) button .txt {
   text-decoration: underline !important;
 }
@@ -349,7 +374,6 @@ form button {
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
   border-radius: 4px;
-  /*		@include linear-gradient-horizontal(#315d87, #0c345a);*/
   background-color: #31873f;
   -webkit-appearance: none;
   text-transform: uppercase;
@@ -369,7 +393,6 @@ form .inputCnt {
 form .info {
   font-weight: bold;
   font-size: .9em;
-  /*margin-top:1em;*/
 }
 form .error {
   border: 1px solid red;

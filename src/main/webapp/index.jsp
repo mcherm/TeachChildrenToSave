@@ -30,34 +30,49 @@
 			</h1>
 
 			<h2>
-				Teach a 45 minute lesson on economics and personal finance to young thriving minds.
+				3<sup>rd</sup> and 4<sup>th</sup> graders learn critical lessons on personal finance and economics in a 45 minute lesson
 			</h2>
 			
+			<h3>Teachers</h3>
+			
+			<p>Why participate?</p>
+			
 			<ul class="program_highlights">
-				<li><span>Standards based and interactive</span></li>
-				<li><span>Free courseware provided</span></li>
-				<li><span>Open to 3rd and 4th grades</span></li>
+				<li><span>Most students don't get these financial literacy lessons any other place</span></li>
+				<li><span>Research has shown that when people are taught the basics of money management as children they are more likely to be fiscally fit as adults</span></li>
+				<li><span>It only takes 45 minutes</span></li>
 			</ul>
 			
-			<h3>
-				Register Now Online!
-			</h3>
+			<button onclick="">Sign up my class</button>			
 			
-			<ul>
-				<li><span>Create an account.</span></li>
-				<li><span>A coordinator will contact you starting in February to confirm the date and the time.</span></li>
+			<h3>Volunteers</h3> 
+			
+			<p>Why volunteer?</p>
+			
+			<ul class="program_highlights">
+				<li><span>Research has shown that when people are taught the basics of money management as children they are more likely to be fiscally fit as adults</span></li>
+				<li><span>Provide valuable financial lessons most children don't won't receive any other time</span></li>
+				<li><span>Choose from a variety of locations that are convenient for you</span></li>
+				<li><span>It only takes 45 minutes</span></li>
+				<li><span>You'll receive all the training material you need</span></li>
 			</ul>
 			
-			<h3>
-				Please note:
-			</h3>
+			<button onclick="">Volunteer</button>			
 			
-			<ul>
-				<li><span>Registration is limited to current employees of subscribed members of the Delaware Banking Association.</span></li>
-				<li><span>If you're not sure your organization is enrolled, please review our About page.</span></li>
+			<h3>Bank Community Affairs Departments</h3>
+			
+			<p>Why participate?</p>
+			
+			<ul class="program_highlights">
+				<li><span>Your bank may get CRA credits</span></li>
+				<li><span>Over 90% of Delaware banks participate</span></li>
+				<li><span>Note: Only members of the Delaware Banker's Associations can participate</span></li>
 			</ul>
+	
+			<button onclick="">Register my bank to join</button>	
 			
-		    <center>  
+		    <center>
+		    <br>  
 		    <a href="event.htm">Project Devs, click Here for Event Registration</a> 
 		    </center>  
 
