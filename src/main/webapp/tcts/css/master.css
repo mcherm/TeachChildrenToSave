@@ -428,3 +428,27 @@ footer small {
   background-color: #0c345a;
   height: 5px;
 }
+
+/* ----- Things that haven't been addressed by the UI team yet --------*/
+
+div.qa-notes {
+    color: #FF3333;
+}
+div.qa-notes::before {
+    content: "QA Notes: ";
+}
+
+div.errorMessage {
+    color: #22FF22;
+}
+
+table.displayTable {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table.displayTable th {
+    border: 1px solid black;
+}
+table.displayTable td {
+    border: 1px solid black;
+}

@@ -1,10 +1,14 @@
-<%@include file="WEB-INF/pages/include/html-head.jsp" %>
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
 
 	<title>Teach Children To Save</title>  
 
 	<link rel="stylesheet" href="tcts/css/master.css">
 	
 	<script type="text/javascript" src="tcts/js/scripts.js"></script>
+    <%@include file="WEB-INF/pages/include/commonHead.jsp"%>
+
 
 <%-- commenting out the jquery call until we actually need to use it --%>	
 <%--	<script type="text/javascript" src="tcts/js/jquery-1.11.1.min.js"></script>  --%>
@@ -43,7 +47,7 @@
 				<li><span>It only takes 45 minutes</span></li>
 			</ul>
 			
-			<button onclick="">Sign up my class</button>			
+			<button onclick="location.href='registerTeacher.htm'">Sign up my class</button>
 			
 			<h3>Volunteers</h3> 
 			
@@ -72,8 +76,8 @@
 			<button onclick="">Register my bank to join</button>	
 			
 		    <center>
-		    <br>  
-		    <a href="event.htm">Project Devs, click Here for Event Registration</a> 
+		    <br>
+		    <a href="event.htm">Project Devs, click Here for Event Registration</a>
 		    </center>  
 
 		</main>

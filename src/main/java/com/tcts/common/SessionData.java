@@ -38,6 +38,10 @@ public class SessionData {
      * standard way to ensure that there IS a session.
      */
     public static void ensureNoActiveSession(HttpSession session) {
+        // FIXME: The following line should be deleted once we have a way to log out.
+        session.setAttribute("sessionData", null);
+
+        // FIXME: Real code begins here
         Object sessionData = session.getAttribute(sessionKey);
         if (sessionData != null) {
             throw new ActiveSessionException();
