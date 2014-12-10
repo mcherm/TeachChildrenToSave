@@ -1,4 +1,36 @@
-// This has DML for the tables I have created and their sample data
+/* This has DML for the tables I have created and their sample data */
+
+drop table AllowedDates;
+create table AllowedDates
+    (
+        event_date DATE NOT NULL,
+        PRIMARY KEY (event_date)
+    );
+insert into AllowedDates (event_date)
+    values (DATE('2015-03-25'));
+insert into AllowedDates (event_date)
+    values (DATE('2015-04-16'));
+
+
+drop table AllowedTimes;
+create table AllowedTimes
+    (
+        event_time VARCHAR(8) NOT NULL,
+        sort_order INT NOT NULL,
+        PRIMARY KEY (event_time)
+    );
+insert into AllowedTimes (event_time, sort_order)
+  values ("9:00 AM", 1);
+insert into AllowedTimes (event_time, sort_order)
+  values ("10:00 AM", 2);
+insert into AllowedTimes (event_time, sort_order)
+  values ("11:00 AM", 3);
+insert into AllowedTimes (event_time, sort_order)
+  values ("12:00 AM", 4);
+insert into AllowedTimes (event_time, sort_order)
+  values ("1:00 PM", 5);
+insert into AllowedTimes (event_time, sort_order)
+  values ("2:00 PM", 6);
 
 
 drop table Event2;

@@ -1,5 +1,6 @@
 package com.tcts.model;
 
+@Deprecated
 public class Login {
 	private StringBuffer userID;
 	private StringBuffer password;

@@ -1,7 +1,9 @@
 package com.tcts.dao2;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.ConnectionFactory;
+import com.tcts.model.CreateEventFormData;
 import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model2.*;
@@ -12,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -45,12 +48,18 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + schoolFields + " from School where school_id = ?";
     private final static String getAllSchoolsSQL =
             "select " + schoolFields + " from School";
+    private final static String getAllowedDatesSQL =
+            "select event_date from AllowedDates order by event_date";
+    private final static String getAllowedTimesSQL =
+            "select event_time from AllowedTimes order by sort_order";
     private final static String getLastInsertIdSQL =
             "select last_insert_id() as last_id";
     private final static String modifyUserPersonalFieldsSQL =
             "update User2 set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
     private final static String insertUserSQL =
             "insert into User2 (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private final static String insertEventSQL =
+            "insert into Event2 (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
 
 
     @Override
@@ -183,6 +192,28 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 
     @Override
+    public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(insertEventSQL);
+            preparedStatement.setString(1, teacherId);
+            preparedStatement.setDate(2, new java.sql.Date(formData.getEventDate().getTime()));
+            preparedStatement.setString(3, formData.getEventTime());
+            preparedStatement.setString(4, formData.getGrade());
+            preparedStatement.setInt(5, Integer.parseInt(formData.getNumberStudents()));
+            preparedStatement.setString(6, formData.getNotes());
+            preparedStatement.setString(7, null); // volunteerId
+            preparedStatement.executeUpdate();
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+
+    @Override
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
         List<Volunteer> volunteers = new ArrayList<Volunteer>();
         Connection connection = null;
@@ -289,6 +320,46 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
+
+    @Override
+    public List<Date> getAllowedDates() throws SQLException {
+        List<Date> dates = new ArrayList<Date>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getAllowedDatesSQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Date date = resultSet.getDate("event_date");
+                dates.add(new PrettyPrintingDate(date));
+            }
+            return dates;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+    @Override
+    public List<String> getAllowedTimes() throws SQLException {
+        List<String> times = new ArrayList<String>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getAllowedTimesSQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String time = resultSet.getString("event_time");
+                times.add(time);
+            }
+            return times;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
 
     @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException {

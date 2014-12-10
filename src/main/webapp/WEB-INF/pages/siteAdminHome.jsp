@@ -19,6 +19,8 @@
                 <li><a href="adminListVolunteers.htm">List Volunteers</a></li>
                 <li><a href="adminListClasses.htm">List Classes</a></li>
                 <li><a href="adminSendEmailAnnounce.htm">Send Email Announcement</a></li>
+                <li><a href="adminEditAllowedDates.htm">Add/Remove Event Dates</a></li>
+                <li><a href="adminEditAllowedTimes.htm">Add/Remove Event Times</a></li>
                 <li><a href="editPersonalData.htm">Edit my Data</a></li>
             </ul>
         </div>

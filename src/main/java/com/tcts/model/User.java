@@ -2,6 +2,7 @@ package com.tcts.model;
 
 import java.sql.Timestamp;
 
+@Deprecated
 public class User {
 	private String volunteerID;
 	private String accessType;

@@ -2,6 +2,7 @@ package com.tcts.model;
 
 import java.util.Date;
 
+@Deprecated
 public class Event {
 	private String eventID;
 	private String schoolID;

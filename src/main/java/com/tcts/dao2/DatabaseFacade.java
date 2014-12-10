@@ -1,5 +1,6 @@
 package com.tcts.dao2;
 
+import com.tcts.model.CreateEventFormData;
 import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model2.Bank;
@@ -10,6 +11,7 @@ import com.tcts.model2.User;
 import com.tcts.model2.Volunteer;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +49,12 @@ public interface DatabaseFacade {
     /** Return the list of events that have a particular volunteer. */
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException;
 
+    /**
+     * Insert a new Teacher in the database, and return it. Expects that all
+     * fields have been checked for containing valid values.
+     */
+    public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException;
+
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
 
@@ -59,4 +67,9 @@ public interface DatabaseFacade {
     /** Returns the full list of all schools. */
     public List<School> getAllSchools() throws SQLException;
 
+    /** Returns the allowed dates. */
+    public List<Date> getAllowedDates() throws SQLException;
+
+    /** Returns the allowed times. */
+    public List<String> getAllowedTimes() throws SQLException;
 }
