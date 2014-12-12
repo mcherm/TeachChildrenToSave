@@ -1,14 +1,5 @@
 package com.tcts.dao2;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-import com.tcts.common.PrettyPrintingDate;
-import com.tcts.database.ConnectionFactory;
-import com.tcts.model.CreateEventFormData;
-import com.tcts.model.EditPersonalDataFormData;
-import com.tcts.model.TeacherRegistrationFormData;
-import com.tcts.model2.*;
-import org.springframework.stereotype.Component;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +7,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import com.tcts.common.PrettyPrintingDate;
+import com.tcts.database.ConnectionFactory;
+import com.tcts.model.CreateEventFormData;
+import com.tcts.model.EditPersonalDataFormData;
+import com.tcts.model.TeacherRegistrationFormData;
+import com.tcts.model2.Bank;
+import com.tcts.model2.BankAdmin;
+import com.tcts.model2.Event;
+import com.tcts.model2.School;
+import com.tcts.model2.SiteAdmin;
+import com.tcts.model2.Teacher;
+import com.tcts.model2.User;
+import com.tcts.model2.UserType;
+import com.tcts.model2.Volunteer;
 
 
 /**
@@ -34,6 +43,10 @@ public class MySQLDatabase implements DatabaseFacade {
 
     private final static String getUserByIdSQL =
             "select " + userFields + " from User2 where user_id = ?";
+    
+    private final static String getUserByTypeSQL =
+            "select " + userFields + " from User2 where access_type = 'T'";
+    
     private final static String getUserByLoginSQL =
             "select " + userFields + " from User2 where user_login = ?";
     private final static String getVolunteersByBankSQL =
@@ -44,6 +57,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event2 where volunteer_id = ?";
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank2 where bank_id = ?";
+    private final static String getBankListSQL =
+            "select " + bankFields + " from Bank2 ";
     private final static String getSchoolByIdSQL =
             "select " + schoolFields + " from School where school_id = ?";
     private final static String getAllSchoolsSQL =
@@ -60,7 +75,43 @@ public class MySQLDatabase implements DatabaseFacade {
             "insert into User2 (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
             "insert into Event2 (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
+    
+    private final static String insertSchoolSQL  =
+    		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    
+    private final static String insertBankSQL =
+    		"insert into Bank2(bank_id,bank_name,bank_admin) VALUES(?,?,?)";
+    
+    private final static String deleteBankSQL =
+    		"delete from Bank2 where schoold_id=? ";
+    
+    private final static String deleteSchooldSQL =
+    		"delete from School where schoold_id=? ";
+      
+    private final static String deleteVolunteerSQL =
+    		"delete from User2 where user_id=? ";
+        
+    private final static String deleteEventSQL =
+    		"delete from Event2 where event_id=? ";
 
+    private final static String getEventsSQL =
+            "select " + eventFields + " from Event2 ";
+    
+    private final static String getEventByIdSQL =
+            "select " + eventFields + " from Event2 where event_id = ?";
+    
+    private final static String updateEventByIdSQL = 
+    		"UPDATE Event2 SET teacher_id = ?,event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ?,volunteer_id =  ? WHERE event_id = ?";
+    
+    private final static String updateSchoolByIdSQL =
+    		"UPDATE School SET " +
+    		"school_name = ?,school_addr1 = ?,school_addr2 = ?,school_city = ?,school_zip = ?,school_county = ?," +
+    		"school_district = ?,school_state = ?,school_phone = ?,school_lmi_eligible = ? WHERE school_id = ?";
+    
+    private final static String updateBankByIdSQL =
+    		"UPDATE Bank2 SET bank_name = ?,bank_admin = ? WHERE bank_id = ?"; 
+    
+    
 
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
@@ -429,4 +480,396 @@ public class MySQLDatabase implements DatabaseFacade {
             // ignore problems closing
         }
     }
+
+
+	@Override
+	public List<? super User> getUsersByType(String userAccessType) throws SQLException {
+		return getUserByType(userAccessType, getUserByTypeSQL);
+	}
+	
+	private List<? super User> getUserByType(String key, String sql) throws SQLException, InconsistentDatabaseException {
+        Connection connection = null;
+        List<? super User> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            //preparedStatement.setString(1, key);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+                numberOfRows++;
+                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
+                switch(userType) {
+                    case VOLUNTEER: {
+                        Volunteer volunteer = new Volunteer();
+                        volunteer.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(volunteer);
+                    } break;
+                    case TEACHER: {
+                        Teacher teacher = new Teacher();
+                        teacher.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(teacher);
+                    } break;
+                    case BANK_ADMIN: {
+                        BankAdmin bankAdmin = new BankAdmin();
+                        bankAdmin.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(bankAdmin);
+                    } break;
+                    case SITE_ADMIN: {
+                        SiteAdmin siteAdmin = new SiteAdmin();
+                        siteAdmin.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(siteAdmin);
+                    } break;
+                    default: {
+                        throw new RuntimeException("This should never occur.");
+                    }
+                }
+             
+            }
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+
+	@Override
+	public List<Bank> getBankList() throws SQLException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Bank> bankList = new ArrayList<>();
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getBankListSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            Bank bank = null;
+            while (resultSet.next()) {
+                numberOfRows++;
+                bank = new Bank();
+                bank.populateFieldsFromResultSetRow(resultSet);
+                bankList.add(bank);
+            }
+            if (numberOfRows < 1) {
+                return null; // No bank found
+            } else {
+                return bankList;
+            }
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public boolean deleteSchool(String schoolId) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(deleteSchooldSQL);
+            preparedStatement.setString(1, schoolId);
+            int success =preparedStatement.executeUpdate();
+            if (success == 0)
+            	return false;
+            else return true;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public School updateSchool(School school) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateSchoolByIdSQL);
+            preparedStatement.setString(1, school.getName());
+            preparedStatement.setString(2, school.getAddressLine1());
+            preparedStatement.setString(3, school.getAddressLine2());
+            preparedStatement.setString(4, school.getCity());
+            preparedStatement.setString(5, school.getZip());
+            preparedStatement.setString(6, school.getCounty());
+            preparedStatement.setString(7, school.getSchoolDistrict());
+            preparedStatement.setString(8, school.getState());
+            preparedStatement.setString(9, school.getPhone());
+            preparedStatement.setInt(10, school.isLmiEligible()==true?1:0);
+            preparedStatement.setString(11, school.getSchoolId());
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+        return getSchoolById(school.getSchoolId());
+	}
+
+
+	@Override
+	public boolean deleteBank(String bankId) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(deleteBankSQL);
+            preparedStatement.setString(1, bankId);
+            int success =preparedStatement.executeUpdate();
+            if (success == 0)
+            	return false;
+            else return true;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public Bank updateBank(Bank bank) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateBankByIdSQL);
+            preparedStatement.setString(1, bank.getBankName());
+            preparedStatement.setString(2, bank.getBankAdminId());
+            preparedStatement.setString(3, bank.getBankId());
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+        return getBankById(bank.getBankId());
+	}
+
+
+	@Override
+	public boolean deleteVolunteer(String volunteerId) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(deleteVolunteerSQL);
+            preparedStatement.setString(1, volunteerId);
+            int success =preparedStatement.executeUpdate();
+            if (success == 0)
+            	return false;
+            else return true;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public User updateVolunteer(Volunteer volunteer) throws SQLException,
+			InconsistentDatabaseException {
+		// TODO Auto-generated method stub
+		EditPersonalDataFormData formData = new EditPersonalDataFormData();
+		formData.setEmail(volunteer.getEmail());
+		formData.setFirstName(volunteer.getFirstName());
+		formData.setLastName(volunteer.getLastName());
+		formData.setPassword(volunteer.getPassword());
+		formData.setPhoneNumber(volunteer.getPhoneNumber());
+		return modifyUserPersonalFields(volunteer.getUserId(), formData);
+	}
+
+
+	@Override
+	public Event updateEvent(Event event) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateEventByIdSQL);
+            preparedStatement.setString(1, event.getTeacherId());
+            preparedStatement.setDate(2, (java.sql.Date) event.getEventDate());
+            preparedStatement.setString(3, event.getEventTime());
+            preparedStatement.setString(4, event.getGrade());
+            preparedStatement.setInt(5, event.getNumberStudents());
+            preparedStatement.setString(6, event.getNotes());
+            preparedStatement.setString(7, event.getVolunteerId());
+            preparedStatement.setString(8, event.getEventId());
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+        return getEventById(event.getEventId());
+	}
+
+
+	@Override
+	public boolean deleteEvent(String eventId) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(deleteEventSQL);
+            preparedStatement.setString(1, eventId);
+            int success =preparedStatement.executeUpdate();
+            if (success == 0)
+            	return false;
+            else return true;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public List<Event> getEvents() throws SQLException,
+			InconsistentDatabaseException {
+		List<Event> events = new ArrayList<Event>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getEventsSQL);
+            
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Event event = new Event();
+                event.setEventId(resultSet.getString("event_id"));
+                event.setTeacherId(resultSet.getString("teacher_id"));
+                event.setEventDate(resultSet.getDate("event_date"));
+                event.setEventTime(resultSet.getString("event_time"));
+                event.setGrade(resultSet.getString("grade"));
+                event.setNumberStudents(resultSet.getInt("number_students"));
+                event.setNotes(resultSet.getString("notes"));
+                event.setVolunteerId(resultSet.getString("volunteer_id"));
+                events.add(event);
+            }
+            return events;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public Event getEventById(String eventId) throws SQLException {
+		Event event = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getEventByIdSQL);
+            preparedStatement.setString(1, eventId);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                event = new Event();
+                event.setEventId(resultSet.getString("event_id"));
+                event.setTeacherId(resultSet.getString("teacher_id"));
+                event.setEventDate(resultSet.getDate("event_date"));
+                event.setEventTime(resultSet.getString("event_time"));
+                event.setGrade(resultSet.getString("grade"));
+                event.setNumberStudents(resultSet.getInt("number_students"));
+                event.setNotes(resultSet.getString("notes"));
+                event.setVolunteerId(resultSet.getString("volunteer_id"));
+               
+            }
+            return event;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+	}
+
+
+	@Override
+	public boolean insertBank(Bank bank) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(insertBankSQL);
+            preparedStatement.setString(1, bank.getBankId());
+            preparedStatement.setString(2, bank.getBankName()); // FIXME: Need actual salt someday
+            preparedStatement.setString(3, bank.getBankAdminId()); // FIXME: Need actual hash someday
+            
+            try {
+                return preparedStatement.execute();
+                // FIXME: How do we detect school-does-not-exist problems?
+            } catch (MySQLIntegrityConstraintViolationException err) {
+                // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
+                try {
+					throw new LoginAlreadyInUseException();
+				} catch (LoginAlreadyInUseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+            
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+		return true;
+	}
+
+
+	@Override
+	public boolean insertSchool(School school) throws SQLException,
+			InconsistentDatabaseException {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(insertSchoolSQL);
+            preparedStatement.setString(1, school.getName());
+            preparedStatement.setString(2, school.getAddressLine1()); // FIXME: Need actual salt someday
+            preparedStatement.setString(3, school.getAddressLine2()); // FIXME: Need actual hash someday
+            preparedStatement.setString(4, school.getCity());
+            preparedStatement.setString(5, school.getZip());
+            preparedStatement.setString(6, school.getCounty());
+            preparedStatement.setString(7, school.getSchoolDistrict());
+            preparedStatement.setString(8, school.getState());
+            preparedStatement.setString(9, school.getPhone());
+            preparedStatement.setInt(10, 1);
+            
+            try {
+                return preparedStatement.execute();
+                // FIXME: How do we detect school-does-not-exist problems?
+            } catch (MySQLIntegrityConstraintViolationException err) {
+                // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
+                try {
+					throw new LoginAlreadyInUseException();
+				} catch (LoginAlreadyInUseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+            
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+		return true;
+	}
+
+
 }

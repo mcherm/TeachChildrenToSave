@@ -23,7 +23,11 @@
     
     <!-- Load in application properties reference -->
    
-	 <context:property-placeholder location="classpath:application.properties" />
+	 
+	 
+
+
+
 	<!-- 
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

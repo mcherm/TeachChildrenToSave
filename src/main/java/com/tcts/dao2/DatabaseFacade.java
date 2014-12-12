@@ -72,4 +72,40 @@ public interface DatabaseFacade {
 
     /** Returns the allowed times. */
     public List<String> getAllowedTimes() throws SQLException;
+    
+    public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException;
+    
+    /** Return the bank list  or null if there is none. */
+    public List<Bank> getBankList() throws SQLException;
+    
+    public boolean deleteSchool(String schoolId) throws SQLException, InconsistentDatabaseException;
+    
+    public boolean deleteBank(String bankId) throws SQLException, InconsistentDatabaseException;
+    
+     
+    public boolean deleteVolunteer(String volunteerId) throws SQLException, InconsistentDatabaseException;
+    
+    public boolean deleteEvent(String eventId) throws SQLException, InconsistentDatabaseException;
+    
+    public List<Event> getEvents() throws SQLException, InconsistentDatabaseException;
+    
+    public Event getEventById(String eventId) throws SQLException;
+
+	School updateSchool(School school) throws SQLException,
+			InconsistentDatabaseException;
+
+	Bank updateBank(Bank bank) throws SQLException,
+			InconsistentDatabaseException;
+	
+	boolean insertBank(Bank bank) throws SQLException,
+	InconsistentDatabaseException;
+	
+	boolean insertSchool(School school) throws SQLException,
+	InconsistentDatabaseException;
+
+	Event updateEvent(Event event) throws SQLException,
+			InconsistentDatabaseException;
+
+	User updateVolunteer(Volunteer volunteer) throws SQLException,
+			InconsistentDatabaseException;
 }
