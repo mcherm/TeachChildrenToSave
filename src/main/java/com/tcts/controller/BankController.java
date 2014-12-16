@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao2.DatabaseFacade;
-import com.tcts.model2.Bank;
+import com.tcts.dao.DatabaseFacade;
+import com.tcts.datamodel.Bank;
 
 /**
  * This is a controller for the "home page" for users. It renders substantially

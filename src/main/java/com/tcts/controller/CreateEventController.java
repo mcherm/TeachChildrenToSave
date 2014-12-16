@@ -1,11 +1,12 @@
 package com.tcts.controller;
 
-import com.tcts.common.PrettyPrintingDate;
-import com.tcts.common.SessionData;
-import com.tcts.dao2.DatabaseFacade;
-import com.tcts.model.CreateEventFormData;
-import com.tcts.model2.Teacher;
-import com.tcts.model2.UserType;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.tcts.common.SessionData;
+import com.tcts.dao.DatabaseFacade;
+import com.tcts.datamodel.Teacher;
+import com.tcts.model.CreateEventFormData;
+import com.tcts.util.EmailUtil;
 
 /**
  * A controller for the screens used to create a new event (a class for volunteers to help with).
@@ -32,6 +31,7 @@ public class CreateEventController {
 
     @Autowired
     private DatabaseFacade database;
+    
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {

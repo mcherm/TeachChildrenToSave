@@ -1,4 +1,4 @@
-package com.tcts.database;
+package com.tcts.exception;
 
 /**
  * An exception thrown when creating any sort of a user but the proposed

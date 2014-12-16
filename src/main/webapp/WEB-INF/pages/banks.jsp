@@ -28,7 +28,6 @@
                 </thead>
                 <tbody>
                 <c:forEach var="bank" items="${banks}">
-                    
                         <tr>
                             <td><c:out value="${bank.bankId}"/></td>
                             <td><c:out value="${bank.bankName}"/></td>
@@ -36,7 +35,6 @@
                             <td><a href="delete.htm">Delete </a></td>
                             <td><a href="show.htm">Modify </a></td>
                         </tr>
-                    
                 </c:forEach>
                 
                 </tbody>

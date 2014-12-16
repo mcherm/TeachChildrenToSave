@@ -1,5 +1,6 @@
 package com.tcts.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -7,12 +8,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.tcts.manager.EventManager;
-import com.tcts.manager.impl.EventManagerImpl;
-import com.tcts.model.Event;
+import com.tcts.datamodel.Event;
+import com.tcts.util.EmailUtil;
 
 @Controller
 public class EventRegistrationController extends AuthenticationController {
+	
+	@Autowired
+    private EmailUtil emailUtil;
 	
 	@RequestMapping(value = "/event", method = RequestMethod.GET)
     public String newForm(Model model) {
@@ -25,10 +28,10 @@ public class EventRegistrationController extends AuthenticationController {
 	   public String addEvent(@ModelAttribute("SpringWeb")Event event, 
 	   ModelMap model) {
 		   
-		   EventManager eventManager = new EventManagerImpl();
-		   eventManager.addEvent(event);
+		   //EventManager eventManager = new EventManagerImpl();
+		   //eventManager.addEvent(event);
 		   
-	      model.addAttribute("eventID", event.getEventID());
+	      /*model.addAttribute("eventID", event.getEventID());
 	      model.addAttribute("schooldID", event.getSchoolID());
 	      model.addAttribute("teacherUserID", event.getTeacherUserID());
 	      model.addAttribute("volunteerUserID", event.getVolunteerUserID());
@@ -38,7 +41,7 @@ public class EventRegistrationController extends AuthenticationController {
 	      model.addAttribute("eventDate", event.getEventDate());
 	      model.addAttribute("eventTime", event.getEventTime());
 	      model.addAttribute("eventNotes", event.getEventNotes());
-	      model.addAttribute("volunteerAssigned", event.isVolunteerAssigned());
+	      model.addAttribute("volunteerAssigned", event.isVolunteerAssigned());*/
 	      
 	      return "event_confirm";
 	   }

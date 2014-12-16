@@ -1,12 +1,13 @@
 package com.tcts.controller;
 
-import com.tcts.common.SessionData;
-import com.tcts.dao2.DatabaseFacade;
-import com.tcts.dao2.LoginAlreadyInUseException;
-import com.tcts.dao2.NoSuchSchoolException;
-import com.tcts.model.TeacherRegistrationFormData;
-import com.tcts.model2.School;
-import com.tcts.model2.Teacher;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +15,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.List;
+import com.tcts.common.SessionData;
+import com.tcts.dao.DatabaseFacade;
+import com.tcts.datamodel.School;
+import com.tcts.datamodel.Teacher;
+import com.tcts.exception.LoginAlreadyInUseException;
+import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.model.TeacherRegistrationFormData;
+import com.tcts.util.EmailUtil;
 
 /**
  * A controller for the flow where new teachers sign up.
@@ -26,6 +32,9 @@ public class TeacherRegistrationController {
 
     @Autowired
     private DatabaseFacade database;
+    
+    @Autowired
+    private EmailUtil emailUtil;
 
     @RequestMapping(value="/registerTeacher", method=RequestMethod.GET)
     public String showRegisterTeacherPage(HttpSession session, Model model) throws SQLException {
@@ -68,11 +77,24 @@ public class TeacherRegistrationController {
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(teacher);
             sessionData.setAuthenticated(true);
+            emailUtil.sendEmail(teacher.getEmail());
             return "redirect:" + teacher.getUserType().getHomepage();
         } catch (NoSuchSchoolException e) {
             return showFormWithErrorMessage(model, "That is not a valid school.");
         } catch (LoginAlreadyInUseException e) {
             return showFormWithErrorMessage(model, "That login is already in use; please choose another.");
-        }
+        } catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+        	e.printStackTrace();
+        	return showFormWithErrorMessage(model, "There was an error registering your data.Please try after some time");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return showFormWithErrorMessage(model, "There was an error registering your data.Please try after some time");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return showFormWithErrorMessage(model, "There was an error sending an email.Please try after some time");
+		}
     }
 }

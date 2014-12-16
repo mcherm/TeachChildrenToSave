@@ -1,6 +1,7 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao2.DatabaseFacade;
+import com.tcts.dao.DatabaseFacade;
+import com.tcts.datamodel.Teacher;
+import com.tcts.datamodel.User;
+import com.tcts.datamodel.Volunteer;
 import com.tcts.model.EditPersonalDataFormData;
-import com.tcts.model2.Teacher;
-import com.tcts.model2.User;
-import com.tcts.model2.Volunteer;
 
 /**
  * This is a controller for the "home page" for users. It renders substantially
@@ -40,7 +41,7 @@ public class TeacherController {
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
-        List<? super User> teachers = database.getUsersByType("T");
+        List<User> teachers = (List<User>)database.getUsersByType("T");
         
         model.addAttribute("teachers", teachers);
         return "teachers";

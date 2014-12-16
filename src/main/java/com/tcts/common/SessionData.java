@@ -1,12 +1,12 @@
 package com.tcts.common;
 
-import com.tcts.model2.BankAdmin;
-import com.tcts.model2.SiteAdmin;
-import com.tcts.model2.Teacher;
-import com.tcts.model2.Volunteer;
-import com.tcts.model2.User;
-
 import javax.servlet.http.HttpSession;
+
+import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.SiteAdmin;
+import com.tcts.datamodel.Teacher;
+import com.tcts.datamodel.User;
+import com.tcts.datamodel.Volunteer;
 
 /**
  * An instance of this class will be stored in the session. It contains all

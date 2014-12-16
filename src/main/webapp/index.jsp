@@ -5,7 +5,7 @@
         <title>Teach Children To Save</title>
         <%@include file="WEB-INF/pages/include/commonHead.jsp"%>
 
-        <script type="text/javascript" src="/teachchildrentosave/tcts/js/scripts.js"></script>
+        <script type="text/javascript" src="tcts/js/scripts.js"></script>
 
 
     </head>

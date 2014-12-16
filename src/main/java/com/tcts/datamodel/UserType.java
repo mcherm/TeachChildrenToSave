@@ -1,9 +1,9 @@
 package com.tcts.datamodel;
 
-import com.tcts.database.InconsistentDatabaseException;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.tcts.exception.InconsistentDatabaseException;
 
 /**
  * An enum containing the various types of users of the system.

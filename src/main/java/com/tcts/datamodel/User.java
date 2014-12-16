@@ -11,6 +11,7 @@ public abstract class User {
     private String login;
     private String email;
     private String password;
+    private String salt;
     private String firstName;
     private String lastName;
     private UserType userType;
@@ -24,10 +25,15 @@ public abstract class User {
         setLogin(resultSet.getString("user_login"));
         setEmail(resultSet.getString("email"));
         setPassword(resultSet.getString("password_hash"));
+        setPassword(resultSet.getString("password_salt"));
         setFirstName(resultSet.getString("first_name"));
         setLastName(resultSet.getString("last_name"));
         setPhoneNumber(resultSet.getString("phone_number"));
         setUserType(UserType.fromDBValue(resultSet.getString("access_type")));
+        if (this.getPassword() == null || this.getSalt() == null) {
+        	this.password = "000000000000000000000000000=";
+            this.salt = "00000000000=";
+        }
     }
 
     public String getUserId() {
@@ -93,4 +99,14 @@ public abstract class User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+    
+    
 }

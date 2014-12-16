@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao2.DatabaseFacade;
-import com.tcts.model2.User;
-import com.tcts.model2.Volunteer;
+import com.tcts.dao.DatabaseFacade;
+import com.tcts.datamodel.User;
+import com.tcts.datamodel.Volunteer;
 
 @Controller
 

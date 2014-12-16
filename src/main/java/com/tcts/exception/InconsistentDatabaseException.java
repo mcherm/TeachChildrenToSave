@@ -1,4 +1,4 @@
-package com.tcts.database;
+package com.tcts.exception;
 
 /**
  * Thrown when the database contains a value that is not permitted to have.

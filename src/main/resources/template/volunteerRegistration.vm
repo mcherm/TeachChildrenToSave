@@ -1,0 +1,10 @@
+ 
+<html>
+<body>
+<h3>Thanks for registering for Teach children to save program.</h3>
+<p>Please contact us on <a href="mailto:${to}">${to}</a> for any details </p>
+	
+<p>Please email at <a href="mailto:${to}">${to}</a></p>
+Thanks
+</body>
+</html>

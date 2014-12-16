@@ -1,6 +1,7 @@
 package com.tcts.controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -8,11 +9,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.tcts.manager.impl.VolunteerManagerImpl;
-import com.tcts.model.Volunteer;
+import com.tcts.datamodel.Volunteer;
+import com.tcts.util.EmailUtil;
 
 @Controller
 public class VolunteerRegistrationController extends AuthenticationController{
+	
+	@Autowired
+    private EmailUtil emailUtil;
 
 	/*@RequestMapping(value = "/volunteer", method = RequestMethod.GET)
 	   public ModelAndView volunteer() {
@@ -24,16 +28,16 @@ public class VolunteerRegistrationController extends AuthenticationController{
 	
 	@RequestMapping(value = "/volunteer", method = RequestMethod.GET)
     public String newForm(Model model) {
-        model.addAttribute("volunteer", new Volunteer());
+        model.addAttribute("volunteer", new com.tcts.datamodel.Volunteer());
 
-        return "volunteer";
+        return "registerVolunteer";
     }
 	
 	   @RequestMapping(value = "/addVolunteer", method = RequestMethod.POST)
 	   public String addStudent(@ModelAttribute("SpringWeb")Volunteer volunteer, 
 	   ModelMap model) {
 		   
-		   VolunteerManagerImpl volunteerManager = new VolunteerManagerImpl();
+		   /*VolunteerManagerImpl volunteerManager = new VolunteerManagerImpl();
 		   volunteerManager.addVolunteer(volunteer);
 		   
 		   
@@ -48,7 +52,7 @@ public class VolunteerRegistrationController extends AuthenticationController{
 	      model.addAttribute("zip", volunteer.getZipcode());
 	      model.addAttribute("accessType", volunteer.getAccessType());
 	      model.addAttribute("emailAddress", volunteer.getEmailAddress());
-	      model.addAttribute("organization", volunteer.getOrganizatiom());
+	      model.addAttribute("organization", volunteer.getOrganizatiom());*/
 	      
 	      return "volunteer_confirm";
 	   }
