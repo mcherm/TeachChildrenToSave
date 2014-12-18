@@ -25,7 +25,7 @@ public abstract class User {
         setLogin(resultSet.getString("user_login"));
         setEmail(resultSet.getString("email"));
         setPassword(resultSet.getString("password_hash"));
-        setPassword(resultSet.getString("password_salt"));
+        setSalt(resultSet.getString("password_salt"));
         setFirstName(resultSet.getString("first_name"));
         setLastName(resultSet.getString("last_name"));
         setPhoneNumber(resultSet.getString("phone_number"));
