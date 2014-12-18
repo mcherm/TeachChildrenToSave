@@ -4,11 +4,9 @@
     <head>
         <title>Teach Children To Save - Add Volunteer</title>
         <%@include file="include/commonHead.jsp"%>
-        <script type="text/javascript" src="tcts/js/scripts.js"></script>
 
     </head>
     <body class="volunteer_registration">
-        <%@include file="include/header.jsp"%>
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -30,7 +28,7 @@
                     <%-- 1. add the css class 'error' to the label --%>
                     <%-- 2. include 'errorText' span --%>
                     <%-- we should (if possible) also update the H1 tag as well, appending something like: ", form has errors" --%>
-
+					<%--
                     <div class="formElementCnt">
                         <label class="error">
                             <div class="inputCnt">
@@ -44,7 +42,7 @@
                             </div>
                         </label>
                     </div>
-
+					 --%>
 
                     <div class="formElementCnt">
                         <label>
@@ -167,9 +165,7 @@
                         </label>
                     </div>
 
-                    <div>
-                        <button type="submit" value="Submit">Submit</button>
-                    </div>
+                    <button type="submit" value="Submit">Submit</button>
 
                 </form:form>
 

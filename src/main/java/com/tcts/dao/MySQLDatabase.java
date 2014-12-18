@@ -27,10 +27,13 @@ import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.LoginAlreadyInUseException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.model.CreateEventFormData;
 import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
+import com.tcts.model.VolunteerRegistrationFormData;
 import com.tcts.util.SecurityUtil;
 
 
@@ -65,8 +68,12 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event2 where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
             "select " + eventFields + " from Event2 where volunteer_id = ?";
+    private final static String getAllAvailableEventsSQL =
+    		            "select " + eventFields + " from Event2 where volunteer_id is null";
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank2 where bank_id = ?";
+    private final static String getAllBanksSQL =
+            "select " + bankFields + " from Bank2";
     private final static String getBankListSQL =
             "select " + bankFields + " from Bank2 ";
     private final static String getSchoolByIdSQL =
@@ -85,6 +92,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "insert into User2 (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
             "insert into Event2 (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
+    private final static String volunteerForEventSQL =
+    	           "update Event2 set volunteer_id = ? where event_id = ?";
     
     private final static String insertSchoolSQL  =
     		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -239,14 +248,28 @@ public class MySQLDatabase implements DatabaseFacade {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Event event = new Event();
-                event.setEventId(resultSet.getString("event_id"));
-                event.setTeacherId(resultSet.getString("teacher_id"));
-                event.setEventDate(resultSet.getDate("event_date"));
-                event.setEventTime(resultSet.getString("event_time"));
-                event.setGrade(resultSet.getString("grade"));
-                event.setNumberStudents(resultSet.getInt("number_students"));
-                event.setNotes(resultSet.getString("notes"));
-                event.setVolunteerId(resultSet.getString("volunteer_id"));
+                event.populateFieldsFromResultSetRow(resultSet);
+                events.add(event);
+            }
+            return events;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public List<Event> getAllAvailableEvents() throws SQLException {
+        List<Event> events = new ArrayList<Event>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getAllAvailableEventsSQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Event event = new Event();
+                event.populateFieldsFromResultSetRow(resultSet);
                 events.add(event);
             }
             return events;
@@ -270,6 +293,22 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setInt(5, Integer.parseInt(formData.getNumberStudents()));
             preparedStatement.setString(6, formData.getNotes());
             preparedStatement.setString(7, null); // volunteerId
+            preparedStatement.executeUpdate();
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(volunteerForEventSQL);
+            preparedStatement.setString(1, volunteerId);
+            preparedStatement.setString(2, eventId);
             preparedStatement.executeUpdate();
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
@@ -383,6 +422,28 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
+    
+    @Override
+    public List<Bank> getAllBanks() throws SQLException {
+        List<Bank> banks = new ArrayList<Bank>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getAllBanksSQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Bank bank = new Bank();
+                bank.populateFieldsFromResultSetRow(resultSet);
+                banks.add(bank);
+            }
+            return banks;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
 
 
     @Override
@@ -424,66 +485,88 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
-
-    @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(insertUserSQL);
-            preparedStatement.setString(1, formData.getLogin());
-            
-            // Uses a secure Random not a simple Random
+    		
+	private User insertNewUser(String login, String password, String email,
+			String firstName, String lastName, UserType userType,
+			String organizationId, String phoneNumber) throws SQLException,
+			LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		try {
+			connection = ConnectionFactory.getConnection();
+			preparedStatement = connection.prepareStatement(insertUserSQL);
+			
+			 // Uses a secure Random not a simple Random
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
             // Salt generation 64 bits long
             byte[] bSalt = new byte[8];
             random.nextBytes(bSalt);
             // Digest computation
-            byte[] bDigest = SecurityUtil.getHash(SecurityUtil.ITERATION_NUMBER,formData.getPassword(),bSalt);
+            byte[] bDigest = SecurityUtil.getHash(SecurityUtil.ITERATION_NUMBER,password,bSalt);
             String sDigest = SecurityUtil.byteToBase64(bDigest);
             String sSalt = SecurityUtil.byteToBase64(bSalt);
             
-            preparedStatement.setString(2, sSalt); // FIXME: Need actual salt someday
-            preparedStatement.setString(3, sDigest); // FIXME: Need actual hash someday
-            preparedStatement.setString(4, formData.getEmail());
-            preparedStatement.setString(5, formData.getFirstName());
-            preparedStatement.setString(6, formData.getLastName());
-            preparedStatement.setString(7, UserType.TEACHER.getDBValue());
-            preparedStatement.setString(8, formData.getSchoolId());
-            preparedStatement.setString(9, formData.getPhoneNumber());
-            preparedStatement.setInt(10, 0); // FIXME: This represents "not approved"
-            try {
-                preparedStatement.execute();
-                // FIXME: How do we detect school-does-not-exist problems?
-            } catch (MySQLIntegrityConstraintViolationException err) {
-                // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
-                throw new LoginAlreadyInUseException();
-            }
-            preparedStatement.close();
-            preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
-            resultSet = preparedStatement.executeQuery();
-            String teacherId = null;
-            int numberOfRows = 0;
-            while (resultSet.next()) {
-                numberOfRows++;
-                teacherId = resultSet.getString(1);
-            }
-            if (numberOfRows < 1) {
-                throw new RuntimeException("This should never happen.");
-            } else if (numberOfRows > 1) {
-                throw new RuntimeException("This should never happen.");
-            } else {
-                Teacher teacher = (Teacher) getUserById(teacherId);
-                return teacher;
-            }
-        } finally {
-            closeSafely(connection, preparedStatement, resultSet);
-        }
+           
+			preparedStatement.setString(1, login);
+			preparedStatement.setString(2, sSalt); 
+            preparedStatement.setString(3, sDigest); 
+			
+			preparedStatement.setString(4, email);
+			preparedStatement.setString(5, firstName);
+			preparedStatement.setString(6, lastName);
+			preparedStatement.setString(7, userType.getDBValue());
+			preparedStatement.setString(8, organizationId);
+			preparedStatement.setString(9, phoneNumber);
+			preparedStatement.setInt(10, 0); // FIXME: This represents
+												// "not approved"
+			try {
+				preparedStatement.executeUpdate();
+			} catch (MySQLIntegrityConstraintViolationException err) {
+				// FIXME: Check if it matches
+				// "Duplicate entry '.*' for key 'ix_login'"
+				throw new LoginAlreadyInUseException();
+			}
+			preparedStatement.close();
+			preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+			resultSet = preparedStatement.executeQuery();
+			String userId = null;
+			int numberOfRows = 0;
+			while (resultSet.next()) {
+				numberOfRows++;
+				userId = resultSet.getString(1);
+			}
+			if (numberOfRows < 1) {
+				throw new RuntimeException("This should never happen.");
+			} else if (numberOfRows > 1) {
+				throw new RuntimeException("This should never happen.");
+			} else {
+				return getUserById(userId);
+			}
+		} finally {
+			closeSafely(connection, preparedStatement, resultSet);
+		}
+	}
+    
+    @Override
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        // FIXME: Need to verify that the school ID is present in the database and throw NoSuchSchoolException if it's not.
+        return (Teacher) insertNewUser(formData.getLogin(), formData.getPassword(), formData.getEmail(),
+                formData.getFirstName(), formData.getLastName(), UserType.TEACHER, formData.getSchoolId(),
+                formData.getPhoneNumber());
     }
 
+    @Override
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData)
+            throws SQLException, NoSuchBankException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException
+    {
+        // FIXME: Need to verify that the bank ID is present in the database and throw NoSuchBankException if it's not.
+        return (Volunteer) insertNewUser(formData.getLogin(), formData.getPassword(), formData.getEmail(),
+                formData.getFirstName(), formData.getLastName(), UserType.VOLUNTEER, formData.getBankId(),
+                formData.getPhoneNumber());
+    }
 
+    
     /**
      * Safely close several things that might be open or not or might not even exist.
      */

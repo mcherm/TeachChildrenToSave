@@ -48,7 +48,7 @@ table {
   display: block;
 }
 
-.b {
+.b, strong {
   font-weight: bold;
 }
 
@@ -81,6 +81,14 @@ sup {
 
 ul {
   list-style-position: inside;
+}
+
+.noUl li {
+  list-style: none;
+}
+
+.mb1 {
+  margin-bottom: 1em;
 }
 
 /* Webfont: TeachKidsToSaveDE-Regular */
@@ -128,7 +136,9 @@ body {
   margin-top: .8em;
 }
 
-header, .mainCnt, footer {
+header,
+.mainCnt,
+footer {
   padding-left: 5px;
   padding-right: 5px;
 }
@@ -157,6 +167,9 @@ header img {
   width: 100%;
   padding-left: 5px;
   padding-right: 5px;
+}
+header .delc button {
+  padding: 0;
 }
 header .delc img {
   max-width: 251px;
@@ -187,6 +200,9 @@ header .dba img {
   nav button {
     display: block;
     height: 44px;
+    width: 100%;
+    text-align: left;
+    padding-left: 12px;
     font-weight: bold;
   }
   nav button .iconFont {
@@ -197,6 +213,9 @@ header .dba img {
     display: inline-block;
     width: 20px;
     text-decoration: none !important;
+  }
+  nav button .txt {
+    font-size: 1.25em;
   }
 }
 @media (min-width: 768px) {
@@ -221,7 +240,6 @@ header .dba img {
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#315d87', EndColorStr='#0c345a');
     height: 38px;
     color: #fff;
-    font-size: .9em;
     text-align: center;
     margin-bottom: 1em;
   }
@@ -229,7 +247,7 @@ header .dba img {
     text-decoration: underline;
   }
   nav ul {
-    padding-top: .85em;
+    padding-top: .65em;
     border: 0;
     margin-bottom: 0;
   }
@@ -246,6 +264,8 @@ header .dba img {
     text-decoration: none;
     font-weight: bold;
     height: auto;
+    font-size: .9em;
+    width: auto;
   }
   nav button .iconFont {
     font-size: .7em;
@@ -253,6 +273,9 @@ header .dba img {
     top: -2px;
     display: inline;
     width: auto;
+  }
+  nav button .txt {
+    font-size: .9em;
   }
 }
 body.home main {
@@ -284,6 +307,13 @@ body.home aside img {
     padding-top: 2em;
   }
 }
+.qa-notes {
+  border: 1px dotted #333;
+  background-color: #ccc;
+  padding: 10px;
+  margin: 10px;
+}
+
 h1 {
   font-weight: bold;
   color: #0c345a;
@@ -352,23 +382,63 @@ body.home main button {
   color: #fff;
   border: 0;
   height: 30px;
-  width: 225px;
 }
 
-/* moved to layout file */
-body.about nav li:nth-child(1) button .txt {
-  text-decoration: underline !important;
-}
-
-body.volunteer_registration nav li:nth-child(4) button .txt {
-  text-decoration: underline !important;
-}
-
-form input[type=text],
-form input[type=password] {
+main .editOrRegister {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
   width: 300px;
-  height: 22px;
+  background-color: #31873f;
+  height: 30px;
+  text-transform: uppercase;
+  color: #fff;
 }
+
+@media (min-width: 320px) {
+  body.home main button {
+    width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  body.home main button {
+    width: 225px;
+  }
+}
+/* majority of nav css moved to layout file */
+body.about nav .about .txt {
+  text-decoration: underline !important;
+}
+
+body.volunteer_registration nav .register .txt {
+  text-decoration: underline !important;
+}
+
+body.signIn nav .signIn .txt {
+  text-decoration: underline !important;
+}
+
+body.volunteerHome table,
+body.bankAdminHome table,
+body.teacherHome table,
+body.createEvent table {
+  width: 100%;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+body.volunteerHome table thead th,
+body.bankAdminHome table thead th,
+body.teacherHome table thead th,
+body.createEvent table thead th {
+  font-weight: bold;
+  background-color: #0c345a;
+  color: #fff;
+  padding-top: .5em;
+  padding-bottom: .5em;
+  padding-left: .5em;
+}
+
 form button {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -382,37 +452,148 @@ form button {
   margin-top: 2em;
   border: 0;
   height: 44px !important;
-  width: 300px;
 }
 form .formElementCnt {
   margin-top: 1em;
 }
 form .inputCnt {
   display: inline-block;
+  width: 100%;
 }
 form .info {
   font-weight: bold;
   font-size: .9em;
 }
 form .error {
-  border: 1px solid red;
+  border: 1px solid #b21b29;
   padding: 2px;
   display: inline-block;
 }
 form .errorText {
-  color: red;
+  color: #b21b29;
+}
+form .addlInfo {
+  font-size: .85em;
+  font-style: italic;
 }
 
-body.volunteer_registration form {
-  width: 300px;
+@media (min-width: 320px) {
+  body.volunteer_registration form,
+  body.registerTeacher form,
+  body.signIn form,
+  body.editPersonalData form,
+  body.eventRegistration form,
+  body.createEvent form,
+  body.addVolunteer form {
+    width: 100%;
+    margin: 0 auto;
+  }
+  body.volunteer_registration form input[type=text],
+  body.volunteer_registration form input[type=password],
+  body.registerTeacher form input[type=text],
+  body.registerTeacher form input[type=password],
+  body.signIn form input[type=text],
+  body.signIn form input[type=password],
+  body.editPersonalData form input[type=text],
+  body.editPersonalData form input[type=password],
+  body.eventRegistration form input[type=text],
+  body.eventRegistration form input[type=password],
+  body.createEvent form input[type=text],
+  body.createEvent form input[type=password],
+  body.addVolunteer form input[type=text],
+  body.addVolunteer form input[type=password] {
+    width: 100%;
+    height: 22px;
+  }
+  body.volunteer_registration form .error,
+  body.registerTeacher form .error,
+  body.signIn form .error,
+  body.editPersonalData form .error,
+  body.eventRegistration form .error,
+  body.createEvent form .error,
+  body.addVolunteer form .error {
+    width: 100%;
+  }
+  body.volunteer_registration form button,
+  body.registerTeacher form button,
+  body.signIn form button,
+  body.editPersonalData form button,
+  body.eventRegistration form button,
+  body.createEvent form button,
+  body.addVolunteer form button {
+    width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  body.volunteer_registration form,
+  body.registerTeacher form,
+  body.signIn form,
+  body.editPersonalData form,
+  body.eventRegistration form,
+  body.createEvent form,
+  body.addVolunteer form {
+    width: 300px;
+    margin: 0 auto;
+  }
+  body.volunteer_registration form input[type=text],
+  body.volunteer_registration form input[type=password],
+  body.registerTeacher form input[type=text],
+  body.registerTeacher form input[type=password],
+  body.signIn form input[type=text],
+  body.signIn form input[type=password],
+  body.editPersonalData form input[type=text],
+  body.editPersonalData form input[type=password],
+  body.eventRegistration form input[type=text],
+  body.eventRegistration form input[type=password],
+  body.createEvent form input[type=text],
+  body.createEvent form input[type=password],
+  body.addVolunteer form input[type=text],
+  body.addVolunteer form input[type=password] {
+    width: 300px;
+    height: 22px;
+  }
+  body.volunteer_registration form .error,
+  body.registerTeacher form .error,
+  body.signIn form .error,
+  body.editPersonalData form .error,
+  body.eventRegistration form .error,
+  body.createEvent form .error,
+  body.addVolunteer form .error {
+    width: auto;
+  }
+  body.volunteer_registration form button,
+  body.registerTeacher form button,
+  body.signIn form button,
+  body.editPersonalData form button,
+  body.eventRegistration form button,
+  body.createEvent form button,
+  body.addVolunteer form button {
+    width: 300px;
+  }
+}
+.errorMessage {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
   margin: 0 auto;
+  width: 90%;
+  height: 3em;
+  background-color: #b21b29;
+  color: #fff;
+  text-align: center;
+  padding: 1em;
+  margin-bottom: 1em;
+  font-weight: bold;
 }
 
 footer {
   max-width: 960px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 1em;
+  margin-top: 2.7em;
+  border-top: 1px solid #ccc;
+  padding-top: .75em;
 }
 footer:after {
   content: " ";
@@ -429,26 +610,18 @@ footer small {
   height: 5px;
 }
 
-/* ----- Things that haven't been addressed by the UI team yet --------*/
-
-div.qa-notes {
-    color: #FF3333;
-}
-div.qa-notes::before {
-    content: "QA Notes: ";
+main {
+  width: 90%;
+  margin: 0 auto;
 }
 
-div.errorMessage {
-    color: #22FF22;
+h2, h3 {
+  font-weight: bold;
+  margin-top: 1em;
+  margin-bottom: .5em;
 }
 
-table.displayTable {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-table.displayTable th {
-    border: 1px solid black;
-}
-table.displayTable td {
-    border: 1px solid black;
+p {
+  padding-bottom: 1em;
+  font-size: .9em;
 }

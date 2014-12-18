@@ -5,17 +5,17 @@
         <title>Teach Children To Save</title>
         <%@include file="WEB-INF/pages/include/commonHead.jsp"%>
 
-        <script type="text/javascript" src="tcts/js/scripts.js"></script>
+        <script type="text/javascript" src="/teachchildrentosave/tcts/js/scripts.js"></script>
 
 
     </head>
     <body class="home">
 
-        <%@include file="WEB-INF/pages/include/header.jsp" %>
         <a href="#main" class="ada-read">Skip to main content</a>
-
+        
         <div class="decor"></div>
 
+        <%@include file="WEB-INF/pages/include/header.jsp" %>
 
         <div class="mainCnt">
 
@@ -42,7 +42,7 @@
                     <li><span>It only takes 45 minutes</span></li>
                 </ul>
 
-                <button onclick="location.href='registerTeacher.htm'">Sign up my class</button>
+                <button onclick="js.loadURL('registerTeacher.htm');">Sign up my class</button>
 
                 <h3>Volunteers</h3>
 
@@ -56,7 +56,7 @@
                     <li><span>You'll receive all the training material you need</span></li>
                 </ul>
 
-                <button onclick="">Volunteer</button>
+                <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
                 <h3>Bank Community Affairs Departments</h3>
 

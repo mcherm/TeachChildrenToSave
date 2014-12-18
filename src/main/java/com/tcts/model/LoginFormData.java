@@ -1,10 +1,12 @@
 package com.tcts.model;
 
+@Deprecated
 public class LoginFormData {
 	private StringBuffer userID;
 	private StringBuffer password;
-
-    public StringBuffer getUserID() {
+	private String userType;
+	
+	public StringBuffer getUserID() {
 		return userID;
 	}
 	public void setUserID(StringBuffer userID) {
@@ -16,6 +18,12 @@ public class LoginFormData {
 	public void setPassword(StringBuffer password) {
 		this.password = password;
 	}
-
+	public String getUserType() {
+		return userType;
+	}
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+	
 
 }

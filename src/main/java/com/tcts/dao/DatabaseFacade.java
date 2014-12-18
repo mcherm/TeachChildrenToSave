@@ -14,10 +14,13 @@ import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.LoginAlreadyInUseException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.model.CreateEventFormData;
 import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
+import com.tcts.model.VolunteerRegistrationFormData;
 
 /**
  * Methods for accessing the database. It should probably be refactored somehow.
@@ -54,6 +57,9 @@ public interface DatabaseFacade {
 
     /** Return the list of events that have a particular teacher. */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
+    
+    /** Return the list of all events that have null for a volunteer. */
+    public List<Event> getAllAvailableEvents() throws SQLException;
 
     /** Return the list of events that have a particular volunteer. */
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException;
@@ -63,9 +69,21 @@ public interface DatabaseFacade {
      * fields have been checked for containing valid values.
      */
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException;
+    
+    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException;
 
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
+    
+    /**
+     * Insert a new Volunteer in the database, and return it. Expects that all
+     * fields have been checked for containing valid values. Will throw an
+     * exception if the login is not unique or if the bank is not found.
+     * @throws UnsupportedEncodingException 
+     * @throws NoSuchAlgorithmException 
+     */
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData)
+            throws SQLException, NoSuchBankException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
     /** Return the bank with this bankId, or null if there is none. */
     public Bank getBankById(String bankId) throws SQLException;
@@ -75,6 +93,9 @@ public interface DatabaseFacade {
 
     /** Returns the full list of all schools. */
     public List<School> getAllSchools() throws SQLException;
+    
+    /** Returns the full list of all schools. */
+    public List<Bank> getAllBanks() throws SQLException;
 
     /** Returns the allowed dates. */
     public List<Date> getAllowedDates() throws SQLException;

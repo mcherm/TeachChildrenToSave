@@ -22,7 +22,7 @@ import com.tcts.common.SessionData;
 import com.tcts.dao.DatabaseFacade;
 import com.tcts.datamodel.User;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.model.Login;
+import com.tcts.model.LoginFormData;
 import com.tcts.util.EmailUtil;
 import com.tcts.util.SecurityUtil;
 
@@ -30,7 +30,7 @@ import com.tcts.util.SecurityUtil;
  * The controller that handles user login for all users.
  */
 @Controller
-public class LoginController extends AuthenticationController {
+public class LoginController {
 
     @Autowired
     private DatabaseFacade database;
@@ -39,13 +39,13 @@ public class LoginController extends AuthenticationController {
 
     @RequestMapping(value = "/getLoginPage", method = RequestMethod.GET)
     public String newLoginPage(Model model) {
-        model.addAttribute("login", new Login());
+    	model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "");
         return "login";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String isUserAuthenticated( @ModelAttribute("SpringWeb")Login login,
+    public String isUserAuthenticated( @ModelAttribute("SpringWeb")LoginFormData login,
                                        ModelMap model,
                                        HttpSession session) throws SQLException, InconsistentDatabaseException {
         SessionData.ensureNoActiveSession(session);
@@ -64,12 +64,12 @@ public class LoginController extends AuthenticationController {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			model.addAttribute("login", new Login());
+			model.addAttribute("login", new LoginFormData ());
             model.addAttribute("errorMessage", "Invalid user id or password.");
             return "login";
 		} catch(NoSuchAlgorithmException ex){
 			ex.printStackTrace();
-			model.addAttribute("login", new Login());
+			model.addAttribute("login", new LoginFormData ());
             model.addAttribute("errorMessage", "Invalid user id or password.");
             return "login";
 		}
@@ -80,7 +80,7 @@ public class LoginController extends AuthenticationController {
         
         if (login.getUserID() == null || login.getPassword() == null || user == null || !isValidUser) {
             // --- Failed login ---
-            model.addAttribute("login", new Login());
+            model.addAttribute("login", new LoginFormData ());
             model.addAttribute("errorMessage", "Invalid user id or password.");
             return "login";
         } else {

@@ -6,33 +6,85 @@
         <title>Teach Children to Save - Edit Personal Data</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
-        <h2>Edit Data</h2>
-        <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
-        <div>
-            <form:form method="POST" action="editPersonalData.htm" modelAttribute="formData">
-                <div>
-                    <div><form:label path="email">Email</form:label></div>
-                    <div><form:input path="email"/></div>
-                </div>
-                <div>
-                    <div><form:label path="firstName">First Name</form:label></div>
-                    <div><form:input path="firstName"/></div>
-                </div>
-                <div>
-                    <div><form:label path="lastName">Last Name</form:label></div>
-                    <div><form:input path="lastName"/></div>
-                </div>
-                <div>
-                    <div><form:label path="phoneNumber">Phone Number</form:label></div>
-                    <div><form:input path="phoneNumber"/></div>
-                </div>
-                <div>
-                    <input type="submit" value="Edit"/>
-                </div>
-            </form:form>
-        </div>
+    <body class="editPersonalData">
+
+        <a href="#main" class="ada-read">Skip to main content</a>
+
+        <div class="decor"></div>
+
+        <%@include file="include/header.jsp" %>
+
+        <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+            <main id="main">
+
+		        <h1>
+					Edit Your Account
+				</h1>
+		        
+				<c:if test="${not empty errorMessage}">
+					<div class="errorMessage">
+				   		<c:out value="${errorMessage}" default=""  />
+			   		</div>			
+				</c:if>
+
+
+	            <form:form method="POST" action="editPersonalData.htm" modelAttribute="formData">
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    First Name
+                                </div>
+                                <form:input path="firstName"/>
+                            </div>
+                        </label>
+                    </div>	
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Last Name
+                                </div>
+                                <form:input path="lastName"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Email
+                                </div>
+                                <form:input path="email"/>
+                            </div>
+                        </label>
+                    </div>	
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Phone Number
+                                </div>
+                                <form:input path="phoneNumber"/>
+                            </div>
+                        </label>
+                    </div>	
+
+                    <button type="submit" value="Edit">Edit</button>
+
+	            </form:form>
+		
+		    </main>
+		
+		</div><%-- mainCnt --%>    
+		        
         <%@include file="include/footer.jsp"%>
     </body>
 </html>

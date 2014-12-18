@@ -8,7 +8,7 @@
 
     </head>
     <body class="event_registration">
-        <%@include file="include/header.jsp"%>
+         <%@include file="include/header.jsp"%>
 
         <h2>Bank Information</h2>
        

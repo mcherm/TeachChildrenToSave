@@ -5,25 +5,101 @@
         <title>Teach Children to Save - Site Administrator Home</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body id="siteAdminHome">
-        <%@include file="include/header.jsp"%>
-        <h1>Admin Home Page</h1>
-        <div id="actions">
-            <h2>Actions</h2>
-            <ul>
-                <li><a href="bank/banks.htm">Add/Remove/Edit Banks</a></li>
-                <li><a href="school/schools.htm">Add/Remove/Edit Schools</a></li>
-                <li><a href="teacher/teachers.htm">Remove/Edit Teachers</a></li>
-                <li><a href="volunteer/volunteers.htm">Remove/Edit Volunteers</a></li>
-                <li><a href="teacher/teachers.htm">List Teachers</a></li>
-                <li><a href="volunteer/volunteers.htm">List Volunteers</a></li>
-                <li><a href="class/classes.htm">List Classes</a></li>
-                <li><a href="adminSendEmailAnnounce.htm">Send Email Announcement</a></li>
-                <li><a href="adminEditAllowedDates.htm">Add/Remove Event Dates</a></li>
-                <li><a href="adminEditAllowedTimes.htm">Add/Remove Event Times</a></li>
-                <li><a href="editPersonalData.htm">Edit my Data</a></li>
-            </ul>
-        </div>
+    <body id="siteAdminHome" class="siteAdminHome">
+    
+        <a href="#main" class="ada-read">Skip to main content</a>
+
+        <div class="decor"></div>
+
+        <%@include file="include/header.jsp" %>
+
+        <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+            <main id="main">    
+
+
+		        <h1>
+		        	Admin Home Page
+		        </h1>
+	        
+	            <h2>Actions</h2>
+	         
+	            <ul class="noUl">
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('bank/banks.htm');" class="editOrRegister">
+	                		Add/Remove/Edit Banks
+	                	</button>
+                	</li>
+                	
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('school/schools.htm');" class="editOrRegister">
+	                		Add/Remove/Edit Schools
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('teacher/teachers.htm');" class="editOrRegister">
+	                		Remove/Edit Teachers
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('volunteer/volunteers.htm');" class="editOrRegister">
+	                		Remove/Edit Volunteers
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('teacher/teachers.htm');" class="editOrRegister">
+	                		List Teachers
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('volunteer/volunteers.htm');" class="editOrRegister">
+	                		List Volunteers
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('class/classes.htm');" class="editOrRegister">
+	                		List Classes
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('adminSendEmailAnnounce.htm');" class="editOrRegister">
+	                		Send Email Announcement
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('adminEditAllowedDates.htm');" class="editOrRegister">
+	                		Add/Remove Event Dates
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('adminEditAllowedTimes.htm');" class="editOrRegister">
+	                		Add/Remove Event Times
+	                	</button>
+	                </li>
+	                
+	                <li class="mb1">
+	                	<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
+	                		Edit my Data
+	                	</button>
+	                </li>
+	            </ul>
+
+		
+			</main>
+
+		</div><%-- mainCnt --%>	
+
         <%@include file="include/footer.jsp"%>
+
     </body>
 </html>

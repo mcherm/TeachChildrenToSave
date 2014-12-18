@@ -5,52 +5,119 @@
     <head>
         <title>Teach Children to Save - Register New Teacher</title>
         <%@include file="include/commonHead.jsp"%>
+
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
-        <h2>Register a New Teacher</h2>
-        <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
-        <div class="teacherRegistrationForm">
-            <form:form method="POST" action="registerTeacher.htm" modelAttribute="formData">
-                <div>
-                    <div><form:label path="login">Username</form:label></div>
-                    <div><form:input path="login"/></div>
-                </div>
-                <div>
-                    <div><form:label path="email">Email</form:label></div>
-                    <div><form:input path="email"/></div>
-                </div>
-                <div>
-                    <div><form:label path="password">Password</form:label></div>
-                    <div><form:input path="password"/></div>
-                </div>
-                <div>
-                    <div><form:label path="firstName">First Name</form:label></div>
-                    <div><form:input path="firstName"/></div>
-                </div>
-                <div>
-                    <div><form:label path="lastName">Last Name</form:label></div>
-                    <div><form:input path="lastName"/></div>
-                </div>
-                <div>
-                    <div><form:label path="phoneNumber">Phone Number</form:label></div>
-                    <div><form:input path="phoneNumber"/></div>
-                </div>
-                <div>
-                    <div class="qa-notes">This needs to be a tool for selecting from the list.</div>
-                    <div><form:label path="schoolId">School Id Code</form:label></div>
-                    <div>
-                        <form:select path="schoolId">
-                            <form:option value="0" label="- Select School -" />
-                            <form:options items="${schools}" itemValue="schoolId" itemLabel="name" />
-                        </form:select>
-                    </div>
-                </div>
-                <div>
-                    <input type="submit" value="Register"/>
-                </div>
-            </form:form>
-        </div>
+    <body class="registerTeacher">
+        <a href="#main" class="ada-read">Skip to main content</a>
+        
+        <div class="decor"></div>
+
+        <%@include file="include/header.jsp" %>
+
+        <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+            <main id="main">
+            
+                    <h1>Register a New Teacher</h1>
+			
+						<c:if test="${not empty errorMessage}">
+							<div class="errorMessage">
+						   		<c:out value="${errorMessage}" default=""  />
+					   		</div>			
+						</c:if>
+
+			            <form:form method="POST" action="registerTeacher.htm" modelAttribute="formData">
+
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                    First Name
+		                                </div>
+		                                <form:input path="firstName"/>
+		                            </div>
+		                        </label>
+		                    </div>								
+
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                    Last Name
+		                                </div>
+		                                <form:input path="lastName"/>
+		                            </div>
+		                        </label>
+		                    </div>		
+						
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                    Username
+		                                </div>
+		                                <form:input path="login"/>
+		                            </div>
+		                        </label>
+		                    </div>
+
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                    Email
+		                                </div>
+		                                <form:input path="email"/>
+		                            </div>
+		                        </label>
+		                    </div>						
+						
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                    Password
+		                                </div>
+		                                <form:input path="password"/>
+		                            </div>
+		                        </label>
+		                    </div>								
+
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                    Phone Number
+		                                </div>
+		                                <form:input path="phoneNumber"/>
+		                            </div>
+		                        </label>
+		                    </div>		
+
+		                    <div class="formElementCnt">
+		                        <label>
+		                            <div class="inputCnt">
+		                                <div class="info">
+		                                   <div><form:label path="schoolId">School where you teach</form:label></div>
+		                                </div>
+				                        <form:select path="schoolId">
+				                            <form:option value="0" label="- Select School -" />
+				                            <form:options items="${schools}" itemValue="schoolId" itemLabel="name" />
+				                        </form:select>
+		                            </div>
+		                        </label>
+		                    </div>		
+		                    		                    
+                        <button type="submit" value="Register">Register</button>
+
+						</form:form>
+
+			</main>			        
+		
+		</div><%-- .mainCnt --%>
+			        
         <%@include file="include/footer.jsp"%>
     </body>
 </html>

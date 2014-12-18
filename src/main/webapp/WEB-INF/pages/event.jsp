@@ -7,77 +7,133 @@
         <%@include file="include/commonHead.jsp"%>
 
     </head>
-    <body class="event_registration">
-        <%@include file="include/header.jsp"%>
+    <body class="eventRegistration">
+    
+        <a href="#main" class="ada-read">Skip to main content</a>
 
-        <h2>Event Information</h2>
-        <form:form method="POST" action="addEvent.htm" modelAttribute="event">
-           <div>
-            <div class="row_div">
-                <div class="row_div_left">
-                    <div class="caption_div"><form:label path="schoolID">School ID</form:label></div>
-                    <div class="field_div row_div_field_left_joint"><form:input path="schoolID" /></div>
-               </div>
-                <div class="row_div_right">
-                    <div class="caption_div"><form:label path="teacherUserID">Teacher User ID</form:label></div>
-                    <div class="field_div"><form:input path="teacherUserID" /></div>
-                </div>
-            </div>
+        <div class="decor"></div>
 
-            <div class="row_div">
-                <div class="row_div_left">
-                    <div class="caption_div"><form:label path="volunteerUserID">Volunteer User ID</form:label></div>
-                    <div class="field_div row_div_field_left_joint"><form:input path="volunteerUserID" /></div>
-                </div>
+        <%@include file="include/header.jsp" %>
 
-                <div class="row_div_right">
-                    <div class="caption_div"><form:label path="grade">Grade</form:label></div>
-                    <div class="field_div"><form:input path="grade" /></div>
-                </div>
-            </div>
+        <div class="mainCnt">
 
-            <div class="row_div">
-                <div class="row_div_left">
-                    <div class="caption_div"><form:label path="subject">Subject</form:label></div>
-                    <div class="field_div row_div_field_left_joint"><form:input path="subject" /></div>
-                </div>
+        <%@include file="include/navigation.jsp" %>
 
-                <div class="row_div_right">
-                    <div class="caption_div"><form:label path="numStudents">Number of Students</form:label></div>
-                    <div class="field_div"><form:input path="numStudents" /></div>
-                </div>
-            </div>
+            <main id="main">    
+		            
+		        <h1>
+		        	Event Information
+		        </h1>
+		        
+		        <form:form method="POST" action="addEvent.htm" modelAttribute="event">
 
-            <div class="row_div">
-                <div class="row_div_left">
-                    <div class="caption_div"><form:label path="eventDate">Event Date</form:label></div>
-                    <div class="field_div row_div_field_left_joint"><form:input type= "date" path="eventDate" /></div>
-                </div>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                School ID
+	                            </div>
+	                            <form:input path="schoolID" />
+	                        </div>
+	                    </label>
+	                </div>				
 
-                <div class="row_div_right">
-                    <div  class="caption_div"><form:label path="eventTime">Event Time</form:label></div>
-                    <div class="field_div"><form:input path="eventTime" /></div>
-                </div>
-             </div>
-            <div class="row_div">
-                <div class="row_div_left">
-                    <div class="caption_div"><form:label path="eventNotes">Event Notes</form:label></div>
-                    <div class="field_div row_div_field_left_joint"><form:input path="eventNotes" /></div>
-                </div>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Teacher User ID
+	                            </div>
+	                            <form:input path="teacherUserID" />
+	                        </div>
+	                    </label>
+	                </div>				
 
-                 <div class="row_div_right">
-                    <div class="caption_div"><form:label path="volunteerAssigned">Volunteer Assigned</form:label></div>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Volunteer User ID
+	                            </div>
+	                            <form:input path="volunteerUserID" />
+	                        </div>
+	                    </label>
+	                </div>	
+	                
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Grade
+	                            </div>
+	                            <form:input path="grade" />
+	                        </div>
+	                    </label>
+	                </div>		                
+	                
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Subject
+	                            </div>
+	                            <form:input path="subject" />
+	                        </div>
+	                    </label>
+	                </div>		                
 
-                 </div>
-            </div>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Event Date
+	                            </div>
+	                            <form:input type= "date" path="eventDate" />
+	                        </div>
+	                    </label>
+	                </div>	
+	                
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Event Time
+	                            </div>
+	                            <form:input path="eventTime" />
+	                        </div>
+	                    </label>
+	                </div>		                
+	                
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Event Notes
+	                            </div>
+	                            <form:input path="eventNotes" />
+	                        </div>
+	                    </label>
+	                </div>	
 
-            <div class="row_div">
-                <div >
-                    <input type="submit" value="Submit"/>
-                </div>
-            </div>
-        </div>
-        </form:form>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Volunteer Assigned
+	                            </div>
+	                            <form:input path="volunteerAssigned" />
+	                        </div>
+	                    </label>
+	                </div>		                
+        
+		            <button type="submit" value="Login">Login</button>	 
+		        
+		        </form:form>
+
+			</main>
+
+		</div><%-- mainCnt --%>			        
+		        
         <%@include file="include/footer.jsp"%>
     </body>
 </html>

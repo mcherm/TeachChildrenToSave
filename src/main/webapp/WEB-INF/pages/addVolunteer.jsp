@@ -5,67 +5,155 @@
         <title>STeach Children To Save - Add Volunteer</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
+    <body class="addVolunteer">
+   
+        <a href="#main" class="ada-read">Skip to main content</a>
 
-        <h2>Volunteer Information</h2>
-        <form:form method="POST" action="/addVolunteer.htm">
-            <div>
-                <div>
-                    <div><form:label path="firstName">First Name</form:label></div>
-                    <div><form:input path="firstName" /></div>
+        <div class="decor"></div>
 
-                    <div><form:label path="lastName">Last Name</form:label></div>
-                    <div><form:input path="lastName" /></div>
-                </div>
-                <div>
-                    <div><form:label path="emailAddress">Email Address</form:label></div>
-                    <div><form:input path="emailAddress" /></div>
-                </div>
-                <div>
-                    <div><form:label path="confirmEmailAddress">Confirm Email Address</form:label></div>
-                    <div><form:input path="confirmEmailAddress" /></div>
-                </div>
+        <%@include file="include/header.jsp" %>
 
-                <div>
-                    <div><form:label path="password">password</form:label></div>
-                    <div><form:input path="password" /></div>
-                </div>
+        <div class="mainCnt">
 
-                <div>
-                    <div><form:label path="confirmPassword">Re-Enter Password</form:label></div>
-                    <div><form:input path="confirmPassword" /></div>
-                </div>
+        <%@include file="include/navigation.jsp" %>
 
-                <div>
-                    <div><form:label path="addressLine1">Work Address Line1</form:label></div>
-                    <div><form:input path="addressLine1" /></div>
-                </div>
+            <main id="main">    
 
-                <div>
-                    <div><form:label path="addressLine2">Work Address Line2</form:label></div>
-                    <div><form:input path="addressLine2" /></div>
-                </div>
+		        <h1>
+		        	Volunteer Information
+		        </h1>
 
-                <div>
-                    <div><form:label path="city">City</form:label></div>
-                    <div><form:input path="city" /></div>
-                </div>
+	    	    <form:form method="POST" action="/addVolunteer.htm">
 
-                <div>
-                    <div><form:label path="state">State</form:label></div>
-                    <div><form:input path="state" /></div>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                First Name
+	                            </div>
+	                            <form:input path="firstName" />
+	                        </div>
+	                    </label>
+	                </div>						    
 
-                    <div><form:label path="zipcode">zip</form:label></div>
-                    <div><form:input path="zipcode" /></div>
-                </div>
-                <div>
-                    <div>
-                        <input type="submit" value="Submit"/>
-                    </div>
-                </div>
-            </div>
-        </form:form>
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Last Name
+	                            </div>
+	                            <form:input path="lastName" />
+	                        </div>
+	                    </label>
+	                </div>				
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Email Address
+	                            </div>
+	                            <form:input path="emailAddress" />
+	                        </div>
+	                    </label>
+	                </div>				
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                               Confirm Email Address
+	                            </div>
+	                           <form:input path="confirmEmailAddress" />
+	                        </div>
+	                    </label>
+	                </div>				
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Password
+	                            </div>
+	                            <form:input path="password" />
+	                        </div>
+	                    </label>
+	                </div>				
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Re-Enter Password
+	                            </div>
+	                            <form:input path="confirmPassword" />
+	                        </div>
+	                    </label>
+	                </div>	
+		    
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Work Address Line 1
+	                            </div>
+	                            <form:input path="addressLine1" />
+	                        </div>
+	                    </label>
+	                </div>			    
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Work Address Line 2
+	                            </div>
+	                            <form:input path="addressLine2" />
+	                        </div>
+	                    </label>
+	                </div>		
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                City
+	                            </div>
+	                            <form:input path="city" />
+	                        </div>
+	                    </label>
+	                </div>	
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                State
+	                            </div>
+	                            <form:input path="state" />
+	                        </div>
+	                    </label>
+	                </div>	
+
+	                <div class="formElementCnt">
+	                    <label>
+	                        <div class="inputCnt">
+	                            <div class="info">
+	                                Zip
+	                            </div>
+	                            <form:input path="zipcode" />
+	                        </div>
+	                    </label>
+	                </div>	
+		    
+			       <button type="submit" value="Submit">Submit</button>		    
+	
+		        </form:form>
+
+			</main>
+
+		</div><%-- mainCnt --%>	
+
         <%@include file="include/footer.jsp"%>
     </body>
 </html>

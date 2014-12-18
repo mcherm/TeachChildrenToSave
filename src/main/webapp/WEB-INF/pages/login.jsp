@@ -6,34 +6,74 @@
         <title>Teach Children To Save - Login</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
-        <h2>Teach Children To Save Login</h2>
-        <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
-        <div class="qa-notes">Some valid logins for testing: larry(V) jane(BA) lucy(T) harry(SA) moe(V) curley(V)
-            shemp(V) joshua(T) allen(T). V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin. All have "pass"
-            as their password.</div>
-        <form:form method="POST" action="login.htm" modelAttribute="login">
-            <div id="container">
-                <div class="row_div">
-                    <div class="row_div_left">
-                        <div><form:label path="userID">User Name</form:label></div>
-                        <div><form:input path="userID" /></div>
-                    </div>
-                </div>
-                <div class="row_div">
-                    <div class="row_div_left">
-                        <div><form:label path="password">Password</form:label></div>
-                        <div><form:input path="password" type="password"/></div>
-                    </div>
-                </div>
-                <div class="row_div">
-                    <div>
-                        <input type="submit" value="Login"/>
-                    </div>
-                </div>
-            </div>
-        </form:form>
-        <%@include file="include/footer.jsp"%>
+
+    <body class="signIn">
+
+        <a href="#main" class="ada-read">Skip to main content</a>
+
+        <div class="decor"></div>
+
+        <%@include file="include/header.jsp" %>
+
+        <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+            <main id="main">
+
+	        <h1>Teach Children To Save Login</h1>				
+
+			<c:if test="${not empty errorMessage}">
+				<div class="errorMessage">
+			   		<c:out value="${errorMessage}" default=""  />
+		   		</div>			
+			</c:if>
+			
+	        <form:form method="POST" action="login.htm" modelAttribute="loginFormData">
+	        
+	            <div class="formElementCnt">
+	                <label>
+	                    <div class="inputCnt">
+	                        <div class="info">
+	                            User Name
+	                        </div>
+	                        <form:input path="userID" />
+	                    </div>
+	                </label>
+	            </div>
+
+	            <div class="formElementCnt">
+	                <label>
+	                    <div class="inputCnt">
+	                        <div class="info">
+	                            Password
+	                        </div>
+	                        <form:input path="password" type="password"/>
+	                    </div>
+	                </label>
+	            </div>
+	            
+	            <button type="submit" value="Login">Login</button>
+	            
+	        </form:form>
+
+	        <div class="qa-notes">
+	        	<strong>Some valid logins for testing:</strong> 
+	        	<br>
+	        	larry(V) jane(BA) lucy(T) harry(SA) moe(V) curley(V)
+	            shemp(V) joshua(T) allen(T).
+	            <br>
+	            V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin. 
+	            <br>
+	            All have "pass"
+	            as their password.
+	        </div>
+
+
+            
+            </main>
+        </div><%-- mainCnt --%>
+        <%@include file="include/footer.jsp" %>
+
     </body>
 </html>

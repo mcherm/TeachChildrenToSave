@@ -8,9 +8,43 @@
         <title>Teach Children To Save - SOMETHING-ABOUT-THE-PAGE</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
-        BODY-OF-PAGE-GOES-HERE
+    <body class="">
+    
+        <a href="#main" class="ada-read">Skip to main content</a>
+
+        <div class="decor"></div>
+
+        <%@include file="include/header.jsp" %>
+
+        <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+            <main id="main">    
+    
+				BODY-OF-PAGE-GOES-HERE
+
+
+
+				<%-- form elements example --%>				
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                First Name
+                            </div>
+                            <input type="text" />
+                        </div>
+                    </label>
+                </div>				
+
+		       <button type="submit" value="Submit">Submit</button>
+
+			
+			</main>
+
+		</div><%-- mainCnt --%>	
+				
         <%@include file="include/footer.jsp"%>
     </body>
 </html>

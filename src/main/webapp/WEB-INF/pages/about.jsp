@@ -4,24 +4,20 @@
 
         <title>Teach Children To Save - About Us</title>
         <%@include file="include/commonHead.jsp"%>
-
-        <script type="text/javascript" src="tcts/js/scripts.js"></script>
-
     </head>
     <body class="about">
         <%@include file="include/header.jsp"%>
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        <div class="decor"></div>
-
+        
         <div class="mainCnt">
 
         <%@include file="include/navigation.jsp" %>
 
             <main id="main">
 
-                <h1>About</h1>
+                <h1>About Us</h1>
 
                 <h2>History</h2>
 
@@ -61,7 +57,7 @@
                 <h3>Email</h3>
 
                 <p>
-                    [We should have u of d create a generic email account for inquiries - might want to consider a for to avoid bot spam]
+                    [We should have u of d create a generic email account for inquiries, or it might be better to consider a form to avoid bot spam]
                 </p>
 
                 <h3>Social Media </h3>
