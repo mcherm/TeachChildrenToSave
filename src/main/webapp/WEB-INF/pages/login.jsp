@@ -29,7 +29,7 @@
 		   		</div>			
 			</c:if>
 			
-	        <form:form method="POST" action="login.htm" modelAttribute="loginFormData">
+	        <form:form method="POST" action="login.htm" modelAttribute="formData">
 	        
 	            <div class="formElementCnt">
 	                <label>

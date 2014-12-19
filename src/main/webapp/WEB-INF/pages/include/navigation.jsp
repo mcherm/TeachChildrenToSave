@@ -20,7 +20,7 @@
 				</button>
 			</li>
 			<li>
-				<button onclick="js.loadURL('volunteer.htm');" class="register">
+				<button onclick="js.loadURL('registerVolunteer.htm');" class="register">
 					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
 					<span class="txt">Register</span>
 				</button>

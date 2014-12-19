@@ -32,8 +32,8 @@ public final class EmailUtil {
 	@Autowired
 	private VelocityEngine velocityEngine;
 	
-    static final String BODY = "This email was sent through Amazon SES ";
-    static final String SUBJECT = "Amazon SES Service at work";
+    static final String BODY = "";
+    static final String SUBJECT = "Thanks for registering for teach children to save program";
     
     
     public EmailUtil() {

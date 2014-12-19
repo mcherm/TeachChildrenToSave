@@ -11,7 +11,7 @@
         <h2>Register a New Volunteer</h2>
         <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
         <div class="volunteerRegistrationForm">
-            <form:form method="POST" action="registerVolunteer.htm" modelAttribute="volunteer">
+            <form:form method="POST" action="registerVolunteer.htm" modelAttribute="formData">
                 <div>
                     <div><form:label path="login">Username</form:label></div>
                     <div><form:input path="login"/></div>

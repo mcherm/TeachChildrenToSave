@@ -22,6 +22,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.LoginAlreadyInUseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.model.VolunteerRegistrationFormData;
+import com.tcts.util.EmailUtil;
 
 /**
  * A controller for the flow where new volunteers sign up.
@@ -74,6 +75,8 @@ public class VolunteerRegistrationController {
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(volunteer);
             sessionData.setAuthenticated(true);
+            EmailUtil emailUtil = new EmailUtil();
+            emailUtil.sendEmail(volunteer.getEmail());
             return "redirect:" + volunteer.getUserType().getHomepage();
         } catch (NoSuchBankException e) {
             return showFormWithErrorMessage(model, "That is not a valid bank.");
