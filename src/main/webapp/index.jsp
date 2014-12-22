@@ -68,7 +68,7 @@
                     <li><span>Note: Only members of the Delaware Banker's Associations can participate</span></li>
                 </ul>
 
-                <button onclick="">Register my bank to join</button>
+                <button onclick="js.loadURL('bank.htm');">Register my bank to join</button>
 
                 <center>
                 <br>

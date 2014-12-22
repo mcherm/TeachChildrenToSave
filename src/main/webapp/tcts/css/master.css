@@ -116,6 +116,11 @@ body {
   padding-bottom: 20px;
 }
 
+main {
+  width: 90%;
+  margin: 0 auto;
+}
+
 .mainCnt {
   max-width: 960px;
   margin-left: auto;
@@ -253,7 +258,8 @@ header .dba img {
   }
   nav li {
     display: inline-block;
-    padding-right: 6%;
+    padding-right: 4%;
+    /* 6 */
     border: 0;
   }
   nav li.last {
@@ -314,6 +320,14 @@ body.home aside img {
   margin: 10px;
 }
 
+body.siteAdminHome main {
+  text-align: center;
+}
+
+body.teachers main {
+  width: 99%;
+}
+
 h1 {
   font-weight: bold;
   color: #0c345a;
@@ -370,7 +384,8 @@ button:hover {
   cursor: pointer !important;
 }
 
-body.home main button {
+body.home main button,
+body.register main button {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
@@ -384,18 +399,45 @@ body.home main button {
   height: 30px;
 }
 
+body.register main button {
+  width: 300px;
+  display: block;
+  width: 300px;
+  margin: 1em auto;
+}
+
 main .editOrRegister {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
   border-radius: 4px;
+  -webkit-appearance: none;
   width: 300px;
+  border: 0;
   background-color: #31873f;
   height: 30px;
   text-transform: uppercase;
   color: #fff;
 }
 
+main .editOrRegister.delete {
+  background-color: #b21b29;
+}
+
+main table .editOrRegister {
+  width: 100%;
+  margin-top: 0;
+}
+
+main .editOrRegister.doneAdding {
+  margin-top: 1em;
+  height: 44px;
+}
+
+/*body.evenRegistration main table .editOrRegister button {
+
+}
+*/
 @media (min-width: 320px) {
   body.home main button {
     width: 100%;
@@ -407,11 +449,22 @@ main .editOrRegister {
   }
 }
 /* majority of nav css moved to layout file */
+body.home nav .home .txt {
+  text-decoration: underline !important;
+}
+
 body.about nav .about .txt {
   text-decoration: underline !important;
 }
 
-body.volunteer_registration nav .register .txt {
+body.openings nav .openings .txt {
+  text-decoration: underline !important;
+}
+
+body.registerTeacher nav .register .txt,
+body.register nav .register .txt,
+body.volunteer_registration nav .register .txt,
+body.registerVolunteer nav .register .txt {
   text-decoration: underline !important;
 }
 
@@ -419,24 +472,77 @@ body.signIn nav .signIn .txt {
   text-decoration: underline !important;
 }
 
+body.contact nav .contact .txt {
+  text-decoration: underline !important;
+}
+
+th.center,
+td.center {
+  text-align: center;
+}
+
 body.volunteerHome table,
 body.bankAdminHome table,
 body.teacherHome table,
-body.createEvent table {
+body.createEvent table,
+body.evenRegistration table,
+body.banks table,
+body.schools table,
+body.teachers table {
   width: 100%;
   border: 1px solid #ccc;
   text-align: left;
+  /*		thead {
+  			@include border-radius-tops(4px);
+  		}
+  */
 }
 body.volunteerHome table thead th,
 body.bankAdminHome table thead th,
 body.teacherHome table thead th,
-body.createEvent table thead th {
+body.createEvent table thead th,
+body.evenRegistration table thead th,
+body.banks table thead th,
+body.schools table thead th,
+body.teachers table thead th {
   font-weight: bold;
   background-color: #0c345a;
   color: #fff;
   padding-top: .5em;
   padding-bottom: .5em;
   padding-left: .5em;
+  vertical-align: middle;
+}
+body.volunteerHome table tbody tr:nth-child(even),
+body.bankAdminHome table tbody tr:nth-child(even),
+body.teacherHome table tbody tr:nth-child(even),
+body.createEvent table tbody tr:nth-child(even),
+body.evenRegistration table tbody tr:nth-child(even),
+body.banks table tbody tr:nth-child(even),
+body.schools table tbody tr:nth-child(even),
+body.teachers table tbody tr:nth-child(even) {
+  background: #eaeaea;
+}
+body.volunteerHome table td,
+body.bankAdminHome table td,
+body.teacherHome table td,
+body.createEvent table td,
+body.evenRegistration table td,
+body.banks table td,
+body.schools table td,
+body.teachers table td {
+  padding: .5em;
+}
+
+body.teachers table {
+  font-size: .6em;
+}
+
+body.schools table,
+body.banks table {
+  width: 98%;
+  font-size: .9em;
+  margin: 0 auto;
 }
 
 form button {
@@ -484,7 +590,8 @@ form .addlInfo {
   body.editPersonalData form,
   body.eventRegistration form,
   body.createEvent form,
-  body.addVolunteer form {
+  body.addVolunteer form,
+  body.registerVolunteer form {
     width: 100%;
     margin: 0 auto;
   }
@@ -501,7 +608,9 @@ form .addlInfo {
   body.createEvent form input[type=text],
   body.createEvent form input[type=password],
   body.addVolunteer form input[type=text],
-  body.addVolunteer form input[type=password] {
+  body.addVolunteer form input[type=password],
+  body.registerVolunteer form input[type=text],
+  body.registerVolunteer form input[type=password] {
     width: 100%;
     height: 22px;
   }
@@ -511,7 +620,8 @@ form .addlInfo {
   body.editPersonalData form .error,
   body.eventRegistration form .error,
   body.createEvent form .error,
-  body.addVolunteer form .error {
+  body.addVolunteer form .error,
+  body.registerVolunteer form .error {
     width: 100%;
   }
   body.volunteer_registration form button,
@@ -520,7 +630,8 @@ form .addlInfo {
   body.editPersonalData form button,
   body.eventRegistration form button,
   body.createEvent form button,
-  body.addVolunteer form button {
+  body.addVolunteer form button,
+  body.registerVolunteer form button {
     width: 100%;
   }
 }
@@ -531,7 +642,8 @@ form .addlInfo {
   body.editPersonalData form,
   body.eventRegistration form,
   body.createEvent form,
-  body.addVolunteer form {
+  body.addVolunteer form,
+  body.registerVolunteer form {
     width: 300px;
     margin: 0 auto;
   }
@@ -548,7 +660,9 @@ form .addlInfo {
   body.createEvent form input[type=text],
   body.createEvent form input[type=password],
   body.addVolunteer form input[type=text],
-  body.addVolunteer form input[type=password] {
+  body.addVolunteer form input[type=password],
+  body.registerVolunteer form input[type=text],
+  body.registerVolunteer form input[type=password] {
     width: 300px;
     height: 22px;
   }
@@ -558,7 +672,8 @@ form .addlInfo {
   body.editPersonalData form .error,
   body.eventRegistration form .error,
   body.createEvent form .error,
-  body.addVolunteer form .error {
+  body.addVolunteer form .error,
+  body.registerVolunteer form .error {
     width: auto;
   }
   body.volunteer_registration form button,
@@ -567,7 +682,8 @@ form .addlInfo {
   body.editPersonalData form button,
   body.eventRegistration form button,
   body.createEvent form button,
-  body.addVolunteer form button {
+  body.addVolunteer form button,
+  body.registerVolunteer form button {
     width: 300px;
   }
 }
@@ -610,7 +726,7 @@ footer small {
   height: 5px;
 }
 
-main {
+body.about main {
   width: 90%;
   margin: 0 auto;
 }

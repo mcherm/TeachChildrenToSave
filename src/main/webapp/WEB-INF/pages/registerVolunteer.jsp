@@ -5,52 +5,125 @@
     <head>
         <title>Teach Children to Save - Register New Volunteer</title>
         <%@include file="include/commonHead.jsp"%>
+
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
-        <h2>Register a New Volunteer</h2>
-        <div class="errorMessage"><c:out value="${errorMessage}" default=""/></div>
-        <div class="volunteerRegistrationForm">
+    <body class="registerVolunteer">
+
+    <a href="#main" class="ada-read">Skip to main content</a>
+
+    <div class="decor"></div>
+
+    <%@include file="include/header.jsp" %>
+
+    <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+        <main id="main">
+
+
+            <h1>Register a New Volunteer</h1>
+
+            <c:if test="${not empty errorMessage}">
+                <div class="errorMessage">
+                    <c:out value="${errorMessage}" default=""  />
+                </div>
+            </c:if>
+
             <form:form method="POST" action="registerVolunteer.htm" modelAttribute="formData">
-                <div>
-                    <div><form:label path="login">Username</form:label></div>
-                    <div><form:input path="login"/></div>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                First Name
+                            </div>
+                            <form:input path="firstName"/>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <div><form:label path="email">Email</form:label></div>
-                    <div><form:input path="email"/></div>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Last Name
+                            </div>
+                            <form:input path="lastName"/>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <div><form:label path="password">Password</form:label></div>
-                    <div><form:input path="password"/></div>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Email
+                            </div>
+                            <form:input path="email"/>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <div><form:label path="firstName">First Name</form:label></div>
-                    <div><form:input path="firstName"/></div>
+
+                <%-- TODO: re-enter email field --%>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Password
+                            </div>
+                            <form:input path="password"/>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <div><form:label path="lastName">Last Name</form:label></div>
-                    <div><form:input path="lastName"/></div>
+
+                <%-- TODO: re-enter password field --%>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Username
+                            </div>
+                            <form:input path="login"/>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <div><form:label path="phoneNumber">Phone Number</form:label></div>
-                    <div><form:input path="phoneNumber"/></div>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Phone Number
+                            </div>
+                            <form:input path="phoneNumber"/>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <div class="qa-notes">This needs to be a tool for selecting from the list.</div>
-                    <div><form:label path="bankId">Select your bank</form:label></div>
-                    <div>
-                        <form:select path="bankId">
-                            <form:option value="0" label="- Select Bank -" />
-                            <form:options items="${banks}" itemValue="bankId" itemLabel="bankName" />
-                        </form:select>
-                    </div>
+
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Select your bank
+                            </div>
+
+                            <form:select path="bankId">
+                                <form:option value="0" label="- Select Bank -" />
+                                <form:options items="${banks}" itemValue="bankId" itemLabel="bankName" />
+                            </form:select>
+                        </div>
+                    </label>
                 </div>
-                <div>
-                    <input type="submit" value="Register"/>
-                </div>
+
+                <button type="submit">Register</button>
+
             </form:form>
-        </div>
-        <%@include file="include/footer.jsp"%>
+
+        </main>
+    </div><%-- mainCnt --%>
+
+    <%@include file="include/footer.jsp"%>
     </body>
 </html>

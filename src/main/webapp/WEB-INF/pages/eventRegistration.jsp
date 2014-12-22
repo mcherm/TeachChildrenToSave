@@ -5,23 +5,33 @@
         <title>Teach Children To Save - Create New Event</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body>
-        <%@include file="include/header.jsp"%>
-        <div id="events">
-            <h2>Events</h2>
-            <table id="eventTable" class="displayTable">
-                <thead>
+    <body class="evenRegistration">
+    <%@include file="include/header.jsp"%>
+
+    <a href="#main" class="ada-read">Skip to main content</a>
+
+
+    <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+        <main id="main">
+
+                <h1>Events</h1>
+
+                <table id="eventTable">
+                    <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Grade</th>
-                        <th>Students</th>
-                        <th>Teacher</th>
-                        <th>School</th>
-                        <th></th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Grade</th>
+                        <th scope="col">Students</th>
+                        <th scope="col">Teacher</th>
+                        <th scope="col">School</th>
+                        <th aria-hidden="true"></th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     <c:forEach var="event" items="${events}">
                         <c:if test="${event.volunteerId == null}">
                             <tr>
@@ -38,19 +48,26 @@
                                     <div class="createEventForm">
                                         <form:form method="POST" action="eventRegistration.htm" modelAttribute="formData">
                                             <input type="hidden" name="eventId" value="${event.eventId}">
-                                            <input type="submit" value="Sign Up"/>
+                                            <%--<input type="submit" value="Sign Up"/>--%>
+                                            <button type="submit" value="Sign Up" class="editOrRegister">
+                                                Sign Up
+                                            </button>
                                         </form:form>
                                     </div>
                                 </td>
                             </tr>
                         </c:if>
                     </c:forEach>
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <a href="volunteerHome.htm">Done adding classes</a>
-        </div>
-        <%@include file="include/footer.jsp"%>
+                    </tbody>
+                </table>
+
+                <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister doneAdding">Done adding classes</button>
+
+        </main>
+
+    </div><%-- .mainCnt --%>
+
+    <%@include file="include/footer.jsp" %>
+
     </body>
 </html>

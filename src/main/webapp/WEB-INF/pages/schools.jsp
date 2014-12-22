@@ -1,59 +1,79 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-    <head>
+<head>
 
-        <title>Teach Children To Save - Schools </title>
-        <%@include file="include/commonHead.jsp"%>
+    <title>Teach Children To Save - Schools Information </title>
+    <%@include file="include/commonHead_innerPage.jsp"%>
 
-    </head>
-    <body class="event_registration">
-        <%@include file="include/header.jsp"%>
+</head>
+<body class="schools">
 
-        <h2>Schools Information</h2>
-       
-        <%@include file="include/footer.jsp"%>
-        <div id="bankList">
-        <table id="approvedVolunteersTable" class="displayTable">
+    <a href="#main" class="ada-read">Skip to main content</a>
+
+    <div class="decor"></div>
+
+    <%@include file="include/header_innerPage.jsp" %>
+
+    <div class="mainCnt">
+
+        <%@include file="include/navigation.jsp" %>
+
+        <main id="main">
+
+            <h1>Schools Information</h1>
+
+            <table id="approvedVolunteersTable">
                 <thead>
-                    <tr>
-                        <th>School ID</th>
-                        <th>Address1</th>
-                        <th>Address2</th>
-                        <th>City</th>
-                        <th>Zip</th>
-                        <th>County</th>
-                        <th>District</th>
-                        <th>Phone</th>
-                        <th>1</th>
-                        <th>2</th>
-                         
-                        
-                       
-                    </tr>
+                <tr>
+                    <th scope="col" class="center">School ID</th>
+                    <th scope="col">Address1</th>
+                    <th scope="col">Address2</th>
+                    <th scope="col">City</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Zip</th>
+                    <th scope="col">County</th>
+                    <th scope="col">District</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">
+                        <span class="ada-read">Column of Delete buttons</span>
+                    </th>
+                    <th scope="col">
+                        <span class="ada-read">Column of Modify buttons</span>
+                    </th>
+                </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="school" items="${schools}">
-                    
-                        <tr>
-                            <td><c:out value="${school.schoolId}"/></td>
-                            <td><c:out value="${school.addressLine1}"/></td>
-                            <td><c:out value="${school.addressLine2}"/></td>
-                            <td><c:out value="${school.city}"/></td>
-                            <td><c:out value="${school.state}"/></td>
-                            <td><c:out value="${school.zip}"/></td>
-                            <td><c:out value="${school.county}"/></td>
-                            <td><c:out value="${school.schoolDistrict}"/></td>
-                            <td><c:out value="${school.phone}"/></td>
-                            <td><a href="delete.htm">Delete </a></td>
-                            <td><a href="show.htm">Modify </a></td>
-                        </tr>
-                    
+                <tr>
+                    <td class="center"><c:out value="${school.schoolId}"/></td>
+                    <td><c:out value="${school.addressLine1}"/></td>
+                    <td><c:out value="${school.addressLine2}"/></td>
+                    <td><c:out value="${school.city}"/></td>
+                    <td><c:out value="${school.state}"/></td>
+                    <td><c:out value="${school.zip}"/></td>
+                    <td><c:out value="${school.county}"/></td>
+                    <td><c:out value="${school.schoolDistrict}"/></td>
+                    <td><c:out value="${school.phone}"/></td>
+                    <td>
+                        <button onclick="js.loadURL('delete.htm');" class="editOrRegister delete">
+                            Delete
+                        </button>
+                    </td>
+                    <td>
+                        <button onclick="js.loadURL('show.htm');" class="editOrRegister">
+                            Modify
+                        </button>
+                    </td>
+                </tr>
                 </c:forEach>
-                
                 </tbody>
             </table>
-            </div>
-            
+        </main>
+
+    </div><%-- mainCnt --%>
+
+    <%@include file="include/footer.jsp"%>
+
     </body>
 </html>

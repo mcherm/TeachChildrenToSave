@@ -19,16 +19,16 @@
         <%@include file="include/navigation.jsp" %>
 
             <main id="main">
-            
-                    <h1>Register a New Teacher</h1>
-			
-						<c:if test="${not empty errorMessage}">
-							<div class="errorMessage">
-						   		<c:out value="${errorMessage}" default=""  />
-					   		</div>			
-						</c:if>
 
-			            <form:form method="POST" action="registerTeacher.htm" modelAttribute="formData">
+				<h1>Register a New Teacher</h1>
+			
+				<c:if test="${not empty errorMessage}">
+					<div class="errorMessage">
+						<c:out value="${errorMessage}" default=""  />
+					</div>
+				</c:if>
+
+				<form:form method="POST" action="registerTeacher.htm" modelAttribute="formData">
 
 		                    <div class="formElementCnt">
 		                        <label>
@@ -112,7 +112,7 @@
 		                    		                    
                         <button type="submit" value="Register">Register</button>
 
-						</form:form>
+				</form:form>
 
 			</main>			        
 		
