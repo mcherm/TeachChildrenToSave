@@ -52,7 +52,7 @@ public interface DatabaseFacade {
      * @throws UnsupportedEncodingException 
      * @throws NoSuchAlgorithmException 
      */
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData)
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
     /** Return the list of events that have a particular teacher. */
@@ -82,7 +82,7 @@ public interface DatabaseFacade {
      * @throws UnsupportedEncodingException 
      * @throws NoSuchAlgorithmException 
      */
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData)
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchBankException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
     /** Return the bank with this bankId, or null if there is none. */
@@ -136,11 +136,12 @@ public interface DatabaseFacade {
 	Event updateEvent(Event event) throws SQLException,
 			InconsistentDatabaseException;
 
+    /** This can be used to upate certain fields of a Volunteer. */
 	User updateVolunteer(Volunteer volunteer) throws SQLException,
 			InconsistentDatabaseException;
 	
 	public List<? super User> getAllUsers() throws SQLException, InconsistentDatabaseException;
 
-	void updateUserCredential(User user) throws SQLException,
+	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException,
 			InconsistentDatabaseException;
 }

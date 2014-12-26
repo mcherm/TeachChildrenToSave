@@ -88,6 +88,7 @@
                         </label>
                     </div>
 
+                    <!-- FIXME: May need to allow editing the password, but that should be a separate call
                     <div class="formElementCnt">
                         <label>
                             <div class="inputCnt">
@@ -98,6 +99,7 @@
                             </div>
                         </label>
                     </div>
+                    -->
 
                     <div class="formElementCnt">
                         <label>

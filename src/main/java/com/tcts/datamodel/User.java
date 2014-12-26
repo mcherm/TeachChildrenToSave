@@ -10,7 +10,7 @@ public abstract class User {
     private String userId;
     private String login;
     private String email;
-    private String password;
+    private String hashedPassword;
     private String salt;
     private String firstName;
     private String lastName;
@@ -24,16 +24,12 @@ public abstract class User {
         setUserId(resultSet.getString("user_id"));
         setLogin(resultSet.getString("user_login"));
         setEmail(resultSet.getString("email"));
-        setPassword(resultSet.getString("password_hash"));
+        setHashedPassword(resultSet.getString("password_hash"));
         setSalt(resultSet.getString("password_salt"));
         setFirstName(resultSet.getString("first_name"));
         setLastName(resultSet.getString("last_name"));
         setPhoneNumber(resultSet.getString("phone_number"));
         setUserType(UserType.fromDBValue(resultSet.getString("access_type")));
-        if (this.getPassword() == null || this.getSalt() == null) {
-        	this.password = "000000000000000000000000000=";
-            this.salt = "00000000000=";
-        }
     }
 
     public String getUserId() {
@@ -60,12 +56,12 @@ public abstract class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashedPassword(String password) {
+        this.hashedPassword = password;
     }
 
     public String getFirstName() {

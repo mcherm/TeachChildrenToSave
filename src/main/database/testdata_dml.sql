@@ -57,21 +57,21 @@ insert into Bank (bank_name, bank_admin)
 
 
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('larry','dummy_salt','pass','larry@foobar.com','Larry','Smith','V','1','1-800-234-1234','1');
+  values ('larry','kNF87zO+5bo=','JcDDbNz0dXVdUvDEzfzVmNEhHjk=','larry@foobar.com','Larry','Smith','V','1','1-800-234-1234','1');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('jane','dummy_salt','pass','janedoe@foobar.com','Jane','Jones','BA','1','1000001','0');
+  values ('jane','84oH5LTcO30=','inZgchLYXtt2wor3razfPvtub+o=','janedoe@foobar.com','Jane','Jones','BA','1','1000001','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('lucy','dummy_salt','pass','lucy@foobar.com','Lucy','Adams','T','1','1-800-234-1234','0');
+  values ('lucy','9HYa4nSj3Jg=','wrkttouWUjjV/sDVJh632UZvu5g=','lucy@foobar.com','Lucy','Adams','T','1','1-800-234-1234','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('harry','dummy_salt','pass','Harry@gmail.com','Harry','Wilson','SA',null,'1-800-234-1234','0');
+  values ('harry','Urdqicfklbw=','I2uKh9UDwqkhLOppWX4haBMFK+M=','Harry@gmail.com','Harry','Wilson','SA',null,'1-800-234-1234','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('moe','dummy_salt','pass','moe@gmail.com','Moe','Carbine','V','3','1-800-234-1234','0');
+  values ('moe','7U5JMa0bB70=','+vQRkteaU2CEhdmwUaof1Pn/8eE=','moe@gmail.com','Moe','Carbine','V','3','1-800-234-1234','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('curley','dummy_salt','pass','curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
+  values ('curley','x0JQ3ovD18k=','R3vvnDTL7TGaTOMBlHY4FndCb3U=','curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('shemp','dummy_salt','pass','shemp@hulu.com','Shemp','Blacksmith ','V','1','1-800-234-1234','0');
+  values ('shemp','lsi4KL+dKv0=','VHMxx4AHj70PFq38sVios7dPbK0=','shemp@hulu.com','Shemp','Blacksmith ','V','1','1-800-234-1234','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('joshua','dummy_salt','pass','josuah@wintergreen.com','Joshua','Wordsmith','T','2','1-800-234-1234','0');
+  values ('joshua','RLwBcwWzkw8=','SXxr0aC/ULZRb61gziXoUUM/J7E=','josuah@wintergreen.com','Joshua','Wordsmith','T','2','1-800-234-1234','0');
 insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('allen','dummy_salt','pass','Allen@novel.com','Allen','James','T','3','1-800-234-1234','0');
+  values ('allen','KsRpejm8v8w=','sxHS4Hjqvfr57nKVCPO49KibSc4=','Allen@novel.com','Allen','James','T','3','1-800-234-1234','0');
 

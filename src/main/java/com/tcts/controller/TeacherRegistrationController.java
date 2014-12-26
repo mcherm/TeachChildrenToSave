@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -73,7 +74,9 @@ public class TeacherRegistrationController {
         // FIXME: probably need more validation rules
         // --- Create object ---
         try {
-            Teacher teacher = database.insertNewTeacher(formData);
+            String salt = SecurityUtil.generateSalt();
+            String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword(), salt);
+            Teacher teacher = database.insertNewTeacher(formData, hashedPassword, salt);
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(teacher);
             sessionData.setAuthenticated(true);

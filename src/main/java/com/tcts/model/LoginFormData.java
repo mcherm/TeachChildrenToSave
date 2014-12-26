@@ -1,29 +1,20 @@
 package com.tcts.model;
 
-@Deprecated
 public class LoginFormData {
-	private StringBuffer userID;
-	private StringBuffer password;
-	private String userType;
-	
-	public StringBuffer getUserID() {
-		return userID;
+	private String login;
+	private String password;
+
+	public String getLogin() {
+		return login;
 	}
-	public void setUserID(StringBuffer userID) {
-		this.userID = userID;
+	public void setLogin(String login) {
+		this.login = login;
 	}
-	public StringBuffer getPassword() {
+	public String getPassword() {
 		return password;
 	}
-	public void setPassword(StringBuffer password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getUserType() {
-		return userType;
-	}
-	public void setUserType(String userType) {
-		this.userType = userType;
-	}
-	
 
 }

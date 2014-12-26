@@ -2,7 +2,6 @@ package com.tcts.dao;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +33,6 @@ import com.tcts.model.CreateEventFormData;
 import com.tcts.model.EditPersonalDataFormData;
 import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.model.VolunteerRegistrationFormData;
-import com.tcts.util.SecurityUtil;
 
 
 /**
@@ -99,7 +97,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
     
     private final static String insertBankSQL =
-    		"insert into Bank(bank_id,bank_name,bank_admin) VALUES(?,?,?)";
+    		"insert into Bank(bank_id, bank_name, bank_admin) VALUES(?,?,?)";
     
     private final static String deleteBankSQL =
     		"delete from Bank where schoold_id=? ";
@@ -130,8 +128,8 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String updateBankByIdSQL =
     		"UPDATE Bank SET bank_name = ?,bank_admin = ? WHERE bank_id = ?";
     
-    private final static String updateUserSQL11 =
-    		"update  User set password_salt=?,password_hash=? where user_id=? ";
+    private final static String updateUserCredentialsByIdSQL =
+    		"update User set password_salt = ?, password_hash = ? where user_id = ?";
     
     
 
@@ -486,7 +484,7 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
     		
-	private User insertNewUser(String login, String password, String email,
+	private User insertNewUser(String login, String hashedPassword, String salt, String email,
 			String firstName, String lastName, UserType userType,
 			String organizationId, String phoneNumber) throws SQLException,
 			LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -496,21 +494,10 @@ public class MySQLDatabase implements DatabaseFacade {
 		try {
 			connection = ConnectionFactory.getConnection();
 			preparedStatement = connection.prepareStatement(insertUserSQL);
-			
-			 // Uses a secure Random not a simple Random
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-            // Salt generation 64 bits long
-            byte[] bSalt = new byte[8];
-            random.nextBytes(bSalt);
-            // Digest computation
-            byte[] bDigest = SecurityUtil.getHash(SecurityUtil.ITERATION_NUMBER,password,bSalt);
-            String sDigest = SecurityUtil.byteToBase64(bDigest);
-            String sSalt = SecurityUtil.byteToBase64(bSalt);
-            
-           
+
 			preparedStatement.setString(1, login);
-			preparedStatement.setString(2, sSalt); 
-            preparedStatement.setString(3, sDigest); 
+			preparedStatement.setString(2, salt);
+            preparedStatement.setString(3, hashedPassword);
 			
 			preparedStatement.setString(4, email);
 			preparedStatement.setString(5, firstName);
@@ -549,19 +536,19 @@ public class MySQLDatabase implements DatabaseFacade {
 	}
     
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // FIXME: Need to verify that the school ID is present in the database and throw NoSuchSchoolException if it's not.
-        return (Teacher) insertNewUser(formData.getLogin(), formData.getPassword(), formData.getEmail(),
+        return (Teacher) insertNewUser(formData.getLogin(), hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.TEACHER, formData.getSchoolId(),
                 formData.getPhoneNumber());
     }
 
     @Override
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData)
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchBankException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException
     {
         // FIXME: Need to verify that the bank ID is present in the database and throw NoSuchBankException if it's not.
-        return (Volunteer) insertNewUser(formData.getLogin(), formData.getPassword(), formData.getEmail(),
+        return (Volunteer) insertNewUser(formData.getLogin(), hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.VOLUNTEER, formData.getBankId(),
                 formData.getPhoneNumber());
     }
@@ -793,7 +780,6 @@ public class MySQLDatabase implements DatabaseFacade {
 		formData.setEmail(volunteer.getEmail());
 		formData.setFirstName(volunteer.getFirstName());
 		formData.setLastName(volunteer.getLastName());
-		formData.setPassword(volunteer.getPassword());
 		formData.setPhoneNumber(volunteer.getPhoneNumber());
 		return modifyUserPersonalFields(volunteer.getUserId(), formData);
 	}
@@ -1032,16 +1018,17 @@ public class MySQLDatabase implements DatabaseFacade {
 	}
 	
 	@Override
-	public void updateUserCredential(User user) throws SQLException,
-			InconsistentDatabaseException {
+	public void updateUserCredential(String userId, String hashedPassword, String salt)
+            throws SQLException, InconsistentDatabaseException
+    {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(updateUserSQL11);
-            preparedStatement.setString(1, user.getSalt());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setString(3, user.getUserId());
+            preparedStatement = connection.prepareStatement(updateUserCredentialsByIdSQL);
+            preparedStatement.setString(1, salt);
+            preparedStatement.setString(2, hashedPassword);
+            preparedStatement.setString(3, userId);
             preparedStatement.executeUpdate();
         } 
         finally {

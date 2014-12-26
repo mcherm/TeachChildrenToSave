@@ -37,7 +37,7 @@
 	                        <div class="info">
 	                            User Name
 	                        </div>
-	                        <form:input path="userID" />
+	                        <form:input path="login" />
 	                    </div>
 	                </label>
 	            </div>

@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -85,8 +84,7 @@ public class TeacherController {
 		formData.setEmail(volunteer.getEmail());
 		formData.setFirstName(volunteer.getFirstName());
 		formData.setLastName(volunteer.getLastName());
-		formData.setPassword(volunteer.getPassword());
-        
+
         model.addAttribute("teacher", database.modifyUserPersonalFields(teacher.getUserId(), formData));
         return "teacher";
     }

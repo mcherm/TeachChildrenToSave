@@ -74,7 +74,8 @@ public class VolunteerController extends AuthenticationController{
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
         
-        
+        // FIXME: Need to offer a way to change one's email and password also.
+
         model.addAttribute("volunteer", database.updateVolunteer(volunteer));
         return "volunteer";
     }
