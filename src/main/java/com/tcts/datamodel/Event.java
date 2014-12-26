@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * An object that corresponds to the "Event2" table in the database.
+ * An object that corresponds to the "Event" table in the database.
  */
 public class Event {
     // --- Basic data fields ---

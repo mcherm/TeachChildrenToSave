@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Represents a single bank. Contains data from one row of the Bank2 table.
+ * Represents a single bank. Contains data from one row of the Bank table.
  */
 public class Bank {
     private String bankId;

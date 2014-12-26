@@ -52,30 +52,30 @@ public class MySQLDatabase implements DatabaseFacade {
             "school_id, school_name, school_addr1, school_addr2, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible";
 
     private final static String getUserByIdSQL =
-            "select " + userFields + " from User2 where user_id = ?";
+            "select " + userFields + " from User where user_id = ?";
     
     private final static String getUserByTypeSQL =
-            "select " + userFields + " from User2 where access_type = ?";
+            "select " + userFields + " from User where access_type = ?";
     
     private final static String getAllUserSQL =
-            "select " + userFields + " from User2";
+            "select " + userFields + " from User";
     
     private final static String getUserByLoginSQL =
-            "select " + userFields + " from User2 where user_login = ?";
+            "select " + userFields + " from User where user_login = ?";
     private final static String getVolunteersByBankSQL =
-            "select " + userFields + " from User2 where access_type = 'V' and organization_id = ?";
+            "select " + userFields + " from User where access_type = 'V' and organization_id = ?";
     private final static String getEventsByTeacherSQL =
-            "select " + eventFields + " from Event2 where teacher_id = ?";
+            "select " + eventFields + " from Event where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
-            "select " + eventFields + " from Event2 where volunteer_id = ?";
+            "select " + eventFields + " from Event where volunteer_id = ?";
     private final static String getAllAvailableEventsSQL =
-    		            "select " + eventFields + " from Event2 where volunteer_id is null";
+    		            "select " + eventFields + " from Event where volunteer_id is null";
     private final static String getBankByIdSQL =
-            "select " + bankFields + " from Bank2 where bank_id = ?";
+            "select " + bankFields + " from Bank where bank_id = ?";
     private final static String getAllBanksSQL =
-            "select " + bankFields + " from Bank2";
+            "select " + bankFields + " from Bank";
     private final static String getBankListSQL =
-            "select " + bankFields + " from Bank2 ";
+            "select " + bankFields + " from Bank ";
     private final static String getSchoolByIdSQL =
             "select " + schoolFields + " from School where school_id = ?";
     private final static String getAllSchoolsSQL =
@@ -87,40 +87,40 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getLastInsertIdSQL =
             "select last_insert_id() as last_id";
     private final static String modifyUserPersonalFieldsSQL =
-            "update User2 set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
+            "update User set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
     private final static String insertUserSQL =
-            "insert into User2 (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
-            "insert into Event2 (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
+            "insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
     private final static String volunteerForEventSQL =
-    	           "update Event2 set volunteer_id = ? where event_id = ?";
+            "update Event set volunteer_id = ? where event_id = ?";
     
     private final static String insertSchoolSQL  =
     		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
     
     private final static String insertBankSQL =
-    		"insert into Bank2(bank_id,bank_name,bank_admin) VALUES(?,?,?)";
+    		"insert into Bank(bank_id,bank_name,bank_admin) VALUES(?,?,?)";
     
     private final static String deleteBankSQL =
-    		"delete from Bank2 where schoold_id=? ";
+    		"delete from Bank where schoold_id=? ";
     
     private final static String deleteSchooldSQL =
     		"delete from School where schoold_id=? ";
       
     private final static String deleteVolunteerSQL =
-    		"delete from User2 where user_id=? ";
+    		"delete from User where user_id=? ";
         
     private final static String deleteEventSQL =
-    		"delete from Event2 where event_id=? ";
+    		"delete from Event where event_id=? ";
 
     private final static String getEventsSQL =
-            "select " + eventFields + " from Event2 ";
+            "select " + eventFields + " from Event ";
     
     private final static String getEventByIdSQL =
-            "select " + eventFields + " from Event2 where event_id = ?";
+            "select " + eventFields + " from Event where event_id = ?";
     
     private final static String updateEventByIdSQL = 
-    		"UPDATE Event2 SET teacher_id = ?,event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ?,volunteer_id =  ? WHERE event_id = ?";
+    		"UPDATE Event SET teacher_id = ?,event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ?,volunteer_id =  ? WHERE event_id = ?";
     
     private final static String updateSchoolByIdSQL =
     		"UPDATE School SET " +
@@ -128,10 +128,10 @@ public class MySQLDatabase implements DatabaseFacade {
     		"school_district = ?,school_state = ?,school_phone = ?,school_lmi_eligible = ? WHERE school_id = ?";
     
     private final static String updateBankByIdSQL =
-    		"UPDATE Bank2 SET bank_name = ?,bank_admin = ? WHERE bank_id = ?"; 
+    		"UPDATE Bank SET bank_name = ?,bank_admin = ? WHERE bank_id = ?";
     
     private final static String updateUserSQL11 =
-    		"update  User2 set password_salt=?,password_hash=? where user_id=? ";
+    		"update  User set password_salt=?,password_hash=? where user_id=? ";
     
     
 
