@@ -84,17 +84,6 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Username
-                            </div>
-                            <form:input path="login"/>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="formElementCnt">
-                    <label>
-                        <div class="inputCnt">
-                            <div class="info">
                                 Phone Number
                             </div>
                             <form:input path="phoneNumber"/>

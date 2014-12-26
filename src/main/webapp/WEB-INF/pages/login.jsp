@@ -34,10 +34,8 @@
 	            <div class="formElementCnt">
 	                <label>
 	                    <div class="inputCnt">
-	                        <div class="info">
-	                            User Name
-	                        </div>
-	                        <form:input path="login" />
+	                        <div class="info">Email</div>
+	                        <form:input path="email" />
 	                    </div>
 	                </label>
 	            </div>
@@ -45,9 +43,7 @@
 	            <div class="formElementCnt">
 	                <label>
 	                    <div class="inputCnt">
-	                        <div class="info">
-	                            Password
-	                        </div>
+	                        <div class="info">Password</div>
 	                        <form:input path="password" type="password"/>
 	                    </div>
 	                </label>
@@ -60,8 +56,8 @@
 	        <div class="qa-notes">
 	        	<strong>Some valid logins for testing:</strong> 
 	        	<br>
-	        	larry(V) jane(BA) lucy(T) harry(SA) moe(V) curley(V)
-	            shemp(V) joshua(T) allen(T).
+                larry@foobar.com(V) janedoe@foobar.com(BA) lucy@foobar.com(T) Harry@gmail.com(SA) moe@gmail.com(V) curley@gmail.com(V)
+                shemp@hulu.com(V) josuah@wintergreen.com(T) Allen@novel.com(T).
 	            <br>
 	            V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin. 
 	            <br>

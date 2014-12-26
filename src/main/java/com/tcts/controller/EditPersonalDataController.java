@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.EmailAlreadyInUseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +40,15 @@ public class EditPersonalDataController {
         formData.setLastName(user.getLastName());
         formData.setPhoneNumber(user.getPhoneNumber());
         model.addAttribute("formData", formData);
-        model.addAttribute("errorMessage", "");
+        return showFormWithErrorMessage(model, "");
+    }
+
+    /**
+     * A subroutine used to set up and then show the editPersonalData form. It
+     * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
+     */
+    public String showFormWithErrorMessage(Model model, String errorMessage) {
+        model.addAttribute("errorMessage", errorMessage);
         return "editPersonalData";
     }
 
@@ -47,17 +56,26 @@ public class EditPersonalDataController {
      * Actually change the values that were entered.
      */
     @RequestMapping(value="/editPersonalData", method=RequestMethod.POST)
-    public String editPersonalData(HttpSession session, Model model,
-                                   @ModelAttribute("formData") EditPersonalDataFormData formData
-    ) throws SQLException {
+    public String editPersonalData(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") EditPersonalDataFormData formData
+        ) throws SQLException
+    {
         SessionData sessionData = SessionData.fromSession(session);
         // FIXME: must validate the fields
         User user = sessionData.getUser();
         if (user == null) {
             throw new NotLoggedInException();
         }
-        User newUser = database.modifyUserPersonalFields(user.getUserId(), formData);
-        sessionData.setUser(newUser);
-        return "redirect:" + user.getUserType().getHomepage();
+
+        User newUser;
+        try {
+            newUser = database.modifyUserPersonalFields(user.getUserId(), formData);
+            sessionData.setUser(newUser);
+            return "redirect:" + user.getUserType().getHomepage();
+        } catch(EmailAlreadyInUseException err) {
+            return showFormWithErrorMessage(model, "That email is already in use by another user.");
+        }
     }
 }

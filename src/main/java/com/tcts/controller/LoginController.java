@@ -46,7 +46,7 @@ public class LoginController {
     {
         SessionData.ensureNoActiveSession(session);
         
-        User potentialUser = database.getUserByLogin(formData.getLogin());
+        User potentialUser = database.getUserByEmail(formData.getEmail());
 
         if (potentialUser != null) {
             // verify the password
@@ -61,51 +61,8 @@ public class LoginController {
         }
 
         // --- Failed login ---
-        model.addAttribute("login", new LoginFormData());
+        model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "Invalid user id or password.");
         return "login";
-
-
-/*
-        byte[] bDigest = null;
-        byte[] bSalt = null;
-        byte[] proposedDigest = null;
-        
-        try {
-             xxxx;
-			 bDigest = SecurityUtil.base64ToByte(user.getPassword());
-			 bSalt = SecurityUtil.base64ToByte(user.getSalt());
-			 proposedDigest = SecurityUtil.getHash(SecurityUtil.ITERATION_NUMBER, login.getPassword(), bSalt);
-			 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			model.addAttribute("login", new LoginFormData ());
-            model.addAttribute("errorMessage", "Invalid user id or password.");
-            return "login";
-		} catch(NoSuchAlgorithmException ex){
-			ex.printStackTrace();
-			model.addAttribute("login", new LoginFormData ());
-            model.addAttribute("errorMessage", "Invalid user id or password.");
-            return "login";
-		}
-        
-        boolean isValidUser = Arrays.equals(proposedDigest, bDigest) ;
-         
-        // Compute the new DIGEST
-        
-        if (login.getLogin() == null || login.getPassword() == null || user == null || !isValidUser) {
-            // --- Failed login ---
-            model.addAttribute("login", new LoginFormData ());
-            model.addAttribute("errorMessage", "Invalid user id or password.");
-            return "login";
-        } else {
-            // --- Successful login ---
-            SessionData sessionData = SessionData.beginNewSession(session);
-            sessionData.setAuthenticated(true);
-            sessionData.setUser(user);
-            return "redirect:" + user.getUserType().getHomepage();
-        }
-*/
     }
 }

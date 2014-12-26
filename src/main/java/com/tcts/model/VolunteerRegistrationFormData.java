@@ -4,21 +4,12 @@ package com.tcts.model;
  * Data that will be entered on the volunteer registration form.
  */
 public class VolunteerRegistrationFormData {
-    private String login;
     private String email;
     private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private String bankId;
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
 
     public String getEmail() {
         return email;

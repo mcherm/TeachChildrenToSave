@@ -8,7 +8,6 @@ import java.sql.SQLException;
  */
 public abstract class User {
     private String userId;
-    private String login;
     private String email;
     private String hashedPassword;
     private String salt;
@@ -22,7 +21,6 @@ public abstract class User {
      */
     protected void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         setUserId(resultSet.getString("user_id"));
-        setLogin(resultSet.getString("user_login"));
         setEmail(resultSet.getString("email"));
         setHashedPassword(resultSet.getString("password_hash"));
         setSalt(resultSet.getString("password_salt"));
@@ -38,14 +36,6 @@ public abstract class User {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
     }
 
     public String getEmail() {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.tcts.exception.EmailAlreadyInUseException;
 import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -25,7 +26,6 @@ import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.LoginAlreadyInUseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -41,7 +41,7 @@ import com.tcts.model.VolunteerRegistrationFormData;
 @Component
 public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
-            "user_id, user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status";
+            "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status";
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
@@ -58,8 +58,8 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getAllUserSQL =
             "select " + userFields + " from User";
     
-    private final static String getUserByLoginSQL =
-            "select " + userFields + " from User where user_login = ?";
+    private final static String getUserByEmailSQL =
+            "select " + userFields + " from User where email = ?";
     private final static String getVolunteersByBankSQL =
             "select " + userFields + " from User where access_type = 'V' and organization_id = ?";
     private final static String getEventsByTeacherSQL =
@@ -87,7 +87,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String modifyUserPersonalFieldsSQL =
             "update User set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
     private final static String insertUserSQL =
-            "insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
             "insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
     private final static String volunteerForEventSQL =
@@ -135,16 +135,16 @@ public class MySQLDatabase implements DatabaseFacade {
 
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
-        return getUserByIdOrLogin(userId, getUserByIdSQL);
+        return getUserByIdOrEmail(userId, getUserByIdSQL);
     }
 
 
     @Override
-    public User getUserByLogin(String login) throws SQLException, InconsistentDatabaseException {
-        return getUserByIdOrLogin(login, getUserByLoginSQL);
+    public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
+        return getUserByIdOrEmail(email, getUserByEmailSQL);
     }
 
-    private User getUserByIdOrLogin(String key, String sql) throws SQLException, InconsistentDatabaseException {
+    private User getUserByIdOrEmail(String key, String sql) throws SQLException, InconsistentDatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -187,7 +187,7 @@ public class MySQLDatabase implements DatabaseFacade {
             if (numberOfRows < 1) {
                 return null; // No user found
             } else if (numberOfRows > 1) {
-                throw new InconsistentDatabaseException("Multiple rows for ID or login of '" + key + "'.");
+                throw new InconsistentDatabaseException("Multiple rows for ID or email of '" + key + "'.");
             } else {
                 return user;
             }
@@ -198,7 +198,9 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException {
+    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData)
+            throws SQLException, EmailAlreadyInUseException
+    {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -209,7 +211,15 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(3, formData.getLastName());
             preparedStatement.setString(4, formData.getPhoneNumber());
             preparedStatement.setString(5, userId);
-            preparedStatement.executeUpdate();
+            try {
+                preparedStatement.executeUpdate();
+            } catch(MySQLIntegrityConstraintViolationException err) {
+                if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
+                    throw new EmailAlreadyInUseException();
+                } else {
+                    throw err;
+                }
+            }
         } finally {
             closeSafely(connection, preparedStatement, null);
         }
@@ -484,10 +494,11 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
     		
-	private User insertNewUser(String login, String hashedPassword, String salt, String email,
+	private User insertNewUser(String hashedPassword, String salt, String email,
 			String firstName, String lastName, UserType userType,
-			String organizationId, String phoneNumber) throws SQLException,
-			LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+			String organizationId, String phoneNumber)
+        throws SQLException, EmailAlreadyInUseException
+    {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -495,24 +506,22 @@ public class MySQLDatabase implements DatabaseFacade {
 			connection = ConnectionFactory.getConnection();
 			preparedStatement = connection.prepareStatement(insertUserSQL);
 
-			preparedStatement.setString(1, login);
-			preparedStatement.setString(2, salt);
-            preparedStatement.setString(3, hashedPassword);
-			
-			preparedStatement.setString(4, email);
-			preparedStatement.setString(5, firstName);
-			preparedStatement.setString(6, lastName);
-			preparedStatement.setString(7, userType.getDBValue());
-			preparedStatement.setString(8, organizationId);
-			preparedStatement.setString(9, phoneNumber);
-			preparedStatement.setInt(10, 0); // FIXME: This represents
+			preparedStatement.setString(1, salt);
+            preparedStatement.setString(2, hashedPassword);
+			preparedStatement.setString(3, email);
+			preparedStatement.setString(4, firstName);
+			preparedStatement.setString(5, lastName);
+			preparedStatement.setString(6, userType.getDBValue());
+			preparedStatement.setString(7, organizationId);
+			preparedStatement.setString(8, phoneNumber);
+			preparedStatement.setInt(9, 0); // FIXME: This represents
 												// "not approved"
 			try {
 				preparedStatement.executeUpdate();
 			} catch (MySQLIntegrityConstraintViolationException err) {
 				// FIXME: Check if it matches
-				// "Duplicate entry '.*' for key 'ix_login'"
-				throw new LoginAlreadyInUseException();
+				// "Duplicate entry '.*' for key 'ix_email'"
+				throw new EmailAlreadyInUseException();
 			}
 			preparedStatement.close();
 			preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
@@ -536,19 +545,19 @@ public class MySQLDatabase implements DatabaseFacade {
 	}
     
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // FIXME: Need to verify that the school ID is present in the database and throw NoSuchSchoolException if it's not.
-        return (Teacher) insertNewUser(formData.getLogin(), hashedPassword, salt, formData.getEmail(),
+        return (Teacher) insertNewUser(hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.TEACHER, formData.getSchoolId(),
                 formData.getPhoneNumber());
     }
 
     @Override
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
-            throws SQLException, NoSuchBankException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException
+            throws SQLException, NoSuchBankException, EmailAlreadyInUseException
     {
         // FIXME: Need to verify that the bank ID is present in the database and throw NoSuchBankException if it's not.
-        return (Volunteer) insertNewUser(formData.getLogin(), hashedPassword, salt, formData.getEmail(),
+        return (Volunteer) insertNewUser(hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.VOLUNTEER, formData.getBankId(),
                 formData.getPhoneNumber());
     }
@@ -733,7 +742,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 	@Override
 	public Bank updateBank(Bank bank) throws SQLException,
-			InconsistentDatabaseException {
+			EmailAlreadyInUseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -742,8 +751,16 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(1, bank.getBankName());
             preparedStatement.setString(2, bank.getBankAdminId());
             preparedStatement.setString(3, bank.getBankId());
-            preparedStatement.executeUpdate();
-        } 
+            try {
+                preparedStatement.executeUpdate();
+            } catch(MySQLIntegrityConstraintViolationException err) {
+                if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
+                    throw new EmailAlreadyInUseException();
+                } else {
+                    throw err;
+                }
+            }
+        }
         finally {
             closeSafely(connection, preparedStatement, null);
             
@@ -774,7 +791,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 	@Override
 	public User updateVolunteer(Volunteer volunteer) throws SQLException,
-			InconsistentDatabaseException {
+			EmailAlreadyInUseException {
 		// TODO Auto-generated method stub
 		EditPersonalDataFormData formData = new EditPersonalDataFormData();
 		formData.setEmail(volunteer.getEmail());
@@ -893,8 +910,8 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public boolean insertBank(Bank bank) throws SQLException,
-			InconsistentDatabaseException {
+	public void insertBank(Bank bank) throws SQLException,
+			EmailAlreadyInUseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -902,31 +919,18 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(insertBankSQL);
             preparedStatement.setString(1, bank.getBankId());
-            preparedStatement.setString(2, bank.getBankName()); // FIXME: Need actual salt someday
-            preparedStatement.setString(3, bank.getBankAdminId()); // FIXME: Need actual hash someday
-            
-            try {
-                return preparedStatement.execute();
-                // FIXME: How do we detect school-does-not-exist problems?
-            } catch (MySQLIntegrityConstraintViolationException err) {
-                // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
-                try {
-					throw new LoginAlreadyInUseException();
-				} catch (LoginAlreadyInUseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            }
-            
+            preparedStatement.setString(2, bank.getBankName());
+            preparedStatement.setString(3, bank.getBankAdminId());
+            preparedStatement.execute();
+
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
-		return true;
 	}
 
 
 	@Override
-	public boolean insertSchool(School school) throws SQLException,
+	public void insertSchool(School school) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -935,8 +939,8 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(insertSchoolSQL);
             preparedStatement.setString(1, school.getName());
-            preparedStatement.setString(2, school.getAddressLine1()); // FIXME: Need actual salt someday
-            preparedStatement.setString(3, school.getAddressLine2()); // FIXME: Need actual hash someday
+            preparedStatement.setString(2, school.getAddressLine1());
+            preparedStatement.setString(3, school.getAddressLine2());
             preparedStatement.setString(4, school.getCity());
             preparedStatement.setString(5, school.getZip());
             preparedStatement.setString(6, school.getCounty());
@@ -944,24 +948,12 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(8, school.getState());
             preparedStatement.setString(9, school.getPhone());
             preparedStatement.setInt(10, 1);
-            
-            try {
-                return preparedStatement.execute();
-                // FIXME: How do we detect school-does-not-exist problems?
-            } catch (MySQLIntegrityConstraintViolationException err) {
-                // FIXME: Check if it matches "Duplicate entry '.*' for key 'ix_login'"
-                try {
-					throw new LoginAlreadyInUseException();
-				} catch (LoginAlreadyInUseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            }
-            
+
+            preparedStatement.execute();
+
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
-		return true;
 	}
 
 

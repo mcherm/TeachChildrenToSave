@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.EmailAlreadyInUseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,7 +41,7 @@ public class TeacherController {
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
-        List<User> teachers = (List<User>)database.getUsersByType("T");
+        List<? super User> teachers = database.getUsersByType("T");
         
         model.addAttribute("teachers", teachers);
         return "teachers";
@@ -75,7 +76,7 @@ public class TeacherController {
     @RequestMapping(value = "/teacher/update", method = RequestMethod.POST)
     public String getUpdatedTeacher(@ModelAttribute(value="teacher") Teacher teacher,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        Volunteer volunteer = sessionData.getVolunteer();
+        Volunteer volunteer = sessionData.getVolunteer(); // FIXME: Won't ever work, since it's a teacher, not a volunteer
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
@@ -85,7 +86,15 @@ public class TeacherController {
 		formData.setFirstName(volunteer.getFirstName());
 		formData.setLastName(volunteer.getLastName());
 
-        model.addAttribute("teacher", database.modifyUserPersonalFields(teacher.getUserId(), formData));
+        User newUser;
+        try {
+            newUser = database.modifyUserPersonalFields(teacher.getUserId(), formData);
+        } catch(EmailAlreadyInUseException err) {
+            // FIXME: Need to handle this by reporting it to the user, NOT by just throwing an exception.
+            // FIXME: ...see EditPersonalDataController for an example of how to do this.
+            throw new RuntimeException(err);
+        }
+        model.addAttribute("teacher", newUser);
         return "teacher";
     }
     

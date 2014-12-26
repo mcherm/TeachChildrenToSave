@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.tcts.exception.AppConfigurationException;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,14 +49,19 @@ public final class EmailUtil {
         from = properties.getProperty("email.from");
     }
     
-    public void sendEmail(String to) throws IOException {    	
+    public void sendEmail(String to) throws IOException, AppConfigurationException {
+
+        if (velocityEngine == null) {
+            throw new AppConfigurationException(
+                    "Cannot send any emails because the velocity engine is not properly configured.");
+        }
         
         // Construct an object to contain the recipient address.
         Destination destination = new Destination().withToAddresses(new String[]{to});
         
         // Create the subject and body of the message.
         Content subject = new Content().withData(SUBJECT);
-        Map model = new HashMap();
+        Map<String,Object> model = new HashMap<String,Object>();
         model.put("to", to);
         
         String text = 	VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template/volunteerRegistration.vm", model);
@@ -89,7 +95,7 @@ public final class EmailUtil {
             client.sendEmail(request);  
            
         }
-        catch (Exception ex) 
+        catch (Exception ex)  // FIXME: Can't safely use a global catch-and-ignore like this
         {
            ex.printStackTrace();
         }

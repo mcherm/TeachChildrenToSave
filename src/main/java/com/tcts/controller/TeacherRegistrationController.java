@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.AppConfigurationException;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,6 @@ import com.tcts.common.SessionData;
 import com.tcts.dao.DatabaseFacade;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
-import com.tcts.exception.LoginAlreadyInUseException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.model.TeacherRegistrationFormData;
 import com.tcts.util.EmailUtil;
@@ -64,9 +65,9 @@ public class TeacherRegistrationController {
     {
         SessionData.ensureNoActiveSession(session);
         // --- Validation rules ---
-        if (formData.getLogin() == null || formData.getLogin().trim().length()==0) {
+        if (formData.getEmail() == null || formData.getEmail().trim().length()==0) {
             return showFormWithErrorMessage(model,
-                    "You must select a valid login name. You may use your email address if you like.");
+                    "You must provide a valid email.");
         }
         if (formData.getSchoolId() == null || formData.getSchoolId().trim().length() == 0 || formData.getSchoolId().equals("0")) {
             return showFormWithErrorMessage(model, "You must select a school.");
@@ -80,12 +81,20 @@ public class TeacherRegistrationController {
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(teacher);
             sessionData.setAuthenticated(true);
-            emailUtil.sendEmail(teacher.getEmail());
+            try {
+                emailUtil.sendEmail(teacher.getEmail());
+            } catch(AppConfigurationException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new teacher '" + formData.getEmail() + "'.");
+            } catch(IOException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new teacher '" + formData.getEmail() + "'.");
+            }
             return "redirect:" + teacher.getUserType().getHomepage();
         } catch (NoSuchSchoolException e) {
             return showFormWithErrorMessage(model, "That is not a valid school.");
-        } catch (LoginAlreadyInUseException e) {
-            return showFormWithErrorMessage(model, "That login is already in use; please choose another.");
+        } catch (EmailAlreadyInUseException e) {
+            return showFormWithErrorMessage(model, "That email is already in use; please choose another.");
         } catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
         	e.printStackTrace();
@@ -94,10 +103,6 @@ public class TeacherRegistrationController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return showFormWithErrorMessage(model, "There was an error registering your data.Please try after some time");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return showFormWithErrorMessage(model, "There was an error sending an email.Please try after some time");
 		}
     }
 }

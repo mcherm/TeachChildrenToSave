@@ -56,17 +56,6 @@
 		                        <label>
 		                            <div class="inputCnt">
 		                                <div class="info">
-		                                    Username
-		                                </div>
-		                                <form:input path="login"/>
-		                            </div>
-		                        </label>
-		                    </div>
-
-		                    <div class="formElementCnt">
-		                        <label>
-		                            <div class="inputCnt">
-		                                <div class="info">
 		                                    Email
 		                                </div>
 		                                <form:input path="email"/>

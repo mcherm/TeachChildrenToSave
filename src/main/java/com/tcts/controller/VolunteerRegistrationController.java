@@ -3,11 +3,14 @@ package com.tcts.controller;
 
 
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.AppConfigurationException;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +23,6 @@ import com.tcts.common.SessionData;
 import com.tcts.dao.DatabaseFacade;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.LoginAlreadyInUseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.model.VolunteerRegistrationFormData;
 import com.tcts.util.EmailUtil;
@@ -62,9 +64,9 @@ public class VolunteerRegistrationController {
     {
         SessionData.ensureNoActiveSession(session);
         // --- Validation rules ---
-        if (formData.getLogin() == null || formData.getLogin().trim().length()==0) {
+        if (formData.getEmail() == null || formData.getEmail().trim().length()==0) {
             return showFormWithErrorMessage(model,
-                    "You must select a valid login name. You may use your email address if you like.");
+                    "You must provide a valid email.");
         }
         if (formData.getBankId() == null || formData.getBankId().trim().length() == 0 || formData.getBankId().equals("0")) {
             return showFormWithErrorMessage(model, "You must select a bank.");
@@ -79,14 +81,20 @@ public class VolunteerRegistrationController {
             sessionData.setUser(volunteer);
             sessionData.setAuthenticated(true);
             EmailUtil emailUtil = new EmailUtil();
-            emailUtil.sendEmail(volunteer.getEmail());
+            try {
+                emailUtil.sendEmail(volunteer.getEmail());
+            } catch(AppConfigurationException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+            } catch(IOException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+            }
             return "redirect:" + volunteer.getUserType().getHomepage();
         } catch (NoSuchBankException e) {
             return showFormWithErrorMessage(model, "That is not a valid bank.");
-        } catch (LoginAlreadyInUseException e) {
-            return showFormWithErrorMessage(model, "That login is already in use; please choose another.");
-        } catch (Exception e) {
-            return showFormWithErrorMessage(model, "That login is already in use; please choose another.");
+        } catch (EmailAlreadyInUseException e) {
+            return showFormWithErrorMessage(model, "That email is already in use; please choose another.");
         }
     }
 }

@@ -27,7 +27,6 @@
                     <thead>
                     <tr>
                         <th scope="col">User ID</th>
-                        <th scope="col">Login</th>
                         <th scope="col">Email</th>
                         <th scope="col">Password</th>
                         <th scope="col">First Name</th>
@@ -48,7 +47,6 @@
                     <c:forEach var="teacher" items="${teachers}">
                     <tr>
                         <td><c:out value="${teacher.userId}"/></td>
-                        <td><c:out value="${teacher.login}"/></td>
                         <td><c:out value="${teacher.email}"/></td>
                         <td><c:out value="${teacher.password}"/></td>
                         <td><c:out value="${teacher.firstName}"/></td>

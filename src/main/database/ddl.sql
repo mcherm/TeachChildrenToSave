@@ -50,7 +50,6 @@ drop table User;
 create table User
     (
         user_id INT NOT NULL AUTO_INCREMENT,
-        user_login VARCHAR(50) NOT NULL,
         password_salt VARCHAR(100) NOT NULL,
         password_hash VARCHAR(100) NOT NULL,
         email VARCHAR(50),
@@ -61,7 +60,7 @@ create table User
         phone_number VARCHAR(45),
         user_status INT,
         PRIMARY KEY (user_id),
-        UNIQUE KEY ix_login (user_login),
+        UNIQUE KEY ix_email (email),
         INDEX ix_organization (organization_id),
         INDEX ix_type (access_type)
     );

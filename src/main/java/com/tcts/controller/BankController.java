@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.EmailAlreadyInUseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -73,9 +74,16 @@ public class BankController {
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
         }
-        
-        
-        model.addAttribute("bank", database.updateBank(bank));
+
+        Bank newBank;
+        try {
+            newBank = database.updateBank(bank);
+        } catch(EmailAlreadyInUseException err) {
+            // FIXME: Need to handle this by reporting it to the user, NOT by just throwing an exception.
+            // FIXME: ...see EditPersonalDataController for an example of how to do this.
+            throw new RuntimeException(err);
+        }
+        model.addAttribute("bank", newBank);
         return "bank";
     }
     
@@ -85,8 +93,14 @@ public class BankController {
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
         }
-        
-        database.insertBank(bank);
+
+        try {
+            database.insertBank(bank);
+        } catch (EmailAlreadyInUseException e) {
+            // FIXME: Should show a form message not just throw a runtime exception.
+            throw new RuntimeException("That email is already in use; please choose another.");
+        }
+
         model.addAttribute("banks", database.getBankList());
         return "banks";
     }

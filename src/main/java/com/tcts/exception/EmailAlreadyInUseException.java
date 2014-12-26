@@ -2,7 +2,7 @@ package com.tcts.exception;
 
 /**
  * An exception thrown when creating any sort of a user but the proposed
- * login is not unique and available.
+ * email is already in use.
  */
-public class LoginAlreadyInUseException extends Exception {
+public class EmailAlreadyInUseException extends Exception {
 }

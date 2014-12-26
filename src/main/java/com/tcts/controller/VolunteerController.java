@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.EmailAlreadyInUseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -74,10 +75,19 @@ public class VolunteerController extends AuthenticationController{
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
         
-        // FIXME: Need to offer a way to change one's email and password also.
+        // FIXME: Need to offer a way to change one's password also.
 
-        model.addAttribute("volunteer", database.updateVolunteer(volunteer));
+        User newUser;
+        try {
+            newUser = database.updateVolunteer(volunteer);
+        } catch(EmailAlreadyInUseException err) {
+            // FIXME: Need to handle this by reporting it to the user, NOT by just throwing an exception.
+            // FIXME: ...see EditPersonalDataController for an example of how to do this.
+            throw new RuntimeException(err);
+        }
+        model.addAttribute("volunteer", newUser);
         return "volunteer";
+
     }
 
 	    

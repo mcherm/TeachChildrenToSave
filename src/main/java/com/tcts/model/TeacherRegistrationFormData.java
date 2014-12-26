@@ -4,21 +4,12 @@ package com.tcts.model;
  * Data that will be entered on the teacher registration form.
  */
 public class TeacherRegistrationFormData {
-    private String login;
     private String email;
     private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private String schoolId;
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
 
     public String getEmail() {
         return email;

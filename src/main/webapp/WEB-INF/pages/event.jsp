@@ -125,8 +125,9 @@
 	                        </div>
 	                    </label>
 	                </div>		                
-        
-		            <button type="submit" value="Login">Login</button>	 
+
+                    <!-- FIXME: Why is this next button named "Login"? -->
+		            <button type="submit" value="Login">Login</button>
 		        
 		        </form:form>
 

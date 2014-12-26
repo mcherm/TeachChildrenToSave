@@ -12,8 +12,8 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.LoginAlreadyInUseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -32,8 +32,8 @@ public interface DatabaseFacade {
      */
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException;
 
-    /** Return the user with this login, or null if there is none. */
-    public User getUserByLogin(String login) throws SQLException, InconsistentDatabaseException;
+    /** Return the user with this email, or null if there is none. */
+    public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException;
 
     /**
      * Modify certain fields of a User. The user with the userId given will be edited
@@ -41,19 +41,20 @@ public interface DatabaseFacade {
      * in this data structure. Other fields are not modified. The newly modified
      * user is returned.
      */
-    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException;
+    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData)
+            throws SQLException, EmailAlreadyInUseException;
 
     /**
      * Insert a new Teacher in the database, and return it. Expects that all
      * fields have been checked for containing valid values. Will throw an
-     * exception if the login is not unique or if the school is not found.
+     * exception if the email is not unique or if the school is not found.
      * @throws NoSuchSchoolException 
-     * @throws LoginAlreadyInUseException 
+     * @throws com.tcts.exception.EmailAlreadyInUseException
      * @throws UnsupportedEncodingException 
      * @throws NoSuchAlgorithmException 
      */
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
-            throws SQLException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchSchoolException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
+            throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
     /** Return the list of events that have a particular teacher. */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
@@ -78,12 +79,12 @@ public interface DatabaseFacade {
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all
      * fields have been checked for containing valid values. Will throw an
-     * exception if the login is not unique or if the bank is not found.
-     * @throws UnsupportedEncodingException 
-     * @throws NoSuchAlgorithmException 
+     * exception if the email is not unique or if the bank is not found.
+     * @throws EmailAlreadyInUseException
+     * @throws NoSuchBankException
      */
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
-            throws SQLException, NoSuchBankException, LoginAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
+            throws SQLException, NoSuchBankException, EmailAlreadyInUseException;
 
     /** Return the bank with this bankId, or null if there is none. */
     public Bank getBankById(String bankId) throws SQLException;
@@ -121,24 +122,22 @@ public interface DatabaseFacade {
     
     public Event getEventById(String eventId) throws SQLException;
 
+    // FIXME: All this stuff shouldn't throw InconsistentDatabaseException.
+
 	School updateSchool(School school) throws SQLException,
 			InconsistentDatabaseException;
 
-	Bank updateBank(Bank bank) throws SQLException,
-			InconsistentDatabaseException;
+	Bank updateBank(Bank bank) throws SQLException, EmailAlreadyInUseException;
 	
-	boolean insertBank(Bank bank) throws SQLException,
-	InconsistentDatabaseException;
+	void insertBank(Bank bank) throws SQLException, EmailAlreadyInUseException;
 	
-	boolean insertSchool(School school) throws SQLException,
-	InconsistentDatabaseException;
+	void insertSchool(School school) throws SQLException, InconsistentDatabaseException;
 
-	Event updateEvent(Event event) throws SQLException,
-			InconsistentDatabaseException;
+	Event updateEvent(Event event) throws SQLException, InconsistentDatabaseException;
 
     /** This can be used to upate certain fields of a Volunteer. */
 	User updateVolunteer(Volunteer volunteer) throws SQLException,
-			InconsistentDatabaseException;
+			EmailAlreadyInUseException;
 	
 	public List<? super User> getAllUsers() throws SQLException, InconsistentDatabaseException;
 

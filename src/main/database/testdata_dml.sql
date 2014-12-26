@@ -1,9 +1,11 @@
 /* This has DML for the tables I have created and their sample data */
 
 insert into AllowedDates (event_date)
-    values (DATE('2015-03-25'));
+    values (DATE('2015-04-08'));
 insert into AllowedDates (event_date)
-    values (DATE('2015-04-16'));
+    values (DATE('2015-04-09'));
+insert into AllowedDates (event_date)
+    values (DATE('2015-04-10'));
 
 
 insert into AllowedTimes (event_time, sort_order)
@@ -56,22 +58,22 @@ insert into Bank (bank_name, bank_admin)
     values ('WSFS', 2);
 
 
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('larry','kNF87zO+5bo=','JcDDbNz0dXVdUvDEzfzVmNEhHjk=','larry@foobar.com','Larry','Smith','V','1','1-800-234-1234','1');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('jane','84oH5LTcO30=','inZgchLYXtt2wor3razfPvtub+o=','janedoe@foobar.com','Jane','Jones','BA','1','1000001','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('lucy','9HYa4nSj3Jg=','wrkttouWUjjV/sDVJh632UZvu5g=','lucy@foobar.com','Lucy','Adams','T','1','1-800-234-1234','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('harry','Urdqicfklbw=','I2uKh9UDwqkhLOppWX4haBMFK+M=','Harry@gmail.com','Harry','Wilson','SA',null,'1-800-234-1234','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('moe','7U5JMa0bB70=','+vQRkteaU2CEhdmwUaof1Pn/8eE=','moe@gmail.com','Moe','Carbine','V','3','1-800-234-1234','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('curley','x0JQ3ovD18k=','R3vvnDTL7TGaTOMBlHY4FndCb3U=','curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('shemp','lsi4KL+dKv0=','VHMxx4AHj70PFq38sVios7dPbK0=','shemp@hulu.com','Shemp','Blacksmith ','V','1','1-800-234-1234','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('joshua','RLwBcwWzkw8=','SXxr0aC/ULZRb61gziXoUUM/J7E=','josuah@wintergreen.com','Joshua','Wordsmith','T','2','1-800-234-1234','0');
-insert into User (user_login, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('allen','KsRpejm8v8w=','sxHS4Hjqvfr57nKVCPO49KibSc4=','Allen@novel.com','Allen','James','T','3','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('kNF87zO+5bo=','JcDDbNz0dXVdUvDEzfzVmNEhHjk=','larry@foobar.com','Larry','Smith','V','1','1-800-234-1234','1');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('84oH5LTcO30=','inZgchLYXtt2wor3razfPvtub+o=','janedoe@foobar.com','Jane','Jones','BA','1','1000001','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('9HYa4nSj3Jg=','wrkttouWUjjV/sDVJh632UZvu5g=','lucy@foobar.com','Lucy','Adams','T','1','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('Urdqicfklbw=','I2uKh9UDwqkhLOppWX4haBMFK+M=','Harry@gmail.com','Harry','Wilson','SA',null,'1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('7U5JMa0bB70=','+vQRkteaU2CEhdmwUaof1Pn/8eE=','moe@gmail.com','Moe','Carbine','V','3','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('x0JQ3ovD18k=','R3vvnDTL7TGaTOMBlHY4FndCb3U=','curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('lsi4KL+dKv0=','VHMxx4AHj70PFq38sVios7dPbK0=','shemp@hulu.com','Shemp','Blacksmith ','V','1','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('RLwBcwWzkw8=','SXxr0aC/ULZRb61gziXoUUM/J7E=','josuah@wintergreen.com','Joshua','Wordsmith','T','2','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
+  values ('KsRpejm8v8w=','sxHS4Hjqvfr57nKVCPO49KibSc4=','Allen@novel.com','Allen','James','T','3','1-800-234-1234','0');
 

@@ -19,11 +19,6 @@
                     <div class="field_div row_div_field_left_joint"><c:out value="${teacher.userId}"/></div>
                </div>
                 <div class="row_div_right">
-                    <div class="caption_div"><form:label path="name">Login</form:label></div>
-                    <div class="field_div"><c:out value="${teacher.login}"/></div>
-                </div>
-                
-                <div class="row_div_right">
                     <div class="caption_div"><form:label path="addressLine1">Email</form:label></div>
                     <div class="field_div"><c:out value="${teacher.email}"/></div>
                 </div>
