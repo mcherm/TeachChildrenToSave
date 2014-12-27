@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao.DatabaseFacade;
+import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.NoSuchBankException;
-import com.tcts.model.VolunteerRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 import com.tcts.util.EmailUtil;
 
 /**

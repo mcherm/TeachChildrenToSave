@@ -1,15 +1,13 @@
-package com.tcts.model;
+package com.tcts.formdata;
 
 /**
- * Data that will be entered on the teacher registration form.
+ * Form fields for the screen where you can edit your personal data.
  */
-public class TeacherRegistrationFormData {
+public class EditPersonalDataFormData {
     private String email;
-    private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private String schoolId;
 
     public String getEmail() {
         return email;
@@ -17,14 +15,6 @@ public class TeacherRegistrationFormData {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getFirstName() {
@@ -49,13 +39,5 @@ public class TeacherRegistrationFormData {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getSchoolId() {
-        return schoolId;
-    }
-
-    public void setSchoolId(String schoolId) {
-        this.schoolId = schoolId;
     }
 }

@@ -1,4 +1,4 @@
-package com.tcts.model;
+package com.tcts.formdata;
 
 public class LoginFormData {
 	private String email;

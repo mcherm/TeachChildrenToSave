@@ -1,4 +1,4 @@
-package com.tcts.model;
+package com.tcts.formdata;
 
 /**
  * Data that will be entered on the volunteer registration form.

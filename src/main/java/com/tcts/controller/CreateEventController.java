@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao.DatabaseFacade;
+import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Teacher;
-import com.tcts.model.CreateEventFormData;
+import com.tcts.formdata.CreateEventFormData;
 
 /**
  * A controller for the screens used to create a new event (a class for volunteers to help with).

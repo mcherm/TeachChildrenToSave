@@ -7,6 +7,8 @@ import com.tcts.datamodel.SiteAdmin;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.ActiveSessionException;
+import com.tcts.exception.NotLoggedInException;
 
 /**
  * An instance of this class will be stored in the session. It contains all

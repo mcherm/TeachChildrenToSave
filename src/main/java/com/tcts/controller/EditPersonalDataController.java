@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.tcts.common.NotLoggedInException;
+import com.tcts.exception.NotLoggedInException;
 import com.tcts.common.SessionData;
-import com.tcts.dao.DatabaseFacade;
+import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.User;
-import com.tcts.model.EditPersonalDataFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
 
 /**
  * A controller for the screen where they are editing the

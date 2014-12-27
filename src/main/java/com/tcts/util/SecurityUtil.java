@@ -6,7 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import com.tcts.common.InvalidBase64DataException;
+import com.tcts.exception.InvalidBase64DataException;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 

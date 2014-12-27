@@ -12,7 +12,7 @@
         <%@include file="include/header.jsp"%>
 
         <h2>Bank Information</h2>
-        <!--<form:form method="POST" action="addEvent.htm" modelAttribute="event">-->
+        <form:form method="POST" action="addEvent.htm" modelAttribute="event">
            <div>
             <div class="row_div">
                 <div class="row_div_left">

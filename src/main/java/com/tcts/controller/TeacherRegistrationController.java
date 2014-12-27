@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao.DatabaseFacade;
+import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
 import com.tcts.exception.NoSuchSchoolException;
-import com.tcts.model.TeacherRegistrationFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.util.EmailUtil;
 
 /**

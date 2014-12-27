@@ -1,4 +1,4 @@
-package com.tcts.model;
+package com.tcts.formdata;
 
 import java.util.Date;
 

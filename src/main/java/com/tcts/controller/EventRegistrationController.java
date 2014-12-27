@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tcts.common.SessionData;
-import com.tcts.dao.DatabaseFacade;
+import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchEventException;
-import com.tcts.model.EventRegistrationFormData;
+import com.tcts.formdata.EventRegistrationFormData;
 
 
 /**

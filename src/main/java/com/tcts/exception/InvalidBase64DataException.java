@@ -1,4 +1,4 @@
-package com.tcts.common;
+package com.tcts.exception;
 
 /**
  * An exception type thrown when we attempt to base64decode a string which

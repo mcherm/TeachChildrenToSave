@@ -1,4 +1,4 @@
-package com.tcts.dao;
+package com.tcts.database;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.tcts.common.PrettyPrintingDate;
-import com.tcts.database.ConnectionFactory;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
@@ -29,10 +28,10 @@ import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
-import com.tcts.model.CreateEventFormData;
-import com.tcts.model.EditPersonalDataFormData;
-import com.tcts.model.TeacherRegistrationFormData;
-import com.tcts.model.VolunteerRegistrationFormData;
+import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 
 
 /**

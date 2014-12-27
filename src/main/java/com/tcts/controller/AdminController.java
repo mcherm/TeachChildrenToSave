@@ -3,7 +3,7 @@ package com.tcts.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.tcts.dao.DatabaseFacade;
+import com.tcts.database.DatabaseFacade;
 
 /**
  * This is a controller for the "home page" for users. It renders substantially
