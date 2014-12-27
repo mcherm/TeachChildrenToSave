@@ -58,6 +58,14 @@ public class SessionData {
         return sessionData;
     }
 
+    /**
+     * This ends the session and logs the user out. If there WAS no
+     * session or logged-in user, then this does nothing.
+     */
+    public static void logout(HttpSession session) {
+        session.setAttribute(sessionKey, null);
+    }
+
 
 	private boolean isAuthenticated;
     private User user; // Will be null if no one is logged in

@@ -1,8 +1,10 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<c:set var="homeLink" value='${sessionData == null || sessionData.user == null ? "index.jsp" : sessionData.user.userType.homepage}' />
 <header role="banner">
 	<nav role="navigation">
 		<ul>
 			<li>
-				<button onclick="js.loadURL('index.jsp');" class="home">
+				<button onclick="js.loadURL('<c:out value="${homeLink}"/>');" class="home">
 					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
 					<span class="txt">Home</span>
 				</button>
@@ -20,23 +22,25 @@
 				</button>
 			</li>
 			<li>
-				<button onclick="js.loadURL('openings.htm');" class="openings">
-					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
-					<span class="txt">Browse Openings</span>
-				</button>
-			</li>
-			<li>
 				<button onclick="js.loadURL('register.htm');" class="register">
 					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
 					<span class="txt">Register</span>
 				</button>
-			</li>
-			<li class="last">
-				<button onclick="js.loadURL('getLoginPage.htm');" class="signIn">
-					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
-					<span class="txt">Sign In</span>
-				</button>
-			</li>
-		</ul>	
+            </li>
+            <li class="last">
+                <c:if test="${sessionData == null || sessionData.user == null}">
+                    <button onclick="js.loadURL('getLoginPage.htm');" class="signIn">
+                        <span class="iconFont" aria-hidden="true" data-icon="A"></span>
+                        <span class="txt">Sign In</span>
+                    </button>
+                </c:if>
+                <c:if test="${sessionData != null && sessionData.user != null}">
+                    <button onclick="js.loadURL('logout.htm');" class="signIn">
+                        <span class="iconFont" aria-hidden="true" data-icon="A"></span>
+                        <span class="txt">Sign Out</span>
+                    </button>
+                </c:if>
+            </li>
+		</ul>
 	</nav>
 </header>
