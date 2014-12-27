@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 
 import com.tcts.database.DatabaseFacade;
 
+// FIXME: This class appears to be completely broken -- the javadoc is wrong and the code is all commented out. I will avoid touching it except for this comment. -- Michael Chermside
+
 /**
  * This is a controller for the "home page" for users. It renders substantially
  * different information depending on the type of user who is logged in.

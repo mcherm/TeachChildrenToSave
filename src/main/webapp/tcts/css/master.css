@@ -424,6 +424,10 @@ main .editOrRegister.delete {
   background-color: #b21b29;
 }
 
+main .editOrRegister.add {
+  background-color: blue; /* FIXME: Adrian to make this look better */
+}
+
 main table .editOrRegister {
   width: 100%;
   margin-top: 0;
@@ -504,7 +508,8 @@ body.createEvent table thead th,
 body.evenRegistration table thead th,
 body.banks table thead th,
 body.schools table thead th,
-body.teachers table thead th {
+body.teachers table thead th,
+body.adminEditAllowedTimes table thead th {
   font-weight: bold;
   background-color: #0c345a;
   color: #fff;
@@ -520,7 +525,8 @@ body.createEvent table tbody tr:nth-child(even),
 body.evenRegistration table tbody tr:nth-child(even),
 body.banks table tbody tr:nth-child(even),
 body.schools table tbody tr:nth-child(even),
-body.teachers table tbody tr:nth-child(even) {
+body.teachers table tbody tr:nth-child(even),
+body.adminEditAllowedTimes table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
 body.volunteerHome table td,
@@ -530,7 +536,8 @@ body.createEvent table td,
 body.evenRegistration table td,
 body.banks table td,
 body.schools table td,
-body.teachers table td {
+body.teachers table td,
+body.adminEditAllowedTimes table td {
   padding: .5em;
 }
 
