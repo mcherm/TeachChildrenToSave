@@ -17,74 +17,82 @@
 
         <%@include file="include/navigation.jsp" %>
 
-            <main id="main">   
+            <main id="main">
 
-		            <form:form method="POST" action="createEvent.htm" modelAttribute="formData">
-		            
-		                <div class="formElementCnt">
-		                    <label>
-		                        <div class="inputCnt">
-		                            <div class="info">
-		                                Date
-		                            </div>
-			                        <form:select path="eventDate">
-			                            <form:option value="" label="- Select Date -" />
-			                            <form:options items="${allowedDates}" itemValue="parseable" itemLabel="pretty"/>
-			                        </form:select>
-		                        </div>
-		                    </label>
-		                </div>				            
+                <h1>Register a New Class</h1>
 
-		                <div class="formElementCnt">
-		                    <label>
-		                        <div class="inputCnt">
-		                            <div class="info">
-		                                Time (approximate)
-		                            </div>
-			                        <form:select path="eventTime">
-			                            <form:option value="" label="- Select Time -" />
-			                            <form:options items="${allowedTimes}"/>
-			                        </form:select>
-		                        </div>
-		                    </label>
-		                </div>		
+                <c:if test="${not empty errorMessage}">
+                    <div class="errorMessage">
+                        <c:out value="${errorMessage}" default=""  />
+                    </div>
+                </c:if>
 
-		                <div class="formElementCnt">
-		                    <label>
-		                        <div class="inputCnt">
-		                            <div class="info">
-		                                Grade
-		                            </div>
-		                            <form:input path="grade"/>
-		                        </div>
-		                    </label>
-		                </div>		
+                <form:form method="POST" action="createEvent.htm" modelAttribute="formData">
 
-		                <div class="formElementCnt">
-		                    <label>
-		                        <div class="inputCnt">
-		                            <div class="info">
-		                                Number of Students
-		                            </div>
-		                            <form:input path="numberStudents"/>
-		                        </div>
-		                    </label>
-		                </div>		
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Date
+                                </div>
+                                <form:select path="eventDate">
+                                    <form:option value="" label="- Select Date -" />
+                                    <form:options items="${allowedDates}" itemValue="parseable" itemLabel="pretty"/>
+                                </form:select>
+                            </div>
+                        </label>
+                    </div>
 
-		                <div class="formElementCnt">
-		                    <label>
-		                        <div class="inputCnt">
-		                            <div class="info">
-		                                Notes for the Volunteer
-		                            </div>
-		                            <form:textarea path="notes"/>
-		                        </div>
-		                    </label>
-		                </div>				
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Time (approximate)
+                                </div>
+                                <form:select path="eventTime">
+                                    <form:option value="" label="- Select Time -" />
+                                    <form:options items="${allowedTimes}"/>
+                                </form:select>
+                            </div>
+                        </label>
+                    </div>
 
-				       <button type="submit" value="Register">Register</button>
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Grade
+                                </div>
+                                <form:input path="grade"/>
+                            </div>
+                        </label>
+                    </div>
 
-		            </form:form>
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Number of Students
+                                </div>
+                                <form:input path="numberStudents"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Notes for the Volunteer
+                                </div>
+                                <form:textarea path="notes"/>
+                            </div>
+                        </label>
+                    </div>
+
+                   <button type="submit" value="Register">Register</button>
+
+                </form:form>
 
 			</main>
 

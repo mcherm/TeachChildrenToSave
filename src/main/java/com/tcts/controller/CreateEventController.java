@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -74,7 +75,18 @@ public class CreateEventController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         // --- Validation Rules ---
-        // FIXME: Need validation, INCLUDING making certain that the date and time are allowed.
+        List<Date> allowedDates = database.getAllowedDates(); // FIXME: Shouldn't we cache this?
+        if (!allowedDates.contains(formData.getEventDate())) {
+            return showFormWithErrorMessage(model, "You must select a valid date.");
+        }
+        List<String> allowedTimes = database.getAllowedTimes(); // FIXME: Shouldn't we cache this?
+        if (!allowedTimes.contains(formData.getEventTime())) {
+            return showFormWithErrorMessage(model, "You must select a time from the list.");
+        }
+        if (formData.getGrade() == null) {
+            return showFormWithErrorMessage(model, "You must specify the grade.");
+        }
+
         // --- Create Event ---
         database.insertEvent(teacher.getUserId(), formData);
         // --- Navigate onward ---
