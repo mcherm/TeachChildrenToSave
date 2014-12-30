@@ -66,13 +66,11 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getEventsByVolunteerSQL =
             "select " + eventFields + " from Event where volunteer_id = ?";
     private final static String getAllAvailableEventsSQL =
-    		            "select " + eventFields + " from Event where volunteer_id is null";
+    		"select " + eventFields + " from Event where volunteer_id is null";
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank where bank_id = ?";
     private final static String getAllBanksSQL =
             "select " + bankFields + " from Bank";
-    private final static String getBankListSQL =
-            "select " + bankFields + " from Bank ";
     private final static String getSchoolByIdSQL =
             "select " + schoolFields + " from School where school_id = ?";
     private final static String getAllSchoolsSQL =
@@ -97,9 +95,11 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String insertBankSQL =
     		"insert into Bank(bank_id, bank_name, bank_admin) VALUES(?,?,?)";
-    
+
+    private final static String deleteUsersByBankId =
+            "delete from User where access_type = 'BA' or access_type = 'V' and organization_id = ?";
     private final static String deleteBankSQL =
-    		"delete from Bank where schoold_id=? ";
+    		"delete from Bank where bank_id = ?";
     
     private final static String deleteSchooldSQL =
     		"delete from School where schoold_id=? ";
@@ -642,35 +642,6 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public List<Bank> getBankList() throws SQLException {
-		Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        List<Bank> bankList = new ArrayList<>();
-        try {
-            connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getBankListSQL);
-            resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
-            Bank bank = null;
-            while (resultSet.next()) {
-                numberOfRows++;
-                bank = new Bank();
-                bank.populateFieldsFromResultSetRow(resultSet);
-                bankList.add(bank);
-            }
-            if (numberOfRows < 1) {
-                return null; // No bank found
-            } else {
-                return bankList;
-            }
-        } finally {
-            closeSafely(connection, preparedStatement, resultSet);
-        }
-	}
-
-
-	@Override
 	public boolean deleteSchool(String schoolId) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
@@ -720,21 +691,31 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public boolean deleteBank(String bankId) throws SQLException,
-			InconsistentDatabaseException {
+	public void deleteBank(String bankId) throws SQLException, NoSuchBankException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         try {
             connection = ConnectionFactory.getConnection();
+
+            // --- Delete all users ---
+            preparedStatement = connection.prepareStatement(deleteUsersByBankId);
+            preparedStatement.setString(1, bankId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                // It would have to have at LEAST the bank admin
+                throw new NoSuchBankException();
+            }
+            preparedStatement.close();
+
+            // --- Delete the bank ---
             preparedStatement = connection.prepareStatement(deleteBankSQL);
             preparedStatement.setString(1, bankId);
-            int success =preparedStatement.executeUpdate();
-            if (success == 0)
-            	return false;
-            else return true;
+            rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new NoSuchBankException();
+            }
         } finally {
-            closeSafely(connection, preparedStatement, resultSet);
+            closeSafely(connection, preparedStatement, null);
         }
 	}
 

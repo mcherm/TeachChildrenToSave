@@ -38,6 +38,7 @@ public final class EmailUtil {
     
     
     public EmailUtil() {
+        // FIXME: Two of these are being created. Find out why, and make only one be created.
         Properties properties = new Properties();
         try {
             properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));

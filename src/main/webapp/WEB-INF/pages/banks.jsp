@@ -4,7 +4,7 @@
     <head>
 
         <title>Teach Children To Save - Bank </title>
-        <%@include file="include/commonHead_innerPage.jsp"%>
+        <%@include file="include/commonHead.jsp"%>
 
     </head>
     <body class="banks">
@@ -13,7 +13,7 @@
 
     <div class="decor"></div>
 
-    <%@include file="include/header_innerPage.jsp" %>
+    <%@include file="include/header.jsp" %>
 
     <div class="mainCnt">
 
@@ -25,38 +25,48 @@
 
             <table id="approvedVolunteersTable">
                 <thead>
-                <tr>
-                    <th scope="col" class="center">Bank ID</th>
-                    <th scope="col">Bank Name Name</th>
-                    <th scope="col" class="center">Bank admin Id</th>
-                    <th scope="col" class="center">
-                        <span class="ada-read">Column of Delete buttons</span>
-                    </th>
-                    <th scope="col" class="center">
-                        <span class="ada-read">Column of Modify buttons</span>
-                    </th>
-                </tr>
+                    <tr>
+                        <th scope="col">Bank Name</th>
+                        <th scope="col" class="center">Bank admin name</th>
+                        <th scope="col" class="center">Bank admin email</th>
+                        <th scope="col" class="center">Bank admin phone</th>
+                        <th scope="col" class="center">
+                            <span class="ada-read">Column of Delete buttons</span>
+                        </th>
+                        <th scope="col" class="center">
+                            <span class="ada-read">Column of Modify buttons</span>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <c:forEach var="bank" items="${banks}">
-                <tr>
-                    <td class="center"><c:out value="${bank.bankId}"/></td>
-                    <td><c:out value="${bank.bankName}"/></td>
-                    <td class="center"><c:out value="${bank.bankAdminId}"/></td>
-                    <td>
-                        <button onclick="js.loadURL('delete.htm');" class="editOrRegister delete">
-                            Delete
-                        </button>
-                    </td>
-                    <td>
-                        <button onclick="js.loadURL('show.htm');" class="editOrRegister">
-                            Modify
-                        </button>
-                    </td>
-                </tr>
-                </c:forEach>
+                    <c:forEach var="bank" items="${banks}">
+                        <tr>
+                            <td><c:out value="${bank.bankName}"/></td>
+                            <td class="center">
+                                <c:out value="${bank.linkedBankAdmin.firstName}"/>
+                                <c:out value="${bank.linkedBankAdmin.lastName}"/>
+                            </td>
+                            <td class="center"><c:out value="${bank.linkedBankAdmin.email}"/></td>
+                            <td class="center"><c:out value="${bank.linkedBankAdmin.phoneNumber}"/></td>
+                            <td>
+                                <form method="POST" action="deleteBank.htm" modelAttribute="formData">
+                                    <input type="hidden" name="bankId" value='<c:out value="${bank.bankId}"/>' />
+                                    <button type="submit" class="editOrRegister delete">Delete</button>
+                                </form>
+                            </td>
+                            <td>
+                                <button onclick="js.loadURL('show.htm');" class="editOrRegister">
+                                    Modify
+                                </button>
+                            </td>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
+
+            <div>
+                <button onclick="js.loadURL('addBank.htm')" class="editOrRegister">Add New Bank</button>
+            </div>
 
         </main>
     </div><%-- mainCnt --%>

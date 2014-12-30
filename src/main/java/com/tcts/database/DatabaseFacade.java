@@ -51,10 +51,10 @@ public interface DatabaseFacade {
      * @throws NoSuchSchoolException 
      * @throws com.tcts.exception.EmailAlreadyInUseException
      * @throws UnsupportedEncodingException 
-     * @throws NoSuchAlgorithmException 
+     * @throws NoSuchAlgorithmException
      */
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
-            throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
+            throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
     /** Return the list of events that have a particular teacher. */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
@@ -95,7 +95,7 @@ public interface DatabaseFacade {
     /** Returns the full list of all schools. */
     public List<School> getAllSchools() throws SQLException;
     
-    /** Returns the full list of all schools. */
+    /** Returns the full list of all banks. */
     public List<Bank> getAllBanks() throws SQLException;
 
     /** Returns the allowed dates. */
@@ -105,13 +105,14 @@ public interface DatabaseFacade {
     public List<String> getAllowedTimes() throws SQLException;
     
     public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException;
-    
-    /** Return the bank list  or null if there is none. */
-    public List<Bank> getBankList() throws SQLException;
-    
+
     public boolean deleteSchool(String schoolId) throws SQLException, InconsistentDatabaseException;
-    
-    public boolean deleteBank(String bankId) throws SQLException, InconsistentDatabaseException;
+
+    /**
+     * This will delete a bank. It ALSO deletes the bank admin AND ALL Volunteers belonging
+     * to that bank.
+     */
+    public void deleteBank(String bankId) throws SQLException, NoSuchBankException;
     
      
     public boolean deleteVolunteer(String volunteerId) throws SQLException, InconsistentDatabaseException;

@@ -11,6 +11,10 @@ public class Bank {
     private String bankName;
     private String bankAdminId;
 
+    // --- Linked data - loaded only when needed ---
+    private BankAdmin linkedBankAdmin;
+
+
     /**
      * This can be called to populate fields from the current row of a resultSet.
      */
@@ -42,5 +46,14 @@ public class Bank {
 
     public void setBankAdminId(String bankAdminId) {
         this.bankAdminId = bankAdminId;
+    }
+
+
+    public BankAdmin getLinkedBankAdmin() {
+        return linkedBankAdmin;
+    }
+
+    public void setLinkedBankAdmin(BankAdmin linkedBankAdmin) {
+        this.linkedBankAdmin = linkedBankAdmin;
     }
 }

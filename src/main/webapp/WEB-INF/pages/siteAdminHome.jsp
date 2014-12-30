@@ -28,7 +28,7 @@
 	         
 	            <ul class="noUl">
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('bank/banks.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('viewEditBanks.htm');" class="editOrRegister">
 	                		Add/Remove/Edit Banks
 	                	</button>
                 	</li>

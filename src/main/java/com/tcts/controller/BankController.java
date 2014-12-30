@@ -5,7 +5,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.BankAdmin;
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.InvalidParameterFromGUIException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NotLoggedInException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,10 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Bank;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * This is a controller for the "home page" for users. It renders substantially
- * different information depending on the type of user who is logged in.
+ * This is a controller for the pages that are used by the site admin to edit the
+ * list of banks (and bank admin users).
  */
 @Controller
 public class BankController {
@@ -28,34 +33,61 @@ public class BankController {
     private DatabaseFacade database;
     
     /**
-     * Render the bank edit page .
+     * Render the bank edit page.
      */
-    @RequestMapping(value = "/bank/banks", method = RequestMethod.GET)
+    @RequestMapping(value = "viewEditBanks", method = RequestMethod.GET)
     public String showBanks(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
         }
-        List<Bank> bankList = database.getBankList();
-        
-        model.addAttribute("banks", bankList);
+
+        return showForm(model);
+    }
+
+
+    /**
+     * A subroutine used to set up and then show the edit banks form. It
+     * returns the string, so you can invoke it as "return showForm(...)".
+     */
+    public String showForm(Model model) throws SQLException {
+        List<Bank> banks = database.getAllBanks();
+        for (Bank bank : banks) {
+            BankAdmin bankAdmin = (BankAdmin) database.getUserById(bank.getBankAdminId());
+            bank.setLinkedBankAdmin(bankAdmin);
+        }
+
+        model.addAttribute("banks", banks);
         return "banks";
     }
-    
-    @RequestMapping(value = "/bank/delete", method = RequestMethod.POST)
-    public String deleteBank(@ModelAttribute(value="bank") Bank bank,HttpSession session, Model model) throws SQLException {
+
+
+    /**
+     * Deletes a bank and all users associated with it.
+     */
+    @RequestMapping(value = "deleteBank", method = RequestMethod.POST)
+    public String deleteBank(
+            @RequestParam String bankId,
+            HttpSession session,
+            Model model
+        ) throws SQLException
+    {
         SessionData sessionData = SessionData.fromSession(session);
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
         }
-        database.deleteBank(bank.getBankId());
-        List<Bank> bankList = database.getBankList();
-        
-        model.addAttribute("banks", bankList);
-        return "banks";
+
+        try {
+            database.deleteBank(bankId);
+        } catch(NoSuchBankException err) {
+            throw new InvalidParameterFromGUIException();
+        }
+
+        return showForm(model);
     }
-    
+
+
+    // FIXME: This needs rewriting
     @RequestMapping(value = "/bank/show", method = RequestMethod.GET)
     public String getBank(@ModelAttribute(value="bank") Bank bank,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
@@ -67,7 +99,8 @@ public class BankController {
         model.addAttribute("bank", bank);
         return "bank";
     }
-    
+
+    // FIXME: This needs rewriting
     @RequestMapping(value = "bank/update", method = RequestMethod.POST)
     public String getUpdatedBank(@ModelAttribute(value="bank") Bank bank,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
@@ -86,7 +119,8 @@ public class BankController {
         model.addAttribute("bank", newBank);
         return "bank";
     }
-    
+
+    // FIXME: This needs rewriting
     @RequestMapping(value = "bank/add", method = RequestMethod.POST)
     public String addBank(@ModelAttribute(value="bank") Bank bank,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
@@ -101,7 +135,7 @@ public class BankController {
             throw new RuntimeException("That email is already in use; please choose another.");
         }
 
-        model.addAttribute("banks", database.getBankList());
+        model.addAttribute("banks", database.getAllBanks());
         return "banks";
     }
 
