@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.InvalidParameterFromGUIException;
+import com.tcts.exception.NoSuchEventException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,7 +52,11 @@ public class ClassController {
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
         }
-        database.deleteEvent(event.getEventId());
+        try {
+            database.deleteEvent(event.getEventId());
+        } catch(NoSuchEventException err) {
+            throw new InvalidParameterFromGUIException();
+        }
         
         List<Event> eventList = database.getEvents();
         

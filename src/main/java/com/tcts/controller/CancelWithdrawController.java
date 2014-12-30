@@ -3,6 +3,7 @@ package com.tcts.controller;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
+import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchEventException;
@@ -109,4 +110,87 @@ public class CancelWithdrawController {
         // --- Done ---
         return "redirect:" + loggedInVolunteer.getUserType().getHomepage();
     }
+
+
+    /**
+     * Display a confirmation page to allow a teacher to cancel a class.
+     */
+    @RequestMapping(value = "teacherCancel", method = RequestMethod.GET)
+    public String showTeacherCancel(
+            HttpSession session,
+            Model model,
+            @RequestParam(value = "eventId") String eventId
+    ) throws SQLException
+    {
+        // --- Ensure logged in as a Teacher ---
+        SessionData sessionData = SessionData.fromSession(session);
+        Teacher loggedInTeacher = sessionData.getTeacher();
+        if (loggedInTeacher == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Ensure the event is valid and is owned by this teacher ---
+        if (eventId == null || eventId.length() == 0) {
+            throw new InvalidParameterFromGUIException();
+        }
+        Event event = database.getEventById(eventId);
+        if (!loggedInTeacher.getUserId().equals(event.getTeacherId())) {
+            throw new NotOwnedByYouException();
+        }
+
+        // --- Display the page ---
+        WithdrawFormData formData = new WithdrawFormData();
+        formData.setEventId(eventId);
+        model.addAttribute("formData", formData);
+        model.addAttribute("hasVolunteer", event.getVolunteerId() != null);
+        model.addAttribute("errorMessage", "");
+        return "teacherCancel";
+    }
+
+
+    /**
+     * A volunteer withdraws themselves from a class they had previously
+     * volunteered for.
+     */
+    @RequestMapping(value = "teacherCancel", method = RequestMethod.POST)
+    public String doTeacherCancel(
+            HttpSession session,
+            @ModelAttribute WithdrawFormData formData
+    ) throws SQLException
+    {
+        // --- Ensure logged in as a Teacher ---
+        SessionData sessionData = SessionData.fromSession(session);
+        Teacher loggedInTeacher = sessionData.getTeacher();
+        if (loggedInTeacher == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Ensure the event is valid and is owned by this teacher ---
+        String eventId = formData.getEventId();
+        if (eventId == null || eventId.length() == 0) {
+            throw new InvalidParameterFromGUIException();
+        }
+        Event event = database.getEventById(eventId);
+        if (!loggedInTeacher.getUserId().equals(event.getTeacherId())) {
+            throw new NotOwnedByYouException();
+        }
+
+        // --- Update the database ---
+        try {
+            database.deleteEvent(eventId);
+        } catch(NoSuchEventException err) {
+            throw new RuntimeException("Shouldn't happen; we just checked if it was there.");
+        }
+
+        // --- Send Emails ---
+        if (event.getVolunteerId() != null) {
+            // FIXME: Here we should send an email to the volunteer
+        }
+        // FIXME: Here we should send an email to the site admin
+
+        // --- Done ---
+        return "redirect:" + loggedInTeacher.getUserType().getHomepage();
+    }
+
+
 }

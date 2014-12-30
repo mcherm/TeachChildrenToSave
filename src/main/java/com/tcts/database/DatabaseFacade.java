@@ -115,8 +115,11 @@ public interface DatabaseFacade {
     
      
     public boolean deleteVolunteer(String volunteerId) throws SQLException, InconsistentDatabaseException;
-    
-    public boolean deleteEvent(String eventId) throws SQLException, InconsistentDatabaseException;
+
+    /**
+     * This deletes the indicated event, or throws NoSuchEventException if it does not exist.
+     */
+    public void deleteEvent(String eventId) throws SQLException, NoSuchEventException;
     
     public List<Event> getEvents() throws SQLException, InconsistentDatabaseException;
     

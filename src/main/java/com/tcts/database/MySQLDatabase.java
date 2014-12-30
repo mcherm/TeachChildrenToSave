@@ -828,8 +828,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public boolean deleteEvent(String eventId) throws SQLException,
-			InconsistentDatabaseException {
+	public void deleteEvent(String eventId) throws SQLException, NoSuchEventException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -837,10 +836,14 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteEventSQL);
             preparedStatement.setString(1, eventId);
-            int success =preparedStatement.executeUpdate();
-            if (success == 0)
-            	return false;
-            else return true;
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new NoSuchEventException();
+            } else if (rowsAffected > 1) {
+                throw new RuntimeException("Cannot happen: eventId is the primary key!");
+            } else {
+                return;
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }

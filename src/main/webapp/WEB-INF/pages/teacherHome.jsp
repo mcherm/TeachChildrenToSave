@@ -50,6 +50,7 @@
 		                        <th>Students</th>
 		                        <th>Volunteer</th>
 		                        <th>Bank</th>
+                                <th></th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -64,6 +65,7 @@
 		                                <c:out value="${event.linkedVolunteer.lastName}" default=""/>
 		                            </td>
 		                            <td><c:out value="${event.linkedVolunteer.linkedBank.bankName}" default=""/></td>
+                                    <td><a href="teacherCancel.htm?eventId=<c:out value="${event.eventId}"/>">cancel</a></td>
 		                        </tr>
 		                    </c:forEach>
 		                </tbody>
