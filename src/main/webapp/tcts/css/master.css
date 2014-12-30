@@ -293,8 +293,7 @@ body.home aside {
   text-align: center;
 }
 body.home aside img {
-  width: 100%;
-  max-width: 379px;
+  width: 278px;
 }
 
 @media (min-width: 768px) {
