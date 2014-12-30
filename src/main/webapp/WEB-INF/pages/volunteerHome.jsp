@@ -54,6 +54,7 @@
 		                        <th>Teacher</th>
 		                        <th>Grade</th>
 		                        <th>Students</th>
+                                <th></th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -65,6 +66,7 @@
 		                            <td><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
 		                            <td><c:out value="${event.grade}"/></td>
 		                            <td><c:out value="${event.numberStudents}"/></td>
+                                    <td><a href="volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>">withdraw</a></td>
 		                        </tr>
 		                    </c:forEach>
 		                </tbody>
