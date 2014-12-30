@@ -4,10 +4,10 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.common.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -31,6 +31,8 @@ public class CreateEventController {
 
     @Autowired
     private DatabaseFacade database;
+    @Autowired
+    private Cache cache;
     
 
     @InitBinder
@@ -55,8 +57,8 @@ public class CreateEventController {
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
     private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
-        model.addAttribute("allowedDates", database.getAllowedDates()); // FIXME: Shouldn't we cache this?
-        model.addAttribute("allowedTimes", database.getAllowedTimes()); // FIXME: Shouldn't we cache this?
+        model.addAttribute("allowedDates", cache.getAllowedDates());
+        model.addAttribute("allowedTimes", cache.getAllowedTimes());
         model.addAttribute("errorMessage", errorMessage);
         return "createEvent";
     }
@@ -75,12 +77,10 @@ public class CreateEventController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         // --- Validation Rules ---
-        List<Date> allowedDates = database.getAllowedDates(); // FIXME: Shouldn't we cache this?
-        if (!allowedDates.contains(formData.getEventDate())) {
+        if (!cache.getAllowedDates().contains(formData.getEventDate())) {
             return showFormWithErrorMessage(model, "You must select a valid date.");
         }
-        List<String> allowedTimes = database.getAllowedTimes(); // FIXME: Shouldn't we cache this?
-        if (!allowedTimes.contains(formData.getEventTime())) {
+        if (!cache.getAllowedTimes().contains(formData.getEventTime())) {
             return showFormWithErrorMessage(model, "You must select a time from the list.");
         }
         if (formData.getGrade() == null) {
