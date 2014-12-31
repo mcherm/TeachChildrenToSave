@@ -93,6 +93,10 @@
                     <button onclick="js.loadURL('viewEditBanks.htm')" class="editOrRegister cancel">Cancel</button>
                 </div>
 
+                <div>
+                    NOTE: Your newly created bank admin will need to use password reset to log on for the first time.
+                </div>
+
             </main>
 
         </div><%-- mainCnt --%>

@@ -63,6 +63,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + userFields + " from User where email = ?";
     private final static String getVolunteersByBankSQL =
             "select " + userFields + " from User where access_type = 'V' and organization_id = ?";
+    private final static String getBankAdminByBankSQL =
+            "select " + userFields + " from User where access_type = 'BA' and organization_id = ?";
     private final static String getEventsByTeacherSQL =
             "select " + eventFields + " from Event where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
@@ -109,7 +111,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"delete from School where schoold_id = ?";
       
     private final static String deleteVolunteerSQL =
-    		"delete from User where user_id=? ";
+    		"delete from User where user_id = ? ";
         
     private final static String deleteEventSQL =
     		"delete from Event where event_id=? ";
@@ -349,6 +351,38 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
+
+
+    @Override
+    public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
+            preparedStatement.setString(1, bankId);
+            resultSet = preparedStatement.executeQuery();
+            BankAdmin bankAdmin = null;
+            int resultCount = 0;
+            while (resultSet.next()) {
+                resultCount += 1;
+                if (resultCount > 1) {
+                    throw new InconsistentDatabaseException("Multiple bank admins for bank " + bankId);
+                }
+                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
+                if (userType != UserType.BANK_ADMIN) {
+                    throw new RuntimeException("This should not occur.");
+                }
+                bankAdmin = new BankAdmin();
+                bankAdmin.populateFieldsFromResultSetRow(resultSet);
+            }
+            return bankAdmin;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
 
     @Override
     public Bank getBankById(String bankId) throws SQLException {
@@ -960,23 +994,24 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = ConnectionFactory.getConnection();
 
             // --- Check if Bank Admin Exists ---
-            preparedStatement = connection.prepareStatement(getBankByIdSQL);
+            preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
             preparedStatement.setString(1, formData.getBankId());
             resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
-            Bank bank = null;
+            BankAdmin bankAdmin = null;
+            int resultCount = 0;
             while (resultSet.next()) {
-                numberOfRows++;
-                bank = new Bank();
-                bank.populateFieldsFromResultSetRow(resultSet);
+                resultCount += 1;
+                if (resultCount > 1) {
+                    throw new InconsistentDatabaseException("Multiple bank admins for bank " + formData.getBankId());
+                }
+                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
+                if (userType != UserType.BANK_ADMIN) {
+                    throw new RuntimeException("This should not occur.");
+                }
+                bankAdmin = new BankAdmin();
+                bankAdmin.populateFieldsFromResultSetRow(resultSet);
             }
-            if (numberOfRows < 1) {
-                throw new NoSuchBankException();
-            } else if (numberOfRows > 1) {
-                throw new InconsistentDatabaseException("Multiple rows for bank '" + formData.getBankId() + "'.");
-            }
-            String bankAdminId = bank.getBankAdminId();
-            preparedStatement.close();
+            String bankAdminId = bankAdmin == null ? null : bankAdmin.getUserId();
 
             if (bankAdminId == null) {
                 // --- Insert new Bank Admin ---
@@ -1001,7 +1036,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 // --- Find out its userId ---
                 preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
                 resultSet = preparedStatement.executeQuery();
-                numberOfRows = 0;
+                int numberOfRows = 0;
                 while (resultSet.next()) {
                     numberOfRows++;
                     bankAdminId = resultSet.getString(1);

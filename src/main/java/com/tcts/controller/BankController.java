@@ -55,7 +55,7 @@ public class BankController {
     public String showForm(Model model) throws SQLException {
         List<Bank> banks = database.getAllBanks();
         for (Bank bank : banks) {
-            BankAdmin bankAdmin = (BankAdmin) database.getUserById(bank.getBankAdminId());
+            BankAdmin bankAdmin = database.getBankAdminByBank(bank.getBankId());
             bank.setLinkedBankAdmin(bankAdmin);
         }
 
@@ -106,8 +106,8 @@ public class BankController {
         EditBankFormData formData = new EditBankFormData();
         formData.setBankId(bankId);
         formData.setBankName(bank.getBankName());
-        if (bank.getBankAdminId() != null) {
-            BankAdmin bankAdmin = (BankAdmin) database.getUserById(bank.getBankAdminId());
+        BankAdmin bankAdmin = database.getBankAdminByBank(bankId);
+        if (bankAdmin != null) {
             formData.setFirstName(bankAdmin.getFirstName());
             formData.setLastName(bankAdmin.getLastName());
             formData.setEmail(bankAdmin.getEmail());
@@ -132,7 +132,6 @@ public class BankController {
     }
 
 
-    // FIXME: This needs rewriting
     @RequestMapping(value = "editBank", method = RequestMethod.POST)
     public String getUpdatedBank(
             HttpSession session,

@@ -9,7 +9,6 @@ import java.sql.SQLException;
 public class Bank {
     private String bankId;
     private String bankName;
-    private String bankAdminId;
 
     // --- Linked data - loaded only when needed ---
     private BankAdmin linkedBankAdmin;
@@ -21,7 +20,6 @@ public class Bank {
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         setBankId(resultSet.getString("bank_id"));
         setBankName(resultSet.getString("bank_name"));
-        setBankAdminId(resultSet.getString("bank_admin"));
     }
 
     public String getBankId() {
@@ -39,15 +37,6 @@ public class Bank {
     public void setBankName(String bankName) {
         this.bankName = bankName;
     }
-
-    public String getBankAdminId() {
-        return bankAdminId;
-    }
-
-    public void setBankAdminId(String bankAdminId) {
-        this.bankAdminId = bankAdminId;
-    }
-
 
     public BankAdmin getLinkedBankAdmin() {
         return linkedBankAdmin;

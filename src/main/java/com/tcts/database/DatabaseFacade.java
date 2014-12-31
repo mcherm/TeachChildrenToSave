@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.tcts.datamodel.Bank;
+import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
@@ -77,7 +78,11 @@ public interface DatabaseFacade {
 
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
-    
+
+    /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin. */
+    public BankAdmin getBankAdminByBank(String bankId)
+            throws SQLException;
+
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all
      * fields have been checked for containing valid values. Will throw an
