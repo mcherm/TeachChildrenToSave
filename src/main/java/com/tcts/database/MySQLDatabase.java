@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.EditBankFormData;
 import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -95,7 +96,9 @@ public class MySQLDatabase implements DatabaseFacade {
     		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
     
     private final static String insertBankSQL =
-    		"insert into Bank(bank_name) VALUES (?)";
+    		"insert into Bank (bank_name) VALUES (?)";
+    private final static String modifyBankByIdSQL =
+            "update Bank set bank_name = ?,bank_admin = ? where bank_id = ?";
 
     private final static String deleteUsersByBankId =
             "delete from User where access_type = 'BA' or access_type = 'V' and organization_id = ?";
@@ -124,10 +127,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"UPDATE School SET " +
     		"school_name = ?,school_addr1 = ?,school_addr2 = ?,school_city = ?,school_zip = ?,school_county = ?," +
     		"school_district = ?,school_state = ?,school_phone = ?,school_lmi_eligible = ? WHERE school_id = ?";
-    
-    private final static String updateBankByIdSQL =
-    		"UPDATE Bank SET bank_name = ?,bank_admin = ? WHERE bank_id = ?";
-    
+
     private final static String updateUserCredentialsByIdSQL =
     		"update User set password_salt = ?, password_hash = ? where user_id = ?";
     
@@ -720,35 +720,6 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public Bank updateBank(Bank bank) throws SQLException,
-			EmailAlreadyInUseException {
-		Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(updateBankByIdSQL);
-            preparedStatement.setString(1, bank.getBankName());
-            preparedStatement.setString(2, bank.getBankAdminId());
-            preparedStatement.setString(3, bank.getBankId());
-            try {
-                preparedStatement.executeUpdate();
-            } catch(MySQLIntegrityConstraintViolationException err) {
-                if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
-                    throw new EmailAlreadyInUseException();
-                } else {
-                    throw err;
-                }
-            }
-        }
-        finally {
-            closeSafely(connection, preparedStatement, null);
-            
-        }
-        return getBankById(bank.getBankId());
-	}
-
-
-	@Override
 	public boolean deleteVolunteer(String volunteerId) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
@@ -963,7 +934,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.close();
 
             // --- And update the Bank ---
-            preparedStatement = connection.prepareStatement(updateBankByIdSQL);
+            preparedStatement = connection.prepareStatement(modifyBankByIdSQL);
             preparedStatement.setString(1, formData.getBankName());
             preparedStatement.setString(2, bankAdminUserId);
             preparedStatement.setString(3, bankId);
@@ -977,7 +948,108 @@ public class MySQLDatabase implements DatabaseFacade {
 	}
 
 
-	@Override
+    @Override
+    public void modifyBankAndBankAdmin(
+            EditBankFormData formData
+        ) throws SQLException, EmailAlreadyInUseException, NoSuchBankException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+
+            // --- Check if Bank Admin Exists ---
+            preparedStatement = connection.prepareStatement(getBankByIdSQL);
+            preparedStatement.setString(1, formData.getBankId());
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            Bank bank = null;
+            while (resultSet.next()) {
+                numberOfRows++;
+                bank = new Bank();
+                bank.populateFieldsFromResultSetRow(resultSet);
+            }
+            if (numberOfRows < 1) {
+                throw new NoSuchBankException();
+            } else if (numberOfRows > 1) {
+                throw new InconsistentDatabaseException("Multiple rows for bank '" + formData.getBankId() + "'.");
+            }
+            String bankAdminId = bank.getBankAdminId();
+            preparedStatement.close();
+
+            if (bankAdminId == null) {
+                // --- Insert new Bank Admin ---
+                String salt = null;
+                String hashedPassword = null;
+                preparedStatement = connection.prepareStatement(insertUserSQL);
+                preparedStatement.setString(1, salt);
+                preparedStatement.setString(2, hashedPassword);
+                preparedStatement.setString(3, formData.getEmail());
+                preparedStatement.setString(4, formData.getFirstName());
+                preparedStatement.setString(5, formData.getLastName());
+                preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
+                preparedStatement.setString(7, formData.getBankId());
+                preparedStatement.setString(8, formData.getPhoneNumber());
+                preparedStatement.setInt(9, 0); // not meaningful
+                int affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows != 1) {
+                    throw new RuntimeException("Should never happen: we inserted one row!");
+                }
+                preparedStatement.close();
+
+                // --- Find out its userId ---
+                preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+                resultSet = preparedStatement.executeQuery();
+                numberOfRows = 0;
+                while (resultSet.next()) {
+                    numberOfRows++;
+                    bankAdminId = resultSet.getString(1);
+                }
+                if (numberOfRows < 1) {
+                    throw new RuntimeException("This should never happen.");
+                } else if (numberOfRows > 1) {
+                    throw new RuntimeException("This should never happen.");
+                }
+                preparedStatement.close();
+
+            } else {
+                // --- Modify existing Bank Admin ---
+                preparedStatement = connection.prepareStatement(modifyUserPersonalFieldsSQL);
+                preparedStatement.setString(1, formData.getEmail());
+                preparedStatement.setString(2, formData.getFirstName());
+                preparedStatement.setString(3, formData.getLastName());
+                preparedStatement.setString(4, formData.getPhoneNumber());
+                preparedStatement.setString(5, formData.getBankId());
+                try {
+                    preparedStatement.executeUpdate();
+                } catch(MySQLIntegrityConstraintViolationException err) {
+                    if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
+                        throw new EmailAlreadyInUseException();
+                    } else {
+                        throw err;
+                    }
+                }
+                preparedStatement.close();
+            }
+
+            // --- Modify Bank ---
+            preparedStatement = connection.prepareStatement(modifyBankByIdSQL);
+            preparedStatement.setString(1, formData.getBankName());
+            preparedStatement.setString(2, bankAdminId);
+            preparedStatement.setString(3, formData.getBankId());
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows != 1) {
+                throw new RuntimeException("How could the bank be deleted before we finish adding it?");
+            }
+
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+
+    @Override
 	public void insertSchool(School school) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
