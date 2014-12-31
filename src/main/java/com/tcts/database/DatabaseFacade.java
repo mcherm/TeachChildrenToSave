@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.tcts.datamodel.Bank;
+import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
@@ -19,6 +20,7 @@ import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -76,7 +78,11 @@ public interface DatabaseFacade {
 
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
-    
+
+    /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin. */
+    public BankAdmin getBankAdminByBank(String bankId)
+            throws SQLException;
+
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all
      * fields have been checked for containing valid values. Will throw an
@@ -132,12 +138,17 @@ public interface DatabaseFacade {
 	School updateSchool(School school) throws SQLException,
 			InconsistentDatabaseException;
 
-	Bank updateBank(Bank bank) throws SQLException, EmailAlreadyInUseException;
-
     /** Inserts a new bank and the corresponding bank admin. Password is set to null. */
 	void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException;
-	
-	void insertSchool(School school) throws SQLException, InconsistentDatabaseException;
+
+    /**
+     * Modifies fields of an existing bank. Either modifies the existing bank admin
+     * (if there is one) or creates a new Bank Admin (if there wasn't one).
+     */
+    public void modifyBankAndBankAdmin(EditBankFormData formData)
+            throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
+
+    void insertSchool(School school) throws SQLException, InconsistentDatabaseException;
 
 	Event updateEvent(Event event) throws SQLException, InconsistentDatabaseException;
 

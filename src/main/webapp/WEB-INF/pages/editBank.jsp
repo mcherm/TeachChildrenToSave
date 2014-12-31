@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <head>
-        <title>Teach Children To Save - Add Bank</title>
+        <title>Teach Children To Save - Edit Bank</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
     <body class="">
@@ -19,7 +19,7 @@
 
             <main id="main">
 
-                <h1>Add New Bank (and Bank Admin)</h1>
+                <h1>Edit Bank (and Bank Admin)</h1>
 
                 <c:if test="${not empty errorMessage}">
                     <div class="errorMessage">
@@ -29,7 +29,9 @@
 
                 <div>
 
-                    <form:form method="POST" action="addBank.htm" modelAttribute="formData">
+                    <form:form method="POST" action="editBank.htm" modelAttribute="formData">
+
+                        <form:hidden path="bankId"/>
 
                         <div class="formElementCnt">
                             <label>
@@ -84,17 +86,13 @@
                             </label>
                         </div>
 
-                        <button type="submit" value="Create">Create</button>
+                        <button type="submit" value="Edit">Edit</button>
 
                     </form:form>
 
                 </div>
                 <div>
                     <button onclick="js.loadURL('viewEditBanks.htm')" class="editOrRegister cancel">Cancel</button>
-                </div>
-
-                <div>
-                    NOTE: Your newly created bank admin will need to use password reset to log on for the first time.
                 </div>
 
             </main>

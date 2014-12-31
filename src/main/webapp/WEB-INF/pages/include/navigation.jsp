@@ -45,7 +45,7 @@
                 <c:if test="${sessionData != null && sessionData.user != null}">
                     <button onclick="js.loadURL('logout.htm');" class="signIn">
                         <span class="iconFont" aria-hidden="true" data-icon="A"></span>
-                        <span class="txt">Sign Out <c:out value="${sessionData.user.firstName}" /></span>
+                        <span class="txt">Sign Out as <c:out value="${sessionData.user.firstName}" /></span>
                     </button>
                 </c:if>
             </li>

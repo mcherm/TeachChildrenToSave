@@ -71,9 +71,7 @@
                                 </form>
                             </td>
                             <td>
-                                <button onclick="js.loadURL('show.htm');" class="editOrRegister">
-                                    Modify
-                                </button>
+                                <button onclick="js.loadURL('editBank.htm?bankId=<c:out value="${bank.bankId}"/>');" class="editOrRegister">Modify</button>
                             </td>
                         </tr>
                     </c:forEach>
