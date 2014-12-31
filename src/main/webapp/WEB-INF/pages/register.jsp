@@ -19,10 +19,10 @@
 
                 <h1>Register</h1>
 
+                <div>I am a banker:</div>
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
-                <button onclick="js.loadURL('bank.htm');">Register my bank to join</button>
-
+                <div>I am a teacher:</div>
                 <button onclick="js.loadURL('registerTeacher.htm');">Sign up my class</button>
 
             </main>
