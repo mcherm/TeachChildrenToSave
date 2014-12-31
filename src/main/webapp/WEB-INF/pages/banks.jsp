@@ -23,6 +23,22 @@
 
             <h1>Bank Information</h1>
 
+            <div id="actions">
+
+                <h2>Actions</h2>
+
+                <ul class="noUl">
+                    <li class="mb1">
+                        <button onclick="js.loadURL('addBank.htm')" class="editOrRegister">Add New Bank</button>
+
+                    </li>
+
+                    <li class="mb1">
+                        <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Cancel</button>
+                    </li>
+                </ul>
+            </div>
+
             <table id="approvedVolunteersTable">
                 <thead>
                     <tr>
@@ -63,14 +79,6 @@
                     </c:forEach>
                 </tbody>
             </table>
-
-            <div>
-                <button onclick="js.loadURL('addBank.htm')" class="editOrRegister">Add New Bank</button>
-            </div>
-
-            <div>
-                <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Cancel</button>
-            </div>
 
         </main>
     </div><%-- mainCnt --%>

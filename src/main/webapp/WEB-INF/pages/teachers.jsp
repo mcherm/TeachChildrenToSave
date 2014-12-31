@@ -4,7 +4,7 @@
     <head>
 
         <title>Teach Children To Save - Teachers </title>
-        <%@include file="include/commonHead_innerPage.jsp"%>
+        <%@include file="include/commonHead.jsp"%>
 
     </head>
     <body class="teachers">
@@ -13,7 +13,7 @@
 
     <div class="decor"></div>
 
-    <%@include file="include/header_innerPage.jsp" %>
+    <%@include file="include/header.jsp" %>
 
     <div class="mainCnt">
 
@@ -48,7 +48,10 @@
                     <tr>
                         <td><c:out value="${teacher.userId}"/></td>
                         <td><c:out value="${teacher.email}"/></td>
-                        <td><c:out value="${teacher.password}"/></td>
+                        <td>
+                            <%-- password throws page error --%>
+                            <%--<c:out value="${teacher.password}"/> --%>
+                        </td>
                         <td><c:out value="${teacher.firstName}"/></td>
                         <td><c:out value="${teacher.lastName}"/></td>
                         <td>Teacher</td>

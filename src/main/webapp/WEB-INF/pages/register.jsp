@@ -21,7 +21,7 @@
 
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
-                <button onclick="js.loadURL('bank.htm');">Register my bank to join</button>
+                <%--<button onclick="js.loadURL('bank.htm');">Register my bank to join</button>--%>
 
                 <button onclick="js.loadURL('registerTeacher.htm');">Sign up my class</button>
 

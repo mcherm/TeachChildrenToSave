@@ -70,10 +70,10 @@
 
                 <button onclick="js.loadURL('bank.htm');">Register my bank to join</button>
 
-                <center>
-                <br>
-                <a href="event.htm">Project Devs, click Here for Event Registration</a>
-                </center>
+                <%--<center>--%>
+                <%--<br>--%>
+                <%--<a href="event.htm">Project Devs, click Here for Event Registration</a>--%>
+                <%--</center>--%>
 
             </main>
 

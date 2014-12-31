@@ -30,7 +30,10 @@ public class SchoolController {
     /**
      * Render the bank edit page .
      */
-    @RequestMapping(value = "/school/schools", method = RequestMethod.GET)
+
+    /**     @RequestMapping(value = "/school/schools", method = RequestMethod.GET)
+     */
+    @RequestMapping(value = "schools", method = RequestMethod.GET)
     public String showSchool(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -42,8 +45,9 @@ public class SchoolController {
         model.addAttribute("schools", schools);
         return "schools";
     }
-    
-    @RequestMapping(value = "/school/delete", method = RequestMethod.GET)
+
+    /**     @RequestMapping(value = "/school/delete", method = RequestMethod.GET) */
+    @RequestMapping(value = "/schoolDelete", method = RequestMethod.GET)
     public String deleteSchool(@ModelAttribute(value="school") School school,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -56,8 +60,10 @@ public class SchoolController {
         model.addAttribute("schools", database.getAllSchools());
         return "schools";
     }
-    
-    @RequestMapping(value = "/school/show", method = RequestMethod.GET)
+
+    /**     @RequestMapping(value = "/school/show", method = RequestMethod.GET)
+     */
+    @RequestMapping(value = "/schoolShow", method = RequestMethod.GET)
     public String getSchool(@ModelAttribute(value="school") School school,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -68,8 +74,9 @@ public class SchoolController {
         model.addAttribute("school", database.getSchoolById(school.getSchoolId()));
         return "school";
     }
-    
-    @RequestMapping(value = "/school/update/{id}", method = RequestMethod.GET)
+
+    /** @RequestMapping(value = "/school/update/{id}", method = RequestMethod.GET) */
+    @RequestMapping(value = "/schoolUpdate/{id}", method = RequestMethod.GET)
     public String getUpdatedSchool(@ModelAttribute(value="school") School school,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (!sessionData.isAuthenticated()) {

@@ -89,8 +89,9 @@
 		                        <label>
 		                            <div class="inputCnt">
 		                                <div class="info">
-		                                   <div><form:label path="schoolId">School where you teach</form:label></div>
-		                                </div>
+											School where you teach
+										</div>
+
 				                        <form:select path="schoolId">
 				                            <form:option value="0" label="- Select School -" />
 				                            <form:options items="${schools}" itemValue="schoolId" itemLabel="name" />
@@ -99,7 +100,7 @@
 		                        </label>
 		                    </div>		
 		                    		                    
-                        <button type="submit" value="Register">Register</button>
+                        <button type="submit">Register</button>
 
 				</form:form>
 

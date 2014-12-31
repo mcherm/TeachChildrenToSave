@@ -29,7 +29,7 @@
 		            <ul class="noUl">
 		                <li class="mb1">
 		                	<button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
-		                		Register for an Event
+		                		Register for a class
 		                	</button>
 		                </li>
 		                
@@ -48,13 +48,15 @@
 		            <table id="eventTable" class="displayTable">
 		                <thead>
 		                    <tr>
-		                        <th>Date</th>
-		                        <th>Time</th>
-		                        <th>School</th>
-		                        <th>Teacher</th>
-		                        <th>Grade</th>
-		                        <th>Students</th>
-                                <th></th>
+		                        <th scope="col">Date</th>
+		                        <th scope="col">Time</th>
+		                        <th scope="col">School</th>
+		                        <th scope="col">Teacher</th>
+		                        <th scope="col" class="center">Grade</th>
+		                        <th scope="col" class="center">Students</th>
+                                <th scope="col">
+									<span class="ada-read">Column of Delete buttons</span>
+								</th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -64,9 +66,14 @@
 		                            <td><c:out value="${event.eventTime}"/></td>
 		                            <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
 		                            <td><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
-		                            <td><c:out value="${event.grade}"/></td>
-		                            <td><c:out value="${event.numberStudents}"/></td>
-                                    <td><a href="volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>">withdraw</a></td>
+		                            <td class="center"><c:out value="${event.grade}"/></td>
+		                            <td class="center"><c:out value="${event.numberStudents}"/></td>
+                                    <td>
+										<button onclick="js.loadURL('volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">
+											Delete
+										</button>
+										<%--<a href="volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>">withdraw</a>--%>
+									</td>
 		                        </tr>
 		                    </c:forEach>
 		                </tbody>

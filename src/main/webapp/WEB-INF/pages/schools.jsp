@@ -4,7 +4,7 @@
 <head>
 
     <title>Teach Children To Save - Schools Information </title>
-    <%@include file="include/commonHead_innerPage.jsp"%>
+    <%@include file="include/commonHead.jsp"%>
 
 </head>
 <body class="schools">
@@ -13,7 +13,7 @@
 
     <div class="decor"></div>
 
-    <%@include file="include/header_innerPage.jsp" %>
+    <%@include file="include/header.jsp" %>
 
     <div class="mainCnt">
 

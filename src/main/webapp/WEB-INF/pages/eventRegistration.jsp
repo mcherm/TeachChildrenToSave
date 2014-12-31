@@ -17,18 +17,123 @@
 
         <main id="main">
 
-                <h1>Events</h1>
+                <h1>Classes</h1>
+
+                <fieldset class="refine">
+                    <legend>
+                        Refine by:
+                    </legend>
+
+                    <div>
+                        <fieldset>
+                            <legend>
+                                County
+                            </legend>
+
+                            <ul>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="newCastle">
+                                        <span class="txt">
+                                            New Castle County (15)
+                                        </span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="kent">
+                                        <span class="txt">
+                                            Kent County (15)
+                                        </span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="sussex">
+                                        <span class="txt">
+                                            Sussex County (15)
+                                        </span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </div>
+
+                    <div>
+                        <fieldset>
+                            <legend>
+                                Grade
+                            </legend>
+
+                            <ul>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="grade2">
+                                        <span class="txt">2rd Grade (15)</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="grade3">
+                                        <span class="txt">3rd Grade (15)</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="grade4">
+                                        <span class="txt">4th Grade (15)</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="grade5">
+                                        <span class="txt">5th Grade (15)</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </div>
+
+                    <div>
+                        <fieldset>
+                            <legend>
+                                CRA Eligible
+                            </legend>
+
+                            <ul>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="yes">
+                                        <span class="txt">
+                                            Yes (15)
+                                        </span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="grade" value="grade4">
+                                        <span class="txt">
+                                            No (15)
+                                        </span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </div>
+                </fieldset>
 
                 <table id="eventTable">
                     <thead>
                     <tr>
                         <th scope="col">Date</th>
                         <th scope="col">Time</th>
-                        <th scope="col">Grade</th>
-                        <th scope="col">Students</th>
+                        <th scope="col" class="center">Grade</th>
+                        <th scope="col" class="center">Students</th>
                         <th scope="col">Teacher</th>
                         <th scope="col">School</th>
-                        <th aria-hidden="true"></th>
+                        <th>
+                            <span class="ada-read">Column of Sign Up buttons</span>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -37,8 +142,8 @@
                             <tr>
                                 <td><c:out value="${event.eventDate}"/></td>
                                 <td><c:out value="${event.eventTime}"/></td>
-                                <td><c:out value="${event.grade}"/></td>
-                                <td><c:out value="${event.numberStudents}"/></td>
+                                <td class="center"><c:out value="${event.grade}"/></td>
+                                <td class="center"><c:out value="${event.numberStudents}"/></td>
                                 <td>
                                     <c:out value="${event.linkedTeacher.firstName}"/>
                                     <c:out value="${event.linkedTeacher.lastName}"/>

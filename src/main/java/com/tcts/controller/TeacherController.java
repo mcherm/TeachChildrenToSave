@@ -34,7 +34,9 @@ public class TeacherController {
     /**
      * Render the list of users .
      */
-    @RequestMapping(value = "/teacher/teachers", method = RequestMethod.GET)
+
+/**    @RequestMapping(value = "/teacher/teachers", method = RequestMethod.GET) */
+    @RequestMapping(value = "/teachers", method = RequestMethod.GET)
     public String showTeachersList(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -46,8 +48,9 @@ public class TeacherController {
         model.addAttribute("teachers", teachers);
         return "teachers";
     }
-    
-    @RequestMapping(value = "/teacher/delete", method = RequestMethod.GET)
+
+    /**     @RequestMapping(value = "/teacher/delete", method = RequestMethod.GET) */
+    @RequestMapping(value = "/teacherDelete", method = RequestMethod.GET)
     public String deleteTeacher(@ModelAttribute(value="teacher") Teacher teacher,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -59,8 +62,9 @@ public class TeacherController {
        model.addAttribute("teachers", database.getUsersByType("T"));
        return "teachers";
     }
-    
-    @RequestMapping(value = "/teacher/show", method = RequestMethod.GET)
+
+    /**     @RequestMapping(value = "/teacher/show", method = RequestMethod.GET */
+     @RequestMapping(value = "/teacherShow", method = RequestMethod.GET)
     public String getTeacher(@ModelAttribute(value="teacher") Teacher teacher,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -72,8 +76,9 @@ public class TeacherController {
         model.addAttribute("teacher", database.getUserById(teacher.getUserId()));
         return "teacher";
     }
-    
-    @RequestMapping(value = "/teacher/update", method = RequestMethod.POST)
+
+    /**     @RequestMapping(value = "/teacher/update", method = RequestMethod.POST) */
+    @RequestMapping(value = "/teacherUpdate", method = RequestMethod.POST)
     public String getUpdatedTeacher(@ModelAttribute(value="teacher") Teacher teacher,HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         Volunteer volunteer = sessionData.getVolunteer(); // FIXME: Won't ever work, since it's a teacher, not a volunteer

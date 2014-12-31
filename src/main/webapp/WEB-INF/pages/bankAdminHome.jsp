@@ -40,7 +40,7 @@
 	                	</li>
 		                <li class="mb1">
 		                	<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
-			                	Edit my Data
+			                	Edit my Account
 		                	</button>
 	                	</li>
 		            </ul>
@@ -64,7 +64,12 @@
 		                                <td><c:out value="${volunteer.firstName}"/></td>
 		                                <td><c:out value="${volunteer.lastName}"/></td>
 		                                <td><c:out value="${volunteer.email}"/></td>
-		                                <td><a href="approveVolunteer.htm?volunteerId=<c:out value="${volunteer.userId}"/>">Approve</a></td>
+		                                <td>
+											<button onclick="js.loadURL('approveVolunteer.htm?volunteerId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister delete">
+												Decline
+											</button>
+											<%--<a href="approveVolunteer.htm?volunteerId=<c:out value="${volunteer.userId}"/>">Approve</a>--%>
+										</td>
 		                            </tr>
 		                        </c:if>
 		                    </c:forEach>
