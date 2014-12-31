@@ -10,6 +10,7 @@ import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NotLoggedInException;
+import com.tcts.formdata.CreateBankFormData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -120,24 +121,59 @@ public class BankController {
         return "bank";
     }
 
-    // FIXME: This needs rewriting
-    @RequestMapping(value = "bank/add", method = RequestMethod.POST)
-    public String addBank(@ModelAttribute(value="bank") Bank bank,HttpSession session, Model model) throws SQLException {
+    @RequestMapping(value = "addBank", method = RequestMethod.GET)
+    public String enterDataToAddBank(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") CreateBankFormData formData
+    ) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Successful; show the edit page again ---
+        return showAddBankWithErrorMessage(model, "");
+    }
+
+    @RequestMapping(value = "addBank", method = RequestMethod.POST)
+    public String doAddBank(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") CreateBankFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
         }
 
         try {
-            database.insertBank(bank);
-        } catch (EmailAlreadyInUseException e) {
-            // FIXME: Should show a form message not just throw a runtime exception.
-            throw new RuntimeException("That email is already in use; please choose another.");
+            database.insertNewBankAndAdmin(formData);
+        } catch(EmailAlreadyInUseException err) {
+            return showAddBankWithErrorMessage(model,
+                    "That email is already in use; please choose another.");
         }
 
-        model.addAttribute("banks", database.getAllBanks());
-        return "banks";
+        // --- Successful; show the master bank edit again ---
+        return showForm(model);
     }
 
-   
+
+    /**
+     * A subroutine used to set up and then show the add bank form. It
+     * returns the string, so you can invoke it as "return showAddBankWithErrorMessage(...)".
+     */
+    public String showAddBankWithErrorMessage(Model model, String errorMessage) throws SQLException {
+        List<Bank> banks = database.getAllBanks();
+        for (Bank bank : banks) {
+            BankAdmin bankAdmin = (BankAdmin) database.getUserById(bank.getBankAdminId());
+            bank.setLinkedBankAdmin(bankAdmin);
+        }
+
+        model.addAttribute("banks", banks);
+        model.addAttribute("errorMessage", errorMessage);
+        return "addBank";
+    }
+
+
 }

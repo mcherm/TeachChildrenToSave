@@ -50,13 +50,15 @@ public class LoginController {
 
         if (potentialUser != null) {
             // verify the password
-            String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword(), potentialUser.getSalt());
-            if (hashedPassword.equals(potentialUser.getHashedPassword())) {
-                // --- Successful login ---
-                SessionData sessionData = SessionData.beginNewSession(session);
-                sessionData.setAuthenticated(true);
-                sessionData.setUser(potentialUser);
-                return "redirect:" + potentialUser.getUserType().getHomepage();
+            if (potentialUser.getSalt() != null && potentialUser.getHashedPassword() != null) {
+                String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword(), potentialUser.getSalt());
+                if (hashedPassword.equals(potentialUser.getHashedPassword())) {
+                    // --- Successful login ---
+                    SessionData sessionData = SessionData.beginNewSession(session);
+                    sessionData.setAuthenticated(true);
+                    sessionData.setUser(potentialUser);
+                    return "redirect:" + potentialUser.getUserType().getHomepage();
+                }
             }
         }
 

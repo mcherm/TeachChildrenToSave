@@ -42,7 +42,7 @@ create table Bank
     (
         bank_id INT NOT NULL AUTO_INCREMENT,
         bank_name VARCHAR(45) NOT NULL,
-        bank_admin INT NOT NULL,
+        bank_admin INT,
         PRIMARY KEY (bank_id)
     );
 
@@ -50,8 +50,8 @@ drop table User;
 create table User
     (
         user_id INT NOT NULL AUTO_INCREMENT,
-        password_salt VARCHAR(100) NOT NULL,
-        password_hash VARCHAR(100) NOT NULL,
+        password_salt VARCHAR(100),
+        password_hash VARCHAR(100),
         email VARCHAR(50),
         first_name VARCHAR(50),
         last_name VARCHAR(50),

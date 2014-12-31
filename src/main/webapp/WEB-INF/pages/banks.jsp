@@ -68,6 +68,10 @@
                 <button onclick="js.loadURL('addBank.htm')" class="editOrRegister">Add New Bank</button>
             </div>
 
+            <div>
+                <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Cancel</button>
+            </div>
+
         </main>
     </div><%-- mainCnt --%>
 

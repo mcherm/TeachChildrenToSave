@@ -17,6 +17,7 @@ import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
@@ -132,8 +133,9 @@ public interface DatabaseFacade {
 			InconsistentDatabaseException;
 
 	Bank updateBank(Bank bank) throws SQLException, EmailAlreadyInUseException;
-	
-	void insertBank(Bank bank) throws SQLException, EmailAlreadyInUseException;
+
+    /** Inserts a new bank and the corresponding bank admin. Password is set to null. */
+	void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException;
 	
 	void insertSchool(School school) throws SQLException, InconsistentDatabaseException;
 

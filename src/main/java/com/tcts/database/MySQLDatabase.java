@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.formdata.CreateBankFormData;
 import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -94,7 +95,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
     
     private final static String insertBankSQL =
-    		"insert into Bank(bank_id, bank_name, bank_admin) VALUES(?,?,?)";
+    		"insert into Bank(bank_name) VALUES (?)";
 
     private final static String deleteUsersByBankId =
             "delete from User where access_type = 'BA' or access_type = 'V' and organization_id = ?";
@@ -102,7 +103,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"delete from Bank where bank_id = ?";
     
     private final static String deleteSchooldSQL =
-    		"delete from School where schoold_id=? ";
+    		"delete from School where schoold_id = ?";
       
     private final static String deleteVolunteerSQL =
     		"delete from User where user_id=? ";
@@ -545,7 +546,6 @@ public class MySQLDatabase implements DatabaseFacade {
     
     @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        // FIXME: Need to verify that the school ID is present in the database and throw NoSuchSchoolException if it's not.
         return (Teacher) insertNewUser(hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.TEACHER, formData.getSchoolId(),
                 formData.getPhoneNumber());
@@ -555,7 +555,6 @@ public class MySQLDatabase implements DatabaseFacade {
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchBankException, EmailAlreadyInUseException
     {
-        // FIXME: Need to verify that the bank ID is present in the database and throw NoSuchBankException if it's not.
         return (Volunteer) insertNewUser(hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.VOLUNTEER, formData.getBankId(),
                 formData.getPhoneNumber());
@@ -893,19 +892,85 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public void insertBank(Bank bank) throws SQLException,
-			EmailAlreadyInUseException {
-		Connection connection = null;
+	public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(insertBankSQL);
-            preparedStatement.setString(1, bank.getBankId());
-            preparedStatement.setString(2, bank.getBankName());
-            preparedStatement.setString(3, bank.getBankAdminId());
-            preparedStatement.execute();
 
+            // --- Insert the bank ---
+            preparedStatement = connection.prepareStatement(insertBankSQL);
+            preparedStatement.setString(1, formData.getBankName());
+
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows != 1) {
+                throw new RuntimeException("Should never happen: we inserted one row!");
+            }
+            preparedStatement.close();
+
+            // --- Find out its bankId ---
+            preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+            resultSet = preparedStatement.executeQuery();
+            String bankId = null;
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+                numberOfRows++;
+                bankId = resultSet.getString(1);
+            }
+            if (numberOfRows < 1) {
+                throw new RuntimeException("This should never happen.");
+            } else if (numberOfRows > 1) {
+                throw new RuntimeException("This should never happen.");
+            }
+            preparedStatement.close();
+
+            // --- Insert the bank admin ---
+            String salt = null;
+            String hashedPassword = null;
+            preparedStatement = connection.prepareStatement(insertUserSQL);
+            preparedStatement.setString(1, salt);
+            preparedStatement.setString(2, hashedPassword);
+            preparedStatement.setString(3, formData.getEmail());
+            preparedStatement.setString(4, formData.getFirstName());
+            preparedStatement.setString(5, formData.getLastName());
+            preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
+            preparedStatement.setString(7, bankId);
+            preparedStatement.setString(8, formData.getPhoneNumber());
+            preparedStatement.setInt(9, 0); // not meaningful
+            affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows != 1) {
+                throw new RuntimeException("Should never happen: we inserted one row!");
+            }
+            preparedStatement.close();
+
+            // FIXME: Once we make the bank_admin column on Bank optional, the code can stop here.
+
+            // --- Find out its userId ---
+            preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+            resultSet = preparedStatement.executeQuery();
+            String bankAdminUserId = null;
+            numberOfRows = 0;
+            while (resultSet.next()) {
+                numberOfRows++;
+                bankAdminUserId = resultSet.getString(1);
+            }
+            if (numberOfRows < 1) {
+                throw new RuntimeException("This should never happen.");
+            } else if (numberOfRows > 1) {
+                throw new RuntimeException("This should never happen.");
+            }
+            preparedStatement.close();
+
+            // --- And update the Bank ---
+            preparedStatement = connection.prepareStatement(updateBankByIdSQL);
+            preparedStatement.setString(1, formData.getBankName());
+            preparedStatement.setString(2, bankAdminUserId);
+            preparedStatement.setString(3, bankId);
+            affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows != 1) {
+                throw new RuntimeException("How could the bank be deleted before we finish adding it?");
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
