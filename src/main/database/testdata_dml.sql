@@ -48,14 +48,40 @@ insert into Event
        );
 
 
-insert into Bank (bank_name, bank_admin)
-    values ('Capital One', 2);
-insert into Bank (bank_name, bank_admin)
-    values ('Bank of America', 2);
-insert into Bank (bank_name, bank_admin)
-    values ('Dauphin Trust', 2);
-insert into Bank (bank_name, bank_admin)
-    values ('WSFS', 2);
+insert into Bank (bank_name, bank_admin) values ('AIG Federal Savings Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Applied Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Artisans'' Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('BNY Mellon Trust of Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('Barclays Bank Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('Brandywine Trust Company', 2);
+insert into Bank (bank_name, bank_admin) values ('Brown Brothers Harriman Trust Company', 2);
+insert into Bank (bank_name, bank_admin) values ('Capital One', 2);
+insert into Bank (bank_name, bank_admin) values ('Charles Schwab Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Chase Bank USA, N.A.', 2);
+insert into Bank (bank_name, bank_admin) values ('CNB', 2);
+insert into Bank (bank_name, bank_admin) values ('Comenity Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Commonwealth Trust Company', 2);
+insert into Bank (bank_name, bank_admin) values ('Community Bank Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('County Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Deutsche Bank Trust Company Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('Discover Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Bank of America', 2);
+insert into Bank (bank_name, bank_admin) values ('The First National Bank of Wyoming', 2);
+insert into Bank (bank_name, bank_admin) values ('Fulton Bank, N.A.', 2);
+insert into Bank (bank_name, bank_admin) values ('Glenmede', 2);
+insert into Bank (bank_name, bank_admin) values ('The Goldman Sachs Trust Company of Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('HSBC Trust Company (Delaware) National Association', 2);
+insert into Bank (bank_name, bank_admin) values ('J.P.Morgan Trust Company of Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('Key National Trust Company of Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('M&T Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('MidCoast Community Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('Morgan Stanley Private Bank', 2);
+insert into Bank (bank_name, bank_admin) values ('PNC Bank, Delaware', 2);
+insert into Bank (bank_name, bank_admin) values ('Principal Trust Company', 2);
+insert into Bank (bank_name, bank_admin) values ('UBS Trust Company, N.A.', 2);
+insert into Bank (bank_name, bank_admin) values ('Wells Fargo Bank, N.A.', 2);
+insert into Bank (bank_name, bank_admin) values ('Wilmington Savings Fund Society, FSB', 2);
+insert into Bank (bank_name, bank_admin) values ('Wilmington Trust Company', 2);
 
 
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
