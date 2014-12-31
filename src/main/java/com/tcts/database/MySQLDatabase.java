@@ -69,8 +69,10 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
             "select " + eventFields + " from Event where volunteer_id = ?";
-    private final static String getAllAvailableEventsSQL =
-    		"select " + eventFields + " from Event where volunteer_id is null";
+    private final static String getAllAvailableEventsWithTeacherAndSchoolSQL =
+    		"select " + eventFields + ", " + userFields + ", " + schoolFields +
+            " from Event join User on teacher_id = user_id join School on organization_id = school_id" +
+            " where volunteer_id is null";
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank where bank_id = ?";
     private final static String getAllBanksSQL =
@@ -275,11 +277,17 @@ public class MySQLDatabase implements DatabaseFacade {
         ResultSet resultSet = null;
         try {
             connection = ConnectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getAllAvailableEventsSQL);
+            preparedStatement = connection.prepareStatement(getAllAvailableEventsWithTeacherAndSchoolSQL);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Event event = new Event();
                 event.populateFieldsFromResultSetRow(resultSet);
+                Teacher teacher = new Teacher();
+                teacher.populateFieldsFromResultSetRow(resultSet);
+                event.setLinkedTeacher(teacher);
+                School school = new School();
+                school.populateFieldsFromResultSetRow(resultSet);
+                teacher.setLinkedSchool(school);
                 events.add(event);
             }
             return events;

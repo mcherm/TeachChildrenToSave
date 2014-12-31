@@ -61,8 +61,16 @@ public interface DatabaseFacade {
 
     /** Return the list of events that have a particular teacher. */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
-    
-    /** Return the list of all events that have null for a volunteer. */
+
+    /**
+     * Return the list of all events that have null for a volunteer.
+     * <p>
+     * The performance of this call is key to the performance of the system as a whole,
+     * so it has been special-cased a bit. This version promises to return Event objects
+     * in which the linkedTeacher has been set, and those teachers will have the
+     * linkedSchool set, so that a single call will retrieve all the data needed to
+     * display data.
+     */
     public List<Event> getAllAvailableEvents() throws SQLException;
 
     /** Return the list of events that have a particular volunteer. */

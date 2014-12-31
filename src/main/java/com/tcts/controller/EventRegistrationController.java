@@ -49,19 +49,6 @@ public class EventRegistrationController {
      */
     private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
         List<Event> events = database.getAllAvailableEvents();
-        for (Event event : events) {
-            Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
-            if (teacher == null) {
-                throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
-            }
-            event.setLinkedTeacher(teacher);
-            String schoolId = teacher.getSchoolId();
-            if (schoolId == null) {
-                throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
-            }
-            School school = database.getSchoolById(schoolId);
-            teacher.setLinkedSchool(school);
-        }
         model.addAttribute("events", events);
         model.addAttribute("errorMessage", errorMessage);
         return "eventRegistration";
