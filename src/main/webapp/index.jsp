@@ -78,7 +78,7 @@
             </main>
 
             <aside>
-                <img src="tcts/img/happy-kids.png" alt="" aria-hidden="true">
+                <img src="tcts/img/logo-tcts.png" alt="" aria-hidden="true">
             </aside>
 
         </div><%-- .mainCnt --%>
