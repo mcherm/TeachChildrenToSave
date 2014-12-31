@@ -1,0 +1,29 @@
+
+We intend to maintain the following invariants in our database:
+
+ * Any newly inserted Event will have an event_date found in AllowedDates and an event_time found
+   in AllowedTimes, although later those might be deleted from AllowedDates and AllowedTimes.
+
+ * In Event, the fields number_students can be null, and notes can be an empty string.
+
+ * In Event, a volunteer_id of null means that there is no volunteer for this (yet).
+
+ * The table Users should be dropped -- we are not using it.
+
+ * In User, the password_salt and password_hash will BOTH have values (meaning that there is
+   a password for that user) or both will be null (meaning that user has no password and can
+   only log in with a password reset).
+
+ * In User, access_type will be "T", "V", "BA", or "SA".
+
+ * In User, if access_type is "T" then organization_id will be the id of a school.
+
+ * In User, if access_type is "V" or "BA" then organization_id will be the id of a bank.
+
+ * In User, if access_type is "SA" then organization_id will be null.
+
+ * In Bank, the column bank_admin will be removed. The admin for a bank can be found by
+   "select user_id from User where access_type = 'BA' and organization_id = ?" where ? is
+   the bank id.
+
+
