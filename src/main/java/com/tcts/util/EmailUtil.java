@@ -42,7 +42,7 @@ public final class EmailUtil {
     public void sendEmail(String text,Map<String,Object> model) throws IOException, AppConfigurationException {
 
         // Construct an object to contain the recipient address.
-        Destination destination = new Destination().withToAddresses("devendrakumardave@gmail.com");
+    	 Destination destination = new Destination().withToAddresses(new String[]{model.get("to").toString()});
         
         // Create the subject and body of the message.
         Content subject = new Content().withData(model.get("subject").toString());
@@ -56,7 +56,7 @@ public final class EmailUtil {
         Message message = new Message().withSubject(subject).withBody(body);
         
         // Assemble the email.
-        SendEmailRequest request = new SendEmailRequest().withSource("devendrakumardave@gmail.com").withDestination(destination).withMessage(message);
+        SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
         
         try
         {        
