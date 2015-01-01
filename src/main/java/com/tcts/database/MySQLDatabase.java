@@ -42,7 +42,7 @@ import com.tcts.formdata.VolunteerRegistrationFormData;
 @Component
 public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
-            "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status";
+            "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status, reset_password_token";
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
@@ -132,6 +132,9 @@ public class MySQLDatabase implements DatabaseFacade {
 
     private final static String updateUserCredentialsByIdSQL =
     		"update User set password_salt = ?, password_hash = ? where user_id = ?";
+    		
+    private final static String updateResetPasswordTokenByIdSQL =
+    		"update User set reset_password_token = ? where user_id = ?";
     
     
 
@@ -1182,8 +1185,27 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, null);
             
         }
-        //return getEventById(event.getEventId());
 	}
+	
+	@Override
+	public void updateResetPasswordToken(String userId, String resetPasswordToken)
+            throws SQLException, InconsistentDatabaseException
+    {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateResetPasswordTokenByIdSQL);
+            preparedStatement.setString(1, resetPasswordToken);
+            preparedStatement.setString(2, userId);
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+	}
+
 
 
 }
