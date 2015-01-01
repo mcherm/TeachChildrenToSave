@@ -139,9 +139,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String updateResetPasswordTokenByIdSQL =
     		"update User set reset_password_token = ? where user_id = ?";
     
-    private final static String updateResetPasswordTokenByIdSQL =
-    		"update User set reset_password_token = ? where user_id = ?";
-    
+   
  
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
