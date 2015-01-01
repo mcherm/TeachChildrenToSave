@@ -3,15 +3,11 @@ package com.tcts.controller;
 
 
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import com.tcts.exception.AppConfigurationException;
-import com.tcts.exception.EmailAlreadyInUseException;
-import com.tcts.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +19,10 @@ import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.formdata.VolunteerRegistrationFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.util.SecurityUtil;
 
 /**
  * A controller for the flow where new volunteers sign up.
@@ -80,16 +77,6 @@ public class VolunteerRegistrationController {
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(volunteer);
             sessionData.setAuthenticated(true);
-            EmailUtil emailUtil = new EmailUtil();
-            try {
-                emailUtil.sendEmail(volunteer.getEmail());
-            } catch(AppConfigurationException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
-            } catch(IOException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
-            }
             return "redirect:" + volunteer.getUserType().getHomepage();
         } catch (NoSuchBankException e) {
             return showFormWithErrorMessage(model, "That is not a valid bank.");

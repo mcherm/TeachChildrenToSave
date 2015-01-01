@@ -15,6 +15,7 @@ public abstract class User {
     private String lastName;
     private UserType userType;
     private String phoneNumber;
+    private String resetPasswordToken;
 
     /**
      * This can be called to populate fields from the current row of a resultSet.
@@ -27,6 +28,7 @@ public abstract class User {
         setFirstName(resultSet.getString("first_name"));
         setLastName(resultSet.getString("last_name"));
         setPhoneNumber(resultSet.getString("phone_number"));
+        setResetPasswordToken(resultSet.getString("reset_password_token"));
         setUserType(UserType.fromDBValue(resultSet.getString("access_type")));
     }
 
@@ -93,6 +95,15 @@ public abstract class User {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+
+	public String getResetPasswordToken() {
+		return resetPasswordToken;
+	}
+
+	public void setResetPasswordToken(String resetPasswordToken) {
+		this.resetPasswordToken = resetPasswordToken;
+	}
+	
     
     
 }

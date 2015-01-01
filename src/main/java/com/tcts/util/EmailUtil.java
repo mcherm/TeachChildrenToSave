@@ -1,15 +1,10 @@
 package com.tcts.util;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import com.tcts.exception.AppConfigurationException;
-import org.apache.velocity.app.VelocityEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -21,6 +16,7 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.tcts.exception.AppConfigurationException;
 
 
 @Component
@@ -30,14 +26,7 @@ public final class EmailUtil {
 	
 	static String from = "";  // Replace with your "From" address. This address must be verified.
                                                       // production access, this address must be verified.
-	@Autowired
-	private VelocityEngine velocityEngine;
-	
-    static final String BODY = "";
-    static final String SUBJECT = "Thanks for registering for teach children to save program";
-    
-    
-    public EmailUtil() {
+	public EmailUtil() {
         // FIXME: Two of these are being created. Find out why, and make only one be created.
         Properties properties = new Properties();
         try {
@@ -50,22 +39,14 @@ public final class EmailUtil {
         from = properties.getProperty("email.from");
     }
     
-    public void sendEmail(String to) throws IOException, AppConfigurationException {
+    public void sendEmail(String text,Map<String,Object> model) throws IOException, AppConfigurationException {
 
-        if (velocityEngine == null) {
-            throw new AppConfigurationException(
-                    "Cannot send any emails because the velocity engine is not properly configured.");
-        }
-        
         // Construct an object to contain the recipient address.
-        Destination destination = new Destination().withToAddresses(new String[]{to});
+        Destination destination = new Destination().withToAddresses("devendrakumardave@gmail.com");
         
         // Create the subject and body of the message.
-        Content subject = new Content().withData(SUBJECT);
-        Map<String,Object> model = new HashMap<String,Object>();
-        model.put("to", to);
+        Content subject = new Content().withData(model.get("subject").toString());
         
-        String text = 	VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template/volunteerRegistration.vm", model);
         Content textBody = new Content().withData(text);
         
         //Body body = new Body().withText(textBody);
@@ -75,7 +56,7 @@ public final class EmailUtil {
         Message message = new Message().withSubject(subject).withBody(body);
         
         // Assemble the email.
-        SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
+        SendEmailRequest request = new SendEmailRequest().withSource("devendrakumardave@gmail.com").withDestination(destination).withMessage(message);
         
         try
         {        
