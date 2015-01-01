@@ -46,7 +46,7 @@
 	                </li>
 	                
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('volunteer/volunteers.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('volunteers.htm');" class="editOrRegister">
 	                		Remove/Edit Volunteers
 	                	</button>
 	                </li>
@@ -59,7 +59,7 @@
 	                <%--</li>--%>
 	                
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('volunteer/volunteers.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL(volunteers.htm');" class="editOrRegister">
 	                		List Volunteers
 	                	</button>
 	                </li>

@@ -3,7 +3,7 @@
 <html>
     <head>
 
-        <title>Teach Children To Save - Teachers </title>
+        <title>Teach Children To Save - Volunteers </title>
         <%@include file="include/commonHead.jsp"%>
 
     </head>
@@ -21,7 +21,7 @@
 
             <main id="main">
 
-                <h1>Teachers Information</h1>
+                <h1>Volunteers Information</h1>
 
                 <table id="approvedVolunteersTable">
                     <thead>
@@ -33,8 +33,7 @@
                         <th scope="col">Last Name</th>
                         <th scope="col">User Type</th>
                         <th scope="col">Phone Number</th>
-                        <th scope="col">Schoold Id</th>
-                        <th scope="col">Linked School</th>
+                        <th scope="col">Bank Id</th>
                         <th scope="col">
                             <span class="ada-read">Column of Delete buttons</span>
                         </th>
@@ -44,29 +43,28 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach var="teacher" items="${teachers}">
+                    <c:forEach var="volunteer" items="${volunteers}">
                     <tr>
-                        <td><c:out value="${teacher.userId}"/></td>
-                        <td><c:out value="${teacher.email}"/></td>
+                        <td><c:out value="${volunteer.userId}"/></td>
+                        <td><c:out value="${volunteer.email}"/></td>
                         <td>
                             <%-- password throws page error --%>
-                            <%--<c:out value="${teacher.password}"/> --%>
+                            <%--<c:out value="${volunteer.password}"/> --%>
                         </td>
-                        <td><c:out value="${teacher.firstName}"/></td>
-                        <td><c:out value="${teacher.lastName}"/></td>
-                        <td>Teacher</td>
-                        <td><c:out value="${teacher.phoneNumber}"/></td>
-                        <td class="center"><c:out value="${teacher.schoolId}"/></td>
-                        <td><c:out value="${teacher.linkedSchool}"/></td>
-                        
+                        <td><c:out value="${volunteer.firstName}"/></td>
+                        <td><c:out value="${volunteer.lastName}"/></td>
+                        <td>Volunteer</td>
+                        <td><c:out value="${volunteer.phoneNumber}"/></td>
+                        <td class="center"><c:out value="${volunteer.bankId}"/></td>
+                                                
                         <td>
 	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">
-	                                    <input type="hidden" name="userId" value='<c:out value="${teacher.userId}"/>' />
+	                                    <input type="hidden" name="userId" value='<c:out value="${volunteer.userId}"/>' />
 	                                    <button type="submit" class="editOrRegister delete">Delete</button>
 	                        </form>
 	                    </td>
 	                    <td>
-	                        <button onclick="js.loadURL('editTeacherData.htm?userId=<c:out value="${teacher.userId}"/>');" class="editOrRegister">
+	                        <button onclick="js.loadURL('editVolunteerData.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
 	                            Modify
 	                        </button>
 	                    </td>
