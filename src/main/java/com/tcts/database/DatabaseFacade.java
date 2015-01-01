@@ -18,10 +18,13 @@ import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchUserException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
 
@@ -113,7 +116,7 @@ public interface DatabaseFacade {
     
     public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException;
 
-    public boolean deleteSchool(String schoolId) throws SQLException, InconsistentDatabaseException;
+    public boolean deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 
     /**
      * This will delete a bank. It ALSO deletes the bank admin AND ALL Volunteers belonging
@@ -122,7 +125,7 @@ public interface DatabaseFacade {
     public void deleteBank(String bankId) throws SQLException, NoSuchBankException;
     
      
-    public boolean deleteVolunteer(String volunteerId) throws SQLException, InconsistentDatabaseException;
+    public boolean deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException;
 
     /**
      * This deletes the indicated event, or throws NoSuchEventException if it does not exist.
@@ -134,9 +137,12 @@ public interface DatabaseFacade {
     public Event getEventById(String eventId) throws SQLException;
 
     // FIXME: All this stuff shouldn't throw InconsistentDatabaseException.
+    
+    /**
+     * Modifies fields of an existing school. 
+     */
 
-	School updateSchool(School school) throws SQLException,
-			InconsistentDatabaseException;
+	public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException;
 
     /** Inserts a new bank and the corresponding bank admin. Password is set to null. */
 	void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException;
@@ -148,7 +154,7 @@ public interface DatabaseFacade {
     public void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
 
-    void insertSchool(School school) throws SQLException, InconsistentDatabaseException;
+    void insertNewSchool(CreateSchoolFormData school) throws SQLException, InconsistentDatabaseException;
 
 	Event updateEvent(Event event) throws SQLException, InconsistentDatabaseException;
 
@@ -160,8 +166,8 @@ public interface DatabaseFacade {
 
 	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException,
 			InconsistentDatabaseException;
-			
-    /** This will update reset password link token in db. */
+	
+	/** This will update reset password link token in db. */
 	
 	void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException,
 	InconsistentDatabaseException;
