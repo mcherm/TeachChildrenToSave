@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.tcts.exception.EmailAlreadyInUseException;
-import com.tcts.formdata.CreateBankFormData;
-import com.tcts.formdata.EditBankFormData;
 import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -26,12 +23,18 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
 
@@ -108,7 +111,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"delete from Bank where bank_id = ?";
     
     private final static String deleteSchooldSQL =
-    		"delete from School where schoold_id = ?";
+    		"delete from School where school_id = ?";
       
     private final static String deleteVolunteerSQL =
     		"delete from User where user_id = ? ";
@@ -136,8 +139,10 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String updateResetPasswordTokenByIdSQL =
     		"update User set reset_password_token = ? where user_id = ?";
     
+    private final static String updateResetPasswordTokenByIdSQL =
+    		"update User set reset_password_token = ? where user_id = ?";
     
-
+ 
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
         return getUserByIdOrEmail(userId, getUserByIdSQL);
@@ -679,7 +684,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 	@Override
 	public boolean deleteSchool(String schoolId) throws SQLException,
-			InconsistentDatabaseException {
+			NoSuchSchoolException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -698,23 +703,23 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public School updateSchool(School school) throws SQLException,
+	public void modifySchool(EditSchoolFormData school) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateSchoolByIdSQL);
-            preparedStatement.setString(1, school.getName());
-            preparedStatement.setString(2, school.getAddressLine1());
-            preparedStatement.setString(3, school.getAddressLine2());
+            preparedStatement.setString(1, school.getSchoolName());
+            preparedStatement.setString(2, school.getSchoolAddress1());
+            preparedStatement.setString(3, school.getSchoolAddress2());
             preparedStatement.setString(4, school.getCity());
             preparedStatement.setString(5, school.getZip());
             preparedStatement.setString(6, school.getCounty());
-            preparedStatement.setString(7, school.getSchoolDistrict());
+            preparedStatement.setString(7, school.getDistrict());
             preparedStatement.setString(8, school.getState());
             preparedStatement.setString(9, school.getPhone());
-            preparedStatement.setInt(10, school.isLmiEligible()==true?1:0);
+            preparedStatement.setString(10, school.getLmiEligible());
             preparedStatement.setString(11, school.getSchoolId());
             preparedStatement.executeUpdate();
         } 
@@ -722,8 +727,7 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, null);
             
         }
-        return getSchoolById(school.getSchoolId());
-	}
+ 	}
 
 
 	@Override
@@ -758,7 +762,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 	@Override
 	public boolean deleteVolunteer(String volunteerId) throws SQLException,
-			InconsistentDatabaseException {
+			NoSuchUserException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -1088,7 +1092,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-	public void insertSchool(School school) throws SQLException,
+	public void insertNewSchool(CreateSchoolFormData school) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1096,13 +1100,13 @@ public class MySQLDatabase implements DatabaseFacade {
         try {
             connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(insertSchoolSQL);
-            preparedStatement.setString(1, school.getName());
-            preparedStatement.setString(2, school.getAddressLine1());
-            preparedStatement.setString(3, school.getAddressLine2());
+            preparedStatement.setString(1, school.getSchoolName());
+            preparedStatement.setString(2, school.getSchoolAddress1());
+            preparedStatement.setString(3, school.getSchoolAddress2());
             preparedStatement.setString(4, school.getCity());
             preparedStatement.setString(5, school.getZip());
             preparedStatement.setString(6, school.getCounty());
-            preparedStatement.setString(7, school.getSchoolDistrict());
+            preparedStatement.setString(7, school.getDistrict());
             preparedStatement.setString(8, school.getState());
             preparedStatement.setString(9, school.getPhone());
             preparedStatement.setInt(10, 1);
