@@ -1179,7 +1179,7 @@ public class MySQLDatabase implements DatabaseFacade {
 	
 	@Override
 	public void updateUserCredential(String userId, String hashedPassword, String salt)
-            throws SQLException, InconsistentDatabaseException
+            throws SQLException
     {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1190,10 +1190,8 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(2, hashedPassword);
             preparedStatement.setString(3, userId);
             preparedStatement.executeUpdate();
-        } 
-        finally {
+        } finally {
             closeSafely(connection, preparedStatement, null);
-            
         }
 	}
 	

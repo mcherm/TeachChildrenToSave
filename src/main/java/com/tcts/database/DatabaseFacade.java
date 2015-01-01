@@ -172,8 +172,8 @@ public interface DatabaseFacade {
 	
 	public List<? super User> getAllUsers() throws SQLException, InconsistentDatabaseException;
 
-	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException,
-			InconsistentDatabaseException;
+    /** Changes the password (and salt) for an existing user. */
+	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException;
 	
 	/** This will update reset password link token in db. */
 	

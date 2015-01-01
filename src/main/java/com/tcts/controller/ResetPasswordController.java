@@ -59,9 +59,8 @@ public class ResetPasswordController {
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
             HttpSession session,
-            HttpServletRequest request,
             @RequestParam(value = "token") String token
-        ) throws SQLException, InconsistentDatabaseException, UnsupportedEncodingException
+        )
     {
         session.setAttribute("resetPasswordToken", token);
         model.addAttribute("formData", new LoginFormData());
@@ -100,6 +99,7 @@ public class ResetPasswordController {
                         SessionData sessionData = SessionData.beginNewSession(session);
                         sessionData.setAuthenticated(true);
                         sessionData.setUser(potentialUser);
+                        // FIXME: There's a minor bug here: the user being stored in the session has the wrong password. Shouldn't harm anything
                         return "redirect:" + potentialUser.getUserType().getHomepage();
                 }
                 else {
@@ -151,7 +151,7 @@ public class ResetPasswordController {
                     System.err.println("Could not send email for new volunteer '" + potentialUser.getEmail() + "'.");
                 }
                 
-        } else{
+        } else {
 			        // --- User does not exists
 			        model.addAttribute("formData", new LoginFormData());
 			        model.addAttribute("errorMessage", "Email Id does not exists.");
