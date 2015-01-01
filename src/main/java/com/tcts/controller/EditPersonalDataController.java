@@ -1,6 +1,7 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -34,12 +35,8 @@ public class EditPersonalDataController {
     public String showEditPersonalDataPage(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         User user = sessionData.getUser();
-        EditPersonalDataFormData formData = new EditPersonalDataFormData();
-        formData.setEmail(user.getEmail());
-        formData.setFirstName(user.getFirstName());
-        formData.setLastName(user.getLastName());
-        formData.setPhoneNumber(user.getPhoneNumber());
-        model.addAttribute("formData", formData);
+        model.addAttribute("formData", transformUserData(user));
+        
         return showFormWithErrorMessage(model, "");
     }
 
@@ -77,5 +74,19 @@ public class EditPersonalDataController {
         } catch(EmailAlreadyInUseException err) {
             return showFormWithErrorMessage(model, "That email is already in use by another user.");
         }
+    }
+    
+    /**
+     * Transform user modal data
+     */
+    
+    private EditPersonalDataFormData transformUserData(User user) {
+    	EditPersonalDataFormData formData = new EditPersonalDataFormData();
+        formData.setEmail(user.getEmail());
+        formData.setFirstName(user.getFirstName());
+        formData.setLastName(user.getLastName());
+        formData.setPhoneNumber(user.getPhoneNumber());
+        formData.setUserId(user.getUserId());
+        return formData;
     }
 }

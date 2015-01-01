@@ -18,27 +18,48 @@
 
             <main id="main">
 
+                <h1>
+                    Edit Allowed Times
+                </h1>
+
+                <%--<div id="actions">--%>
+
+                    <%--<h2>Actions</h2>--%>
+
+                    <%--<ul class="noUl">--%>
+                        <%--<li class="mb1">--%>
+                            <%--<button onclick="" class="editOrRegister add">Add</button>--%>
+                        <%--</li>--%>
+                    <%--</ul>--%>
+                <%--</div>--%>
+
                 <table id="adminEditAllowedTimesTable">
                     <thead>
                         <tr>
-                            <th>Time</th>
-                            <th></th>
-                            <th></th>
+                            <th scope="col" class="time">Time</th>
+                            <th scope="col">
+                                <span class="ada-read">Column of Modify buttons</span>
+                            </th>
+                            <th scope="col">
+                                <span class="ada-read">Column of Delete buttons</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="time" items="${allowedTimes}">
                             <tr>
-                                <td><c:out value="${time}"/></td>
-                                <td><button onclick="" class="editOrRegister">Modify</button></td>
-                                <td><button onclick="" class="editOrRegister delete">Delete</button></td>
+                                <td class-"timeColumn"><c:out value="${time}"/></td>
+                                <td>
+                                    <button onclick="" class="editOrRegister">Modify</button>
+                                </td>
+                                <td>
+                                    <button onclick="" class="editOrRegister delete">Delete</button>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-                <div class="addButton">
-                    <button onclick="" class="editOrRegister add">Add</button>
-                </div>
+
 
                 <div class="qa-notes">
                     This table LOOKS all right, but so far the buttons don't DO anything.

@@ -1,12 +1,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <header role="banner">
 	<div class="delc">
-		<%--<button onclick="js.loadURL('index.jsp');">--%>
-			<img src="tcts/img/logo-del-council.png" alt="Delaware Council on Economic Education logo">
-		<%--</button>--%>
+			<a href="http://www.lerner.udel.edu/centers/ceee/delaware-council-economic-education" target="_blank"><img src="tcts/img/logo-del-council.png" alt="Delaware Council on Economic Education logo"></a>
 	</div>
 	
 	<div class="dba" >
-		<img src="tcts/img/logo-dba.png" alt="Delaware Bankers Association logo">
+		<a href="http://www.debankers.com/" target="_blank"><img src="tcts/img/logo-dba.png" alt="Delaware Bankers Association logo"></a>
 	</div>
 </header>

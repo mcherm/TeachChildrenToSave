@@ -17,7 +17,7 @@
 
         <%@include file="include/navigation.jsp" %>
 
-            <main id="main">    
+            <main id="main">
 
 
 		        <h1>
@@ -34,31 +34,32 @@
                 	</li>
                 	
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('school/schools.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('schools.htm');" class="editOrRegister">
 	                		Add/Remove/Edit Schools
 	                	</button>
 	                </li>
-	                
+
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('teacher/teachers.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('teachers.htm');" class="editOrRegister">
 	                		Remove/Edit Teachers
 	                	</button>
 	                </li>
 	                
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('volunteer/volunteers.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('volunteers.htm');" class="editOrRegister">
 	                		Remove/Edit Volunteers
 	                	</button>
 	                </li>
+
+					<%-- same as Remove/Edit Teachers --%>
+	                <%--<li class="mb1">--%>
+	                	<%--<button onclick="js.loadURL('teacher/teachers.htm');" class="editOrRegister">--%>
+	                		<%--List Teachers--%>
+	                	<%--</button>--%>
+	                <%--</li>--%>
 	                
 	                <li class="mb1">
-	                	<button onclick="js.loadURL('teacher/teachers.htm');" class="editOrRegister">
-	                		List Teachers
-	                	</button>
-	                </li>
-	                
-	                <li class="mb1">
-	                	<button onclick="js.loadURL('volunteer/volunteers.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL(volunteers.htm');" class="editOrRegister">
 	                		List Volunteers
 	                	</button>
 	                </li>
@@ -89,7 +90,7 @@
 	                
 	                <li class="mb1">
 	                	<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
-	                		Edit my Data
+	                		Edit my Account
 	                	</button>
 	                </li>
 	            </ul>

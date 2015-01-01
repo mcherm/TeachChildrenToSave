@@ -4,7 +4,7 @@
 <head>
 
     <title>Teach Children To Save - Schools Information </title>
-    <%@include file="include/commonHead_innerPage.jsp"%>
+    <%@include file="include/commonHead.jsp"%>
 
 </head>
 <body class="schools">
@@ -13,7 +13,7 @@
 
     <div class="decor"></div>
 
-    <%@include file="include/header_innerPage.jsp" %>
+    <%@include file="include/header.jsp" %>
 
     <div class="mainCnt">
 
@@ -22,11 +22,28 @@
         <main id="main">
 
             <h1>Schools Information</h1>
+            
+            <div id="actions">
+
+                <h2>Actions</h2>
+
+                <ul class="noUl">
+                    <li class="mb1">
+                        <button onclick="js.loadURL('addSchool.htm')" class="editOrRegister">Add New School</button>
+
+                    </li>
+
+                    <li class="mb1">
+                        <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Cancel</button>
+                    </li>
+                </ul>
+            </div>
 
             <table id="approvedVolunteersTable">
                 <thead>
                 <tr>
                     <th scope="col" class="center">School ID</th>
+                    <th scope="col">Name</th>
                     <th scope="col">Address1</th>
                     <th scope="col">Address2</th>
                     <th scope="col">City</th>
@@ -47,6 +64,7 @@
                 <c:forEach var="school" items="${schools}">
                 <tr>
                     <td class="center"><c:out value="${school.schoolId}"/></td>
+                    <td><c:out value="${school.name}"/></td>
                     <td><c:out value="${school.addressLine1}"/></td>
                     <td><c:out value="${school.addressLine2}"/></td>
                     <td><c:out value="${school.city}"/></td>
@@ -56,12 +74,13 @@
                     <td><c:out value="${school.schoolDistrict}"/></td>
                     <td><c:out value="${school.phone}"/></td>
                     <td>
-                        <button onclick="js.loadURL('delete.htm');" class="editOrRegister delete">
-                            Delete
-                        </button>
+                        <form method="POST" action="deleteSchool.htm" modelAttribute="formData">
+                                    <input type="hidden" name="schoolId" value='<c:out value="${school.schoolId}"/>' />
+                                    <button type="submit" class="editOrRegister delete">Delete</button>
+                        </form>
                     </td>
                     <td>
-                        <button onclick="js.loadURL('show.htm');" class="editOrRegister">
+                        <button onclick="js.loadURL('editSchool.htm?schoolId=<c:out value="${school.schoolId}"/>');" class="editOrRegister">
                             Modify
                         </button>
                     </td>

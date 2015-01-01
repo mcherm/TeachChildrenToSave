@@ -7,12 +7,18 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.InvalidParameterFromGUIException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.NotLoggedInException;
+import com.tcts.formdata.EditPersonalDataFormData;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
@@ -29,12 +35,11 @@ public class VolunteerController extends AuthenticationController{
     /**
      * Render the list of users .
      */
-    @RequestMapping(value = "/volunteer/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/volunteers", method = RequestMethod.GET)
     public String showVolunteersList(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        Volunteer volunteer = sessionData.getVolunteer();
-        if (volunteer == null) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
         }
         List<? super User> volunteers = database.getUsersByType("V");
         
@@ -42,52 +47,97 @@ public class VolunteerController extends AuthenticationController{
         return "volunteers";
     }
     
-    @RequestMapping(value = "/volunteer/delete", method = RequestMethod.GET)
-    public String deleteVolunteer(@ModelAttribute(value="volunteer") Volunteer volunteer,HttpSession session, Model model) throws SQLException {
+   
+    @RequestMapping(value = "volunteerDelete", method = RequestMethod.GET)
+    public String deletevolunteer(@RequestParam String userId,
+            HttpSession session,
+            Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
-        database.deleteVolunteer(volunteer.getUserId());
+        try {
+			database.deleteVolunteer(userId);
+		} catch (NoSuchUserException e) {
+			throw new InvalidParameterFromGUIException();
+		}
         
-        model.addAttribute("volunteers", database.getUsersByType("V"));
+       model.addAttribute("volunteers", database.getUsersByType("V"));
+       return "volunteer";
+    }
+    
+    @RequestMapping(value = "editVolunteerData", method = RequestMethod.GET)
+    public String enterDataToEditVolunteer(
+            HttpSession session,
+            Model model,
+            @RequestParam String userId
+    ) throws SQLException {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Load existing data ---
+        User user = database.getUserById(userId);
+        
+        // --- Show the edit page ---
+        return showEditUserWithErrorMessage(model, transformUserData(user), "");
+    }
+
+    /**
+     * Actually change the values that were entered.
+     */
+    @RequestMapping(value="/editVolunteerData", method=RequestMethod.POST)
+    public String editVolunteerData(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") EditPersonalDataFormData formData
+        ) throws SQLException
+    {
+        SessionData sessionData = SessionData.fromSession(session);
+        // FIXME: must validate the fields
+        User user = sessionData.getUser();
+        if (user == null) {
+            throw new NotLoggedInException();
+        }
+
+        try {
+           database.modifyUserPersonalFields(user.getUserId(), formData);
+        } catch(EmailAlreadyInUseException err) {
+            return showEditUserWithErrorMessage(model, formData, "That email is already in use by another user.");
+        }
+        
+        List<? super User> volunteers = database.getUsersByType("V");
+        
+        model.addAttribute("volunteers", volunteers);
         return "volunteers";
     }
     
-    @RequestMapping(value = "/volunteer/show", method = RequestMethod.GET)
-    public String getVolunteer(@ModelAttribute(value="volunteer") Volunteer volunteer,HttpSession session, Model model) throws SQLException {
-        SessionData sessionData = SessionData.fromSession(session);
-        
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
-        }
-                
-        model.addAttribute("volunteer", database.getUserById(volunteer.getUserId()));
-        return "volunteer";
+    /**
+     * A subroutine used to set up and then show the add user form. It
+     * returns the string, so you can invoke it as "return showEditSchoolWithErrorMessage(...)".
+     */
+    public String showEditUserWithErrorMessage(Model model, EditPersonalDataFormData formData, String errorMessage)
+            throws SQLException
+    {
+        model.addAttribute("formData", formData);
+        model.addAttribute("errorMessage", errorMessage);
+        return "editVolunteer";
     }
     
-    @RequestMapping(value = "/volunteer/update/{id}", method = RequestMethod.POST)
-    public String getUpdatedVolunteer(@ModelAttribute(value="volunteer") Volunteer volunteer,HttpSession session, Model model) throws SQLException {
-        SessionData sessionData = SessionData.fromSession(session);
-        
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
-        }
-        
-        // FIXME: Need to offer a way to change one's password also.
-
-        User newUser;
-        try {
-            newUser = database.updateVolunteer(volunteer);
-        } catch(EmailAlreadyInUseException err) {
-            // FIXME: Need to handle this by reporting it to the user, NOT by just throwing an exception.
-            // FIXME: ...see EditPersonalDataController for an example of how to do this.
-            throw new RuntimeException(err);
-        }
-        model.addAttribute("volunteer", newUser);
-        return "volunteer";
-
+    /**
+     * Transform user modal data
+     */
+    
+    private EditPersonalDataFormData transformUserData(User user) {
+    	EditPersonalDataFormData formData = new EditPersonalDataFormData();
+        formData.setEmail(user.getEmail());
+        formData.setFirstName(user.getFirstName());
+        formData.setLastName(user.getLastName());
+        formData.setPhoneNumber(user.getPhoneNumber());
+        return formData;
     }
 
 	    

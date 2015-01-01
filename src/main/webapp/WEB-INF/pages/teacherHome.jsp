@@ -34,7 +34,7 @@
 		                </li>
 		                <li class="mb1">
 							<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
-								Edit my Data
+								Edit my Account
 							</button>
 		                </li>
 		            </ul>
@@ -44,13 +44,15 @@
 		            <table id="eventTable">
 		                <thead>
 		                    <tr>
-		                        <th>Date</th>
-		                        <th>Time</th>
-		                        <th>Grade</th>
-		                        <th>Students</th>
-		                        <th>Volunteer</th>
-		                        <th>Bank</th>
-                                <th></th>
+		                        <th scope="col">Date</th>
+		                        <th scope="col">Time</th>
+		                        <th scope="col" class="center">Grade</th>
+		                        <th scope="col" class="center">Students</th>
+		                        <th scope="col">Volunteer</th>
+		                        <th scope="col">Bank</th>
+                                <th scope="col">
+									<span class="ada-read">Column of Delete buttons</span>
+								</th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -58,14 +60,19 @@
 		                        <tr>
 		                            <td><c:out value="${event.eventDate}"/></td>
 		                            <td><c:out value="${event.eventTime}"/></td>
-		                            <td><c:out value="${event.grade}"/></td>
-		                            <td><c:out value="${event.numberStudents}"/></td>
+		                            <td class="center"><c:out value="${event.grade}"/></td>
+		                            <td class="center"><c:out value="${event.numberStudents}"/></td>
 		                            <td>
 		                                <c:out value="${event.linkedVolunteer.firstName}" default="no volunteer"/>
 		                                <c:out value="${event.linkedVolunteer.lastName}" default=""/>
 		                            </td>
 		                            <td><c:out value="${event.linkedVolunteer.linkedBank.bankName}" default=""/></td>
-                                    <td><a href="teacherCancel.htm?eventId=<c:out value="${event.eventId}"/>">cancel</a></td>
+                                    <td>
+										<button onclick="js.loadURL('teacherCancel.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">
+											Delete
+										</button>
+										<%--<a href="teacherCancel.htm?eventId=<c:out value="${event.eventId}"/>">cancel</a>--%>
+									</td>
 		                        </tr>
 		                    </c:forEach>
 		                </tbody>

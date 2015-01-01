@@ -159,11 +159,11 @@ header:after {
   display: block;
   clear: both;
 }
-header div:nth-child(1) {
+header .delc {
   width: 49.65035%;
   float: left;
 }
-header div:nth-child(2) {
+header .dba {
   width: 49.65035%;
   float: right;
   text-align: right;
@@ -327,6 +327,34 @@ body.teachers main {
   width: 99%;
 }
 
+fieldset.refine {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #cdcdcd;
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+}
+fieldset.refine legend {
+  font-weight: bold;
+  padding: .25em;
+  margin: 1em;
+}
+fieldset.refine div {
+  width: 33.33333%;
+  display: inline-block;
+  float: left;
+  padding-left: 1em;
+}
+fieldset.refine ul {
+  list-style: none;
+  padding-left: .25em;
+}
+fieldset.refine fieldset legend {
+  margin: .25em;
+}
+
 h1 {
   font-weight: bold;
   color: #0c345a;
@@ -337,7 +365,7 @@ h1 {
 }
 
 body.home h3 {
-  margin-top: 1em;
+  margin-top: 1.75em;
   font-weight: bold;
 }
 
@@ -414,17 +442,13 @@ main .editOrRegister {
   width: 300px;
   border: 0;
   background-color: #31873f;
-  height: 30px;
+  height: 44px;
   text-transform: uppercase;
   color: #fff;
 }
 
 main .editOrRegister.delete {
   background-color: #b21b29;
-}
-
-main .editOrRegister.add {
-  background-color: blue; /* FIXME: Adrian to make this look better */
 }
 
 main table .editOrRegister {
@@ -435,6 +459,10 @@ main table .editOrRegister {
 main .editOrRegister.doneAdding {
   margin-top: 1em;
   height: 44px;
+}
+
+.adminEditAllowedTimes table button {
+  width: 68px;
 }
 
 /*body.evenRegistration main table .editOrRegister button {
@@ -491,7 +519,8 @@ body.createEvent table,
 body.evenRegistration table,
 body.banks table,
 body.schools table,
-body.teachers table {
+body.teachers table,
+body.adminEditAllowedTimes table {
   width: 100%;
   border: 1px solid #ccc;
   text-align: left;
@@ -544,13 +573,26 @@ body.teachers table {
   font-size: .6em;
 }
 
-body.schools table,
-body.banks table {
+body.schools table {
   width: 98%;
   font-size: .9em;
   margin: 0 auto;
 }
 
+@media (min-width: 320px) {
+  body.adminEditAllowedTimes table {
+    width: 100%;
+    margin: 0 auto 1em auto;
+  }
+  body.adminEditAllowedTimes table .time {
+    width: 90%;
+  }
+}
+@media (min-width: 768px) {
+  body.adminEditAllowedTimes table {
+    width: 50%;
+  }
+}
 form button {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -564,6 +606,15 @@ form button {
   margin-top: 2em;
   border: 0;
   height: 44px !important;
+}
+form input[type=text],
+form input[type=password],
+form input[type=email],
+form input[type=tel],
+form input[type=number],
+form textarea {
+  border: 1px solid #cdcdcd;
+  padding: .25em;
 }
 form .formElementCnt {
   margin-top: 1em;
@@ -587,6 +638,10 @@ form .errorText {
 form .addlInfo {
   font-size: .85em;
   font-style: italic;
+}
+form textarea {
+  width: 100%;
+  height: 88px;
 }
 
 @media (min-width: 320px) {

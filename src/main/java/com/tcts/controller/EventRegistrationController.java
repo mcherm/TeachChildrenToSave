@@ -1,7 +1,10 @@
 package com.tcts.controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,10 +20,14 @@ import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
+import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.util.EmailUtil;
+import com.tcts.util.TemplateUtil;
 
 
 /**
@@ -31,6 +38,12 @@ public class EventRegistrationController {
 
     @Autowired
     private DatabaseFacade database;
+    
+    @Autowired
+    TemplateUtil templateUtil;
+    
+    @Autowired
+    EmailUtil emailUtil;
 
 
 	@RequestMapping(value = "/eventRegistration", method = RequestMethod.GET)
@@ -69,6 +82,49 @@ public class EventRegistrationController {
         // --- Create Event ---
         database.volunteerForEvent(formData.eventId, volunteer.getUserId());
         // --- Navigate onward ---
+        if (null != formData.getEventId()) {
+        	
+	        Event event = database.getEventById(formData.getEventId());
+	        //Send email to volunteer
+	        try {
+	        	
+	        	Map<String,Object> emailModel = new <String, Object>HashMap();
+	        	emailModel.put("to", volunteer.getEmail());
+	        	emailModel.put("subject", "Your class has a volunteer!");
+	        	emailModel.put("class", event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
+	        	emailModel.put("volunteer", volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber());
+	        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
+	            emailUtil.sendEmail(emailContent, emailModel);
+	        } catch(AppConfigurationException err) {
+	            // FIXME: Need to log or report this someplace more reliable.
+	            System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+	        } catch(IOException err) {
+	            // FIXME: Need to log or report this someplace more reliable.
+	            System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+	        }
+	        
+	        //Send email to teacher
+	        if (null != event.getTeacherId()) {
+		        User teacher = database.getUserById(event.getTeacherId());
+		        try {
+		        	
+		        	Map<String,Object> emailModel = new <String, Object>HashMap();
+		        	emailModel.put("to", volunteer.getEmail());
+		        	emailModel.put("subject", "You have successfully signed up for a class!");
+		        	emailModel.put("class", event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
+		        	emailModel.put("teacher", teacher.getFirstName() );//+ " - " + teacher.getLastName() + " - " + teacher.getEmail() + " - " + teacher.getPhoneNumber());
+		        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToTeacher", emailModel);
+		            emailUtil.sendEmail(emailContent, emailModel);
+		        } catch(AppConfigurationException err) {
+		            // FIXME: Need to log or report this someplace more reliable.
+		            System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+		        } catch(IOException err) {
+		            // FIXME: Need to log or report this someplace more reliable.
+		            System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+		        }
+	        }
+        }
+
         return "redirect:" + sessionData.getUser().getUserType().getHomepage();
     }
 }

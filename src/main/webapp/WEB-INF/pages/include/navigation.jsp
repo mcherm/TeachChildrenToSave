@@ -9,6 +9,10 @@
 					<span class="txt">Home</span>
 				</button>
 			</li>
+
+
+			<%-- TODO: button for user dashboard, and revise home link to be site home --%>
+
 			<li>
 				<button onclick="js.loadURL('about.htm');" class="about">
 					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
@@ -21,12 +25,16 @@
 					<span class="txt">Contact</span>
 				</button>
 			</li>
+
+			<c:if test="${sessionData == null || sessionData.user == null}">
 			<li>
 				<button onclick="js.loadURL('register.htm');" class="register">
 					<span class="iconFont" aria-hidden="true" data-icon="A"></span>
 					<span class="txt">Register</span>
 				</button>
             </li>
+			</c:if>
+
             <li class="last">
                 <c:if test="${sessionData == null || sessionData.user == null}">
                     <button onclick="js.loadURL('getLoginPage.htm');" class="signIn">
@@ -37,8 +45,7 @@
                 <c:if test="${sessionData != null && sessionData.user != null}">
                     <button onclick="js.loadURL('logout.htm');" class="signIn">
                         <span class="iconFont" aria-hidden="true" data-icon="A"></span>
-                        <span class="txt">Sign Out as</span>
-                        <span class="txt username"><c:out value="${sessionData.user.firstName}"/></span>
+                        <span class="txt">Sign Out as <c:out value="${sessionData.user.firstName}" /></span>
                     </button>
                 </c:if>
             </li>

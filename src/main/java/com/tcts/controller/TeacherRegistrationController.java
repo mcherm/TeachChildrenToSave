@@ -1,6 +1,5 @@
 package com.tcts.controller;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -8,9 +7,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import com.tcts.exception.AppConfigurationException;
-import com.tcts.exception.EmailAlreadyInUseException;
-import com.tcts.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,9 +18,10 @@ import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.formdata.TeacherRegistrationFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.util.SecurityUtil;
 
 /**
  * A controller for the flow where new teachers sign up.
@@ -35,8 +32,6 @@ public class TeacherRegistrationController {
     @Autowired
     private DatabaseFacade database;
     
-    @Autowired
-    private EmailUtil emailUtil;
 
     @RequestMapping(value="/registerTeacher", method=RequestMethod.GET)
     public String showRegisterTeacherPage(HttpSession session, Model model) throws SQLException {
@@ -81,15 +76,6 @@ public class TeacherRegistrationController {
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(teacher);
             sessionData.setAuthenticated(true);
-            try {
-                emailUtil.sendEmail(teacher.getEmail());
-            } catch(AppConfigurationException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new teacher '" + formData.getEmail() + "'.");
-            } catch(IOException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new teacher '" + formData.getEmail() + "'.");
-            }
             return "redirect:" + teacher.getUserType().getHomepage();
         } catch (NoSuchSchoolException e) {
             return showFormWithErrorMessage(model, "That is not a valid school.");

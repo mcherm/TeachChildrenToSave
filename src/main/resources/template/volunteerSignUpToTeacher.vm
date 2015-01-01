@@ -1,0 +1,13 @@
+ 
+<html>
+<body>
+<img src="logo-tcts.png" alt="Teahc Children To Save logo">
+
+Congratulations, a volunteer has signed up for the following class:
+  
+   ${class}
+Volunteer:
+   ${volunteer}
+
+</body>
+</html>

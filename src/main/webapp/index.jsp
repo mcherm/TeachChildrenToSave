@@ -69,10 +69,16 @@
                 </ul>
 
 
-                <div>
-                    If you would like your bank to participate, please contact <strong>[NEED NAME AND CONTACT]</strong>
+
+                <%--<center>--%>
+                <%--<br>--%>
+                <%--<a href="event.htm">Project Devs, click Here for Event Registration</a>--%>
+                <%--</center>--%>
+
+                <p>
+                    If you would like your bank to participate, please contact <span class="b">[NEED NAME AND CONTACT]</span>
                     to begin participating in the program.
-                </div>
+                </p>
 
             </main>
 

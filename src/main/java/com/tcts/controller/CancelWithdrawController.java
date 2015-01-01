@@ -1,15 +1,14 @@
 package com.tcts.controller;
 
-import com.tcts.common.SessionData;
-import com.tcts.database.DatabaseFacade;
-import com.tcts.datamodel.Event;
-import com.tcts.datamodel.Teacher;
-import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.InvalidParameterFromGUIException;
-import com.tcts.exception.NoSuchEventException;
-import com.tcts.exception.NotLoggedInException;
-import com.tcts.exception.NotOwnedByYouException;
-import com.tcts.formdata.WithdrawFormData;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +17,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
-import java.util.List;
+import com.tcts.common.SessionData;
+import com.tcts.database.DatabaseFacade;
+import com.tcts.datamodel.Event;
+import com.tcts.datamodel.Teacher;
+import com.tcts.datamodel.User;
+import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.AppConfigurationException;
+import com.tcts.exception.InvalidParameterFromGUIException;
+import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NotLoggedInException;
+import com.tcts.exception.NotOwnedByYouException;
+import com.tcts.formdata.WithdrawFormData;
+import com.tcts.util.EmailUtil;
+import com.tcts.util.TemplateUtil;
 
 
 /**
@@ -32,6 +42,12 @@ public class CancelWithdrawController {
 
     @Autowired
     private DatabaseFacade database;
+    
+    @Autowired
+    private TemplateUtil templateUtil;
+    
+    @Autowired
+    private EmailUtil emailUtil;
 
     /**
      * A volunteer withdraws themselves from a class they had previously
@@ -107,6 +123,26 @@ public class CancelWithdrawController {
         // FIXME: Here it should send an email to the teacher and perhaps to the site admin,
         // and the email should include formData.getWithdrawNotes()
 
+        // 		--- Send Emails ---
+        
+        if (event.getVolunteerId() != null) {
+        	try {
+        		Map<String,Object> emailModel = new <String, Object>HashMap();
+            	
+            	emailModel.put("to", loggedInVolunteer.getEmail());
+            	emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
+            	emailModel.put("class", event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
+            	//emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
+            	String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
+                emailUtil.sendEmail(emailContent, emailModel);
+            } catch(AppConfigurationException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new volunteer '" + loggedInVolunteer.getEmail() + "'.");
+            } catch(IOException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new volunteer '" + loggedInVolunteer.getEmail() + "'.");
+            }
+        }
         // --- Done ---
         return "redirect:" + loggedInVolunteer.getUserType().getHomepage();
     }
@@ -155,6 +191,7 @@ public class CancelWithdrawController {
     @RequestMapping(value = "teacherCancel", method = RequestMethod.POST)
     public String doTeacherCancel(
             HttpSession session,
+            HttpServletRequest request,
             @ModelAttribute WithdrawFormData formData
     ) throws SQLException
     {
@@ -183,8 +220,29 @@ public class CancelWithdrawController {
         }
 
         // --- Send Emails ---
+        
         if (event.getVolunteerId() != null) {
-            // FIXME: Here we should send an email to the volunteer
+        	
+        	User volunteer = database.getUserById(event.getVolunteerId());
+        	try {
+        	
+            	Map<String,Object> emailModel = new <String, Object>HashMap();
+            	
+            	emailModel.put("to", volunteer.getEmail());
+            	emailModel.put("subject", "Your volunteer event has been canceled.");
+            	emailModel.put("class", event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
+            	String singupUrl =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/register.htm";
+            	emailModel.put("signupLink", singupUrl);
+            	//emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
+            	String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
+                emailUtil.sendEmail(emailContent, emailModel);
+            } catch(AppConfigurationException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+            } catch(IOException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+            }
         }
         // FIXME: Here we should send an email to the site admin
 

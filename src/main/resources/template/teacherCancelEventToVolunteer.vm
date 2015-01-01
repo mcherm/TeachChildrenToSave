@@ -1,0 +1,13 @@
+ 
+<html>
+<body>
+<img src="../tcts/img/logo-tcts.png" alt="Delaware Bankers Association logo">
+
+Unfortunately, your teacher has canceled the following event you were scheduled to volunteer for:
+
+   ${class}
+
+Feel free to <a href="${signupLink}">sign up</a> for another available class to make a difference in a child’s life.
+
+</body>
+</html>

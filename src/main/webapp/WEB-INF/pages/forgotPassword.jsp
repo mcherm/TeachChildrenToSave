@@ -29,46 +29,28 @@
 		   		</div>			
 			</c:if>
 			
-	        <form:form method="POST" action="login.htm" modelAttribute="formData">
+	        <form:form method="POST" action="sendPasswordResetEmail.htm" modelAttribute="formData">
 	        
 	            <div class="formElementCnt">
 	                <label>
 	                    <div class="inputCnt">
-	                        <div class="info">Email</div>
+	                        <div class="info">Enter Your Email Id.</div>
 	                        <form:input path="email" />
 	                    </div>
 	                </label>
 	            </div>
-
+	            
 	            <div class="formElementCnt">
 	                <label>
 	                    <div class="inputCnt">
-	                        <div class="info">Password</div>
-	                        <form:input path="password" type="password"/>
+	                        <div class="info">Password reset link will be emailed to your registered email id.</div>
 	                    </div>
 	                </label>
-	                
-	                <div class="inputCnt">
-	                        <a href="forgotPassword.htm">Forgot Password</a>
-	                    </div>
 	            </div>
-	            
-	            <button type="submit" value="Login">Login</button>
+
+	            <button type="submit" value="Login">Reset Password</button>
 	            
 	        </form:form>
-
-	        <div class="qa-notes">
-	        	<strong>Some valid logins for testing:</strong> 
-	        	<br>
-                larry@foobar.com(V) janedoe@foobar.com(BA) lucy@foobar.com(T) Harry@gmail.com(SA) moe@gmail.com(V) curley@gmail.com(V)
-                shemp@hulu.com(V) josuah@wintergreen.com(T) Allen@novel.com(T).
-	            <br>
-	            V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin. 
-	            <br>
-	            All have "pass"
-	            as their password.
-	        </div>
-
 
             
             </main>
