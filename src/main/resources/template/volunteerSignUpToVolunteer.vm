@@ -1,0 +1,18 @@
+ 
+<html>
+<body>
+<img src="logo-tcts.png" alt="Teach Children To Save logo">
+
+Congratulations, you have signed up for the following class:
+
+   ${class}
+Teacher:
+   ${teacher}
+   
+<p>Here’s a link to everything you will need to know:</p>
+<p>o	FAQs</p>
+<p>o	Training Video</p>
+   
+
+</body>
+</html>

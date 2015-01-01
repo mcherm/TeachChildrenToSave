@@ -69,7 +69,7 @@
 		                                <div class="info">
 		                                    Password
 		                                </div>
-		                                <form:input path="password"/>
+		                                <form:input path="password" type="password"/>
 		                            </div>
 		                        </label>
 		                    </div>								
