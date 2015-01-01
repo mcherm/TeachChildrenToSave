@@ -47,6 +47,10 @@
 	                        <form:input path="password" type="password"/>
 	                    </div>
 	                </label>
+	                
+	                <div class="inputCnt">
+	                        <a href="forgotPassword.htm">Forgot Password</a>
+	                    </div>
 	            </div>
 	            
 	            <button type="submit" value="Login">Login</button>

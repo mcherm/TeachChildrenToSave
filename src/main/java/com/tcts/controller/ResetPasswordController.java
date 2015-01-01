@@ -138,7 +138,7 @@ public class ResetPasswordController {
             		Map<String,Object> emailModel = new <String, Object>HashMap();
                 	
                 	emailModel.put("to", potentialUser.getEmail());
-                	emailModel.put("subject", "Passwor reset link for teach children to save program");
+                	emailModel.put("subject", "Password reset link for teach children to save program");
                 	
                 	emailModel.put("passwordResetLink", url);
                 	String emailContent = templateUtil.generateTemplate("passwordReset", emailModel);
