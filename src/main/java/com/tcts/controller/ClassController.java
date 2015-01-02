@@ -83,8 +83,8 @@ public class ClassController {
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
-                
-        model.addAttribute("event", database.updateEvent(event));
+
+        // FIXME: it should now modify the event
         return "class";
     }
 
