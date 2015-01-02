@@ -35,7 +35,7 @@ public class VolunteerController extends AuthenticationController{
     /**
      * Render the list of users .
      */
-    @RequestMapping(value = "/volunteers", method = RequestMethod.GET)
+    @RequestMapping(value = "volunteers", method = RequestMethod.GET)
     public String showVolunteersList(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
