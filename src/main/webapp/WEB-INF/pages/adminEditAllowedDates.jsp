@@ -19,7 +19,7 @@
             <main id="main">
 
                 <h1>
-                    Edit Allowed Times
+                    Edit Allowed Dates
                 </h1>
 
                 <%--<div id="actions">--%>
@@ -36,7 +36,7 @@
                 <table id="adminEditAllowedTimesTable">
                     <thead>
                         <tr>
-                            <th scope="col" class="time">Time</th>
+                            <th scope="col" class="time">Date</th>
                             <th scope="col">
                                 <span class="ada-read">Column of Modify buttons</span>
                             </th>
@@ -46,18 +46,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="time" items="${allowedTimes}">
+                        <c:forEach var="time" items="${allowedDates}">
                             <tr>
-                                <td class-"timeColumn"><c:out value="${time}"/></td>
+                                <td class-"timeColumn"><c:out value="${date}"/></td>
                                 
                                 <td>
-			                        <form method="POST" action="allowedTimeDelete.htm" modelAttribute="formData">
-			                                    <input type="hidden" name="time" value='<c:out value="${time}"/>' />
+			                        <form method="POST" action="allowedDateDelete.htm" modelAttribute="formData">
+			                                    <input type="hidden" name="date" value='<c:out value="${allowedDate}"/>' />
 			                                    <button type="submit" class="editOrRegister delete">Delete</button>
 			                        </form>
 		                    	</td>
 			                    <td>
-			                        <button onclick="js.loadURL('editAllowedTime.htm?time=<c:out value="${time}"/>');" class="editOrRegister">
+			                        <button onclick="js.loadURL('editAllowedDate.htm?date=<c:out value="${allowedDate}"/>');" class="editOrRegister">
 			                            Modify
 			                        </button>
 			                    </td>

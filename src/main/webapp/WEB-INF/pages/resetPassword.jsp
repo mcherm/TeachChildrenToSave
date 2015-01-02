@@ -30,7 +30,16 @@
 			</c:if>
 			
 	        <form:form method="POST" action="resetPassword.htm" modelAttribute="formData">
-
+	        
+	        	<div class="formElementCnt">
+	                <label>
+	                    <div class="inputCnt">
+	                        <div class="info">Email</div>
+	                        <form:input path="email" />
+	                    </div>
+	                </label>
+	            </div>
+	        
 	            <div class="formElementCnt">
 	                <label>
 	                    <div class="inputCnt">

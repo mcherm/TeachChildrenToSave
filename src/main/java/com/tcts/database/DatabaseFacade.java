@@ -15,16 +15,20 @@ import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchUserException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditAllowedDateTimeData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
 
@@ -162,9 +166,9 @@ public interface DatabaseFacade {
     public void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
 
-    void insertNewSchool(CreateSchoolFormData school) throws SQLException, InconsistentDatabaseException;
+    public void insertNewSchool(CreateSchoolFormData school) throws SQLException;
 
-	Event updateEvent(Event event) throws SQLException, InconsistentDatabaseException;
+	public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
 
     /** This can be used to upate certain fields of a Volunteer. */
 	User updateVolunteer(Volunteer volunteer) throws SQLException,
@@ -172,11 +176,28 @@ public interface DatabaseFacade {
 	
 	public List<? super User> getAllUsers() throws SQLException, InconsistentDatabaseException;
 
-    /** Changes the password (and salt) for an existing user. */
+	/** Changes the password (and salt) for an existing user. */
 	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException;
 	
 	/** This will update reset password link token in db. */
 	
-	void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException,
-	InconsistentDatabaseException;
+	void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException;
+	
+	/** Update allowed time **/
+	
+	public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException;
+	
+	/**
+     *		Delete allowed time
+     */
+    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException;
+
+    /**
+     *		Delete allowed date
+     */
+	public void deleteAllowedDate(String date) throws SQLException, NoSuchAllowedDateException;
+
+	/** Update allowed date **/
+	public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException;
+	
 }

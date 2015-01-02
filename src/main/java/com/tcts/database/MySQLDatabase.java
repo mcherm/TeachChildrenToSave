@@ -25,6 +25,8 @@ import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchAllowedDateException;
+import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -32,9 +34,11 @@ import com.tcts.exception.NoSuchUserException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditAllowedDateTimeData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
 
@@ -128,7 +132,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event where event_id = ?";
     
     private final static String updateEventByIdSQL = 
-    		"UPDATE Event SET teacher_id = ?,event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ?,volunteer_id =  ? WHERE event_id = ?";
+    		"UPDATE Event SET event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ? WHERE event_id = ?";
     
     private final static String updateSchoolByIdSQL =
     		"UPDATE School SET " +
@@ -140,6 +144,18 @@ public class MySQLDatabase implements DatabaseFacade {
     		
     private final static String updateResetPasswordTokenByIdSQL =
     		"update User set reset_password_token = ? where user_id = ?";
+    
+    private final static String updateAllowedTimeSQL =
+    		"update AllowedTimes set event_time = ? where event_time = ?";
+    
+    private final static String updateAllowedDateSQL =
+    		"update AllowedDates set event_date = ? where event_date = ?";
+    
+    private final static String deleteAllowedTimeSQL =
+    		"delete from AllowedTimes where event_time = ? ";
+    
+    private final static String deleteAllowedDateSQL =
+    		"delete from AllowedDates where event_date = ? ";
     
    
  
@@ -800,28 +816,27 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public Event updateEvent(Event event) throws SQLException,
-			InconsistentDatabaseException {
+	public void modifyEvent(EventRegistrationFormData formData) throws SQLException,
+			NoSuchEventException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+        	
+        	connection = ConnectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateEventByIdSQL);
-            preparedStatement.setString(1, event.getTeacherId());
-            preparedStatement.setDate(2, (java.sql.Date) event.getEventDate());
-            preparedStatement.setString(3, event.getEventTime());
-            preparedStatement.setString(4, event.getGrade());
-            preparedStatement.setInt(5, event.getNumberStudents());
-            preparedStatement.setString(6, event.getNotes());
-            preparedStatement.setString(7, event.getVolunteerId());
-            preparedStatement.setString(8, event.getEventId());
+            preparedStatement.setDate(1,  new java.sql.Date(formData.getEventDate().getTime()));
+            preparedStatement.setString(2, formData.getEventTime());
+            preparedStatement.setString(3, formData.getGrade());
+            preparedStatement.setInt(4, Integer.parseInt(formData.getNumberStudents().equalsIgnoreCase("")?"0":formData.getNumberStudents()));
+            preparedStatement.setString(5, formData.getNotes());
+            preparedStatement.setString(6, formData.getEventId());
             preparedStatement.executeUpdate();
         } 
         finally {
             closeSafely(connection, preparedStatement, null);
             
         }
-        return getEventById(event.getEventId());
+
 	}
 
 
@@ -1197,7 +1212,7 @@ public class MySQLDatabase implements DatabaseFacade {
 	
 	@Override
 	public void updateResetPasswordToken(String userId, String resetPasswordToken)
-            throws SQLException, InconsistentDatabaseException
+            throws SQLException
     {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1206,6 +1221,76 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement = connection.prepareStatement(updateResetPasswordTokenByIdSQL);
             preparedStatement.setString(1, resetPasswordToken);
             preparedStatement.setString(2, userId);
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+	}
+	
+	@Override
+	public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException
+    {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateAllowedTimeSQL);
+            preparedStatement.setString(1, time.getAllowedTime());
+            preparedStatement.setString(2, time.getAllowedTime());
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+	}
+	
+	@Override
+	public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException
+	{
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(deleteAllowedTimeSQL);
+            preparedStatement.setString(1, time);
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+	}
+	
+	@Override
+	public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException
+    {
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateAllowedDateSQL);
+            preparedStatement.setString(1, date.getAllowedDate());
+            preparedStatement.setString(2, date.getAllowedDate());
+            preparedStatement.executeUpdate();
+        } 
+        finally {
+            closeSafely(connection, preparedStatement, null);
+            
+        }
+	}
+	
+	@Override
+	public void deleteAllowedDate(String date) throws SQLException, NoSuchAllowedDateException
+	{
+		Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(deleteAllowedDateSQL);
+            preparedStatement.setString(1, date);
             preparedStatement.executeUpdate();
         } 
         finally {
