@@ -49,12 +49,18 @@
                         <c:forEach var="time" items="${allowedTimes}">
                             <tr>
                                 <td class-"timeColumn"><c:out value="${time}"/></td>
+                                
                                 <td>
-                                    <button onclick="" class="editOrRegister">Modify</button>
-                                </td>
-                                <td>
-                                    <button onclick="" class="editOrRegister delete">Delete</button>
-                                </td>
+			                        <form method="POST" action="allowedTimeDelete.htm" modelAttribute="formData">
+			                                    <input type="hidden" name="time" value='<c:out value="${time}"/>' />
+			                                    <button type="submit" class="editOrRegister delete">Delete</button>
+			                        </form>
+		                    	</td>
+			                    <td>
+			                        <button onclick="js.loadURL('editAllowedTime.htm?time=<c:out value="${time}"/>');" class="editOrRegister">
+			                            Modify
+			                        </button>
+			                    </td>
                             </tr>
                         </c:forEach>
                     </tbody>
