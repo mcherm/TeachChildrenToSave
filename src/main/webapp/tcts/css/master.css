@@ -342,7 +342,7 @@ fieldset.refine legend {
   margin: 1em;
 }
 fieldset.refine div {
-  width: 33.33333%;
+  width: 20%;
   display: inline-block;
   float: left;
   padding-left: 1em;
