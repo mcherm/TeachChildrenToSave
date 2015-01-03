@@ -53,6 +53,46 @@
                 return {'counts': counts, 'values': values};
             }
 
+            /*
+             * This creates the table of events (dynamically constructing the HTML).
+             */
+            function buildTable(events) {
+                var html =
+                    "<thead><tr>" +
+                    "    <th scope='col'>Date</th>" +
+                    "    <th scope='col'>Time</th>" +
+                    "    <th scope='col' class='center'>Grade</th>" +
+                    "    <th scope='col' class='center'>Students</th>" +
+                    "    <th scope='col'>Teacher</th>" +
+                    "    <th scope='col'>School</th>" +
+                    "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
+                    "</tr></thead>" +
+                    "<tbody>";
+                $.each(events, function(i,event) {
+                    html +=
+                        "<tr id='rowForEvent" + event.eventId + "'>" +
+                        "    <td>" + event.eventDate + "</td>" +
+                        "    <td>" + event.eventTime + "</td>" +
+                        "    <td class='center'>" + event.grade + "</td>" +
+                        "    <td class='center'>" + event.numberStudents + "</td>" +
+                        "    <td>" + event.firstName + " " + event.lastName + "</td>" +
+                        "    <td>" + event.schoolName + "</td>" +
+                        "    <td>" +
+                        "        <div class='createEventForm'>" +
+                        "            <form method='POST' action='eventRegistration.htm'>" +
+                        "                <input type='hidden' name='eventId' value='" + event.eventId + "'>" +
+                        "                <button type='submit' value='Sign Up' class='editOrRegister'>Sign Up</button>" +
+                        "            </form>" +
+                        "        </div>" +
+                        "    </td>" +
+                        "</tr>";
+                });
+                html +=
+                    "</tbody>";
+
+                $('#dynamicEventTable').html(html);
+            }
+
             $(document).ready(function() {
                 var createSelectionCheckboxes = function(args) {
                     var countsAndValues = countsAndDistinctValuesForField(availableEvents, args.field);
@@ -100,6 +140,7 @@
                     legend: 'CRA Eligible',
                     itemLabel: function(s) {return {'true': 'Yes', 'false': 'No'}[s];}
                 });
+                buildTable(availableEvents);
             });
         </script>
     </head>
@@ -130,47 +171,7 @@
 
                 </fieldset>
 
-                <table id="eventTable">
-                    <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Time</th>
-                        <th scope="col" class="center">Grade</th>
-                        <th scope="col" class="center">Students</th>
-                        <th scope="col">Teacher</th>
-                        <th scope="col">School</th>
-                        <th>
-                            <span class="ada-read">Column of Sign Up buttons</span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${events}" var="event">
-                        <tr id="rowForEvent<c:out value="${event.eventId}"/>">
-                            <td><c:out value="${event.eventDate}"/></td>
-                            <td><c:out value="${event.eventTime}"/></td>
-                            <td class="center"><c:out value="${event.grade}"/></td>
-                            <td class="center"><c:out value="${event.numberStudents}"/></td>
-                            <td>
-                                <c:out value="${event.linkedTeacher.firstName}"/>
-                                <c:out value="${event.linkedTeacher.lastName}"/>
-                            </td>
-                            <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
-                            <td>
-                                <div class="createEventForm">
-                                    <form:form method="POST" action="eventRegistration.htm" modelAttribute="formData">
-                                        <input type="hidden" name="eventId" value="${event.eventId}">
-                                        <%--<input type="submit" value="Sign Up"/>--%>
-                                        <button type="submit" value="Sign Up" class="editOrRegister">
-                                            Sign Up
-                                        </button>
-                                    </form:form>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
+                <table id="dynamicEventTable"><!-- populated by javascript --></table>
 
                 <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister doneAdding">Done adding classes</button>
 
