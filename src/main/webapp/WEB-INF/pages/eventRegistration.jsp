@@ -54,9 +54,17 @@
             }
 
             /*
+             * This is accessed as filterSettings[field][value] and it returns true if that
+             * box is checked and false if it isn't. Only the checked values should be shown
+             * UNLESS none of the values for a field are checked, in which case that field
+             * should not restrict the display of events.
+             */
+            var filterSettings = {};
+
+            /*
              * This creates the table of events (dynamically constructing the HTML).
              */
-            function buildTable(events) {
+            function buildTable() {
                 var html =
                     "<thead><tr>" +
                     "    <th scope='col'>Date</th>" +
@@ -68,24 +76,41 @@
                     "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
                     "<tbody>";
-                $.each(events, function(i,event) {
-                    html +=
-                        "<tr id='rowForEvent" + event.eventId + "'>" +
-                        "    <td>" + event.eventDate + "</td>" +
-                        "    <td>" + event.eventTime + "</td>" +
-                        "    <td class='center'>" + event.grade + "</td>" +
-                        "    <td class='center'>" + event.numberStudents + "</td>" +
-                        "    <td>" + event.firstName + " " + event.lastName + "</td>" +
-                        "    <td>" + event.schoolName + "</td>" +
-                        "    <td>" +
-                        "        <div class='createEventForm'>" +
-                        "            <form method='POST' action='eventRegistration.htm'>" +
-                        "                <input type='hidden' name='eventId' value='" + event.eventId + "'>" +
-                        "                <button type='submit' value='Sign Up' class='editOrRegister'>Sign Up</button>" +
-                        "            </form>" +
-                        "        </div>" +
-                        "    </td>" +
-                        "</tr>";
+                $.each(availableEvents, function(i,event) {
+                    var showThisEvent = true;
+                    $.each(filterSettings, function(field,settings) {
+                        var allAreUnchecked = true;
+                        $.each(settings, function(value,isChecked) {
+                            if (isChecked) {
+                                allAreUnchecked = false;
+                            }
+                        });
+                        if (!allAreUnchecked) {
+                            var actualValue = event[field];
+                            if (! settings[actualValue]) {
+                                showThisEvent = false;
+                            }
+                        }
+                    });
+                    if (showThisEvent) {
+                        html +=
+                            "<tr id='rowForEvent" + event.eventId + "'>" +
+                            "    <td>" + event.eventDate + "</td>" +
+                            "    <td>" + event.eventTime + "</td>" +
+                            "    <td class='center'>" + event.grade + "</td>" +
+                            "    <td class='center'>" + event.numberStudents + "</td>" +
+                            "    <td>" + event.firstName + " " + event.lastName + "</td>" +
+                            "    <td>" + event.schoolName + "</td>" +
+                            "    <td>" +
+                            "        <div class='createEventForm'>" +
+                            "            <form method='POST' action='eventRegistration.htm'>" +
+                            "                <input type='hidden' name='eventId' value='" + event.eventId + "'>" +
+                            "                <button type='submit' value='Sign Up' class='editOrRegister'>Sign Up</button>" +
+                            "            </form>" +
+                            "        </div>" +
+                            "    </td>" +
+                            "</tr>";
+                    }
                 });
                 html +=
                     "</tbody>";
@@ -93,27 +118,38 @@
                 $('#dynamicEventTable').html(html);
             }
 
+            /*
+             * This is the function that gets called when a checkbox is clicked.
+             */
+            function toggleFilter(field, value) {
+                filterSettings[field][value] = ! filterSettings[field][value];
+                buildTable();
+            }
+
             $(document).ready(function() {
                 var createSelectionCheckboxes = function(args) {
+                    filterSettings[args.field] = {};
                     var countsAndValues = countsAndDistinctValuesForField(availableEvents, args.field);
                     var counts = countsAndValues.counts;
                     var values = countsAndValues.values;
-                    $('#' + args.field +'_checkboxes').html(
+                    var html =
                         "<fieldset>" +
                         "    <legend>" + args.legend + "</legend>" +
-                        "    <ul>" +
-                                $.map( values, function(value) {
-                                    return "" +
-                                        "<li>" +
-                                        "    <label>" +
-                                        "        <input type='checkbox' />" +
-                                        "        <span class='txt'>" + args.itemLabel(value) + " (" + counts[value] + ")" +
-                                        "    </label>" +
-                                        "</li>";
-                                }).join('') +
+                        "    <ul>";
+                    $.each(values, function(i,value) {
+                        filterSettings[args.field][value] = false;
+                        html +=
+                            "<li>" +
+                            "    <label>" +
+                            "        <input type='checkbox' onclick='toggleFilter(\"" + args.field + "\",\"" + value + "\");' />" +
+                            "        <span class='txt'>" + args.itemLabel(value) + " (" + counts[value] + ")" + "</span>" +
+                            "    </label>" +
+                            "</li>";
+                    });
+                    html +=
                         "    </ul>" +
                         "</fieldset>"
-                    );
+                    $('#' + args.field +'_checkboxes').html(html);
                 }
                 createSelectionCheckboxes({
                     field: 'eventDate',
@@ -140,7 +176,7 @@
                     legend: 'CRA Eligible',
                     itemLabel: function(s) {return {'true': 'Yes', 'false': 'No'}[s];}
                 });
-                buildTable(availableEvents);
+                buildTable();
             });
         </script>
     </head>
@@ -173,7 +209,7 @@
 
                 <table id="dynamicEventTable"><!-- populated by javascript --></table>
 
-                <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister doneAdding">Done adding classes</button>
+                <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister doneAdding">Cancel</button>
 
         </main>
 
