@@ -802,3 +802,18 @@ p {
   padding-bottom: 1em;
   font-size: .9em;
 }
+
+th.sortable {
+  background-image: url("../img/updown.gif");
+  background-position: right center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+th.sortable.descending {
+  background-image: url("../img/up.gif");
+}
+
+th.sortable.ascending {
+  background-image: url("../img/down.gif");
+}

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.common.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,6 +46,9 @@ public class EventRegistrationController {
     @Autowired
     EmailUtil emailUtil;
 
+    @Autowired
+    Cache cache;
+
 
 	@RequestMapping(value = "/eventRegistration", method = RequestMethod.GET)
     public String showEventRegistrationPage(HttpSession session, Model model) throws SQLException {
@@ -63,6 +67,8 @@ public class EventRegistrationController {
     private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
         List<Event> events = database.getAllAvailableEvents();
         model.addAttribute("events", events);
+        model.addAttribute("allowedDates", cache.getAllowedDates());
+        model.addAttribute("allowedTimes", cache.getAllowedTimes());
         model.addAttribute("errorMessage", errorMessage);
         return "eventRegistration";
     }

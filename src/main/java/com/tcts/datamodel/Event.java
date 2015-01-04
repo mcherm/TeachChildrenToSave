@@ -1,5 +1,7 @@
 package com.tcts.datamodel;
 
+import com.tcts.common.PrettyPrintingDate;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -11,7 +13,7 @@ public class Event {
     // --- Basic data fields ---
     private String eventId;
     private String teacherId;
-    private Date eventDate;
+    private PrettyPrintingDate eventDate;
     private String eventTime;
     private String grade;
     private int numberStudents;
@@ -29,7 +31,7 @@ public class Event {
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         setEventId(resultSet.getString("event_id"));
         setTeacherId(resultSet.getString("teacher_id"));
-        setEventDate(resultSet.getDate("event_date"));
+        setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
         setEventTime(resultSet.getString("event_time"));
         setGrade(resultSet.getString("grade"));
         setNumberStudents(resultSet.getInt("number_students"));
@@ -54,11 +56,11 @@ public class Event {
         this.teacherId = teacherId;
     }
 
-    public Date getEventDate() {
+    public PrettyPrintingDate getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Date eventDate) {
+    public void setEventDate(PrettyPrintingDate eventDate) {
         this.eventDate = eventDate;
     }
 

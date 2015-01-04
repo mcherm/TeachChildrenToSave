@@ -60,7 +60,7 @@
                 <c:forEach var="event" items="${events}">
                         <c:if test="${event.volunteerId == null}">
                             <tr>
-                                <td><c:out value="${event.eventDate}"/></td>
+                                <td><c:out value="${event.eventDate.pretty}"/></td>
                                 <td><c:out value="${event.eventTime}"/></td>
                                 <td class="center"><c:out value="${event.grade}"/></td>
                                 <td class="center"><c:out value="${event.numberStudents}"/></td>

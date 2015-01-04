@@ -62,7 +62,7 @@
 		                <tbody>
 		                    <c:forEach var="event" items="${events}">
 		                        <tr>
-		                            <td><c:out value="${event.eventDate}"/></td>
+		                            <td><c:out value="${event.eventDate.pretty}"/></td>
 		                            <td><c:out value="${event.eventTime}"/></td>
 		                            <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
 		                            <td><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>

@@ -11,7 +11,7 @@ public class PrettyPrintingDate extends Date {
     private final static ThreadLocal<SimpleDateFormat> prettyFormatter = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("EEEE, MMMM d, yyyy");
+            return new SimpleDateFormat("EEE, M/d/yyyy");
         }
     };
 

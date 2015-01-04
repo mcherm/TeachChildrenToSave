@@ -10,7 +10,7 @@
                 <c:forEach items="${events}" var="event" varStatus="eventStatus">
                     {
                         'eventId': <c:out value="${event.eventId}"/>,
-                        'eventDate': '<c:out value="${event.eventDate}"/>',
+                        'eventDate': '<c:out value="${event.eventDate.pretty}"/>',
                         'eventTime': '<c:out value="${event.eventTime}"/>',
                         'grade': '<c:out value="${event.grade}"/>',
                         'numberStudents': '<c:out value="${event.numberStudents}"/>',
@@ -67,12 +67,12 @@
             function buildTable() {
                 var html =
                     "<thead><tr>" +
-                    "    <th scope='col'>Date</th>" +
-                    "    <th scope='col'>Time</th>" +
-                    "    <th scope='col' class='center'>Grade</th>" +
-                    "    <th scope='col' class='center'>Students</th>" +
-                    "    <th scope='col'>Teacher</th>" +
-                    "    <th scope='col'>School</th>" +
+                    "    <th scope='col' class='sortable' onclick='sortBy(\"eventDate\")' id='col_for_eventDate'>Date</th>" +
+                    "    <th scope='col' class='sortable' onclick='sortBy(\"eventTime\")' id='col_for_eventTime'>Time</th>" +
+                    "    <th scope='col' class='sortable' onclick='sortBy(\"grade\")' id='col_for_grade'>Grade</th>" +
+                    "    <th scope='col' class='sortable' onclick='sortBy(\"numberStudents\")' id='col_for_numberStudents'>Students</th>" +
+                    "    <th scope='col' class='sortable' onclick='sortBy(\"firstName\")' id='col_for_firstName'>Teacher</th>" +
+                    "    <th scope='col' class='sortable' onclick='sortBy(\"schoolName\")' id='col_for_schoolName''>School</th>" +
                     "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
                     "<tbody>";
@@ -124,6 +124,78 @@
             function toggleFilter(field, value) {
                 filterSettings[field][value] = ! filterSettings[field][value];
                 buildTable();
+            }
+
+            /*
+             * lookupTable is an object used as a map. if key is a key in lookupTable, this
+             * returns the corresponding value from lookupTable. If it is NOT a key in lookupTable,
+             * this returns -1. The "safely" in the name refers to the fact that we are
+             * avoiding returning undefined which would cause problems in the sort function.
+             */
+            function getValueSafely(lookupTable, key) {
+                var result = lookupTable[key];
+                if (result === undefined) {
+                    return -1;
+                } else {
+                    return result;
+                }
+            }
+
+            /*
+             * Returns true if value1 is less than value2, when both are values
+             * of the given field. Passes field in order to allow us to have
+             * different sorting logic for different types of fields. The default
+             * is basic string ordering.
+             */
+            function isLessThan(field, value1, value2) {
+                if ($.inArray(field, ['grade', 'numberStudents']) > -1) {
+                    // -- numeric sort --
+                    return parseInt(value1) < parseInt(value2);
+                } else if (field == 'eventDate') {
+                    // -- date sort --
+                    var dateOrder = {
+                        <c:forEach items="${allowedDates}" var="date" varStatus="status">
+                        "<c:out value="${date.pretty}"/>": <c:out value="${status.index}"/>
+                        <c:if test="${!status.last}">,</c:if>
+                        </c:forEach>
+                    };
+                    return getValueSafely(dateOrder, value1) < getValueSafely(dateOrder, value2);
+                } else if (field == 'eventTime') {
+                    // -- time sort --
+                    var timeOrder = {
+                        <c:forEach items="${allowedTimes}" var="time" varStatus="status">
+                            "<c:out value="${time}"/>": <c:out value="${status.index}"/>
+                            <c:if test="${!status.last}">,</c:if>
+                        </c:forEach>
+                    };
+                    return getValueSafely(timeOrder, value1) < getValueSafely(timeOrder, value2);
+                } else {
+                    // -- string sort --
+                    return value1 < value2;
+                }
+            }
+
+            /*
+             * This is the function that gets called when a sort box is clicked.
+             */
+            function  sortBy(field) {
+                var descending = $("#col_for_" + field).hasClass("ascending");
+                availableEvents.sort(function(event1, event2) {
+                    if (descending) {
+                        var temp = event1;
+                        event1 = event2;
+                        event2 = temp;
+                    }
+                    if (event1[field] == event2[field]) {
+                        return 0;
+                    } else if (isLessThan(field, event1[field], event2[field])) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                });
+                buildTable();
+                $("#col_for_" + field).addClass(descending ? "descending" : "ascending");
             }
 
             $(document).ready(function() {

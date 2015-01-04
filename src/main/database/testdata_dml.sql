@@ -15,7 +15,7 @@ insert into AllowedTimes (event_time, sort_order)
 insert into AllowedTimes (event_time, sort_order)
   values ("11:00 AM", 3);
 insert into AllowedTimes (event_time, sort_order)
-  values ("12:00 AM", 4);
+  values ("12:00 PM", 4);
 insert into AllowedTimes (event_time, sort_order)
   values ("1:00 PM", 5);
 insert into AllowedTimes (event_time, sort_order)

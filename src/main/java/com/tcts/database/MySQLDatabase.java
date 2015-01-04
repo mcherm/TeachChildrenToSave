@@ -879,7 +879,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 Event event = new Event();
                 event.setEventId(resultSet.getString("event_id"));
                 event.setTeacherId(resultSet.getString("teacher_id"));
-                event.setEventDate(resultSet.getDate("event_date"));
+                event.setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
                 event.setEventTime(resultSet.getString("event_time"));
                 event.setGrade(resultSet.getString("grade"));
                 event.setNumberStudents(resultSet.getInt("number_students"));
@@ -909,13 +909,12 @@ public class MySQLDatabase implements DatabaseFacade {
                 event = new Event();
                 event.setEventId(resultSet.getString("event_id"));
                 event.setTeacherId(resultSet.getString("teacher_id"));
-                event.setEventDate(resultSet.getDate("event_date"));
+                event.setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
                 event.setEventTime(resultSet.getString("event_time"));
                 event.setGrade(resultSet.getString("grade"));
                 event.setNumberStudents(resultSet.getInt("number_students"));
                 event.setNotes(resultSet.getString("notes"));
                 event.setVolunteerId(resultSet.getString("volunteer_id"));
-               
             }
             return event;
         } finally {
