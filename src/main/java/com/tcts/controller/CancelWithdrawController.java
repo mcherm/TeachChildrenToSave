@@ -72,6 +72,10 @@ public class CancelWithdrawController {
             throw new InvalidParameterFromGUIException();
         }
         Event event = database.getEventById(eventId);
+        if (event == null) {
+            // No such event by that ID
+            throw new InvalidParameterFromGUIException();
+        }
         if (!loggedInVolunteer.getUserId().equals(event.getVolunteerId())) {
             throw new NotOwnedByYouException();
         }
@@ -108,6 +112,10 @@ public class CancelWithdrawController {
             throw new InvalidParameterFromGUIException();
         }
         Event event = database.getEventById(eventId);
+        if (event == null) {
+            // No such event by that ID
+            throw new InvalidParameterFromGUIException();
+        }
         if (!loggedInVolunteer.getUserId().equals(event.getVolunteerId())) {
             throw new NotOwnedByYouException();
         }
@@ -170,6 +178,10 @@ public class CancelWithdrawController {
             throw new InvalidParameterFromGUIException();
         }
         Event event = database.getEventById(eventId);
+        if (event == null) {
+            // No such event by that ID
+            throw new InvalidParameterFromGUIException();
+        }
         if (!loggedInTeacher.getUserId().equals(event.getTeacherId())) {
             throw new NotOwnedByYouException();
         }
@@ -208,6 +220,10 @@ public class CancelWithdrawController {
             throw new InvalidParameterFromGUIException();
         }
         Event event = database.getEventById(eventId);
+        if (event == null) {
+            // No such event by that ID
+            throw new InvalidParameterFromGUIException();
+        }
         if (!loggedInTeacher.getUserId().equals(event.getTeacherId())) {
             throw new NotOwnedByYouException();
         }

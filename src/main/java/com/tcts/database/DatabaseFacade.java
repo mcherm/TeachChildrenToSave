@@ -145,7 +145,8 @@ public interface DatabaseFacade {
     public void deleteEvent(String eventId) throws SQLException, NoSuchEventException;
     
     public List<Event> getEvents() throws SQLException, InconsistentDatabaseException;
-    
+
+    /** Returns the indicated event object, or null if it does not exist. */
     public Event getEventById(String eventId) throws SQLException;
 
     // FIXME: All this stuff shouldn't throw InconsistentDatabaseException.

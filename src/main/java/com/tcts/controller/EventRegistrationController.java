@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.common.Cache;
+import com.tcts.exception.InvalidParameterFromGUIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,6 +92,10 @@ public class EventRegistrationController {
         if (null != formData.getEventId()) {
         	
 	        Event event = database.getEventById(formData.getEventId());
+            if (event == null) {
+                // No such event by that ID, but somehow we just volunteered for it???!!
+                throw new InvalidParameterFromGUIException();
+            }
 	        //Send email to volunteer
 	        try {
 	        	

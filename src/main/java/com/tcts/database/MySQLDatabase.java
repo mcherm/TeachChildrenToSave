@@ -905,7 +905,9 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement = connection.prepareStatement(getEventByIdSQL);
             preparedStatement.setString(1, eventId);
             resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
             while (resultSet.next()) {
+                numberOfRows += 1;
                 event = new Event();
                 event.setEventId(resultSet.getString("event_id"));
                 event.setTeacherId(resultSet.getString("teacher_id"));
@@ -916,7 +918,14 @@ public class MySQLDatabase implements DatabaseFacade {
                 event.setNotes(resultSet.getString("notes"));
                 event.setVolunteerId(resultSet.getString("volunteer_id"));
             }
-            return event;
+            if (numberOfRows == 0) {
+                // did not find such a user
+                return null;
+            } else if (numberOfRows == 1) {
+                return event;
+            } else {
+                throw new InconsistentDatabaseException("More than one event with the id '" + eventId + "'.");
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }

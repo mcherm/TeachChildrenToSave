@@ -122,7 +122,11 @@ public class EventController {
 
         // --- Load existing data ---
         Event event = database.getEventById(eventId);
-        
+        if (event == null) {
+            // No such event by that ID
+            throw new InvalidParameterFromGUIException();
+        }
+
         // --- Show the edit page ---
         return showEditEventWithErrorMessage(model, transformEventData(event), "");
     }

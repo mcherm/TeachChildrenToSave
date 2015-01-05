@@ -73,6 +73,7 @@
                     "    <th scope='col' class='sortable' onclick='sortBy(\"numberStudents\")' id='col_for_numberStudents'>Students</th>" +
                     "    <th scope='col' class='sortable' onclick='sortBy(\"firstName\")' id='col_for_firstName'>Teacher</th>" +
                     "    <th scope='col' class='sortable' onclick='sortBy(\"schoolName\")' id='col_for_schoolName''>School</th>" +
+                    "    <th scope='col'><span class='ada-read'>Column of Details buttons</span></th>" +
                     "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
                     "<tbody>";
@@ -101,6 +102,11 @@
                             "    <td class='center'>" + event.numberStudents + "</td>" +
                             "    <td>" + event.firstName + " " + event.lastName + "</td>" +
                             "    <td>" + event.schoolName + "</td>" +
+                            "    <td><form action='eventDetails.htm' method='POST'>" +
+                            "        <input type='hidden' name='eventId' value='" + event.eventId +"'/>" +
+                            "        <input type='hidden' name='doneURL' value='eventRegistration.htm'/>" +
+                            "        <button class='editOrRegister details' type='submit'>Details</button>" +
+                            "    </form></td>"
                             "    <td>" +
                             "        <div class='createEventForm'>" +
                             "            <form method='POST' action='eventRegistration.htm'>" +

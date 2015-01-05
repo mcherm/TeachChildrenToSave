@@ -54,9 +54,8 @@
 		                        <th scope="col">Teacher</th>
 		                        <th scope="col" class="center">Grade</th>
 		                        <th scope="col" class="center">Students</th>
-                                <th scope="col">
-									<span class="ada-read">Column of Delete buttons</span>
-								</th>
+                                <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
+                                <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -69,10 +68,16 @@
 		                            <td class="center"><c:out value="${event.grade}"/></td>
 		                            <td class="center"><c:out value="${event.numberStudents}"/></td>
                                     <td>
+                                        <form action="eventDetails.htm" method="POST">
+                                            <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
+                                            <input type="hidden" name="doneURL" value="volunteerHome.htm"/>
+                                            <button class="editOrRegister details" type="submit">Details</button>
+                                        </form>
+                                    </td>
+                                    <td>
 										<button onclick="js.loadURL('volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">
 											Delete
 										</button>
-										<%--<a href="volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>">withdraw</a>--%>
 									</td>
 		                        </tr>
 		                    </c:forEach>

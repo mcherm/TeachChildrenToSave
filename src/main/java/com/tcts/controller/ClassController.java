@@ -71,7 +71,11 @@ public class ClassController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
         event = database.getEventById(event.getEventId());
-        
+        if (event == null) {
+            // No such event by that ID
+            throw new InvalidParameterFromGUIException();
+        }
+
         model.addAttribute("event", event);
         return "class";
     }

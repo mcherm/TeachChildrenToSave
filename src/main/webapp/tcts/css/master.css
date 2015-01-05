@@ -817,3 +817,9 @@ th.sortable.descending {
 th.sortable.ascending {
   background-image: url("../img/down.gif");
 }
+
+/* FIXME: the event details page badly needs some work from Adrian! */
+body.eventDetails div.label {
+  font-weight: bold;
+  margin-top: 2em;
+}
