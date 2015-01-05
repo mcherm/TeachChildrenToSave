@@ -144,7 +144,6 @@ public class School {
      */
     public String getAddressInGoogleMapsForm() {
         StringBuffer result = new StringBuffer();
-        addWithSpace(result, name);
         addWithSpace(result, addressLine1);
         addWithSpace(result, addressLine2);
         addWithSpace(result, city);
