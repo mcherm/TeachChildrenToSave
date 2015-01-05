@@ -1,5 +1,6 @@
 package com.tcts.controller;
 
+import com.tcts.common.Configuration;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Bank;
@@ -33,6 +34,10 @@ public class EventDetailsController {
 
     @Autowired
     private DatabaseFacade database;
+
+    @Autowired
+    private Configuration configuration;
+
 
     /**
      * Render the page.
@@ -87,9 +92,13 @@ public class EventDetailsController {
         School linkedSchool = database.getSchoolById(linkedTeacher.getSchoolId());
         linkedTeacher.setLinkedSchool(linkedSchool);
 
+        // --- Fetch the google maps key ---
+        String googleMapsKey = configuration.getProperty("googleMapsKey");
+
         // --- Display the page ---
         model.addAttribute("event", event);
         model.addAttribute("doneURL", doneURL);
+        model.addAttribute("googleMapsKey", googleMapsKey);
         return "eventDetails";
     }
 

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -157,6 +158,10 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String deleteAllowedDateSQL =
     		"delete from AllowedDates where event_date = ? ";
     
+    
+    @Autowired
+    private ConnectionFactory connectionFactory;
+    
    
  
     @Override
@@ -175,7 +180,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, key);
             resultSet = preparedStatement.executeQuery();
@@ -230,7 +235,7 @@ public class MySQLDatabase implements DatabaseFacade {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(modifyUserPersonalFieldsSQL);
             preparedStatement.setString(1, formData.getEmail());
             preparedStatement.setString(2, formData.getFirstName());
@@ -276,7 +281,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, userId);
             resultSet = preparedStatement.executeQuery();
@@ -298,7 +303,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllAvailableEventsWithTeacherAndSchoolSQL);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -324,7 +329,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(insertEventSQL);
             preparedStatement.setString(1, teacherId);
             preparedStatement.setDate(2, new java.sql.Date(formData.getEventDate().getTime()));
@@ -345,7 +350,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(volunteerForEventSQL);
             preparedStatement.setString(1, volunteerId);
             preparedStatement.setString(2, eventId);
@@ -363,7 +368,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getVolunteersByBankSQL);
             preparedStatement.setString(1, bankId);
             resultSet = preparedStatement.executeQuery();
@@ -389,7 +394,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
             preparedStatement.setString(1, bankId);
             resultSet = preparedStatement.executeQuery();
@@ -420,7 +425,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getBankByIdSQL);
             preparedStatement.setString(1, bankId);
             resultSet = preparedStatement.executeQuery();
@@ -450,7 +455,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getSchoolByIdSQL);
             preparedStatement.setString(1, schoolId);
             resultSet = preparedStatement.executeQuery();
@@ -481,7 +486,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllSchoolsSQL);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -502,7 +507,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllBanksSQL);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -525,7 +530,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllowedDatesSQL);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -545,7 +550,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllowedTimesSQL);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -567,7 +572,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		try {
-			connection = ConnectionFactory.getConnection();
+			connection = connectionFactory.getConnection();
 			preparedStatement = connection.prepareStatement(insertUserSQL);
 
 			preparedStatement.setString(1, salt);
@@ -658,7 +663,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, key);
             resultSet = preparedStatement.executeQuery();
@@ -711,7 +716,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteSchooldSQL);
             preparedStatement.setString(1, schoolId);
             int success =preparedStatement.executeUpdate();
@@ -730,7 +735,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateSchoolByIdSQL);
             preparedStatement.setString(1, school.getSchoolName());
             preparedStatement.setString(2, school.getSchoolAddress1());
@@ -757,7 +762,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
 
             // --- Delete all users ---
             preparedStatement = connection.prepareStatement(deleteUsersByBankId);
@@ -789,7 +794,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteVolunteerSQL);
             preparedStatement.setString(1, volunteerId);
             int success =preparedStatement.executeUpdate();
@@ -822,7 +827,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         try {
         	
-        	connection = ConnectionFactory.getConnection();
+        	connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateEventByIdSQL);
             preparedStatement.setDate(1,  new java.sql.Date(formData.getEventDate().getTime()));
             preparedStatement.setString(2, formData.getEventTime());
@@ -846,7 +851,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteEventSQL);
             preparedStatement.setString(1, eventId);
             int rowsAffected = preparedStatement.executeUpdate();
@@ -871,7 +876,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getEventsSQL);
             
             resultSet = preparedStatement.executeQuery();
@@ -901,7 +906,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getEventByIdSQL);
             preparedStatement.setString(1, eventId);
             resultSet = preparedStatement.executeQuery();
@@ -938,7 +943,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
 
             // --- Insert the bank ---
             preparedStatement = connection.prepareStatement(insertBankSQL);
@@ -1027,7 +1032,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
 
             // --- Check if Bank Admin Exists ---
             preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
@@ -1127,7 +1132,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(insertSchoolSQL);
             preparedStatement.setString(1, school.getSchoolName());
             preparedStatement.setString(2, school.getSchoolAddress1());
@@ -1156,7 +1161,7 @@ public class MySQLDatabase implements DatabaseFacade {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllUserSQL);
             resultSet = preparedStatement.executeQuery();
             int numberOfRows = 0;
@@ -1207,7 +1212,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateUserCredentialsByIdSQL);
             preparedStatement.setString(1, salt);
             preparedStatement.setString(2, hashedPassword);
@@ -1225,7 +1230,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateResetPasswordTokenByIdSQL);
             preparedStatement.setString(1, resetPasswordToken);
             preparedStatement.setString(2, userId);
@@ -1243,7 +1248,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateAllowedTimeSQL);
             preparedStatement.setString(1, time.getAllowedTime());
             preparedStatement.setString(2, time.getAllowedTime());
@@ -1261,7 +1266,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteAllowedTimeSQL);
             preparedStatement.setString(1, time);
             preparedStatement.executeUpdate();
@@ -1278,7 +1283,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateAllowedDateSQL);
             preparedStatement.setString(1, date.getAllowedDate());
             preparedStatement.setString(2, date.getAllowedDate());
@@ -1296,7 +1301,7 @@ public class MySQLDatabase implements DatabaseFacade {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = ConnectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteAllowedDateSQL);
             preparedStatement.setString(1, date);
             preparedStatement.executeUpdate();

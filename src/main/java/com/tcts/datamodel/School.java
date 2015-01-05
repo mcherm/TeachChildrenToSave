@@ -124,4 +124,31 @@ public class School {
     public void setLmiEligible(boolean lmiEligible) {
         this.lmiEligible = lmiEligible;
     }
+
+
+    /**
+     * Subroutine of getAddressInGoogleMapsForm. Appends s to buffer, EXCEPT
+     * that (1) append a '+' first if buffer is non-empty, (2) replace any
+     * spaces in s with '+'.
+     */
+    private void addWithSpace(StringBuffer buffer, String s) {
+        if (buffer.length() > 0) {
+            buffer.append('+');
+        }
+        buffer.append(s.replace(' ','+'));
+    }
+
+    /**
+     * Retrieves the address encoded so that it can be used as a search query
+     * for google maps.
+     */
+    public String getAddressInGoogleMapsForm() {
+        StringBuffer result = new StringBuffer();
+        addWithSpace(result, name);
+        addWithSpace(result, addressLine1);
+        addWithSpace(result, addressLine2);
+        addWithSpace(result, city);
+        addWithSpace(result, state);
+        return result.toString();
+    }
 }

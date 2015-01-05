@@ -1,13 +1,17 @@
 package com.tcts.database;
 
-import java.io.IOException;
+import com.tcts.common.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 
+@Component
 public class ConnectionFactory {
+
     static {
         // Do this at the TOP of the class so it will execute before anything else.
         try {
@@ -17,30 +21,22 @@ public class ConnectionFactory {
         }
     }
 
-	//static reference to itself
-    private static final ConnectionFactory instance = new ConnectionFactory();
-    private String dbUrl;
-    private String dbUsername;
-	private String dbPassword;
 
-    /** private constructor: use the ConnectionFactory.getConnection() to access the singleton instance. */
-    private ConnectionFactory() {
-        Properties properties = new Properties();
-        try {
-            properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
-        } catch(IOException err) {
-            throw new RuntimeException("Cannot read properties file to connect to database.", err);
-        }
-        dbUrl = properties.getProperty("db.url");
-        dbUsername = properties.getProperty("db.user");
-        dbPassword = properties.getProperty("db.pass");
+    @Autowired
+    Configuration configuration;
+
+
+    /**
+     * Returns a connection that can be used for accessing the database.
+     * <p>
+     * FIXME: For performance purposes, it would probably be better if we had
+     * some level of connection pooling.
+     */
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+                configuration.getProperty("db.url"),
+                configuration.getProperty("db.user"),
+                configuration.getProperty("db.pass"));
     }
-     
-    private Connection createConnection() throws SQLException {
-        return DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
-    }
-     
-    public static Connection getConnection() throws SQLException {
-        return instance.createConnection();
-    }
+
 }

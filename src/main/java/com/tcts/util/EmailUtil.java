@@ -2,8 +2,9 @@ package com.tcts.util;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 
+import com.tcts.common.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -21,22 +22,11 @@ import com.tcts.exception.AppConfigurationException;
 
 @Component
 public final class EmailUtil {
-	private static String awsAccessKeyId = "";
-	private static String awsSecretKey="";
-	
-	static String from = "";  // Replace with your "From" address. This address must be verified.
-                                                      // production access, this address must be verified.
-	public EmailUtil() {
+
+    Configuration configuration = new Configuration();
+
+    public EmailUtil() {
         // FIXME: Two of these are being created. Find out why, and make only one be created.
-        Properties properties = new Properties();
-        try {
-            properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
-        } catch(IOException err) {
-            throw new RuntimeException("Cannot read properties file to connect to database.", err);
-        }
-        awsAccessKeyId = properties.getProperty("aws.access_key");
-        awsSecretKey = properties.getProperty("aws.secret_access_key");
-        from = properties.getProperty("email.from");
     }
     
     public void sendEmail(String text,Map<String,Object> model) throws IOException, AppConfigurationException {
@@ -56,12 +46,15 @@ public final class EmailUtil {
         Message message = new Message().withSubject(subject).withBody(body);
         
         // Assemble the email.
+        String from = configuration.getProperty("email.from");
         SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
         
         try
         {        
            
-            AWSCredentials credentials = new BasicAWSCredentials(awsAccessKeyId,awsSecretKey);
+            AWSCredentials credentials = new BasicAWSCredentials(
+                    configuration.getProperty("aws.access_key"),
+                    configuration.getProperty("aws.secret_access_key"));
             AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient(credentials);
             //AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
                
