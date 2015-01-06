@@ -106,7 +106,7 @@
                             "        <input type='hidden' name='eventId' value='" + event.eventId +"'/>" +
                             "        <input type='hidden' name='doneURL' value='eventRegistration.htm'/>" +
                             "        <button class='editOrRegister details' type='submit'>Details</button>" +
-                            "    </form></td>"
+                            "    </form></td>" +
                             "    <td>" +
                             "        <div class='createEventForm'>" +
                             "            <form method='POST' action='eventRegistration.htm'>" +
