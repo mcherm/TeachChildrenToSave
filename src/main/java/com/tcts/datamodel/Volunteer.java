@@ -1,5 +1,7 @@
 package com.tcts.datamodel;
 
+import com.tcts.database.MySQLDatabase;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +24,7 @@ public class Volunteer extends User {
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         super.populateFieldsFromResultSetRow(resultSet);
         setBankId(resultSet.getString("organization_id"));
-        setApproved(resultSet.getInt("user_status") == 1);
+        setApproved(resultSet.getInt("user_status") == MySQLDatabase.APPROVAL_STATUS_NORMAL);
         setCraHours(new BigDecimal(0)); // FIXME: Need column in DB for this, right?
     }
 

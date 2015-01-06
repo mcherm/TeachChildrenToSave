@@ -1,6 +1,7 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -92,15 +93,31 @@ public class UserHomePageController {
      */
     @RequestMapping(value = "bankAdminHome", method = RequestMethod.GET)
     public String showBankAdminHomePage(HttpSession session, Model model) throws SQLException {
+        // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();
         if (bankAdmin == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in bank admin.");
         }
+
+        // --- Obtain and sort the volunteers ---
         List<Volunteer> volunteers = database.getVolunteersByBank(bankAdmin.getBankId());
-        model.addAttribute("volunteers", volunteers);
+        List<Volunteer> normalVolunteers = new ArrayList<Volunteer>(volunteers.size());
+        List<Volunteer> suspendedVolunteers = new ArrayList<Volunteer>();
+        for (Volunteer volunteer : volunteers) {
+            if (volunteer.isApproved()) {
+                normalVolunteers.add(volunteer);
+            } else {
+                suspendedVolunteers.add(volunteer);
+            }
+        }
+
+        // --- Show homepage ---
+        model.addAttribute("normalVolunteers", normalVolunteers);
+        model.addAttribute("suspendedVolunteers", suspendedVolunteers);
         return "bankAdminHome";
     }
+
 
     /**
      * Render the home page for a teacher.

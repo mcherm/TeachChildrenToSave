@@ -120,9 +120,33 @@ public class CancelWithdrawController {
             throw new NotOwnedByYouException();
         }
 
+        // --- Perform the withdraw ---
+        withdrawFromAnEvent(database, templateUtil, emailUtil, event);
+
+        // --- Done ---
+        return "redirect:" + loggedInVolunteer.getUserType().getHomepage();
+    }
+
+
+    /**
+     * Subroutine that actually withdraws a volunteer from an event. Exposed
+     * here so it can be shared from other locations.
+     * <p>
+     * FIXME: I think that this should NOT send an email to the volunteer, but
+     * instead to the TEACHER. (The volunteer will be performing the action
+     * or be notified by some other means. However, I will not make that change
+     * right at the moment.
+     */
+    public static void withdrawFromAnEvent(
+            DatabaseFacade database,
+            TemplateUtil templateUtil,
+            EmailUtil emailUtil,
+            Event event
+        ) throws SQLException
+    {
         // --- Update the database ---
         try {
-            database.volunteerForEvent(eventId, null);
+            database.volunteerForEvent(event.getEventId(), null);
         } catch(NoSuchEventException err) {
             throw new RuntimeException("Shouldn't happen; we just checked if it was there.");
         }
@@ -132,27 +156,25 @@ public class CancelWithdrawController {
         // and the email should include formData.getWithdrawNotes()
 
         // 		--- Send Emails ---
-        
         if (event.getVolunteerId() != null) {
-        	try {
-        		Map<String,Object> emailModel = new <String, Object>HashMap();
-            	
-            	emailModel.put("to", loggedInVolunteer.getEmail());
-            	emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
-            	emailModel.put("class", event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
-            	//emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
-            	String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
+            Volunteer volunteer = (Volunteer) database.getUserById(event.getVolunteerId());
+            try {
+                Map<String,Object> emailModel = new <String, Object>HashMap();
+
+                emailModel.put("to", volunteer.getEmail());
+                emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
+                emailModel.put("class", event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
+                //emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
+                String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
                 emailUtil.sendEmail(emailContent, emailModel);
             } catch(AppConfigurationException err) {
                 // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + loggedInVolunteer.getEmail() + "'.");
+                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
             } catch(IOException err) {
                 // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + loggedInVolunteer.getEmail() + "'.");
+                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
             }
         }
-        // --- Done ---
-        return "redirect:" + loggedInVolunteer.getUserType().getHomepage();
     }
 
 

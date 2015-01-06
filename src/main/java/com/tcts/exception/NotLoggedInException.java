@@ -6,4 +6,14 @@ package com.tcts.exception;
  * logged in.
  */
 public class NotLoggedInException extends RuntimeException {
+
+    /** Empty constructor. */
+    public NotLoggedInException() {
+        super();
+    }
+
+    /** Construct with error message. */
+    public NotLoggedInException(String msg) {
+        super(msg);
+    }
 }

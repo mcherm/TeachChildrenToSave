@@ -157,6 +157,10 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String deleteAllowedDateSQL =
     		"delete from AllowedDates where event_date = ? ";
+
+    public final static int APPROVAL_STATUS_NORMAL = 0;
+    public final static int APPROVAL_STATUS_SUSPENDED = 1;
+    public final static int DEFAULT_APPROVAL_STATUS = APPROVAL_STATUS_NORMAL;
     
     
     @Autowired
@@ -583,8 +587,7 @@ public class MySQLDatabase implements DatabaseFacade {
 			preparedStatement.setString(6, userType.getDBValue());
 			preparedStatement.setString(7, organizationId);
 			preparedStatement.setString(8, phoneNumber);
-			preparedStatement.setInt(9, 0); // FIXME: This represents
-												// "not approved"
+			preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
 			try {
 				preparedStatement.executeUpdate();
 			} catch (MySQLIntegrityConstraintViolationException err) {
@@ -983,7 +986,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
             preparedStatement.setString(7, bankId);
             preparedStatement.setString(8, formData.getPhoneNumber());
-            preparedStatement.setInt(9, 0); // not meaningful
+            preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
             affectedRows = preparedStatement.executeUpdate();
             if (affectedRows != 1) {
                 throw new RuntimeException("Should never happen: we inserted one row!");
@@ -1067,7 +1070,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
                 preparedStatement.setString(7, formData.getBankId());
                 preparedStatement.setString(8, formData.getPhoneNumber());
-                preparedStatement.setInt(9, 0); // not meaningful
+                preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows != 1) {
                     throw new RuntimeException("Should never happen: we inserted one row!");
