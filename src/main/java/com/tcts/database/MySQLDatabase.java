@@ -54,7 +54,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
-            "bank_id, bank_name, bank_admin";
+            "bank_id, bank_name";
     private final static String schoolFields =
             "school_id, school_name, school_addr1, school_addr2, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible";
 

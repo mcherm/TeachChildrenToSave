@@ -42,8 +42,8 @@ create table Bank
     (
         bank_id INT NOT NULL AUTO_INCREMENT,
         bank_name VARCHAR(45) NOT NULL,
-        bank_admin INT,
-        PRIMARY KEY (bank_id)
+        PRIMARY KEY (bank_id),
+        UNIQUE KEY ix_name (bank_name)
     );
 
 drop table User;
@@ -58,12 +58,52 @@ create table User
         access_type VARCHAR(2) NOT NULL,
         organization_id INT,
         phone_number VARCHAR(45),
-        user_status INT,
+        user_status INT NOT NULL,
+        reset_password_token VARCHAR(500),
         PRIMARY KEY (user_id),
         UNIQUE KEY ix_email (email),
         INDEX ix_organization (organization_id),
         INDEX ix_type (access_type)
     );
 
-/* FIXME: This is missing the code for the "school" table.
-*/
+drop table School;
+create table School
+    (
+        school_id INT NOT NULL AUTO_INCREMENT,
+        school_name VARCHAR(80) NOT NULL,
+        school_addr1 VARCHAR(60) NOT NULL,
+        school_addr2 VARCHAR(60),
+        school_city VARCHAR(45) NOT NULL,
+        school_zip VARCHAR(10) NOT NULL,
+        school_county VARCHAR(45) NOT NULL,
+        school_district VARCHAR(45),
+        school_state VARCHAR(2) NOT NULL,
+        school_phone VARCHAR(45),
+        school_lmi_eligible INT,
+        school_SLC VARCHAR(10) NOT NULL,
+        PRIMARY KEY (school_id),
+        UNIQUE KEY ix_name (school_name)
+    );
+
+
+/* --- The following are just TEMPORARY tables for now, and are not used by the app --- */
+
+DROP TABLE Bank2;
+CREATE TABLE Bank2
+(bank_id     int(11)      NOT NULL AUTO_INCREMENT PRIMARY KEY
+  ,bank_name   VARCHAR(45)
+  ,bank_addr1  VARCHAR(45)
+  ,bank_addr2  VARCHAR(45)
+  ,bank_city   VARCHAR(45)
+  ,bank_state  VARCHAR(2)
+  ,bank_zip    VARCHAR(10)
+  ,bank_county VARCHAR(45)
+);
+
+DROP TABLE Activity_Logging;
+CREATE TABLE Activity_Logging
+    (
+        user_id INT,
+        activity_time DATETIME,
+        activity_type VARCHAR(1000)
+    );

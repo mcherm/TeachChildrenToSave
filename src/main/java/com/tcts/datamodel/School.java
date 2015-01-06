@@ -129,13 +129,15 @@ public class School {
     /**
      * Subroutine of getAddressInGoogleMapsForm. Appends s to buffer, EXCEPT
      * that (1) append a '+' first if buffer is non-empty, (2) replace any
-     * spaces in s with '+'.
+     * spaces in s with '+',  (3) does nothing if s is null.
      */
     private void addWithSpace(StringBuffer buffer, String s) {
-        if (buffer.length() > 0) {
-            buffer.append('+');
+        if (s != null) {
+            if (buffer.length() > 0) {
+                buffer.append('+');
+            }
+            buffer.append(s.replace(' ','+'));
         }
-        buffer.append(s.replace(' ','+'));
     }
 
     /**
