@@ -58,27 +58,8 @@
 
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
-                <h3>Bank Community Affairs Departments</h3>
-
-                <p>Why participate?</p>
-
-                <ul class="program_highlights">
-                    <li><span>Your bank may get CRA credits</span></li>
-                    <li><span>Over 90% of Delaware banks participate</span></li>
-                    <li><span>Note: Only members of the Delaware Banker's Associations can participate</span></li>
-                </ul>
-
-
-
-                <%--<center>--%>
-                <%--<br>--%>
-                <%--<a href="event.htm">Project Devs, click Here for Event Registration</a>--%>
-                <%--</center>--%>
-
-                <p>
-                    If you would like your bank to participate, please contact <span class="b">[NEED NAME AND CONTACT]</span>
-                    to begin participating in the program.
-                </p>
+                <h3>Already Registered?</h3>
+                <button onclick="js.loadURL('getLoginPage.htm');">Sign In</button>
 
             </main>
 
