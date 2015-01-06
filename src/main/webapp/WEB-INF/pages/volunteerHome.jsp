@@ -59,6 +59,9 @@
 		                    </tr>
 		                </thead>
 		                <tbody>
+                            <c:if test="${empty events}">
+                                <td colspan="8" class="emptyTableMessage">You have not signed up for any classes yet.</td>
+                            </c:if>
 		                    <c:forEach var="event" items="${events}">
 		                        <tr>
 		                            <td><c:out value="${event.eventDate.pretty}"/></td>

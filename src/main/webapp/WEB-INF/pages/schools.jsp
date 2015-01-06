@@ -61,6 +61,9 @@
                 </tr>
                 </thead>
                 <tbody>
+                <c:if test="${empty schools}">
+                    <td colspan="12" class="emptyTableMessage">There are no schools.</td>
+                </c:if>
                 <c:forEach var="school" items="${schools}">
                 <tr>
                     <td class="center"><c:out value="${school.schoolId}"/></td>

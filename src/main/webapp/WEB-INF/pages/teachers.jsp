@@ -44,6 +44,9 @@
                     </tr>
                     </thead>
                     <tbody>
+                        <c:if test="${empty teachers}">
+                            <td colspan="11" class="emptyTableMessage">There are no teachers.</td>
+                        </c:if>
                     <c:forEach var="teacher" items="${teachers}">
                     <tr>
                         <td><c:out value="${teacher.userId}"/></td>

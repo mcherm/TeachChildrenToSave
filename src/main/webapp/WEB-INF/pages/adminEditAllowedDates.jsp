@@ -46,6 +46,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <c:if test="${empty allowedDates}">
+                            <td colspan="3" class="emptyTableMessage">There are no allowed dates now.</td>
+                        </c:if>
                         <c:forEach var="time" items="${allowedDates}">
                             <tr>
                                 <td class-"timeColumn"><c:out value="${date}"/></td>

@@ -823,3 +823,8 @@ body.eventDetails div.label {
   font-weight: bold;
   margin-top: 2em;
 }
+
+td.emptyTableMessage {
+  font-style: italic;
+  text-align: center;
+}

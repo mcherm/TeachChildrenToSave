@@ -55,6 +55,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <c:if test="${empty banks}">
+                        <td colspan="6" class="emptyTableMessage">There are no banks.</td>
+                    </c:if>
                     <c:forEach var="bank" items="${banks}">
                         <tr>
                             <td><c:out value="${bank.bankName}"/></td>

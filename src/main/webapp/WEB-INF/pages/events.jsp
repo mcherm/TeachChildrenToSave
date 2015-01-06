@@ -57,6 +57,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <c:if test="${empty events}">
+                        <td colspan="8" class="emptyTableMessage">There are no events.</td>
+                    </c:if>
                 <c:forEach var="event" items="${events}">
                         <c:if test="${event.volunteerId == null}">
                             <tr>
