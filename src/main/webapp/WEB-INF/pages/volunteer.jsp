@@ -116,20 +116,9 @@
                         <label>
                             <div class="inputCnt">
                                 <div class="info">
-                                    Work Address Line 1
+                                    Work Address
                                 </div>
                                 <form:input path="addressLine1" />
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="formElementCnt">
-                        <label>
-                            <div class="inputCnt">
-                                <div class="info">
-                                    Work Address Line 2
-                                </div>
-                                <form:input path="addressLine2" />
                             </div>
                         </label>
                     </div>

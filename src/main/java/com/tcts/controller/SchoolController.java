@@ -212,7 +212,6 @@ public class SchoolController {
         formData.setDistrict(school.getSchoolDistrict());
         formData.setPhone(school.getPhone());
         formData.setSchoolAddress1(school.getAddressLine1());
-        formData.setSchoolAddress2(school.getAddressLine2());
         formData.setSchoolName(school.getName());
         formData.setState(school.getState());
         formData.setZip(school.getZip());

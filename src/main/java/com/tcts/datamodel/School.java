@@ -11,7 +11,6 @@ public class School {
     private String schoolId;
     private String name;
     private String addressLine1;
-    private String addressLine2;
     private String city;
     private String state;
     private String zip;
@@ -28,7 +27,6 @@ public class School {
         setSchoolId(resultSet.getString("school_id"));
         setName(resultSet.getString("school_name"));
         setAddressLine1(resultSet.getString("school_addr1"));
-        setAddressLine2(resultSet.getString("school_addr2"));
         setCity(resultSet.getString("school_city"));
         setState(resultSet.getString("school_state"));
         setZip(resultSet.getString("school_zip"));
@@ -61,14 +59,6 @@ public class School {
 
     public void setAddressLine1(String addressLine1) {
         this.addressLine1 = addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
-    }
-
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
     }
 
     public String getCity() {
@@ -157,7 +147,6 @@ public class School {
     public String getAddressInGoogleMapsForm() {
         StringBuffer result = new StringBuffer();
         addWithSpace(result, addressLine1);
-        addWithSpace(result, addressLine2);
         addWithSpace(result, city);
         addWithSpace(result, state);
         return result.toString();

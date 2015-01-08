@@ -73,7 +73,6 @@
                     <div id="schoolAddressField">
                         <div class="label">School Address</div>
                         <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.addressLine1}"/></div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.addressLine2}"/></div>
                         <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.city}"/></div>
                         <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.state}"/></div>
                         <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.zip}"/></div>

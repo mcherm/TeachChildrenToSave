@@ -43,8 +43,7 @@
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Address1</th>
-                    <th scope="col">Address2</th>
+                    <th scope="col">Address</th>
                     <th scope="col">City</th>
                     <th scope="col">State</th>
                     <th scope="col">Zip</th>
@@ -69,7 +68,6 @@
                 <tr>
                     <td><c:out value="${school.name}"/></td>
                     <td><c:out value="${school.addressLine1}"/></td>
-                    <td><c:out value="${school.addressLine2}"/></td>
                     <td><c:out value="${school.city}"/></td>
                     <td><c:out value="${school.state}"/></td>
                     <td><c:out value="${school.zip}"/></td>

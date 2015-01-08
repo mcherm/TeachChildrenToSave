@@ -20,7 +20,6 @@
             <div>
                 <div>Work Address</div>
                 <div>${addressLine1}</div>
-                <div>${addressLine2}</div>
                 <div>${state}</div>
                 <div>${city} - ${zipcode}</div>
             </div>

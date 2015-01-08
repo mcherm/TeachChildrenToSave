@@ -56,7 +56,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String bankFields =
             "bank_id, bank_name";
     private final static String schoolFields =
-            "school_id, school_name, school_addr1, school_addr2, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible, school_SLC";
+            "school_id, school_name, school_addr1, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible, school_SLC";
 
     private final static String getUserByIdSQL =
             "select " + userFields + " from User where user_id = ?";
@@ -105,7 +105,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "update Event set volunteer_id = ? where event_id = ?";
     
     private final static String insertSchoolSQL  =
-    		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible,school_SLC) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    		"insert into School (school_name,school_addr1,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible,school_SLC) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     
     private final static String insertBankSQL =
     		"insert into Bank (bank_name) VALUES (?)";
@@ -137,7 +137,7 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String updateSchoolByIdSQL =
     		"UPDATE School SET " +
-    		"school_name = ?,school_addr1 = ?,school_addr2 = ?,school_city = ?,school_zip = ?,school_county = ?," +
+    		"school_name = ?,school_addr1 = ?,school_city = ?,school_zip = ?,school_county = ?," +
     		"school_district = ?,school_state = ?,school_phone = ?,school_lmi_eligible = ?,school_SLC = ? WHERE school_id = ?";
 
     private final static String updateUserCredentialsByIdSQL =
@@ -742,16 +742,15 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement = connection.prepareStatement(updateSchoolByIdSQL);
             preparedStatement.setString(1, formData.getSchoolName());
             preparedStatement.setString(2, formData.getSchoolAddress1());
-            preparedStatement.setString(3, formData.getSchoolAddress2());
-            preparedStatement.setString(4, formData.getCity());
-            preparedStatement.setString(5, formData.getZip());
-            preparedStatement.setString(6, formData.getCounty());
-            preparedStatement.setString(7, formData.getDistrict());
-            preparedStatement.setString(8, formData.getState());
-            preparedStatement.setString(9, formData.getPhone());
-            preparedStatement.setString(10, formData.getLmiEligible());
-            preparedStatement.setString(11, formData.getSLC());
-            preparedStatement.setString(12, formData.getSchoolId());
+            preparedStatement.setString(3, formData.getCity());
+            preparedStatement.setString(4, formData.getZip());
+            preparedStatement.setString(5, formData.getCounty());
+            preparedStatement.setString(6, formData.getDistrict());
+            preparedStatement.setString(7, formData.getState());
+            preparedStatement.setString(8, formData.getPhone());
+            preparedStatement.setString(9, formData.getLmiEligible());
+            preparedStatement.setString(10, formData.getSLC());
+            preparedStatement.setString(11, formData.getSchoolId());
             preparedStatement.executeUpdate();
         } 
         finally {
@@ -1140,15 +1139,14 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement = connection.prepareStatement(insertSchoolSQL);
             preparedStatement.setString(1, formData.getSchoolName());
             preparedStatement.setString(2, formData.getSchoolAddress1());
-            preparedStatement.setString(3, formData.getSchoolAddress2());
-            preparedStatement.setString(4, formData.getCity());
-            preparedStatement.setString(5, formData.getZip());
-            preparedStatement.setString(6, formData.getCounty());
-            preparedStatement.setString(7, formData.getDistrict());
-            preparedStatement.setString(8, formData.getState());
-            preparedStatement.setString(9, formData.getPhone());
-            preparedStatement.setInt(10, Integer.parseInt(formData.getLmiEligible()));
-            preparedStatement.setString(11, formData.getSLC());
+            preparedStatement.setString(3, formData.getCity());
+            preparedStatement.setString(4, formData.getZip());
+            preparedStatement.setString(5, formData.getCounty());
+            preparedStatement.setString(6, formData.getDistrict());
+            preparedStatement.setString(7, formData.getState());
+            preparedStatement.setString(8, formData.getPhone());
+            preparedStatement.setInt(9, Integer.parseInt(formData.getLmiEligible()));
+            preparedStatement.setString(10, formData.getSLC());
 
             preparedStatement.execute();
 

@@ -24,12 +24,8 @@
                 </div>
                 
                 <div class="row_div_right">
-                    <div class="caption_div"><form:label path="addressLine1">Address Line1</form:label></div>
+                    <div class="caption_div"><form:label path="addressLine1">Address</form:label></div>
                     <div class="field_div"><c:out value="${school.addressLine1}"/></div>
-                </div>
-                <div class="row_div_right">
-                    <div class="caption_div"><form:label path="addressLine1">Address Line2</form:label></div>
-                    <div class="field_div"><c:out value="${school.addressLine2}"/></div>
                 </div>
                 <div class="row_div_right">
                     <div class="caption_div"><form:label path="addressLine1">City</form:label></div>

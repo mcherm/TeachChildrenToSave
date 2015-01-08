@@ -6,7 +6,6 @@ package com.tcts.formdata;
 public class CreateSchoolFormData {
     private String schoolName;
     private String schoolAddress1;
-    private String schoolAddress2;
     private String city;
     private String zip;
     private String county;
@@ -27,12 +26,6 @@ public class CreateSchoolFormData {
 	}
 	public void setSchoolAddress1(String schoolAddress1) {
 		this.schoolAddress1 = schoolAddress1;
-	}
-	public String getSchoolAddress2() {
-		return schoolAddress2;
-	}
-	public void setSchoolAddress2(String schoolAddress2) {
-		this.schoolAddress2 = schoolAddress2;
 	}
 	public String getCity() {
 		return city;

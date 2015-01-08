@@ -46,20 +46,9 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        School Address Line1
+                                        School Address
                                     </div>
                                     <form:input path="schoolAddress1" />
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="formElementCnt">
-                            <label>
-                                <div class="inputCnt">
-                                    <div class="info">
-                                        Schoo Address Line2
-                                    </div>
-                                    <form:input path="schoolAddress2" />
                                 </div>
                             </label>
                         </div>

@@ -21,7 +21,6 @@
                         'phoneNumber': '<c:out value="${event.linkedTeacher.phoneNumber}"/>',
                         'schoolName': '<c:out value="${event.linkedTeacher.linkedSchool.name}"/>',
                         'addressLine1': '<c:out value="${event.linkedTeacher.linkedSchool.addressLine1}"/>',
-                        'addressLine2': '<c:out value="${event.linkedTeacher.linkedSchool.addressLine2}"/>',
                         'city': '<c:out value="${event.linkedTeacher.linkedSchool.city}"/>',
                         'state': '<c:out value="${event.linkedTeacher.linkedSchool.state}"/>',
                         'zip': '<c:out value="${event.linkedTeacher.linkedSchool.zip}"/>',
