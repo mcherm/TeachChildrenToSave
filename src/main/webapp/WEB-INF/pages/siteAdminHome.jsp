@@ -51,21 +51,8 @@
 	                	</button>
 	                </li>
 
-					<%-- same as Remove/Edit Teachers --%>
-	                <%--<li class="mb1">--%>
-	                	<%--<button onclick="js.loadURL('teacher/teachers.htm');" class="editOrRegister">--%>
-	                		<%--List Teachers--%>
-	                	<%--</button>--%>
-	                <%--</li>--%>
-	                
 	                <li class="mb1">
-	                	<button onclick="js.loadURL(volunteers.htm');" class="editOrRegister">
-	                		List Volunteers
-	                	</button>
-	                </li>
-	                
-	                <li class="mb1">
-	                	<button onclick="js.loadURL('class/classes.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('viewEditEvents.htm');" class="editOrRegister">
 	                		List Classes
 	                	</button>
 	                </li>

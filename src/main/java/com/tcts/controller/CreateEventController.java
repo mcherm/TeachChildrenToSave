@@ -45,7 +45,7 @@ public class CreateEventController {
     @RequestMapping(value="/createEvent", method= RequestMethod.GET)
     public String showCreateEventPage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getTeacher() == null && sessionData.getSiteAdmin() == null) {
+        if (sessionData.getTeacher() == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         model.addAttribute("formData", new CreateEventFormData());
@@ -73,7 +73,7 @@ public class CreateEventController {
     {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
-        if (teacher == null && sessionData.getSiteAdmin() == null) {
+        if (teacher == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         // --- Validation Rules ---
