@@ -23,6 +23,17 @@
 
                 <h1>Volunteers Information</h1>
 
+                <div id="actions">
+
+                    <h2>Actions</h2>
+
+                    <ul class="noUl">
+                        <li class="mb1">
+                            <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
+                        </li>
+                    </ul>
+                </div>
+
                 <table id="approvedVolunteersTable">
                     <thead>
                     <tr>

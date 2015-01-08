@@ -22,16 +22,20 @@
                     Edit Allowed Dates
                 </h1>
 
-                <%--<div id="actions">--%>
+                <div id="actions">
 
-                    <%--<h2>Actions</h2>--%>
+                    <h2>Actions</h2>
 
-                    <%--<ul class="noUl">--%>
-                        <%--<li class="mb1">--%>
-                            <%--<button onclick="" class="editOrRegister add">Add</button>--%>
-                        <%--</li>--%>
-                    <%--</ul>--%>
-                <%--</div>--%>
+                    <ul class="noUl">
+                        <li class="mb1">
+                            <button onclick="alert('not implemented yet')" class="editOrRegister">Add Date</button>
+                        </li>
+
+                        <li class="mb1">
+                            <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
+                        </li>
+                    </ul>
+                </div>
 
                 <table id="adminEditAllowedTimesTable">
                     <thead>

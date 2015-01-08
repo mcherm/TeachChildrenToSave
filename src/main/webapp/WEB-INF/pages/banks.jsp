@@ -34,7 +34,7 @@
                     </li>
 
                     <li class="mb1">
-                        <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Cancel</button>
+                        <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                     </li>
                 </ul>
             </div>
