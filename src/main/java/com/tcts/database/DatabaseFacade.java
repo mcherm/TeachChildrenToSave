@@ -143,8 +143,17 @@ public interface DatabaseFacade {
      * This deletes the indicated event, or throws NoSuchEventException if it does not exist.
      */
     public void deleteEvent(String eventId) throws SQLException, NoSuchEventException;
-    
-    public List<Event> getEvents() throws SQLException, InconsistentDatabaseException;
+
+    /**
+     * Return the list of all events.
+     * <p>
+     * To make things faster, this has been special-cased a bit. This call promises
+     * to return Event objects in which the linkedTeacher has been set and those
+     * teachers have the linkedSchool set; also if the volunteerId for the event is
+     * not null then the linkedVolunteer will be set it will have the linkedBank
+     * set. This way a single call returns all the data that is needed.
+     */
+    public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException;
 
     /** Returns the indicated event object, or null if it does not exist. */
     public Event getEventById(String eventId) throws SQLException;

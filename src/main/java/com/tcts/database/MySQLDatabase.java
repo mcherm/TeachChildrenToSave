@@ -73,8 +73,15 @@ public class MySQLDatabase implements DatabaseFacade {
 
     private final static String getEventByIdSQL =
             "select " + eventFields + " from Event where event_id = ?";
-    private final static String getAllEventsSQL =
-            "select " + eventFields + " from Event ";
+    private final static String getAllEventsWithTeacherAndSchoolAndVolunteerAndBankSQL =
+            "select " + eventFields + ", " + prefixFieldsWith("teacher.", userFields) + ", " + schoolFields +
+                    ", " + prefixFieldsWith("volunteer.",userFields) + ", " + bankFields +
+                    " from Event" +
+                    " join User teacher on teacher_id = teacher.user_id" +
+                    " join School on teacher.organization_id = school_id" +
+                    " left join User volunteer on volunteer_id = volunteer.user_id" +
+                    " left join Bank on volunteer.organization_id = bank_id" +
+                    " order by school_name asc, teacher.last_name asc, event_date asc";
     private final static String getEventsByTeacherSQL =
             "select " + eventFields + " from Event where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
@@ -158,7 +165,30 @@ public class MySQLDatabase implements DatabaseFacade {
     public final static int APPROVAL_STATUS_NORMAL = 0;
     public final static int APPROVAL_STATUS_SUSPENDED = 1;
     public final static int DEFAULT_APPROVAL_STATUS = APPROVAL_STATUS_NORMAL;
-    
+
+
+    /**
+     * This is a subroutine used to build the SQL queries in a few complex cases.
+     * It takes a prefix and a ", " separated list of strings. It returns the same
+     * list of strings, but with the prefix before each one. Thus,
+     * <code>prefixFieldsWith("t.", "owner, user, size")</code> results in
+     * <code>"t.owner, t.user, t.size"</code>
+     */
+    private static String prefixFieldsWith(String prefix, String fieldString) {
+        String[] fields = fieldString.split("\\,\\s?");
+        StringBuilder result = new StringBuilder();
+        boolean firstTimeThroughTheLoop = true;
+        for (String field : fields) {
+            if (firstTimeThroughTheLoop) {
+                firstTimeThroughTheLoop = false;
+            } else {
+                result.append(", ");
+            }
+            result.append(prefix);
+            result.append(field);
+        }
+        return result.toString();
+    }
     
     @Autowired
     private ConnectionFactory connectionFactory;
@@ -869,7 +899,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public List<Event> getEvents() throws SQLException,
+	public List<Event> getAllEvents() throws SQLException,
 			InconsistentDatabaseException {
 		List<Event> events = new ArrayList<Event>();
         Connection connection = null;
@@ -877,19 +907,26 @@ public class MySQLDatabase implements DatabaseFacade {
         ResultSet resultSet = null;
         try {
             connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getAllEventsSQL);
+            preparedStatement = connection.prepareStatement(getAllEventsWithTeacherAndSchoolAndVolunteerAndBankSQL);
             
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Event event = new Event();
-                event.setEventId(resultSet.getString("event_id"));
-                event.setTeacherId(resultSet.getString("teacher_id"));
-                event.setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
-                event.setEventTime(resultSet.getString("event_time"));
-                event.setGrade(resultSet.getString("grade"));
-                event.setNumberStudents(resultSet.getInt("number_students"));
-                event.setNotes(resultSet.getString("notes"));
-                event.setVolunteerId(resultSet.getString("volunteer_id"));
+                event.populateFieldsFromResultSetRow(resultSet);
+                Teacher teacher = new Teacher();
+                teacher.populateFieldsFromResultSetRowWithPrefix(resultSet, "teacher.");
+                event.setLinkedTeacher(teacher);
+                School school = new School();
+                school.populateFieldsFromResultSetRow(resultSet);
+                teacher.setLinkedSchool(school);
+                if (event.getVolunteerId() != null) {
+                    Volunteer volunteer = new Volunteer();
+                    volunteer.populateFieldsFromResultSetRowWithPrefix(resultSet, "volunteer.");
+                    event.setLinkedVolunteer(volunteer);
+                    Bank bank = new Bank();
+                    bank.populateFieldsFromResultSetRow(resultSet);
+                    volunteer.setLinkedBank(bank);
+                }
                 events.add(event);
             }
             return events;

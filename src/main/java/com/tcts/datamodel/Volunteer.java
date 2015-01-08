@@ -2,7 +2,6 @@ package com.tcts.datamodel;
 
 import com.tcts.database.MySQLDatabase;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -13,7 +12,6 @@ public class Volunteer extends User {
     // --- Basic data fields ---
     private String bankId;
     private boolean isApproved;
-    private BigDecimal craHours;
 
     // --- Linked data - loaded only when needed ---
     private Bank linkedBank;
@@ -21,11 +19,16 @@ public class Volunteer extends User {
     /**
      * This can be called to populate fields from the current row of a resultSet.
      */
+    @Override
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        super.populateFieldsFromResultSetRow(resultSet);
-        setBankId(resultSet.getString("organization_id"));
-        setApproved(resultSet.getInt("user_status") == MySQLDatabase.APPROVAL_STATUS_NORMAL);
-        setCraHours(new BigDecimal(0)); // FIXME: Need column in DB for this, right?
+        populateFieldsFromResultSetRowWithPrefix(resultSet, "");
+    }
+
+    @Override
+    public void populateFieldsFromResultSetRowWithPrefix(ResultSet resultSet, String prefix) throws SQLException {
+        super.populateFieldsFromResultSetRowWithPrefix(resultSet, prefix);
+        setBankId(resultSet.getString(prefix + "organization_id"));
+        setApproved(resultSet.getInt(prefix + "user_status") == MySQLDatabase.APPROVAL_STATUS_NORMAL);
     }
 
     public String getBankId() {
@@ -42,14 +45,6 @@ public class Volunteer extends User {
 
     public void setApproved(boolean approved) {
         isApproved = approved;
-    }
-
-    public BigDecimal getCraHours() {
-        return craHours;
-    }
-
-    public void setCraHours(BigDecimal craHours) {
-        this.craHours = craHours;
     }
 
     public Bank getLinkedBank() {

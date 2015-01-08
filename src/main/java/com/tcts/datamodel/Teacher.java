@@ -17,9 +17,15 @@ public class Teacher extends User {
     /**
      * This can be called to populate fields from the current row of a resultSet.
      */
+    @Override
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        super.populateFieldsFromResultSetRow(resultSet);
-        setSchoolId(resultSet.getString("organization_id"));
+        populateFieldsFromResultSetRowWithPrefix(resultSet, "");
+    }
+
+    @Override
+    public void populateFieldsFromResultSetRowWithPrefix(ResultSet resultSet, String prefix) throws SQLException {
+        super.populateFieldsFromResultSetRowWithPrefix(resultSet, prefix);
+        setSchoolId(resultSet.getString(prefix + "organization_id"));
     }
 
     public String getSchoolId() {

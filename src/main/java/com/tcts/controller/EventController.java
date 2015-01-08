@@ -90,8 +90,7 @@ public class EventController {
             throw new InvalidParameterFromGUIException();
         }
 
-        model.addAttribute("events", database.getAllAvailableEvents());
-        return "events";
+        return "redirect:" + "viewEditEvents.htm";
     }
     
     /**
@@ -104,7 +103,7 @@ public class EventController {
             throw new NotLoggedInException();
         }
 
-        model.addAttribute("events", database.getAllAvailableEvents());
+        model.addAttribute("events", database.getAllEvents());
         return "events";
     }
     

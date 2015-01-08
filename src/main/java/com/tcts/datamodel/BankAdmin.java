@@ -12,6 +12,7 @@ public class BankAdmin extends User {
     /**
      * This can be called to populate fields from the current row of a resultSet.
      */
+    @Override
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         super.populateFieldsFromResultSetRow(resultSet);
         setBankId(resultSet.getString("organization_id"));

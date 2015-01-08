@@ -43,6 +43,8 @@
                         <th scope="col" class="center">Students</th>
                         <th scope="col">Teacher</th>
                         <th scope="col">School</th>
+                        <th scope="col">Volunteer</th>
+                        <th scope="col">Bank</th>
                         <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
                         <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
                         <th scope="col"><span class="ada-read">Column of Modify buttons</span></th>
@@ -50,38 +52,48 @@
                 </thead>
                 <tbody>
                     <c:if test="${empty events}">
-                        <td colspan="8" class="emptyTableMessage">There are no events.</td>
+                        <td colspan="8" class="emptyTableMessage">There are no classes.</td>
                     </c:if>
-                <c:forEach var="event" items="${events}">
-                        <c:if test="${event.volunteerId == null}">
-                            <tr>
-                                <td><c:out value="${event.eventDate.pretty}"/></td>
-                                <td><c:out value="${event.eventTime}"/></td>
-                                <td class="center"><c:out value="${event.grade}"/></td>
-                                <td class="center"><c:out value="${event.numberStudents}"/></td>
-                                <td>
-                                    <c:out value="${event.linkedTeacher.firstName}"/>
-                                    <c:out value="${event.linkedTeacher.lastName}"/>
-                                </td>
-                                <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
-                                <td>
-                                    <form action="eventDetails.htm" method="POST">
-                                        <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
-                                        <input type="hidden" name="doneURL" value="viewEditEvents.htm"/>
-                                        <button class="editOrRegister details" type="submit">Details</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <form method="POST" action="deleteEvent.htm" modelAttribute="formData">
-                                        <input type="hidden" name="eventId" value='<c:out value="${event.eventId}"/>' />
-                                        <button type="submit" class="editOrRegister delete">Delete</button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <button onclick="js.loadURL('editEvent.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister">Modify</button>
-                                </td>
-                            </tr>
-                        </c:if>
+                    <c:forEach var="event" items="${events}">
+                        <tr>
+                            <td><c:out value="${event.eventDate.pretty}"/></td>
+                            <td><c:out value="${event.eventTime}"/></td>
+                            <td class="center"><c:out value="${event.grade}"/></td>
+                            <td class="center"><c:out value="${event.numberStudents}"/></td>
+                            <td>
+                                <c:out value="${event.linkedTeacher.firstName}"/>
+                                <c:out value="${event.linkedTeacher.lastName}"/>
+                            </td>
+                            <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
+                            <c:choose>
+                                <c:when test="${empty event.volunteerId}">
+                                    <td colspan="2" class="emptyTableMessage">None yet.</td>
+                                </c:when>
+                                <c:otherwise>
+                                    <td>
+                                        <c:out value="${event.linkedVolunteer.firstName}"/>
+                                        <c:out value="${event.linkedVolunteer.lastName}"/>
+                                    </td>
+                                    <td><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></td>
+                                </c:otherwise>
+                            </c:choose>
+                            <td>
+                                <form action="eventDetails.htm" method="POST">
+                                    <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
+                                    <input type="hidden" name="doneURL" value="viewEditEvents.htm"/>
+                                    <button class="editOrRegister details" type="submit">Details</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="POST" action="deleteEvent.htm" modelAttribute="formData">
+                                    <input type="hidden" name="eventId" value='<c:out value="${event.eventId}"/>' />
+                                    <button type="submit" class="editOrRegister delete">Delete</button>
+                                </form>
+                            </td>
+                            <td>
+                                <button onclick="js.loadURL('editEvent.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister">Modify</button>
+                            </td>
+                        </tr>
                     </c:forEach>
                 </tbody>
             </table>
