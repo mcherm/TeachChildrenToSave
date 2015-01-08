@@ -175,8 +175,6 @@ public interface DatabaseFacade {
 	User updateVolunteer(Volunteer volunteer) throws SQLException,
 			EmailAlreadyInUseException;
 	
-	public List<? super User> getAllUsers() throws SQLException, InconsistentDatabaseException;
-
 	/** Changes the password (and salt) for an existing user. */
 	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException;
 	

@@ -64,9 +64,6 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getUserByTypeSQL =
             "select " + userFields + " from User where access_type = ?";
     
-    private final static String getAllUserSQL =
-            "select " + userFields + " from User";
-    
     private final static String getUserByEmailSQL =
             "select " + userFields + " from User where email = ?";
     private final static String getVolunteersByBankSQL =
@@ -1156,58 +1153,6 @@ public class MySQLDatabase implements DatabaseFacade {
 	}
 
 
-	@Override
-	public List<? super User> getAllUsers() throws SQLException,
-			InconsistentDatabaseException {
-		Connection connection = null;
-        List<? super User> usersList = new ArrayList<>();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getAllUserSQL);
-            resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
-            while (resultSet.next()) {
-                numberOfRows++;
-                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
-                switch(userType) {
-                    case VOLUNTEER: {
-                        Volunteer volunteer = new Volunteer();
-                        volunteer.populateFieldsFromResultSetRow(resultSet);
-                        usersList.add(volunteer);
-                    } break;
-                    case TEACHER: {
-                        Teacher teacher = new Teacher();
-                        teacher.populateFieldsFromResultSetRow(resultSet);
-                        usersList.add(teacher);
-                    } break;
-                    case BANK_ADMIN: {
-                        BankAdmin bankAdmin = new BankAdmin();
-                        bankAdmin.populateFieldsFromResultSetRow(resultSet);
-                        usersList.add(bankAdmin);
-                    } break;
-                    case SITE_ADMIN: {
-                        SiteAdmin siteAdmin = new SiteAdmin();
-                        siteAdmin.populateFieldsFromResultSetRow(resultSet);
-                        usersList.add(siteAdmin);
-                    } break;
-                    default: {
-                        throw new RuntimeException("This should never occur.");
-                    }
-                }
-             
-            }
-            if (numberOfRows < 1) {
-                return null; // No user found
-            } else {
-            	return usersList;
-            } 
-        } finally {
-            closeSafely(connection, preparedStatement, resultSet);
-        }
-	}
-	
 	@Override
 	public void updateUserCredential(String userId, String hashedPassword, String salt)
             throws SQLException
