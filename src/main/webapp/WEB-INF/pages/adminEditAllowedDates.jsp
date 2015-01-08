@@ -55,7 +55,7 @@
                         </c:if>
                         <c:forEach var="time" items="${allowedDates}">
                             <tr>
-                                <td class-"timeColumn"><c:out value="${date}"/></td>
+                                <td class="timeColumn"><c:out value="${date}"/></td>
                                 
                                 <td>
 			                        <form method="POST" action="allowedDateDelete.htm" modelAttribute="formData">

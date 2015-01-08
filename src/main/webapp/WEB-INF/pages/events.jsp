@@ -21,7 +21,7 @@
 
         <main id="main">
 
-            <h1>Class</h1>
+            <h1>Classes</h1>
 
             <div id="actions">
 

@@ -70,6 +70,11 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + userFields + " from User where access_type = 'V' and organization_id = ?";
     private final static String getBankAdminByBankSQL =
             "select " + userFields + " from User where access_type = 'BA' and organization_id = ?";
+
+    private final static String getEventByIdSQL =
+            "select " + eventFields + " from Event where event_id = ?";
+    private final static String getAllEventsSQL =
+            "select " + eventFields + " from Event ";
     private final static String getEventsByTeacherSQL =
             "select " + eventFields + " from Event where teacher_id = ?";
     private final static String getEventsByVolunteerSQL =
@@ -78,6 +83,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"select " + eventFields + ", " + userFields + ", " + schoolFields +
             " from Event join User on teacher_id = user_id join School on organization_id = school_id" +
             " where volunteer_id is null";
+
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank where bank_id = ?";
     private final static String getAllBanksSQL =
@@ -123,13 +129,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String deleteEventSQL =
     		"delete from Event where event_id=? ";
 
-    private final static String getEventsSQL =
-            "select " + eventFields + " from Event ";
-    
-    private final static String getEventByIdSQL =
-            "select " + eventFields + " from Event where event_id = ?";
-    
-    private final static String updateEventByIdSQL = 
+    private final static String updateEventByIdSQL =
     		"UPDATE Event SET event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ? WHERE event_id = ?";
     
     private final static String updateSchoolByIdSQL =
@@ -877,7 +877,7 @@ public class MySQLDatabase implements DatabaseFacade {
         ResultSet resultSet = null;
         try {
             connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getEventsSQL);
+            preparedStatement = connection.prepareStatement(getAllEventsSQL);
             
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
