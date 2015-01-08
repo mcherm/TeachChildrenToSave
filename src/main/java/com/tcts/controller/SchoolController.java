@@ -216,6 +216,8 @@ public class SchoolController {
         formData.setSchoolName(school.getName());
         formData.setState(school.getState());
         formData.setZip(school.getZip());
+        formData.setLmiEligible(Integer.toString(school.getLmiEligible()));
+        formData.setSLC(school.getSLC());
         
         return formData;
     }

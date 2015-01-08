@@ -580,7 +580,7 @@ insert into Event
  volunteer_id
 )
   values
-  (3,
+  (4,
    DATE('2015-03-06'), '1:00 PM',
    4, 20, 'These are some notes.',
    5
@@ -592,7 +592,7 @@ insert into Event
  volunteer_id
 )
   values
-  (3,
+  (4,
    DATE('2015-03-06'), '9:00 AM',
    2, 15, '',
    null

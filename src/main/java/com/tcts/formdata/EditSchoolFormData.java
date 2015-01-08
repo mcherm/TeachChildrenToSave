@@ -1,7 +1,7 @@
 package com.tcts.formdata;
 
 /**
- * The data fields needed to edit a bank.
+ * The data fields needed to edit a school.
  */
 public class EditSchoolFormData extends CreateSchoolFormData {
     private String schoolId;

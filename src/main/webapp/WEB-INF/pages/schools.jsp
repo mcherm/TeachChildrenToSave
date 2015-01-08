@@ -42,7 +42,6 @@
             <table id="approvedVolunteersTable">
                 <thead>
                 <tr>
-                    <th scope="col" class="center">School ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Address1</th>
                     <th scope="col">Address2</th>
@@ -52,6 +51,8 @@
                     <th scope="col">County</th>
                     <th scope="col">District</th>
                     <th scope="col">Phone</th>
+                    <th scope="col">LMI Eligible</th>
+                    <th scope="col">SLC</th>
                     <th scope="col">
                         <span class="ada-read">Column of Delete buttons</span>
                     </th>
@@ -66,7 +67,6 @@
                 </c:if>
                 <c:forEach var="school" items="${schools}">
                 <tr>
-                    <td class="center"><c:out value="${school.schoolId}"/></td>
                     <td><c:out value="${school.name}"/></td>
                     <td><c:out value="${school.addressLine1}"/></td>
                     <td><c:out value="${school.addressLine2}"/></td>
@@ -76,6 +76,8 @@
                     <td><c:out value="${school.county}"/></td>
                     <td><c:out value="${school.schoolDistrict}"/></td>
                     <td><c:out value="${school.phone}"/></td>
+                    <td><c:out value="${school.lmiEligible}"/></td>
+                    <td><c:out value="${school.SLC}"/></td>
                     <td>
                         <form method="POST" action="deleteSchool.htm" modelAttribute="formData">
                                     <input type="hidden" name="schoolId" value='<c:out value="${school.schoolId}"/>' />

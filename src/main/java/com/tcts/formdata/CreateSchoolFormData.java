@@ -1,7 +1,7 @@
 package com.tcts.formdata;
 
 /**
- * The data fields needed to create a bank and its associated bank admin.
+ * The data fields needed to create a school.
  */
 public class CreateSchoolFormData {
     private String schoolName;
@@ -14,6 +14,7 @@ public class CreateSchoolFormData {
     private String state;
     private String phone;
     private String lmiEligible;
+    private String SLC;
     
 	public String getSchoolName() {
 		return schoolName;
@@ -75,8 +76,10 @@ public class CreateSchoolFormData {
 	public void setLmiEligible(String lmiEligible) {
 		this.lmiEligible = lmiEligible;
 	}
-	
-
-    
-
+    public String getSLC() {
+        return SLC;
+    }
+    public void setSLC(String SLC) {
+        this.SLC = SLC;
+    }
 }

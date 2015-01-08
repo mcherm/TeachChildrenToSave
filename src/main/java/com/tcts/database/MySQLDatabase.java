@@ -56,7 +56,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String bankFields =
             "bank_id, bank_name";
     private final static String schoolFields =
-            "school_id, school_name, school_addr1, school_addr2, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible";
+            "school_id, school_name, school_addr1, school_addr2, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible, school_SLC";
 
     private final static String getUserByIdSQL =
             "select " + userFields + " from User where user_id = ?";
@@ -105,7 +105,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "update Event set volunteer_id = ? where event_id = ?";
     
     private final static String insertSchoolSQL  =
-    		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    		"insert into School (school_name,school_addr1,school_addr2,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible,school_SLC) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     
     private final static String insertBankSQL =
     		"insert into Bank (bank_name) VALUES (?)";
@@ -138,7 +138,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String updateSchoolByIdSQL =
     		"UPDATE School SET " +
     		"school_name = ?,school_addr1 = ?,school_addr2 = ?,school_city = ?,school_zip = ?,school_county = ?," +
-    		"school_district = ?,school_state = ?,school_phone = ?,school_lmi_eligible = ? WHERE school_id = ?";
+    		"school_district = ?,school_state = ?,school_phone = ?,school_lmi_eligible = ?,school_SLC = ? WHERE school_id = ?";
 
     private final static String updateUserCredentialsByIdSQL =
     		"update User set password_salt = ?, password_hash = ? where user_id = ?";
@@ -733,24 +733,25 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public void modifySchool(EditSchoolFormData school) throws SQLException,
+	public void modifySchool(EditSchoolFormData formData) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateSchoolByIdSQL);
-            preparedStatement.setString(1, school.getSchoolName());
-            preparedStatement.setString(2, school.getSchoolAddress1());
-            preparedStatement.setString(3, school.getSchoolAddress2());
-            preparedStatement.setString(4, school.getCity());
-            preparedStatement.setString(5, school.getZip());
-            preparedStatement.setString(6, school.getCounty());
-            preparedStatement.setString(7, school.getDistrict());
-            preparedStatement.setString(8, school.getState());
-            preparedStatement.setString(9, school.getPhone());
-            preparedStatement.setString(10, school.getLmiEligible());
-            preparedStatement.setString(11, school.getSchoolId());
+            preparedStatement.setString(1, formData.getSchoolName());
+            preparedStatement.setString(2, formData.getSchoolAddress1());
+            preparedStatement.setString(3, formData.getSchoolAddress2());
+            preparedStatement.setString(4, formData.getCity());
+            preparedStatement.setString(5, formData.getZip());
+            preparedStatement.setString(6, formData.getCounty());
+            preparedStatement.setString(7, formData.getDistrict());
+            preparedStatement.setString(8, formData.getState());
+            preparedStatement.setString(9, formData.getPhone());
+            preparedStatement.setString(10, formData.getLmiEligible());
+            preparedStatement.setString(11, formData.getSLC());
+            preparedStatement.setString(12, formData.getSchoolId());
             preparedStatement.executeUpdate();
         } 
         finally {
@@ -1129,7 +1130,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-	public void insertNewSchool(CreateSchoolFormData school) throws SQLException,
+	public void insertNewSchool(CreateSchoolFormData formData) throws SQLException,
 			InconsistentDatabaseException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1137,16 +1138,17 @@ public class MySQLDatabase implements DatabaseFacade {
         try {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(insertSchoolSQL);
-            preparedStatement.setString(1, school.getSchoolName());
-            preparedStatement.setString(2, school.getSchoolAddress1());
-            preparedStatement.setString(3, school.getSchoolAddress2());
-            preparedStatement.setString(4, school.getCity());
-            preparedStatement.setString(5, school.getZip());
-            preparedStatement.setString(6, school.getCounty());
-            preparedStatement.setString(7, school.getDistrict());
-            preparedStatement.setString(8, school.getState());
-            preparedStatement.setString(9, school.getPhone());
-            preparedStatement.setInt(10, 1);
+            preparedStatement.setString(1, formData.getSchoolName());
+            preparedStatement.setString(2, formData.getSchoolAddress1());
+            preparedStatement.setString(3, formData.getSchoolAddress2());
+            preparedStatement.setString(4, formData.getCity());
+            preparedStatement.setString(5, formData.getZip());
+            preparedStatement.setString(6, formData.getCounty());
+            preparedStatement.setString(7, formData.getDistrict());
+            preparedStatement.setString(8, formData.getState());
+            preparedStatement.setString(9, formData.getPhone());
+            preparedStatement.setInt(10, Integer.parseInt(formData.getLmiEligible()));
+            preparedStatement.setString(11, formData.getSLC());
 
             preparedStatement.execute();
 

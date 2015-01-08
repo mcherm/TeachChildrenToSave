@@ -249,11 +249,14 @@
                     legend: 'Grade',
                     itemLabel: function(s) {return "Grade " + s;}
                 });
+                <%-- FIXME: Here I should have another checkbox for selecting by CRA Eligible --%>
+                <%--
                 createSelectionCheckboxes({
                     field: 'lmiEligible',
                     legend: 'CRA Eligible',
                     itemLabel: function(s) {return {'true': 'Yes', 'false': 'No'}[s];}
                 });
+                --%>
                 buildTable();
             });
         </script>

@@ -136,13 +136,24 @@
                                     <div class="info">
                                         LMI Eligible
                                     </div>
-	                                    <form:radiobutton path="lmiEligible" value="1" />Yes 
-	                                    <form:radiobutton path="lmiEligible" value="0" />No
+                                    <form:input path="lmiEligible" />
                                 </div>
                             </label>
                         </div>
 
-                         <button type="submit" value="Edit">Edit</button>
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        SLC
+                                    </div>
+                                    <form:input path="SLC"/>
+                                </div>
+                            </label>
+                        </div>
+
+                        <button type="submit" value="Edit">Edit</button>
+                        <button type="button" onclick="js.loadURL('schools.htm')">Cancel</button>
 
                     </form:form>
 

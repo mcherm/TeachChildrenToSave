@@ -18,7 +18,8 @@ public class School {
     private String county;
     private String schoolDistrict;
     private String phone;
-    private boolean lmiEligible;
+    private int lmiEligible;
+    private String slc;
 
     /**
      * This can be called to populate fields from the current row of a resultSet.
@@ -34,7 +35,8 @@ public class School {
         setCounty(resultSet.getString("school_county"));
         setSchoolDistrict(resultSet.getString("school_district"));
         setPhone(resultSet.getString("school_phone"));
-        setLmiEligible(1 == resultSet.getInt("school_lmi_eligible"));
+        setLmiEligible(resultSet.getInt("school_lmi_eligible"));
+        setSLC(resultSet.getString("school_SLC"));
     }
 
     public String getSchoolId() {
@@ -117,12 +119,20 @@ public class School {
         this.phone = phone;
     }
 
-    public boolean isLmiEligible() {
+    public int getLmiEligible() {
         return lmiEligible;
     }
 
-    public void setLmiEligible(boolean lmiEligible) {
+    public void setLmiEligible(int lmiEligible) {
         this.lmiEligible = lmiEligible;
+    }
+
+    public String getSLC() {
+        return slc;
+    }
+
+    public void setSLC(String slc) {
+        this.slc = slc;
     }
 
 

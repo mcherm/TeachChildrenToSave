@@ -52,18 +52,19 @@
                 
                 <div class="row_div_right">
                     <div class="caption_div"><form:label path="schoolDistrict;">School district</form:label></div>
-                    <div class="field_div"><c:out value="${school.schoolDistrict;}"/></div>
+                    <div class="field_div"><c:out value="${school.schoolDistrict}"/></div>
                 </div>
                 
                 <div class="row_div_right">
                     <div class="caption_div"><form:label path="phone;">School phone</form:label></div>
-                    <div class="field_div"><c:out value="${school.phone;}"/></div>
+                    <div class="field_div"><c:out value="${school.phone}"/></div>
                 </div>
                 
                 <div class="row_div_right">
                     <div class="caption_div"><form:label path="lmiEligible;;">School lmiEligible;</form:label></div>
-                    <div class="field_div"><c:out value="${school.lmiEligible;;}"/></div>
+                    <div class="field_div"><c:out value="${school.lmiEligible}"/></div>
                 </div>
+
             </div>
 
             

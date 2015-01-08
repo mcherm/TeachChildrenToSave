@@ -93,10 +93,7 @@
                     <div id="schoolLMIEligibleField">
                         <div class="label">School Eligible for CRA Credits?</div>
                         <div class="value">
-                            <c:choose>
-                                <c:when test="${event.linkedTeacher.linkedSchool.lmiEligible == '1'}">Yes</c:when>
-                                <c:otherwise>No</c:otherwise>
-                            </c:choose>
+                            <div class="qa-notes">Not implemented yet</div>
                         </div>
                     </div>
                 </div>
