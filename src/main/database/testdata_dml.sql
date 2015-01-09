@@ -1,25 +1,22 @@
 /* This has DML for the tables I have created and their sample data */
 
-insert into AllowedDates (event_date)
-    values (DATE('2015-04-08'));
-insert into AllowedDates (event_date)
-    values (DATE('2015-04-09'));
-insert into AllowedDates (event_date)
-    values (DATE('2015-04-10'));
+insert into AllowedDates (event_date) values (DATE('2015-04-03'));
+insert into AllowedDates (event_date) values (DATE('2015-04-04'));
 
 
-insert into AllowedTimes (event_time, sort_order)
-  values ("9:00 AM", 1);
-insert into AllowedTimes (event_time, sort_order)
-  values ("10:00 AM", 2);
-insert into AllowedTimes (event_time, sort_order)
-  values ("11:00 AM", 3);
-insert into AllowedTimes (event_time, sort_order)
-  values ("12:00 PM", 4);
-insert into AllowedTimes (event_time, sort_order)
-  values ("1:00 PM", 5);
-insert into AllowedTimes (event_time, sort_order)
-  values ("2:00 PM", 6);
+insert into AllowedTimes (event_time, sort_order) values ("9:00 to 9:45 AM", 1);
+insert into AllowedTimes (event_time, sort_order) values ("9:30 to 10:15 AM", 2);
+insert into AllowedTimes (event_time, sort_order) values ("10:00 to 10:45 AM", 3);
+insert into AllowedTimes (event_time, sort_order) values ("10:30 to 11:15 AM", 4);
+insert into AllowedTimes (event_time, sort_order) values ("11:00 to 11:45 AM", 5);
+insert into AllowedTimes (event_time, sort_order) values ("11:30 AM to 12:15 PM", 6);
+insert into AllowedTimes (event_time, sort_order) values ("12:00 to 12:45 PM", 7);
+insert into AllowedTimes (event_time, sort_order) values ("12:30 to 1:15 PM", 8);
+insert into AllowedTimes (event_time, sort_order) values ("1:00 to 1:45 PM", 9);
+insert into AllowedTimes (event_time, sort_order) values ("1:30 to 2:15 PM", 10);
+insert into AllowedTimes (event_time, sort_order) values ("2:00 to 2:45 PM", 11);
+insert into AllowedTimes (event_time, sort_order) values ("2:30 to 3:15 PM", 12);
+insert into AllowedTimes (event_time, sort_order) values ("3:00 to 3:45 PM", 13);
 
 
 insert into School ( School_county,School_district,School_name,school_SLC, School_addr1
@@ -469,39 +466,39 @@ insert into School ( School_county,School_district,School_name,school_SLC, Schoo
 
 
 
-insert into Bank (bank_name) VALUES ("AIG Federal Savings Bank");
-insert into Bank (bank_name) VALUES ("Applied Bank");
-insert into Bank (bank_name) VALUES ("Artisan's Bank");
-insert into Bank (bank_name) VALUES ("Bank of America");
-insert into Bank (bank_name) VALUES ("Barclay's Bank Delaware");
-insert into Bank (bank_name) VALUES ("BNY Mellon Trust of Delaware");
-insert into Bank (bank_name) VALUES ("Brandywine Trust Company");
-insert into Bank (bank_name) VALUES ("Brown Brothers Harriman Trust Company");
-insert into Bank (bank_name) VALUES ("Capital One");
-insert into Bank (bank_name) VALUES ("Charles Schwab Bank");
-insert into Bank (bank_name) VALUES ("Chase Bank USA");
-insert into Bank (bank_name) VALUES ("CNB");
-insert into Bank (bank_name) VALUES ("Comenity Bank");
-insert into Bank (bank_name) VALUES ("Commonwealth Trust Company");
-insert into Bank (bank_name) VALUES ("Community Bank Delaware");
-insert into Bank (bank_name) VALUES ("County Bank");
-insert into Bank (bank_name) VALUES ("Deutsche Bank Trust Company Delaware");
-insert into Bank (bank_name) VALUES ("Discover Bank");
-insert into Bank (bank_name) VALUES ("Fulton Bank");
-insert into Bank (bank_name) VALUES ("Glenmede");
-insert into Bank (bank_name) VALUES ("HSBC Trust Company");
-insert into Bank (bank_name) VALUES ("JPMorgan Trust Company of Delaware");
-insert into Bank (bank_name) VALUES ("Key National Trust Company of Delaware");
-insert into Bank (bank_name) VALUES ("M&T Bank");
-insert into Bank (bank_name) VALUES ("MidCoast Community Bank");
-insert into Bank (bank_name) VALUES ("Morgan Stanley Private Bank");
-insert into Bank (bank_name) VALUES ("PNC Bank");
-insert into Bank (bank_name) VALUES ("Principal Trust Company");
-insert into Bank (bank_name) VALUES ("The First National Bank of Wyoming");
-insert into Bank (bank_name) VALUES ("UBS Trust Company");
-insert into Bank (bank_name) VALUES ("Wells Fargo Bank");
-insert into Bank (bank_name) VALUES ("Wilmington Trust Company");
-insert into Bank (bank_name) VALUES ("WSFS Bank");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("AIG Federal Savings Bank", "600 North King Street", "Suite 2"  , "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Applied Bank", "660 Plaza Drive", "", "Newark ", "DE", "19702");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Artisan's Bank", "2961 Centerville Road", "", "Wilmington", "DE", "19808");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Bank of America", "1100 North King Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Barclay's Bank Delaware", "100 South West Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("BNY Mellon Trust of Delaware", "301 Bellevue Parkway", "Suite 19A-307", "Wilmington", "DE", "19809");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Brandywine Trust Company", "7234 Lancaster Pike", "", "Hockessin", "DE", "19707");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Brown Brothers Harriman Trust Company", "919 North Market Street", "Suite 420", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Capital One", "802 Delaware Avenue", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Charles Schwab Bank", "602 Delaware Avenue", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Chase Bank USA", "201 North Walnut Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("CNB", "4580 South DuPont Highway", "", "Camden", "DE", "19934");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Comenity Bank", "1 Righter Parkway", "", "Wilmington", "DE", "19803");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Commonwealth Trust Company", "29 Bancroft Mills Road", "", "Wilmington", "DE", "19806");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Community Bank Delaware", "16982 Kings Highway", "", "Lewes", "DE", "19958");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("County Bank", "19927 Shuttle Road", "", "Rehoboth Beach", "DE", "19971");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Deutsche Bank Trust Company Delaware", "1011 Centre Road", "Suite 200", "Wilmington", "DE", "19805");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Discover Bank", "12 Read's Way", "", "New Castle", "DE", "19720");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Fulton Bank", "1013 Center Road", "3rd Floor", "Wilmington", "DE", "19805");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Glenmede", "1201 North Market Street", "Suite 1501", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("HSBC Trust Company", "300 Delaware Avenue", "Suite 1401", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("JPMorgan Trust Company of Delaware", "500 Stanton Christiana Road", "", "Newark ", "DE", "19713");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Key National Trust Company of Delaware", "1105 North Market Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("M&T Bank", "1100 North Market Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("MidCoast Community Bank", "974 Justison Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Morgan Stanley Private Bank", "919 North Market Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("PNC Bank", "222 Delaware Avenue", "", "Wilmington", "DE", "19899");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Principal Trust Company", "1013 Center Road", "", "Wilmington", "DE", "19805");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("The First National Bank of Wyoming", "120 West Camden-Wyoming Avenue", "", "Camden-Wyoming", "DE", "19934");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("UBS Trust Company", "500 Delaware Avenue", "9th Floor", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Wells Fargo Bank", "814 Philadelphia Pike", "", "Wilmington", "DE", "19809");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Wilmington Trust Company", "100 North Market Street", "", "Wilmington", "DE", "19890");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("WSFS Bank", "500 Delaware Avenue", "", "Wilmington", "DE", "19801");
 
 
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
@@ -573,197 +570,70 @@ insert into User (password_salt, password_hash, email, first_name, last_name, ac
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('f0uTm9wh9N8=', 'ALnCTEcc/yl6SNbrDAG+s/8fiks=', 'valerie.daughdrill@bsd.k12.de.us.com', 'Valerie', 'Daughdrill', 'BA', '8', '273-050-4932', '0');
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('ExBSfqjA/2c=', 'BPi+lreoH11Zbd2lvOXQHfIn2cI=', 'raelene.mcmenamin@hotmail.com.com', 'Raelene', 'Mcmenamin', 'BA', '9', '155-896-6510', '0');
 
-insert into Event
-(teacher_id,
- event_date, event_time,
- grade, number_students, notes,
- volunteer_id
-)
-  values
-  (4,
-   DATE('2015-03-06'), '1:00 PM',
-   4, 20, 'These are some notes.',
-   5
-  );
-insert into Event
-(teacher_id,
- event_date, event_time,
- grade, number_students, notes,
- volunteer_id
-)
-  values
-  (4,
-   DATE('2015-03-06'), '9:00 AM',
-   2, 15, '',
-   null
-  );
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (10, DATE('2015-04-10'), '9:00 AM', 2, 23, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (10, DATE('2015-04-08'), '2:00 PM', 5, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (11, DATE('2015-04-10'), '11:00 AM', 4, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (11, DATE('2015-04-08'), '9:00 AM', 5, 14, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (12, DATE('2015-04-10'), '11:00 AM', 2, 22, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (12, DATE('2015-04-09'), '12:00 PM', 5, 23, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (13, DATE('2015-04-08'), '9:00 AM', 5, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (13, DATE('2015-04-10'), '9:00 AM', 4, 12, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (14, DATE('2015-04-08'), '11:00 AM', 3, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (14, DATE('2015-04-09'), '11:00 AM', 3, 14, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (15, DATE('2015-04-08'), '9:00 AM', 5, 13, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (15, DATE('2015-04-08'), '10:00 AM', 4, 23, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (16, DATE('2015-04-08'), '11:00 AM', 3, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (16, DATE('2015-04-08'), '9:00 AM', 3, 22, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (17, DATE('2015-04-09'), '12:00 PM', 5, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (17, DATE('2015-04-09'), '2:00 PM', 4, 24, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (18, DATE('2015-04-08'), '1:00 PM', 4, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (18, DATE('2015-04-10'), '2:00 PM', 4, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (19, DATE('2015-04-10'), '11:00 AM', 3, 10, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (19, DATE('2015-04-09'), '2:00 PM', 3, 17, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (20, DATE('2015-04-08'), '10:00 AM', 3, 17, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (20, DATE('2015-04-09'), '11:00 AM', 5, 13, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (21, DATE('2015-04-10'), '1:00 PM', 4, 17, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (21, DATE('2015-04-08'), '11:00 AM', 3, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (22, DATE('2015-04-09'), '12:00 PM', 4, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (22, DATE('2015-04-08'), '11:00 AM', 4, 18, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (23, DATE('2015-04-10'), '9:00 AM', 4, 10, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (23, DATE('2015-04-09'), '2:00 PM', 5, 14, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (24, DATE('2015-04-10'), '11:00 AM', 3, 24, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (24, DATE('2015-04-08'), '1:00 PM', 4, 18, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (25, DATE('2015-04-09'), '9:00 AM', 2, 16, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (25, DATE('2015-04-09'), '2:00 PM', 3, 14, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (26, DATE('2015-04-08'), '12:00 PM', 3, 17, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (26, DATE('2015-04-08'), '12:00 PM', 4, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (27, DATE('2015-04-10'), '11:00 AM', 5, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (27, DATE('2015-04-09'), '2:00 PM', 4, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (28, DATE('2015-04-09'), '9:00 AM', 2, 18, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (28, DATE('2015-04-08'), '12:00 PM', 2, 8, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (29, DATE('2015-04-09'), '9:00 AM', 4, 6, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (29, DATE('2015-04-09'), '12:00 PM', 5, 12, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (30, DATE('2015-04-09'), '11:00 AM', 4, 16, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (30, DATE('2015-04-08'), '2:00 PM', 5, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (31, DATE('2015-04-09'), '9:00 AM', 3, 6, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (31, DATE('2015-04-10'), '10:00 AM', 5, 6, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (32, DATE('2015-04-10'), '9:00 AM', 3, 17, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (32, DATE('2015-04-10'), '12:00 PM', 4, 16, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (33, DATE('2015-04-10'), '1:00 PM', 5, 19, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (33, DATE('2015-04-10'), '12:00 PM', 4, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (34, DATE('2015-04-08'), '11:00 AM', 4, 8, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (34, DATE('2015-04-09'), '9:00 AM', 4, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (35, DATE('2015-04-09'), '2:00 PM', 5, 18, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (35, DATE('2015-04-08'), '9:00 AM', 3, 10, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (36, DATE('2015-04-08'), '9:00 AM', 3, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (36, DATE('2015-04-08'), '9:00 AM', 3, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (37, DATE('2015-04-08'), '1:00 PM', 3, 12, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (37, DATE('2015-04-08'), '11:00 AM', 5, 25, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (38, DATE('2015-04-08'), '10:00 AM', 4, 9, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (38, DATE('2015-04-08'), '2:00 PM', 2, 9, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (39, DATE('2015-04-10'), '2:00 PM', 4, 19, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (39, DATE('2015-04-08'), '11:00 AM', 4, 21, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (40, DATE('2015-04-10'), '2:00 PM', 3, 9, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (40, DATE('2015-04-09'), '1:00 PM', 3, 9, '', null);
+
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-03'), '1:00 to 1:45 PM', 4, 20, 'These are some notes.', 5);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-03'), '9:00 to 9:45 AM', 2, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (10, DATE('2015-04-03'), '9:00 to 9:45 AM', 2, 23, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (10, DATE('2015-04-04'), '2:00 to 2:45 PM', 5, 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (11, DATE('2015-04-03'), '11:00 to 11:45 AM', 4, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (11, DATE('2015-04-04'), '9:00 to 9:45 AM', 5, 14, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (12, DATE('2015-04-03'), '11:00 to 11:45 AM', 2, 22, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (12, DATE('2015-04-04'), '12:30 to 1:15 PM', 5, 23, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (13, DATE('2015-04-04'), '9:00 to 9:45 AM', 5, 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (13, DATE('2015-04-03'), '9:00 to 9:45 AM', 4, 12, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (14, DATE('2015-04-04'), '11:00 to 11:45 AM', 3, 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (14, DATE('2015-04-04'), '11:00 to 11:45 AM', 3, 14, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (15, DATE('2015-04-04'), '9:00 to 9:45 AM', 5, 13, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (15, DATE('2015-04-04'), '10:30 to 11:15 AM', 4, 23, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (16, DATE('2015-04-04'), '11:00 to 11:45 AM', 3, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (16, DATE('2015-04-04'), '9:00 to 9:45 AM', 3, 22, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (17, DATE('2015-04-04'), '12:30 to 1:15 PM', 5, 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (17, DATE('2015-04-04'), '2:00 to 2:45 PM', 4, 24, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (18, DATE('2015-04-04'), '1:00 to 1:45 PM', 4, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (18, DATE('2015-04-03'), '2:00 to 2:45 PM', 4, 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (19, DATE('2015-04-03'), '11:00 to 11:45 AM', 3, 10, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (19, DATE('2015-04-04'), '2:00 to 2:45 PM', 3, 17, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (20, DATE('2015-04-04'), '10:30 to 11:15 AM', 3, 17, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (20, DATE('2015-04-04'), '11:00 to 11:45 AM', 5, 13, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (21, DATE('2015-04-03'), '1:00 to 1:45 PM', 4, 17, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (21, DATE('2015-04-04'), '11:00 to 11:45 AM', 3, 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (22, DATE('2015-04-04'), '12:30 to 1:15 PM', 4, 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (22, DATE('2015-04-04'), '11:00 to 11:45 AM', 4, 18, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (23, DATE('2015-04-03'), '9:00 to 9:45 AM', 4, 10, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (23, DATE('2015-04-04'), '2:00 to 2:45 PM', 5, 14, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (24, DATE('2015-04-03'), '11:00 to 11:45 AM', 3, 24, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (24, DATE('2015-04-04'), '1:00 to 1:45 PM', 4, 18, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (25, DATE('2015-04-04'), '9:00 to 9:45 AM', 2, 16, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (25, DATE('2015-04-04'), '2:00 to 2:45 PM', 3, 14, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (26, DATE('2015-04-04'), '12:30 to 1:15 PM', 3, 17, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (26, DATE('2015-04-04'), '12:30 to 1:15 PM', 4, 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (27, DATE('2015-04-03'), '11:00 to 11:45 AM', 5, 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (27, DATE('2015-04-04'), '2:00 to 2:45 PM', 4, 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (28, DATE('2015-04-04'), '9:00 to 9:45 AM', 2, 18, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (28, DATE('2015-04-04'), '12:30 to 1:15 PM', 2, 8, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (29, DATE('2015-04-04'), '9:00 to 9:45 AM', 4, 6, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (29, DATE('2015-04-04'), '12:30 to 1:15 PM', 5, 12, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (30, DATE('2015-04-04'), '11:00 to 11:45 AM', 4, 16, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (30, DATE('2015-04-04'), '2:00 to 2:45 PM', 5, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (31, DATE('2015-04-04'), '9:00 to 9:45 AM', 3, 6, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (31, DATE('2015-04-03'), '10:30 to 11:15 AM', 5, 6, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (32, DATE('2015-04-03'), '9:00 to 9:45 AM', 3, 17, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (32, DATE('2015-04-03'), '12:30 to 1:15 PM', 4, 16, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (33, DATE('2015-04-03'), '1:00 to 1:45 PM', 5, 19, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (33, DATE('2015-04-03'), '12:30 to 1:15 PM', 4, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (34, DATE('2015-04-04'), '11:00 to 11:45 AM', 4, 8, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (34, DATE('2015-04-04'), '9:00 to 9:45 AM', 4, 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (35, DATE('2015-04-04'), '2:00 to 2:45 PM', 5, 18, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (35, DATE('2015-04-04'), '9:00 to 9:45 AM', 3, 10, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (36, DATE('2015-04-04'), '9:00 to 9:45 AM', 3, 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (36, DATE('2015-04-04'), '9:00 to 9:45 AM', 3, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (37, DATE('2015-04-04'), '1:00 to 1:45 PM', 3, 12, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (37, DATE('2015-04-04'), '11:00 to 11:45 AM', 5, 25, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (38, DATE('2015-04-04'), '10:30 to 11:15 AM', 4, 9, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (38, DATE('2015-04-04'), '2:00 to 2:45 PM', 2, 9, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (39, DATE('2015-04-03'), '2:00 to 2:45 PM', 4, 19, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (39, DATE('2015-04-04'), '11:00 to 11:45 AM', 4, 21, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (40, DATE('2015-04-03'), '2:00 to 2:45 PM', 3, 9, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (40, DATE('2015-04-04'), '1:00 to 1:45 PM', 3, 9, '', null);
 
 
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip)
-  VALUES("AIG Federal Savings Bank","600 North King Street","Suite 2"
-    ,"Wilmington","DE","19801");
-
-
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Applied Bank","660 Plaza Drive","","Newark ","DE","19702");
-
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Artisan's Bank","2961 Centerville Road","","Wilmington","DE","19808");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Bank of America","1100 North King Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Barclay's Bank Delaware","100 South West Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("BNY Mellon Trust of Delaware","301 Bellevue Parkway","Suite 19A-307","Wilmington","DE","19809");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Brandywine Trust Company","7234 Lancaster Pike","","Hockessin","DE","19707");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Brown Brothers Harriman Trust Company","919 North Market Street","Suite 420"
-  ,"Wilmington","DE","19801");
-
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Capital One","802 Delaware Avenue","","Wilmington","DE","19801");
-
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Charles Schwab Bank","602 Delaware Avenue","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Chase Bank USA","201 North Walnut Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("CNB","4580 South DuPont Highway","","Camden","DE","19934");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Comenity Bank","1 Righter Parkway","","Wilmington","DE","19803");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Commonwealth Trust Company","29 Bancroft Mills Road","","Wilmington","DE","19806");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Community Bank Delaware","16982 Kings Highway","","Lewes","DE","19958");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("County Bank","19927 Shuttle Road","","Rehoboth Beach","DE","19971");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Deutsche Bank Trust Company Delaware","1011 Centre Road","Suite 200","Wilmington","DE","19805");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Discover Bank","12 Read's Way","","New Castle","DE","19720");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Fulton Bank","1013 Center Road","3rd Floor","Wilmington","DE","19805");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Glenmede","1201 North Market Street","Suite 1501","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("HSBC Trust Company","300 Delaware Avenue","Suite 1401","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("JPMorgan Trust Company of Delaware","500 Stanton Christiana Road","","Newark ","DE","19713");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Key National Trust Company of Delaware","1105 North Market Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("M&T Bank","1100 North Market Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("MidCoast Community Bank","974 Justison Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Morgan Stanley Private Bank","919 North Market Street","","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("PNC Bank","222 Delaware Avenue","","Wilmington","DE","19899");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Principal Trust Company","1013 Center Road","","Wilmington","DE","19805");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("The First National Bank of Wyoming","120 West Camden-Wyoming Avenue","","Camden-Wyoming","DE","19934");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("UBS Trust Company","500 Delaware Avenue","9th Floor","Wilmington","DE","19801");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Wells Fargo Bank","814 Philadelphia Pike","","Wilmington","DE","19809");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("Wilmington Trust Company","100 North Market Street","","Wilmington","DE","19890");
-insert into Bank2 (bank_name, bank_addr1, bank_addr2, bank_city
-  ,bank_state,bank_zip) VALUES
-("WSFS Bank","500 Delaware Avenue","","Wilmington","DE","19801");
