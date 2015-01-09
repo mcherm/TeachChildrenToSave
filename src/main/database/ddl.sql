@@ -14,9 +14,10 @@ create table AllowedDates
 drop table AllowedTimes;
 create table AllowedTimes
     (
-        event_time VARCHAR(8) NOT NULL,
+        event_time VARCHAR(30) NOT NULL,
         sort_order INT NOT NULL,
-        PRIMARY KEY (event_time)
+        PRIMARY KEY (event_time),
+        UNIQUE KEY ix_sort_order (sort_order)
     );
 
 
@@ -26,8 +27,8 @@ create table Event
         event_id INT NOT NULL AUTO_INCREMENT,
         teacher_id INT NOT NULL,
         event_date DATE NOT NULL,
-        event_time VARCHAR(8) NOT NULL,
-        grade VARCHAR(1) NOT NULL,
+        event_time VARCHAR(30) NOT NULL,
+        grade VARCHAR(8) NOT NULL,
         number_students INT NOT NULL,
         notes VARCHAR(1000),
         volunteer_id INT,
@@ -42,6 +43,12 @@ create table Bank
     (
         bank_id INT NOT NULL AUTO_INCREMENT,
         bank_name VARCHAR(45) NOT NULL,
+        bank_addr1 VARCHAR(45), /* not used */
+        bank_addr2 VARCHAR(45), /* not used */
+        bank_city VARCHAR(45), /* not used */
+        bank_state VARCHAR(2), /* not used */
+        bank_zip VARCHAR(10), /* not used */
+        bank_county VARCHAR(45), /* not used */
         PRIMARY KEY (bank_id),
         UNIQUE KEY ix_name (bank_name)
     );
@@ -72,7 +79,6 @@ create table School
         school_id INT NOT NULL AUTO_INCREMENT,
         school_name VARCHAR(80) NOT NULL,
         school_addr1 VARCHAR(60) NOT NULL,
-        school_addr2 VARCHAR(60),
         school_city VARCHAR(45) NOT NULL,
         school_zip VARCHAR(10) NOT NULL,
         school_county VARCHAR(45) NOT NULL,
@@ -87,18 +93,6 @@ create table School
 
 
 /* --- The following are just TEMPORARY tables for now, and are not used by the app --- */
-
-DROP TABLE Bank2;
-CREATE TABLE Bank2
-(bank_id     int(11)      NOT NULL AUTO_INCREMENT PRIMARY KEY
-  ,bank_name   VARCHAR(45)
-  ,bank_addr1  VARCHAR(45)
-  ,bank_addr2  VARCHAR(45)
-  ,bank_city   VARCHAR(45)
-  ,bank_state  VARCHAR(2)
-  ,bank_zip    VARCHAR(10)
-  ,bank_county VARCHAR(45)
-);
 
 DROP TABLE Activity_Logging;
 CREATE TABLE Activity_Logging

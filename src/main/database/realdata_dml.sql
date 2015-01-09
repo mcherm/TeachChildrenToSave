@@ -3,27 +3,23 @@
  */
 
 
-insert into AllowedDates (event_date)
-  values (DATE('2015-04-08'));
-insert into AllowedDates (event_date)
-  values (DATE('2015-04-09'));
-insert into AllowedDates (event_date)
-  values (DATE('2015-04-10'));
+insert into AllowedDates (event_date) values (DATE('2015-04-03'));
+insert into AllowedDates (event_date) values (DATE('2015-04-04'));
 
 
-insert into AllowedTimes (event_time, sort_order)
-  values ("9:00 AM", 1);
-insert into AllowedTimes (event_time, sort_order)
-  values ("10:00 AM", 2);
-insert into AllowedTimes (event_time, sort_order)
-  values ("11:00 AM", 3);
-insert into AllowedTimes (event_time, sort_order)
-  values ("12:00 PM", 4);
-insert into AllowedTimes (event_time, sort_order)
-  values ("1:00 PM", 5);
-insert into AllowedTimes (event_time, sort_order)
-  values ("2:00 PM", 6);
-
+insert into AllowedTimes (event_time, sort_order) values ("9:00 to 9:45 AM", 1);
+insert into AllowedTimes (event_time, sort_order) values ("9:30 to 10:15 AM", 2);
+insert into AllowedTimes (event_time, sort_order) values ("10:00 to 10:45 AM", 3);
+insert into AllowedTimes (event_time, sort_order) values ("10:30 to 11:15 AM", 4);
+insert into AllowedTimes (event_time, sort_order) values ("11:00 to 11:45 AM", 5);
+insert into AllowedTimes (event_time, sort_order) values ("11:30 AM to 12:15 PM", 6);
+insert into AllowedTimes (event_time, sort_order) values ("12:00 to 12:45 PM", 7);
+insert into AllowedTimes (event_time, sort_order) values ("12:30 to 1:15 PM", 8);
+insert into AllowedTimes (event_time, sort_order) values ("1:00 to 1:45 PM", 9);
+insert into AllowedTimes (event_time, sort_order) values ("1:30 to 2:15 PM", 10);
+insert into AllowedTimes (event_time, sort_order) values ("2:00 to 2:45 PM", 11);
+insert into AllowedTimes (event_time, sort_order) values ("2:30 to 3:15 PM", 12);
+insert into AllowedTimes (event_time, sort_order) values ("3:00 to 3:45 PM", 13);
 
 
 
@@ -474,39 +470,39 @@ insert into School ( School_county,School_district,School_name,school_SLC, Schoo
 
 
 
-insert into Bank (bank_name) VALUES ("AIG Federal Savings Bank");
-insert into Bank (bank_name) VALUES ("Applied Bank");
-insert into Bank (bank_name) VALUES ("Artisan's Bank");
-insert into Bank (bank_name) VALUES ("Bank of America");
-insert into Bank (bank_name) VALUES ("Barclay's Bank Delaware");
-insert into Bank (bank_name) VALUES ("BNY Mellon Trust of Delaware");
-insert into Bank (bank_name) VALUES ("Brandywine Trust Company");
-insert into Bank (bank_name) VALUES ("Brown Brothers Harriman Trust Company");
-insert into Bank (bank_name) VALUES ("Capital One");
-insert into Bank (bank_name) VALUES ("Charles Schwab Bank");
-insert into Bank (bank_name) VALUES ("Chase Bank USA");
-insert into Bank (bank_name) VALUES ("CNB");
-insert into Bank (bank_name) VALUES ("Comenity Bank");
-insert into Bank (bank_name) VALUES ("Commonwealth Trust Company");
-insert into Bank (bank_name) VALUES ("Community Bank Delaware");
-insert into Bank (bank_name) VALUES ("County Bank");
-insert into Bank (bank_name) VALUES ("Deutsche Bank Trust Company Delaware");
-insert into Bank (bank_name) VALUES ("Discover Bank");
-insert into Bank (bank_name) VALUES ("Fulton Bank");
-insert into Bank (bank_name) VALUES ("Glenmede");
-insert into Bank (bank_name) VALUES ("HSBC Trust Company");
-insert into Bank (bank_name) VALUES ("JPMorgan Trust Company of Delaware");
-insert into Bank (bank_name) VALUES ("Key National Trust Company of Delaware");
-insert into Bank (bank_name) VALUES ("M&T Bank");
-insert into Bank (bank_name) VALUES ("MidCoast Community Bank");
-insert into Bank (bank_name) VALUES ("Morgan Stanley Private Bank");
-insert into Bank (bank_name) VALUES ("PNC Bank");
-insert into Bank (bank_name) VALUES ("Principal Trust Company");
-insert into Bank (bank_name) VALUES ("The First National Bank of Wyoming");
-insert into Bank (bank_name) VALUES ("UBS Trust Company");
-insert into Bank (bank_name) VALUES ("Wells Fargo Bank");
-insert into Bank (bank_name) VALUES ("Wilmington Trust Company");
-insert into Bank (bank_name) VALUES ("WSFS Bank");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("AIG Federal Savings Bank", "600 North King Street", "Suite 2"  , "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Applied Bank", "660 Plaza Drive", "", "Newark ", "DE", "19702");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Artisan's Bank", "2961 Centerville Road", "", "Wilmington", "DE", "19808");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Bank of America", "1100 North King Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Barclay's Bank Delaware", "100 South West Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("BNY Mellon Trust of Delaware", "301 Bellevue Parkway", "Suite 19A-307", "Wilmington", "DE", "19809");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Brandywine Trust Company", "7234 Lancaster Pike", "", "Hockessin", "DE", "19707");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Brown Brothers Harriman Trust Company", "919 North Market Street", "Suite 420", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Capital One", "802 Delaware Avenue", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Charles Schwab Bank", "602 Delaware Avenue", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Chase Bank USA", "201 North Walnut Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("CNB", "4580 South DuPont Highway", "", "Camden", "DE", "19934");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Comenity Bank", "1 Righter Parkway", "", "Wilmington", "DE", "19803");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Commonwealth Trust Company", "29 Bancroft Mills Road", "", "Wilmington", "DE", "19806");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Community Bank Delaware", "16982 Kings Highway", "", "Lewes", "DE", "19958");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("County Bank", "19927 Shuttle Road", "", "Rehoboth Beach", "DE", "19971");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Deutsche Bank Trust Company Delaware", "1011 Centre Road", "Suite 200", "Wilmington", "DE", "19805");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Discover Bank", "12 Read's Way", "", "New Castle", "DE", "19720");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Fulton Bank", "1013 Center Road", "3rd Floor", "Wilmington", "DE", "19805");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Glenmede", "1201 North Market Street", "Suite 1501", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("HSBC Trust Company", "300 Delaware Avenue", "Suite 1401", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("JPMorgan Trust Company of Delaware", "500 Stanton Christiana Road", "", "Newark ", "DE", "19713");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Key National Trust Company of Delaware", "1105 North Market Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("M&T Bank", "1100 North Market Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("MidCoast Community Bank", "974 Justison Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Morgan Stanley Private Bank", "919 North Market Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("PNC Bank", "222 Delaware Avenue", "", "Wilmington", "DE", "19899");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Principal Trust Company", "1013 Center Road", "", "Wilmington", "DE", "19805");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("The First National Bank of Wyoming", "120 West Camden-Wyoming Avenue", "", "Camden-Wyoming", "DE", "19934");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("UBS Trust Company", "500 Delaware Avenue", "9th Floor", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Wells Fargo Bank", "814 Philadelphia Pike", "", "Wilmington", "DE", "19809");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Wilmington Trust Company", "100 North Market Street", "", "Wilmington", "DE", "19890");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("WSFS Bank", "500 Delaware Avenue", "", "Wilmington", "DE", "19801");
 
 
 
