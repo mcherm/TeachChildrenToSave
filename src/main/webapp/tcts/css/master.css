@@ -73,6 +73,10 @@ em {
   display: none;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 sup {
   font-size: 75%;
   position: relative;
@@ -342,7 +346,7 @@ fieldset.refine legend {
   margin: 1em;
 }
 fieldset.refine div {
-  width: 20%;
+  width: 25%;
   display: inline-block;
   float: left;
   padding-left: 1em;
@@ -353,6 +357,16 @@ fieldset.refine ul {
 }
 fieldset.refine fieldset legend {
   margin: .25em;
+}
+fieldset.refine fieldset input[type=checkbox] {
+  float: left;
+}
+fieldset.refine fieldset label {
+  display: block;
+  clear: both;
+}
+fieldset.refine fieldset label span {
+  display: block;
 }
 
 h1 {
@@ -579,6 +593,42 @@ body.schools table {
   margin: 0 auto;
 }
 
+body.evenRegistration td {
+  vertical-align: middle;
+}
+body.evenRegistration td.action {
+  vertical-align: top;
+}
+body.evenRegistration .editOrRegister {
+  width: 60px;
+}
+
+th.sortable {
+  background-image: url("../img/updown.gif");
+  background-position: right center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+th.sortable.descending {
+  background-image: url("../img/up.gif");
+}
+
+th.sortable.ascending {
+  background-image: url("../img/down.gif");
+}
+
+/* FIXME: the event details page badly needs some work from Adrian! */
+body.eventDetails div.label {
+  font-weight: bold;
+  margin-top: 2em;
+}
+
+td.emptyTableMessage {
+  font-style: italic;
+  text-align: center;
+}
+
 @media (min-width: 320px) {
   body.adminEditAllowedTimes table {
     width: 100%;
@@ -801,30 +851,4 @@ h2, h3 {
 p {
   padding-bottom: 1em;
   font-size: .9em;
-}
-
-th.sortable {
-  background-image: url("../img/updown.gif");
-  background-position: right center;
-  background-repeat: no-repeat;
-  cursor: pointer;
-}
-
-th.sortable.descending {
-  background-image: url("../img/up.gif");
-}
-
-th.sortable.ascending {
-  background-image: url("../img/down.gif");
-}
-
-/* FIXME: the event details page badly needs some work from Adrian! */
-body.eventDetails div.label {
-  font-weight: bold;
-  margin-top: 2em;
-}
-
-td.emptyTableMessage {
-  font-style: italic;
-  text-align: center;
 }

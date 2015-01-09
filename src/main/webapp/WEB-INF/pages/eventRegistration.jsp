@@ -95,24 +95,22 @@
                     if (showThisEvent) {
                         html +=
                             "<tr id='rowForEvent" + event.eventId + "'>" +
-                            "    <td>" + event.eventDate + "</td>" +
-                            "    <td>" + event.eventTime + "</td>" +
+                            "    <td><span class='nowrap'>" + event.eventDate + "</span></td>" +
+                            "    <td><span class='nowrap'>" + event.eventTime + "</span></td>" +
                             "    <td class='center'>" + event.grade + "</td>" +
                             "    <td class='center'>" + event.numberStudents + "</td>" +
                             "    <td>" + event.firstName + " " + event.lastName + "</td>" +
                             "    <td>" + event.schoolName + "</td>" +
-                            "    <td><form action='eventDetails.htm' method='POST'>" +
+                            "    <td class='action'><form action='eventDetails.htm' method='POST'>" +
                             "        <input type='hidden' name='eventId' value='" + event.eventId +"'/>" +
                             "        <input type='hidden' name='doneURL' value='eventRegistration.htm'/>" +
                             "        <button class='editOrRegister details' type='submit'>Details</button>" +
                             "    </form></td>" +
-                            "    <td>" +
-                            "        <div class='createEventForm'>" +
+                            "    <td class='action'>" +
                             "            <form method='POST' action='eventRegistration.htm'>" +
                             "                <input type='hidden' name='eventId' value='" + event.eventId + "'>" +
-                            "                <button type='submit' value='Sign Up' class='editOrRegister'>Sign Up</button>" +
+                            "                <button type='submit' class='editOrRegister details'>Sign Up</button>" +
                             "            </form>" +
-                            "        </div>" +
                             "    </td>" +
                             "</tr>";
                     }
