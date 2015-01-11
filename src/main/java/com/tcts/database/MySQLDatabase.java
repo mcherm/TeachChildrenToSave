@@ -120,7 +120,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String insertBankSQL =
     		"insert into Bank (bank_name) VALUES (?)";
     private final static String modifyBankByIdSQL =
-            "update Bank set bank_name = ?,bank_admin = ? where bank_id = ?";
+            "update Bank set bank_name = ? where bank_id = ?";
 
     private final static String deleteUsersByBankId =
             "delete from User where access_type = 'BA' or access_type = 'V' and organization_id = ?";
@@ -1025,35 +1025,6 @@ public class MySQLDatabase implements DatabaseFacade {
             if (affectedRows != 1) {
                 throw new RuntimeException("Should never happen: we inserted one row!");
             }
-            preparedStatement.close();
-
-            // FIXME: Once we make the bank_admin column on Bank optional, the code can stop here.
-
-            // --- Find out its userId ---
-            preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
-            resultSet = preparedStatement.executeQuery();
-            String bankAdminUserId = null;
-            numberOfRows = 0;
-            while (resultSet.next()) {
-                numberOfRows++;
-                bankAdminUserId = resultSet.getString(1);
-            }
-            if (numberOfRows < 1) {
-                throw new RuntimeException("This should never happen.");
-            } else if (numberOfRows > 1) {
-                throw new RuntimeException("This should never happen.");
-            }
-            preparedStatement.close();
-
-            // --- And update the Bank ---
-            preparedStatement = connection.prepareStatement(modifyBankByIdSQL);
-            preparedStatement.setString(1, formData.getBankName());
-            preparedStatement.setString(2, bankAdminUserId);
-            preparedStatement.setString(3, bankId);
-            affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows != 1) {
-                throw new RuntimeException("How could the bank be deleted before we finish adding it?");
-            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
@@ -1149,8 +1120,7 @@ public class MySQLDatabase implements DatabaseFacade {
             // --- Modify Bank ---
             preparedStatement = connection.prepareStatement(modifyBankByIdSQL);
             preparedStatement.setString(1, formData.getBankName());
-            preparedStatement.setString(2, bankAdminId);
-            preparedStatement.setString(3, formData.getBankId());
+            preparedStatement.setString(2, formData.getBankId());
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows != 1) {
                 throw new RuntimeException("How could the bank be deleted before we finish adding it?");
