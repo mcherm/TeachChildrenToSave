@@ -190,8 +190,11 @@ public interface DatabaseFacade {
 	/** This will update reset password link token in db. */
 	
 	void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException;
-	
-	/** Update allowed time **/
+
+    /** Update the userStatus field of a specific user. */
+    public void updateUserStatusById(String userId, int userStatus) throws SQLException;
+
+    /** Update allowed time **/
 	
 	public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException;
 	

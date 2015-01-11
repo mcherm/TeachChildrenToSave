@@ -2,6 +2,7 @@ package com.tcts.controller;
 
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
+import com.tcts.database.MySQLDatabase;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
@@ -81,7 +82,6 @@ public class BankAdminActionsController {
     @RequestMapping(value = "suspendVolunteer", method = RequestMethod.POST)
     public String suspendVolunteer(
             HttpSession session,
-            Model model,
             @RequestParam("volunteerId") String volunteerId
         ) throws SQLException
     {
@@ -107,11 +107,44 @@ public class BankAdminActionsController {
             CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event);
         }
 
-        // FIXME: Here we need to suspend the person too!
+        // --- Actually suspend the person ---
+        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_SUSPENDED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();
     }
 
 
+    /**
+     * Sets the given volunteer to "suspended", which will REMOVE them from
+     * all events they had volunteered for.
+     */
+    @RequestMapping(value = "reinstateVolunteer", method = RequestMethod.POST)
+    public String reinstateVolunteer(
+            HttpSession session,
+            @RequestParam("volunteerId") String volunteerId
+        ) throws SQLException
+    {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        BankAdmin bankAdmin = sessionData.getBankAdmin();
+        if (bankAdmin == null) {
+            throw new NotLoggedInException("Cannot navigate to this page unless you are a logged-in bank admin.");
+        }
+
+        // --- Find that volunteer; make sure it's ours ---
+        Volunteer volunteer = (Volunteer) database.getUserById(volunteerId);
+        if (volunteer == null) {
+            throw new InvalidParameterFromGUIException();
+        }
+        if (! volunteer.getBankId().equals(bankAdmin.getBankId())) {
+            throw new InvalidParameterFromGUIException();
+        }
+
+        // --- Actually restore the person ---
+        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_NORMAL);
+
+        // --- And navigate to home page ---
+        return "redirect:" + bankAdmin.getUserType().getHomepage();
+    }
 }

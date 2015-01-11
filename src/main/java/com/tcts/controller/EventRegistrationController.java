@@ -84,6 +84,9 @@ public class EventRegistrationController {
         if (volunteer == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
+        if (!volunteer.isApproved()) {
+            throw new InvalidParameterFromGUIException("GUI should not let a suspended volunteer register for an event.");
+        }
         // --- Validation Rules ---
         // FIXME: There may not BE any validation needed!
         // --- Create Event ---

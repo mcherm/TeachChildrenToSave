@@ -28,9 +28,17 @@
 		         
 		            <ul class="noUl">
 		                <li class="mb1">
-		                	<button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
-		                		Register for a class
-		                	</button>
+                            <c:choose>
+                                <c:when test="${sessionData.volunteer.approved}">
+                                    <button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
+                                        Register for a class
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <div>The administrator for your bank has suspended your account. You
+                                    can not volunteer for classes at this time.</div>
+                                </c:otherwise>
+                            </c:choose>
 		                </li>
 		                
 		                <li class="mb1">

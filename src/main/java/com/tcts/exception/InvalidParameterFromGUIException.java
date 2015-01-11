@@ -6,4 +6,13 @@ package com.tcts.exception;
  * error, only a bug in the UI or a hack attempt.
  */
 public class InvalidParameterFromGUIException extends RuntimeException {
+    /** No args constructor. */
+    public InvalidParameterFromGUIException() {
+        super();
+    }
+
+    /** Construct with an error message. */
+    public InvalidParameterFromGUIException(String msg) {
+        super(msg);
+    }
 }

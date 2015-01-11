@@ -149,6 +149,9 @@ public class MySQLDatabase implements DatabaseFacade {
     		
     private final static String updateResetPasswordTokenByIdSQL =
     		"update User set reset_password_token = ? where user_id = ?";
+
+    private final static String updateUserStatusByIdSQL =
+            "update User set user_status = ? where user_id = ?";
     
     private final static String updateAllowedTimeSQL =
     		"update AllowedTimes set event_time = ? where event_time = ?";
@@ -1193,9 +1196,25 @@ public class MySQLDatabase implements DatabaseFacade {
         } 
         finally {
             closeSafely(connection, preparedStatement, null);
-            
         }
 	}
+
+    @Override
+    public void updateUserStatusById(String userId, int userStatus) throws SQLException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(updateUserStatusByIdSQL);
+            preparedStatement.setInt(1, userStatus);
+            preparedStatement.setString(2, userId);
+            preparedStatement.executeUpdate();
+        }
+        finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+    }
 	
 	@Override
 	public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException

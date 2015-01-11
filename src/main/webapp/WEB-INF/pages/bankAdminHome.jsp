@@ -54,7 +54,18 @@
 		                        <th>First Name</th>
 		                        <th>Last Name</th>
 		                        <th>Email</th>
-		                        <th>Classes Registered</th>
+		                        <th>
+                                    <div>Classes Registered</div>
+                                    <table>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Teacher</th>
+                                            <th>Grade</th>
+                                            <th>Students</th>
+                                        </tr>
+                                    </table>
+                                </th>
                                 <th scope="col"><span class="ada-read">Column of Suspend buttons</span></th>
 		                    </tr>
 		                </thead>
@@ -70,12 +81,14 @@
                                     <td>
                                         <div class="volunteerClasses" id="volunteerClassesFor<c:out value="${volunteer.userId}"/>">
                                             <!-- populated by javascript -->
+                                            <em>loading...</em>
                                         </div>
                                     </td>
                                     <td>
-                                        <button onclick="js.loadURL('suspendVolunteer.htm?volunteerId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister delete">
-                                            Suspend
-                                        </button>
+                                        <form method="POST" action="suspendVolunteer.htm">
+                                            <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
+                                            <button type="submit" class="editOrRegister delete">Suspend</button>
+                                        </form>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -100,9 +113,10 @@
                                         <td><c:out value="${volunteer.lastName}"/></td>
                                         <td><c:out value="${volunteer.email}"/></td>
                                         <td>
-                                            <button onclick="js.loadURL('reinstateVolunteer.htm?volunteerId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister delete">
-                                                Reinstate
-                                            </button>
+                                            <form method="POST" action="reinstateVolunteer.htm">
+                                                <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
+                                                <button type="submit" class="editOrRegister delete">Reinstate</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 </c:forEach>
