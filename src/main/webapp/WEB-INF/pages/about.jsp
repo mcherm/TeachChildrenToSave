@@ -51,35 +51,8 @@
                 <h3>Contact us</h3>
 
                 <p>
-                    If you have any questions, don’t hesitate to contact us.
-                </p>
-
-                <h3>Email</h3>
-
-                <p>
-                    [We should have u of d create a generic email account for inquiries, or it might be better to consider a form to avoid bot spam]
-                </p>
-
-                <h3>Social Media </h3>
-
-                <p>
-                    [Do they have a Facebook page?]
-                </p>
-
-                <h3>Phone</h3>
-
-                <p>
-                    Alexis Vasko <br>
-                    Teach Children to Save Day Coordinator) <br>
-                    302-831-0268
-                </p>
-
-                <h3>Mail</h3>
-
-                <p>
-                    Teach Children to Save Day <br>
-                    C/O <br>
-                    [Need to insert address]
+                    If you have any questions, don’t hesitate to
+                    <button type="button" onclick="js.loadURL('contact.htm')" class="editOrRegister">Contact Us</button>.
                 </p>
 
             </main>
