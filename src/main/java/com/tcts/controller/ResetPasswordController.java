@@ -74,7 +74,6 @@ public class ResetPasswordController {
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
             HttpSession session,
-            HttpServletRequest request,
             @RequestParam("token") String token
         ) throws SQLException, InconsistentDatabaseException, UnsupportedEncodingException
     {

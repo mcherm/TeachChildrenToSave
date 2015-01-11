@@ -51,7 +51,8 @@ public class LoginController {
         if (potentialUser != null) {
             // verify the password
             if (potentialUser.getSalt() != null && potentialUser.getHashedPassword() != null) {
-                String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword(), potentialUser.getSalt());
+                String hashedPassword = SecurityUtil.getHashedPassword(
+                        formData.getPassword().trim(), potentialUser.getSalt());
                 if (hashedPassword.equals(potentialUser.getHashedPassword())) {
                     // --- Successful login ---
                     SessionData sessionData = SessionData.beginNewSession(session);

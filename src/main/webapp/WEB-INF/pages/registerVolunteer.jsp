@@ -36,7 +36,7 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                First Name
+                                First Name (*)
                             </div>
                             <form:input path="firstName"/>
                         </div>
@@ -47,7 +47,7 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Last Name
+                                Last Name (*)
                             </div>
                             <form:input path="lastName"/>
                         </div>
@@ -58,7 +58,7 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Email
+                                Email (*)
                             </div>
                             <form:input path="email"/>
                         </div>
@@ -71,7 +71,7 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Password
+                                Password (*)
                             </div>
                             <form:input path="password" type="password"/>
                         </div>
@@ -95,7 +95,7 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Select your bank
+                                Select your bank (*)
                             </div>
 
                             <form:select path="bankId">
@@ -109,6 +109,8 @@
                 <button type="submit">Register</button>
 
             </form:form>
+
+            <div>* - Required field</div>
 
         </main>
     </div><%-- mainCnt --%>

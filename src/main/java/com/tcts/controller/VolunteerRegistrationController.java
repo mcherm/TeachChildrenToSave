@@ -65,14 +65,26 @@ public class VolunteerRegistrationController {
             return showFormWithErrorMessage(model,
                     "You must provide a valid email.");
         }
+        if (formData.getFirstName() == null || formData.getFirstName().trim().length()==0) {
+            return showFormWithErrorMessage(model,
+                    "You must provide a first name.");
+        }
+        if (formData.getLastName() == null || formData.getLastName().trim().length()==0) {
+            return showFormWithErrorMessage(model,
+                    "You must provide a last name.");
+        }
+        if (formData.getPassword() == null || formData.getPassword().trim().length()==0) {
+            return showFormWithErrorMessage(model,
+                    "You must select a password.");
+        }
         if (formData.getBankId() == null || formData.getBankId().trim().length() == 0 || formData.getBankId().equals("0")) {
             return showFormWithErrorMessage(model, "You must select a bank.");
         }
-        // FIXME: probably need more validation rules
+
         // --- Create object ---
         try {
             String salt = SecurityUtil.generateSalt();
-            String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword(), salt);
+            String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword().trim(), salt);
             Volunteer volunteer = database.insertNewVolunteer(formData, hashedPassword, salt);
             SessionData sessionData = SessionData.beginNewSession(session);
             sessionData.setUser(volunteer);
