@@ -1,0 +1,208 @@
+body {text-align: center;}
+
+.decor {
+line-height:0;
+font-size:0;
+height:5px;
+margin:0;
+padding:0;
+}
+
+header .delc img {
+width: 251px;
+}
+
+header .dba img {
+width: 158px;
+}
+
+header {
+width: 960px;
+margin-left: auto;
+margin-right: auto;
+margin-top: 1em;
+text-align: left;
+}
+
+.mainCnt {
+width: 960px;
+margin-left: auto;
+margin-right: auto;
+line-height: 1.1em;
+font-size: .9em;
+text-align: left;
+}
+
+footer {
+width: 960px;
+margin-left: auto;
+margin-right: auto;
+margin-top: 2.7em;
+border-top: 1px solid #ccc;
+padding-top: .75em;
+text-align: left;
+}
+
+body.home main,
+body.about main,
+body.contact main,
+body.signIn main,
+body.register main {
+width: 55.94406%;
+float: right;
+font-size: .9em;
+padding-left: 5px;
+padding-right: 5px;
+text-align: left;
+}
+
+/*body.about main,
+body.contact main,
+body.signIn main,
+body.register main {
+width: 90%;
+margin: 0 47.5px 0 47.5px;
+}*/
+
+body.signIn main,
+body.register main {
+  text-align: center;
+}
+
+body.volunteer_registration form, 
+body.registerTeacher form, 
+body.signIn form, 
+body.editPersonalData form, 
+body.eventRegistration form, 
+body.createEvent form, 
+body.addVolunteer form, 
+body.registerVolunteer form,
+body.addBank form,
+body.addSchool form {
+width: 300px;
+margin: 0 auto;
+}
+
+body.home main button, 
+body.register main button {
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+-ms-border-radius: 4px;
+border-radius: 4px;
+font-size: .9em;
+background-color: #31873f;
+-webkit-appearance: none;
+text-transform: uppercase;
+color: #fff;
+border: 0;
+height: 30px;
+width:300px;
+font-weight:bold;
+}
+
+header {
+width: 960px;
+margin-left: auto;
+margin-right: auto;
+margin-top: 1em;
+}
+
+
+nav {
+-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+-ms-border-radius: 4px;
+border-radius: 4px;
+background-color: #0c345a;
+background-image: -webkit-gradient(linear, left, right, left, right);
+background-image: -webkit-linear-gradient(to right, #315d87, #0c345a);
+background-image: -moz-linear-gradient(to right, #315d87, #0c345a);
+background-image: -ms-linear-gradient(to right, #315d87, #0c345a);
+background-image: -o-linear-gradient(to right, #315d87, #0c345a);
+background-image: linear-gradient(to right, #315d87, #0c345a);
+filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#315d87', EndColorStr='#0c345a');
+height: 38px;
+color: #fff;
+text-align: center;
+margin-bottom: 1em;
+}
+
+.maincnt ul {
+}
+
+nav ul {
+margin-left:25%;
+}
+
+nav li {
+list-style-type: none;
+display: block;
+padding-right: 4%;
+padding-top: .5em;
+border: 0;
+float:left;
+}
+
+nav button {
+/*color: #fff;*/
+text-decoration: none;
+font-weight: bold;
+height: auto;
+width: auto;
+color: #ffe89b; 
+font-size:8px;
+}
+
+nav button .iconfont {
+}
+
+
+nav button .txt {
+color:#fff;
+font-size: 12px;
+padding:0 0 0 5px;
+position:relative;
+bottom: -2px;
+}
+
+form .inputCnt {
+display: block;
+width: 100%;
+text-align: left;
+}
+
+form .inputCnt input{
+width: 100%;
+}
+
+body.volunteer_registration form button, 
+body.registerTeacher form button, 
+body.signIn form button, 
+body.editPersonalData form button, 
+body.eventRegistration form button, 
+body.createEvent form button, 
+body.addVolunteer form button, 
+body.registerVolunteer form button,
+body.addBank form button,
+body.addSchool form button {
+width: 300px;
+font-weight:bold;
+}
+
+body.home aside img,
+body.about aside img,
+body.contact aside img,
+body.signIn aside img, 
+body.register aside img {
+
+    width:380px;
+}
+
+body.signIn aside img{
+  
+    width:278px;
+}
+
+.qa-notes {
+text-align: left;
+}

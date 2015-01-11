@@ -5,11 +5,9 @@
         <title>Teach Children To Save - Add Bank</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body class="">
+    <body class="addBank">
 
         <a href="#main" class="ada-read">Skip to main content</a>
-
-        <div class="decor"></div>
 
         <%@include file="include/header.jsp" %>
 
@@ -88,13 +86,13 @@
 
                     </form:form>
 
-                </div>
-                <div>
-                    <button onclick="js.loadURL('viewEditBanks.htm')" class="editOrRegister cancel">Cancel</button>
-                </div>
+                    <div class="cancelBlock">
+                        <button onclick="js.loadURL('viewEditBanks.htm')" class="editOrRegister delete">Cancel</button>
+                        <p>
+                            NOTE: Your newly created bank admin will need to use password reset to log on for the first time.
+                        </p>
+                    </div>
 
-                <div>
-                    NOTE: Your newly created bank admin will need to use password reset to log on for the first time.
                 </div>
 
             </main>

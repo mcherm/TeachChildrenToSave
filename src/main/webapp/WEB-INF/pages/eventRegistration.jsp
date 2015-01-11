@@ -66,12 +66,12 @@
             function buildTable() {
                 var html =
                     "<thead><tr>" +
-                    "    <th scope='col' class='sortable' onclick='sortBy(\"eventDate\")' id='col_for_eventDate'>Date</th>" +
-                    "    <th scope='col' class='sortable' onclick='sortBy(\"eventTime\")' id='col_for_eventTime'>Time</th>" +
-                    "    <th scope='col' class='sortable' onclick='sortBy(\"grade\")' id='col_for_grade'>Grade</th>" +
-                    "    <th scope='col' class='sortable' onclick='sortBy(\"numberStudents\")' id='col_for_numberStudents'>Students</th>" +
-                    "    <th scope='col' class='sortable' onclick='sortBy(\"firstName\")' id='col_for_firstName'>Teacher</th>" +
-                    "    <th scope='col' class='sortable' onclick='sortBy(\"schoolName\")' id='col_for_schoolName''>School</th>" +
+                    "    <th width='5%' scope='col' class='sortable' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\")'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
+                    "    <th width='11%' scope='col' class='sortable' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\")'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
+                    "    <th width='10%' scope='col' class='sortable' id='col_for_grade'><button onclick='sortBy(\"grade\")'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
+                    "    <th width='12%' scope='col' class='sortable' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\")'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
+                    "    <th width='19%' scope='col' class='sortable' id='col_for_firstName'><button onclick='sortBy(\"firstName\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
+                    "    <th width='30%' scope='col' class='sortable' id='col_for_schoolName''><button onclick='sortBy(\"schoolName\")'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
                     "    <th scope='col'><span class='ada-read'>Column of Details buttons</span></th>" +
                     "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
@@ -95,8 +95,8 @@
                     if (showThisEvent) {
                         html +=
                             "<tr id='rowForEvent" + event.eventId + "'>" +
-                            "    <td><span class='nowrap'>" + event.eventDate + "</span></td>" +
-                            "    <td><span class='nowrap'>" + event.eventTime + "</span></td>" +
+                            "    <td>" + event.eventDate + "</td>" +
+                            "    <td>" + event.eventTime + "</td>" +
                             "    <td class='center'>" + event.grade + "</td>" +
                             "    <td class='center'>" + event.numberStudents + "</td>" +
                             "    <td>" + event.firstName + " " + event.lastName + "</td>" +
@@ -259,10 +259,10 @@
         </script>
     </head>
     <body class="evenRegistration">
-    <%@include file="include/header.jsp"%>
 
     <a href="#main" class="ada-read">Skip to main content</a>
 
+    <%@include file="include/header.jsp"%>
 
     <div class="mainCnt">
 
@@ -277,18 +277,21 @@
                         Refine by:
                     </legend>
 
-                    <div id="eventDate_checkboxes"><!--populated by javascript --></div>
-                    <div id="eventTime_checkboxes"><!--populated by javascript --></div>
-                    <div id="county_checkboxes"><!--populated by javascript --></div>
-                    <div id="grade_checkboxes"><!--populated by javascript --></div>
-                    <div id="lmiEligible_checkboxes"><!--populated by javascript --></div>
+                    <div id="eventDate_checkboxes"><%-- populated by javascript --%></div>
+                    <div id="eventTime_checkboxes"><%-- populated by javascript --%></div>
+                    <div id="county_checkboxes"><%-- populated by javascript --%></div>
+                    <div id="grade_checkboxes"><%-- populated by javascript --%></div>
+                    <div id="lmiEligible_checkboxes"><%-- populated by javascript --%></div>
 
                 </fieldset>
 
-                <table id="dynamicEventTable"><!-- populated by javascript --></table>
+                <table id="dynamicEventTable"><%-- populated by javascript --%></table>
 
-                <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister doneAdding">Cancel</button>
+                <br>
 
+                <div class="cancelBlock">
+                    <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister delete">Cancel</button>
+                </div>
         </main>
 
     </div><%-- .mainCnt --%>

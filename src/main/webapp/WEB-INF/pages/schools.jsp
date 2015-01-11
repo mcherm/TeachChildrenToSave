@@ -11,8 +11,6 @@
 
     <a href="#main" class="ada-read">Skip to main content</a>
 
-    <div class="decor"></div>
-
     <%@include file="include/header.jsp" %>
 
     <div class="mainCnt">
@@ -30,7 +28,6 @@
                 <ul class="noUl">
                     <li class="mb1">
                         <button onclick="js.loadURL('addSchool.htm')" class="editOrRegister">Add New School</button>
-
                     </li>
 
                     <li class="mb1">
@@ -73,12 +70,12 @@
                     <td><c:out value="${school.name}"/></td>
                     <td><c:out value="${school.addressLine1}"/></td>
                     <td><c:out value="${school.city}"/></td>
-                    <td><c:out value="${school.state}"/></td>
+                    <td class="center"><c:out value="${school.state}"/></td>
                     <td><c:out value="${school.zip}"/></td>
                     <td><c:out value="${school.county}"/></td>
                     <td><c:out value="${school.schoolDistrict}"/></td>
                     <td><c:out value="${school.phone}"/></td>
-                    <td><c:out value="${school.lmiEligible}"/></td>
+                    <td class="center"><c:out value="${school.lmiEligible}"/></td>
                     <td><c:out value="${school.SLC}"/></td>
                     <td>
                         <form method="POST" action="deleteSchool.htm" modelAttribute="formData">

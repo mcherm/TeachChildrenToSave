@@ -11,8 +11,6 @@
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        <div class="decor"></div>
-
         <%@include file="include/header.jsp" %>
 
         <div class="mainCnt">
@@ -49,29 +47,36 @@
 	                </label>
 	                
 	                <div class="inputCnt">
-	                        <a href="forgotPassword.htm">Forgot Password</a>
-	                    </div>
+						<a href="forgotPassword.htm">Forgot Password</a>
+						<%--TODO: should be a button not an anchor, but currently adding this button will trigger the form submit, not the js URL load--%>
+						<%--<button onclick="js.loadURL('forgotPassword.htm')" class="likeAnAnchor" type="button">--%>
+							<%--Forgot Password--%>
+						<%--</button>--%>
+	                </div>
 	            </div>
 	            
 	            <button type="submit" value="Login">Login</button>
 	            
 	        </form:form>
 
-	        <div class="qa-notes">
-	        	<strong>Some valid logins for testing:</strong> 
-	        	<br>
-                larry@foobar.com(V) janedoe@foobar.com(BA) lucy@foobar.com(T) bonnie@mcherm.com(SA) moe@gmail.com(V) curley@gmail.com(V)
-                shemp@hulu.com(V) josuah@wintergreen.com(T) Allen@novel.com(T).
-	            <br>
-	            V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin. 
-	            <br>
-	            All have "pass"
-	            as their password.
-	        </div>
+				<div class="qa-notes">
+					<strong>Some valid logins for testing:</strong>
+					<br>
+					larry@foobar.com(V) janedoe@foobar.com(BA) lucy@foobar.com(T) bonnie@mcherm.com(SA) moe@gmail.com(V) curley@gmail.com(V)
+					shemp@hulu.com(V) josuah@wintergreen.com(T) Allen@novel.com(T).
+					<br>
+					V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin.
+					<br>
+					All have "pass"
+					as their password.
+		        </div>
 
-
-            
             </main>
+
+			<aside>
+				<img src="tcts/img/logo-tcts.png" alt="" aria-hidden="true">
+			</aside>
+
         </div><%-- mainCnt --%>
         <%@include file="include/footer.jsp" %>
 

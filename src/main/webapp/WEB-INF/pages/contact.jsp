@@ -6,11 +6,12 @@
         <%@include file="include/commonHead.jsp"%>
     </head>
     <body class="contact">
-        <%@include file="include/header.jsp"%>
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        
+        <%@include file="include/header.jsp"%>
+
+
         <div class="mainCnt">
 
         <%@include file="include/navigation.jsp" %>
@@ -58,6 +59,10 @@
                 </p>
 
             </main>
+
+            <aside>
+                <img src="tcts/img/iStock_000011666378Small-kids-computers.jpg" alt="" aria-hidden="true">
+            </aside>
 
         </div><%-- .mainCnt --%>
 

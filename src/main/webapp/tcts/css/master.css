@@ -293,27 +293,59 @@ body.home main {
   padding-right: 5px;
 }
 
-body.home aside {
+body.home aside,
+body.about aside,
+body.contact aside,
+body.signIn aside,
+body.register aside {
   text-align: center;
+  padding-top: 3em;
 }
-body.home aside img {
-  width: 278px;
+body.home aside img,
+body.about aside img,
+body.contact aside img,
+body.signIn aside img,
+body.register aside img {
+  width: 95%;
+  max-width: 380px;
+}
+
+body.signIn aside {
+  padding-top: 3em;
+}
+body.signIn aside img {
+  max-width: 278px;
+}
+
+body.register main {
+  text-align: center;
 }
 
 @media (min-width: 768px) {
-  body.home main {
+  body.home main,
+  body.about main,
+  body.contact main,
+  body.signIn main,
+  body.register main {
     width: 55.94406%;
     float: right;
     font-size: .9em;
   }
-  body.home main li {
+  body.home main li,
+  body.about main li,
+  body.contact main li,
+  body.signIn main li,
+  body.register main li {
     margin-bottom: .15em;
   }
 
-  body.home aside {
+  body.home aside,
+  body.about aside,
+  body.contact aside,
+  body.signIn aside,
+  body.register aside {
     width: 43.35664%;
     float: left;
-    padding-top: 2em;
   }
 }
 .qa-notes {
@@ -393,6 +425,10 @@ main ul {
 
 main ul span {
   color: #333;
+}
+
+a, a:visited {
+  color: #0c345a;
 }
 
 /* Webfont: TeachKidsToSaveDE-Regular */
@@ -475,14 +511,34 @@ main .editOrRegister.doneAdding {
   height: 44px;
 }
 
-.adminEditAllowedTimes table button {
+main thead button {
+  color: #fff;
+  width: 100%;
+  text-align: left;
+}
+
+.adminEditAllowedTimes tbody button {
   width: 68px;
 }
 
-/*body.evenRegistration main table .editOrRegister button {
-
+.likeAnAnchor {
+  display: inline !important;
+  background-color: transparent;
+  color: #0c345a;
+  text-transform: none;
+  text-decoration: underline;
+  height: initial !important;
+  width: initial !important;
+  text-align: left;
+  margin: 0;
+  padding: 0;
 }
-*/
+
+.likeAnAnchor:hover {
+  text-decoration: none;
+}
+
+/* body.evenRegistration main table .editOrRegister button {} */
 @media (min-width: 320px) {
   body.home main button {
     width: 100%;
@@ -639,8 +695,11 @@ td.emptyTableMessage {
   }
 }
 @media (min-width: 768px) {
-  body.adminEditAllowedTimes table {
-    width: 50%;
+  body.adminEditAllowedTimes {
+    /*		table {
+    			width:50%;		
+    
+    		}*/
   }
 }
 form button {
@@ -702,7 +761,9 @@ form textarea {
   body.eventRegistration form,
   body.createEvent form,
   body.addVolunteer form,
-  body.registerVolunteer form {
+  body.registerVolunteer form,
+  body.addBank form,
+  body.addSchool form {
     width: 100%;
     margin: 0 auto;
   }
@@ -721,7 +782,11 @@ form textarea {
   body.addVolunteer form input[type=text],
   body.addVolunteer form input[type=password],
   body.registerVolunteer form input[type=text],
-  body.registerVolunteer form input[type=password] {
+  body.registerVolunteer form input[type=password],
+  body.addBank form input[type=text],
+  body.addBank form input[type=password],
+  body.addSchool form input[type=text],
+  body.addSchool form input[type=password] {
     width: 100%;
     height: 22px;
   }
@@ -732,7 +797,9 @@ form textarea {
   body.eventRegistration form .error,
   body.createEvent form .error,
   body.addVolunteer form .error,
-  body.registerVolunteer form .error {
+  body.registerVolunteer form .error,
+  body.addBank form .error,
+  body.addSchool form .error {
     width: 100%;
   }
   body.volunteer_registration form button,
@@ -742,7 +809,9 @@ form textarea {
   body.eventRegistration form button,
   body.createEvent form button,
   body.addVolunteer form button,
-  body.registerVolunteer form button {
+  body.registerVolunteer form button,
+  body.addBank form button,
+  body.addSchool form button {
     width: 100%;
   }
 }
@@ -754,7 +823,9 @@ form textarea {
   body.eventRegistration form,
   body.createEvent form,
   body.addVolunteer form,
-  body.registerVolunteer form {
+  body.registerVolunteer form,
+  body.addBank form,
+  body.addSchool form {
     width: 300px;
     margin: 0 auto;
   }
@@ -773,7 +844,11 @@ form textarea {
   body.addVolunteer form input[type=text],
   body.addVolunteer form input[type=password],
   body.registerVolunteer form input[type=text],
-  body.registerVolunteer form input[type=password] {
+  body.registerVolunteer form input[type=password],
+  body.addBank form input[type=text],
+  body.addBank form input[type=password],
+  body.addSchool form input[type=text],
+  body.addSchool form input[type=password] {
     width: 300px;
     height: 22px;
   }
@@ -784,7 +859,9 @@ form textarea {
   body.eventRegistration form .error,
   body.createEvent form .error,
   body.addVolunteer form .error,
-  body.registerVolunteer form .error {
+  body.registerVolunteer form .error,
+  body.addBank form .error,
+  body.addSchool form .error {
     width: auto;
   }
   body.volunteer_registration form button,
@@ -794,10 +871,17 @@ form textarea {
   body.eventRegistration form button,
   body.createEvent form button,
   body.addVolunteer form button,
-  body.registerVolunteer form button {
+  body.registerVolunteer form button,
+  body.addBank form button,
+  body.addSchool form button {
     width: 300px;
   }
 }
+.cancelBlock {
+  width: 300px;
+  margin: 1em auto;
+}
+
 .errorMessage {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -837,11 +921,11 @@ footer small {
   height: 5px;
 }
 
-body.about main {
-  width: 90%;
-  margin: 0 auto;
+/*body.about main {
+	width:90%;
+	margin:0 auto;
 }
-
+*/
 h2, h3 {
   font-weight: bold;
   margin-top: 1em;

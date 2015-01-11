@@ -6,11 +6,11 @@
         <%@include file="include/commonHead.jsp"%>
     </head>
     <body class="contact">
-        <%@include file="include/header.jsp"%>
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        
+        <%@include file="include/header.jsp"%>
+
         <div class="mainCnt">
 
         <%@include file="include/navigation.jsp" %>

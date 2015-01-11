@@ -6,11 +6,11 @@
         <%@include file="include/commonHead.jsp"%>
     </head>
     <body class="register">
-        <%@include file="include/header.jsp"%>
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        
+        <%@include file="include/header.jsp"%>
+
         <div class="mainCnt">
 
         <%@include file="include/navigation.jsp" %>
@@ -28,6 +28,10 @@
                 <button onclick="js.loadURL('registerTeacher.htm');">Sign up my class</button>
 
             </main>
+
+            <aside>
+                <img src="tcts/img/iStock_000032938910Small-happy-student-and-teacher.jpg" alt="" aria-hidden="true">
+            </aside>
 
         </div><%-- .mainCnt --%>
 

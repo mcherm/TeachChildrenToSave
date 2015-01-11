@@ -12,8 +12,6 @@
     <body class="home">
 
         <a href="#main" class="ada-read">Skip to main content</a>
-        
-        <div class="decor"></div>
 
         <%@include file="WEB-INF/pages/include/header.jsp" %>
 
@@ -64,7 +62,8 @@
             </main>
 
             <aside>
-                <img src="tcts/img/logo-tcts.png" alt="" aria-hidden="true">
+                <%--<img src="tcts/img/logo-tcts.png" alt="" aria-hidden="true">--%>
+                <img src="tcts/img/iStock_000019109215Small-happy-kids.jpg" alt="" aria-hidden="true">
             </aside>
 
         </div><%-- .mainCnt --%>

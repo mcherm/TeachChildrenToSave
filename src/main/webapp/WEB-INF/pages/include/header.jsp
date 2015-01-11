@@ -1,4 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<div class="decor"></div>
+
 <header role="banner">
 	<div class="delc">
 			<a href="http://www.lerner.udel.edu/centers/ceee/delaware-council-economic-education" target="_blank"><img src="tcts/img/logo-del-council.png" alt="Delaware Council on Economic Education logo"></a>

@@ -8,8 +8,6 @@
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        <div class="decor"></div>
-
         <%@include file="include/header.jsp" %>
 
         <div class="mainCnt">

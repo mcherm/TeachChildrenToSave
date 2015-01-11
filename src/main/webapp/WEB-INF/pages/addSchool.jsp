@@ -5,11 +5,9 @@
         <title>Teach Children To Save - Add School</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body class="">
+    <body class="addSchool">
 
         <a href="#main" class="ada-read">Skip to main content</a>
-
-        <div class="decor"></div>
 
         <%@include file="include/header.jsp" %>
 
@@ -141,13 +139,14 @@
                         </div>
 
                         <button type="submit" value="Create">Create</button>
-                        <button type="button" onclick="js.loadURL('schools.htm')">Cancel</button>
+                        <%--<button type="button" onclick="js.loadURL('schools.htm')">Cancel</button>--%>
 
                     </form:form>
 
-                </div>
-                <div>
-                    <button onclick="js.loadURL('viewEditSchools.htm')" class="editOrRegister cancel">Cancel</button>
+                    <div class="cancelBlock">
+                        <button onclick="js.loadURL('viewEditSchools.htm')" class="editOrRegister delete">Cancel</button>
+                    </div>
+
                 </div>
 
             </main>
