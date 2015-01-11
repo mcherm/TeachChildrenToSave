@@ -51,27 +51,33 @@
 	                	</button>
 	                </li>
 
-	                <li class="mb1">
-	                	<button onclick="js.loadURL('viewEditEvents.htm');" class="editOrRegister">
-	                		List Classes
-	                	</button>
-	                </li>
-	                
-	                <li class="mb1">
+                    <li class="mb1">
+                        <button onclick="js.loadURL('viewEditEvents.htm');" class="editOrRegister">
+                            List Classes
+                        </button>
+                    </li>
+
+                    <li class="mb1">
+                        <button onclick="js.loadURL('adminEditAllowedDates.htm');" class="editOrRegister">
+                            Add/Remove Event Dates
+                        </button>
+                    </li>
+
+                    <li class="mb1">
+                        <button onclick="js.loadURL('adminEditAllowedTimes.htm');" class="editOrRegister">
+                            Add/Remove Event Times
+                        </button>
+                    </li>
+
+                    <li class="mb1">
+                        <button onclick="js.loadURL('adminViewStatistics.htm');" class="editOrRegister">
+                            View Program Statistics
+                        </button>
+                    </li>
+
+                    <li class="mb1">
 	                	<button onclick="js.loadURL('adminSendEmailAnnounce.htm');" class="editOrRegister">
 	                		Send Email Announcement
-	                	</button>
-	                </li>
-	                
-	                <li class="mb1">
-	                	<button onclick="js.loadURL('adminEditAllowedDates.htm');" class="editOrRegister">
-	                		Add/Remove Event Dates
-	                	</button>
-	                </li>
-	                
-	                <li class="mb1">
-	                	<button onclick="js.loadURL('adminEditAllowedTimes.htm');" class="editOrRegister">
-	                		Add/Remove Event Times
 	                	</button>
 	                </li>
 	                

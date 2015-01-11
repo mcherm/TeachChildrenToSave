@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.tcts.datamodel.SiteStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -164,6 +165,15 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String deleteAllowedDateSQL =
     		"delete from AllowedDates where event_date = ? ";
+
+    private final static String getNumEventsSQL = "select count(*) from Event";
+    private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
+    private final static String getNumUnmatchedEventsSQL = "select count(*) from Event where volunteer_id is null";
+    private final static String getNum3rdGradeEventsSQL = "select count(*) from Event where grade = 3";
+    private final static String getNum4thGradeEventsSQL = "select count(*) from Event where grade = 4";
+    private final static String getNumVolunteersSQL = "select count(*) from User where access_type = 'V'";
+    private final static String getNumParticipatingTeachersSQL = "select count(distinct teacher_id) from Event";
+    private final static String getNumParticipatingSchoolsSQL = "select count(distinct organization_id) from Event join User on teacher_id = user_id";
 
     public final static int APPROVAL_STATUS_NORMAL = 0;
     public final static int APPROVAL_STATUS_SUSPENDED = 1;
@@ -841,19 +851,6 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public User updateVolunteer(Volunteer volunteer) throws SQLException,
-			EmailAlreadyInUseException {
-		// TODO Auto-generated method stub
-		EditPersonalDataFormData formData = new EditPersonalDataFormData();
-		formData.setEmail(volunteer.getEmail());
-		formData.setFirstName(volunteer.getFirstName());
-		formData.setLastName(volunteer.getLastName());
-		formData.setPhoneNumber(volunteer.getPhoneNumber());
-		return modifyUserPersonalFields(volunteer.getUserId(), formData);
-	}
-
-
-	@Override
 	public void modifyEvent(EventRegistrationFormData formData) throws SQLException,
 			NoSuchEventException {
 		Connection connection = null;
@@ -1155,7 +1152,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setInt(9, Integer.parseInt(formData.getLmiEligible()));
             preparedStatement.setString(10, formData.getSLC());
 
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
 
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
@@ -1282,10 +1279,57 @@ public class MySQLDatabase implements DatabaseFacade {
         } 
         finally {
             closeSafely(connection, preparedStatement, null);
-            
         }
 	}
 
 
+    @Override
+    public SiteStatistics getSiteStatistics() throws SQLException {
+        Connection connection = null;
+        try {
+            connection = connectionFactory.getConnection();
+
+            SiteStatistics siteStatistics = new SiteStatistics();
+            siteStatistics.setNumEvents(runSQLReturningInt(connection, getNumEventsSQL));
+            siteStatistics.setNumMatchedEvents(runSQLReturningInt(connection, getNumMatchedEventsSQL));
+            siteStatistics.setNumUnmatchedEvents(runSQLReturningInt(connection, getNumUnmatchedEventsSQL));
+            siteStatistics.setNum3rdGradeEvents(runSQLReturningInt(connection, getNum3rdGradeEventsSQL));
+            siteStatistics.setNum4thGradeEvents(runSQLReturningInt(connection, getNum4thGradeEventsSQL));
+            siteStatistics.setNumVolunteers(runSQLReturningInt(connection, getNumVolunteersSQL));
+            siteStatistics.setNumParticipatingTeachers(runSQLReturningInt(connection, getNumParticipatingTeachersSQL));
+            siteStatistics.setNumParticipatingSchools(runSQLReturningInt(connection, getNumParticipatingSchoolsSQL));
+            return siteStatistics;
+        }
+        finally {
+            closeSafely(connection, null, null);
+        }
+    }
+
+
+    /** A private subroutine of getSiteStatistics(). Must be passed an SQL select returning exactly 1 integer. */
+    private int runSQLReturningInt(Connection connection, String sql) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            int outputInt = Integer.MIN_VALUE; // will not get used since we check that there was 1 row
+            preparedStatement = connection.prepareStatement(sql);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+                numberOfRows++;
+                outputInt = resultSet.getInt(1);
+            }
+            if (numberOfRows < 1) {
+                throw new RuntimeException("This should never happen.");
+            } else if (numberOfRows > 1) {
+                throw new RuntimeException("This should never happen.");
+            }
+            return outputInt;
+        }
+        finally {
+            closeSafely(null, preparedStatement, resultSet);
+        }
+
+    }
 
 }

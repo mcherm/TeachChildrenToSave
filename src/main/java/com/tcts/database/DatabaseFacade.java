@@ -10,6 +10,7 @@ import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
+import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
@@ -180,10 +181,7 @@ public interface DatabaseFacade {
 
 	public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
 
-    /** This can be used to upate certain fields of a Volunteer. */
-	User updateVolunteer(Volunteer volunteer) throws SQLException,
-			EmailAlreadyInUseException;
-	
+
 	/** Changes the password (and salt) for an existing user. */
 	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException;
 	
@@ -210,5 +208,7 @@ public interface DatabaseFacade {
 
 	/** Update allowed date **/
 	public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException;
-	
+
+    /** Retrieves a bunch of basic statistics about the database. */
+    public SiteStatistics getSiteStatistics() throws SQLException;
 }
