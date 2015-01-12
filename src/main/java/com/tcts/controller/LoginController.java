@@ -1,7 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.User;
-import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.formdata.LoginFormData;
 import com.tcts.util.SecurityUtil;
 
@@ -42,9 +39,9 @@ public class LoginController {
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
             HttpSession session
-        ) throws SQLException, InconsistentDatabaseException
+        ) throws Exception
     {
-        SessionData.ensureNoActiveSession(session);
+    	SessionData.ensureNoActiveSession(session);
         
         User potentialUser = database.getUserByEmail(formData.getEmail());
 
@@ -67,5 +64,23 @@ public class LoginController {
         model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "Invalid user id or password.");
         return "login";
+    }
+    
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public String homePage(
+            ModelMap model,
+            HttpSession session
+        )
+    {
+    	SessionData sessionData = SessionData.fromSession(session);
+    	User user = sessionData.getUser();
+    	
+    	if (user == null) {
+    		model.addAttribute("formData", new LoginFormData());
+            model.addAttribute("errorMessage", "Session expired,Kindly login again.");
+            return "login";
+    	}
+        return "redirect:" + user.getUserType().getHomepage();
+     
     }
 }
