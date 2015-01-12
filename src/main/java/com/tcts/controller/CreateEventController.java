@@ -8,6 +8,7 @@ import java.util.Date;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.common.Cache;
+import com.tcts.exception.InvalidParameterFromGUIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -83,8 +84,11 @@ public class CreateEventController {
         if (!cache.getAllowedTimes().contains(formData.getEventTime())) {
             return showFormWithErrorMessage(model, "You must select a time from the list.");
         }
-        if (formData.getGrade() == null) {
+        if (formData.getGrade() == null || formData.getGrade().length() == 0) {
             return showFormWithErrorMessage(model, "You must specify the grade.");
+        }
+        if (!(formData.getGrade().equals("3") || formData.getGrade().equals("4"))) {
+            throw new InvalidParameterFromGUIException("GUI should only let you chose valid grades.");
         }
 
         // --- Create Event ---

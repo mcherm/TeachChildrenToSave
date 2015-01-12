@@ -159,6 +159,21 @@ public class EventController {
             throw new NotLoggedInException();
         }
 
+        // --- Validate the event fields ---
+        if (!cache.getAllowedDates().contains(formData.getEventDate())) {
+            return showEditEventWithErrorMessage(model, formData, "You must select a valid date.");
+        }
+        if (!cache.getAllowedTimes().contains(formData.getEventTime())) {
+            return showEditEventWithErrorMessage(model, formData, "You must select a time from the list.");
+        }
+        if (formData.getGrade() == null || formData.getGrade().length() == 0) {
+            return showEditEventWithErrorMessage(model, formData, "You must specify the grade.");
+        }
+        if (!(formData.getGrade().equals("3") || formData.getGrade().equals("4"))) {
+            throw new InvalidParameterFromGUIException("GUI should only let you chose valid grades.");
+        }
+
+        // --- Update the event ---
         try {
             database.modifyEvent(formData);
         } catch(NoSuchEventException err) {

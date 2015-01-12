@@ -61,7 +61,11 @@
                                 <div class="info">
                                     Grade
                                 </div>
-                                <form:input path="grade"/>
+                                <form:select path="grade">
+                                    <form:option value="" label="Select One..."/>
+                                    <form:option value="3" label="3rd Grade"/>
+                                    <form:option value="4" label="4th Grade"/>
+                                </form:select>
                             </div>
                         </label>
                     </div>
