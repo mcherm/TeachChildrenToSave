@@ -7,8 +7,9 @@
     <head>
         <title>Teach Children To Save - Unexpected error occurred</title>
         <%@include file="include/commonHead.jsp"%>
+        <script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
     </head>
-    <body class="">
+    <body class="errorPage">
     
         <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -23,8 +24,9 @@
             <main id="main">    
     
 				<div class="errorMessage">
-				   		Unexpected error occurred.Kidnly re-try and if error persists then please try after sometime.
-			   	</div>	
+				    An unexpected error has occurred. You may retry. If that does not work, please
+                    use the "contact us" link to report the problem.
+			   	</div>
 
 
 				<div id="actions">
@@ -40,7 +42,12 @@
                     </ul>
                 </div>
 
-			
+                <div class="obscuredFootnote"><span onclick="$('.hiddenErrorMessage').toggle()">Details...</span></div>
+			    <div class="hiddenErrorMessage">
+                    <div class="exceptionType"><c:out value="${exceptionType}"/></div>
+                    <div class="exceptionMessage"><c:out value="${exceptionMessage}"/></div>
+                    <pre class="stackTrace"><c:out value="${stackTrace}"/></pre>
+			    </div>
 			</main>
 
 		</div><%-- mainCnt --%>	
