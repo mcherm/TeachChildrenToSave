@@ -7,7 +7,6 @@ import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 
-import com.tcts.common.Cache;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -32,9 +31,7 @@ public class CreateEventController {
 
     @Autowired
     private DatabaseFacade database;
-    @Autowired
-    private Cache cache;
-    
+
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
@@ -58,8 +55,8 @@ public class CreateEventController {
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
     private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
-        model.addAttribute("allowedDates", cache.getAllowedDates());
-        model.addAttribute("allowedTimes", cache.getAllowedTimes());
+        model.addAttribute("allowedDates", database.getAllowedDates());
+        model.addAttribute("allowedTimes", database.getAllowedTimes());
         model.addAttribute("errorMessage", errorMessage);
         return "createEvent";
     }
@@ -78,10 +75,10 @@ public class CreateEventController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         // --- Validation Rules ---
-        if (!cache.getAllowedDates().contains(formData.getEventDate())) {
+        if (!database.getAllowedDates().contains(formData.getEventDate())) {
             return showFormWithErrorMessage(model, "You must select a valid date.");
         }
-        if (!cache.getAllowedTimes().contains(formData.getEventTime())) {
+        if (!database.getAllowedTimes().contains(formData.getEventTime())) {
             return showFormWithErrorMessage(model, "You must select a time from the list.");
         }
         if (formData.getGrade() == null || formData.getGrade().length() == 0) {

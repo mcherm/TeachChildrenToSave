@@ -129,7 +129,7 @@ public interface DatabaseFacade {
     
     public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException;
 
-    public boolean deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
+    public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 
     /**
      * This will delete a bank. It ALSO deletes the bank admin AND ALL Volunteers belonging
@@ -138,7 +138,7 @@ public interface DatabaseFacade {
     public void deleteBank(String bankId) throws SQLException, NoSuchBankException;
     
      
-    public boolean deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException;
+    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException;
 
     /**
      * This deletes the indicated event, or throws NoSuchEventException if it does not exist.

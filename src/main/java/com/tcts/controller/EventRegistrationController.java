@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import com.tcts.common.Cache;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,12 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
-import com.tcts.datamodel.School;
-import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AppConfigurationException;
-import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.util.EmailUtil;
@@ -47,9 +43,6 @@ public class EventRegistrationController {
     @Autowired
     EmailUtil emailUtil;
 
-    @Autowired
-    Cache cache;
-
 
 	@RequestMapping(value = "/eventRegistration", method = RequestMethod.GET)
     public String showEventRegistrationPage(HttpSession session, Model model) throws SQLException {
@@ -68,8 +61,8 @@ public class EventRegistrationController {
     private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
         List<Event> events = database.getAllAvailableEvents();
         model.addAttribute("events", events);
-        model.addAttribute("allowedDates", cache.getAllowedDates());
-        model.addAttribute("allowedTimes", cache.getAllowedTimes());
+        model.addAttribute("allowedDates", database.getAllowedDates());
+        model.addAttribute("allowedTimes", database.getAllowedTimes());
         model.addAttribute("errorMessage", errorMessage);
         return "eventRegistration";
     }

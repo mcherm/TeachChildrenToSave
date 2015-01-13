@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.tcts.common.Cache;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
@@ -39,10 +38,7 @@ public class EventController {
 
     @Autowired
     private DatabaseFacade database;
-    
-    @Autowired
-    private Cache cache;
-    
+
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
@@ -138,8 +134,8 @@ public class EventController {
     public String showEditEventWithErrorMessage(Model model, CreateEventFormData formData, String errorMessage)
             throws SQLException
     {
-    	model.addAttribute("allowedDates", cache.getAllowedDates());
-        model.addAttribute("allowedTimes", cache.getAllowedTimes());
+    	model.addAttribute("allowedDates", database.getAllowedDates());
+        model.addAttribute("allowedTimes", database.getAllowedTimes());
         model.addAttribute("formData", formData);
         model.addAttribute("errorMessage", errorMessage);
         return "editEvent";
@@ -160,10 +156,10 @@ public class EventController {
         }
 
         // --- Validate the event fields ---
-        if (!cache.getAllowedDates().contains(formData.getEventDate())) {
+        if (!database.getAllowedDates().contains(formData.getEventDate())) {
             return showEditEventWithErrorMessage(model, formData, "You must select a valid date.");
         }
-        if (!cache.getAllowedTimes().contains(formData.getEventTime())) {
+        if (!database.getAllowedTimes().contains(formData.getEventTime())) {
             return showEditEventWithErrorMessage(model, formData, "You must select a time from the list.");
         }
         if (formData.getGrade() == null || formData.getGrade().length() == 0) {

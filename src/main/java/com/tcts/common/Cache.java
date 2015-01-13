@@ -23,6 +23,7 @@ import java.util.List;
  * cached data must be done while holding a lock on the Cache object.
  */
 @Component
+@Deprecated
 public class Cache {
 
     private static final long REFRESH_IN_MILLIS = 1000*60*60;
@@ -31,14 +32,16 @@ public class Cache {
     private DatabaseFacade database;
 
 
-    private CachedValue<List<Date>,SQLException> allowedDates = new CachedValue<List<Date>,SQLException>() {
+    private CachedValue<List<Date>,SQLException> allowedDates =
+            new CachedValue<List<Date>,SQLException>(REFRESH_IN_MILLIS) {
         @Override
         public List<Date> generateValue() throws SQLException {
             return Collections.unmodifiableList(database.getAllowedDates());
         }
     };
 
-    private CachedValue<List<String>,SQLException> allowedTimes = new CachedValue<List<String>,SQLException>() {
+    private CachedValue<List<String>,SQLException> allowedTimes =
+            new CachedValue<List<String>,SQLException>(REFRESH_IN_MILLIS) {
         @Override
         public List<String> generateValue() throws SQLException {
             return Collections.unmodifiableList(database.getAllowedTimes());
@@ -47,36 +50,26 @@ public class Cache {
 
 
     /**
-     * Call this any time to invalidate all cached data.
-     */
-    public void refreshAllNow() {
-        allowedDates.refreshNow();
-        allowedTimes.refreshNow();
-    }
-
-    /**
-     * The list of dates that are currently allowed.
-     */
-    public List<Date> getAllowedDates() throws SQLException {
-        return allowedDates.getCachedValue();
-    }
-
-    /**
-     * The list of times that are currently allowed.
-     */
-    public List<String> getAllowedTimes() throws SQLException {
-        return allowedTimes.getCachedValue();
-    }
-
-
-    /**
      * An inner class that stores one cached value. Instances must implement the
      * generateValue() method, which may throw an exception (of user-definable type "E").
      * If there is no exception type needed then set E to "RuntimeException".
      */
     private static abstract class CachedValue<T,E extends Throwable> {
-        private long nextRefreshTime = 0;
-        private T value = null;
+        private final long refreshMillis;
+        private long nextRefreshTime;
+        private T value;
+
+        /**
+         * Constructor.
+         *
+         * @param refreshMillis number of millis after which we should
+         *   consider a value to be stale.
+         */
+        public CachedValue(long refreshMillis) {
+            this.refreshMillis = refreshMillis;
+            nextRefreshTime = 0;
+            value = null;
+        }
 
         /** Override this to implement obtaining the value when the cache is empty. */
         public abstract T generateValue() throws E;
@@ -87,7 +80,7 @@ public class Cache {
             synchronized (this) {
                 if (value == null || nextRefreshTime == 0 || now >= nextRefreshTime) {
                     value = generateValue();
-                    nextRefreshTime = System.currentTimeMillis() + REFRESH_IN_MILLIS;
+                    nextRefreshTime = now + refreshMillis;
                 }
                 return value;
             }
@@ -97,6 +90,7 @@ public class Cache {
         public void refreshNow() {
             synchronized (this) {
                 value = null;
+                nextRefreshTime = 0;
             }
         }
     }

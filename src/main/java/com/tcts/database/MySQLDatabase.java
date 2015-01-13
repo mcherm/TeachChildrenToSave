@@ -48,7 +48,6 @@ import com.tcts.formdata.VolunteerRegistrationFormData;
 /**
  * The (one and only) implementation of DatabaseFacade.
  */
-@Component
 public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
             "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status, reset_password_token";
@@ -753,8 +752,8 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public boolean deleteSchool(String schoolId) throws SQLException,
-			NoSuchSchoolException {
+	public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException
+    {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -762,10 +761,12 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteSchooldSQL);
             preparedStatement.setString(1, schoolId);
-            int success =preparedStatement.executeUpdate();
-            if (success == 0)
-            	return false;
-            else return true;
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new NoSuchSchoolException();
+            } else if (rowsAffected > 1) {
+                throw new InconsistentDatabaseException("More than one school had id of '" + schoolId + "'.");
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
@@ -831,8 +832,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public boolean deleteVolunteer(String volunteerId) throws SQLException,
-			NoSuchUserException {
+	public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -840,10 +840,12 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteVolunteerSQL);
             preparedStatement.setString(1, volunteerId);
-            int success =preparedStatement.executeUpdate();
-            if (success == 0)
-            	return false;
-            else return true;
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new NoSuchUserException();
+            } else if (rowsAffected > 1) {
+                throw new InconsistentDatabaseException("More than one user had id of '" + volunteerId + "'.");
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
@@ -888,7 +890,7 @@ public class MySQLDatabase implements DatabaseFacade {
             if (rowsAffected == 0) {
                 throw new NoSuchEventException();
             } else if (rowsAffected > 1) {
-                throw new RuntimeException("Cannot happen: eventId is the primary key!");
+                throw new InconsistentDatabaseException("Cannot happen: eventId is the primary key!");
             } else {
                 return;
             }
