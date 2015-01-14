@@ -32,7 +32,7 @@
                     
                     </ul>
                 </div>
-				<a download="teachers.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'teachers');">Export table to Excel</a>
+				<a download="teachers.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'teachers');">Export to Excel</a>
                 <table id="approvedVolunteersTable">
                     <thead>
                     <tr>

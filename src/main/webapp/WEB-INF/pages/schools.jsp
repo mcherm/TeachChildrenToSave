@@ -35,7 +35,7 @@
                     </li>
                 </ul>
             </div>
-			<a download="schools.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'schools');">Export table to Excel</a>
+			<a download="schools.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'schools');">Export to Excel</a>
             <table id="approvedVolunteersTable">
                 <thead>
                 <tr>

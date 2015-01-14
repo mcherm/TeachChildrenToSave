@@ -90,6 +90,15 @@ public interface DatabaseFacade {
      */
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException;
     
+    /**
+     * voluneer signup for an event
+     * 
+     * @param eventId
+     * @param volunteerId
+     * @throws SQLException
+     * @throws NoSuchEventException
+     */
+    
     public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException;
 
     /** Return the list of volunteers that have a particular bank. */
@@ -127,6 +136,13 @@ public interface DatabaseFacade {
     /** Returns the allowed times. */
     public List<String> getAllowedTimes() throws SQLException;
     
+    /**
+     *     
+     * @param userType
+     * @return List<? super User>
+     * @throws SQLException
+     * @throws InconsistentDatabaseException
+     */
     public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException;
 
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
@@ -137,7 +153,13 @@ public interface DatabaseFacade {
      */
     public void deleteBank(String bankId) throws SQLException, NoSuchBankException;
     
-     
+    /**
+     * delete volunteer from database
+     * 
+     * @param volunteerId
+     * @throws SQLException
+     * @throws NoSuchUserException
+     */
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException;
 
     /**
@@ -177,6 +199,11 @@ public interface DatabaseFacade {
     public void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
 
+    /**
+     * Insert new school in database
+     * @param school
+     * @throws SQLException
+     */
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException;
 
 	public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
@@ -211,9 +238,20 @@ public interface DatabaseFacade {
 
     /** Retrieves a bunch of basic statistics about the database. */
     public SiteStatistics getSiteStatistics() throws SQLException;
-    
-    /** Get list of volunteers with their bank details. */
-	List<Teacher> getTeacherWithSchoolData() throws SQLException;
-	/** Get list of teacher with their school details. */
-	List<Volunteer> getVolunteerWithBankData() throws SQLException;
+
+    /**
+     * Get list of volunteers with their bank details.
+     * 
+     * @return List<Teacher>
+     * @throws SQLException
+     */
+	public List<Teacher> getTeacherWithSchoolData() throws SQLException;
+
+	/**
+	 * Get list of teacher with their school details.
+	 * 
+	 * @return List<Volunteer>
+	 * @throws SQLException
+	 */
+	public List<Volunteer> getVolunteerWithBankData() throws SQLException;
 }

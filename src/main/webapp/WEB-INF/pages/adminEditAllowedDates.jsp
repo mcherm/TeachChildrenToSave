@@ -35,7 +35,7 @@
                      	
                     </ul>
                 </div>
-				<a download="allowedDaes.xls" href="#" onclick="return ExcellentExport.excel(this, 'adminEditAllowedTimesTable', 'allowedDates');">Export table to Excel</a>
+				<a download="allowedDaes.xls" href="#" onclick="return ExcellentExport.excel(this, 'adminEditAllowedTimesTable', 'allowedDates');">Export to Excel</a>
                 <table id="adminEditAllowedTimesTable">
                     <thead>
                         <tr>
