@@ -166,11 +166,11 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String getVoluneerWithBankSQL =
             "select " + userFields + ", " + bankFields + 
-		    " from User left join Bank on bank_id = organization_id  and access_type = 'V'";
+		    " from User join Bank on bank_id = organization_id  and access_type = 'V'";
     
     private final static String getTeacherWithSchoolSQL =
     		"select " + userFields + ", " + schoolFields + 
-		    " from User left join School on school_id = organization_id  and access_type = 'T'";
+		    " from User join School on school_id = organization_id  and access_type = 'T'";
 
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";

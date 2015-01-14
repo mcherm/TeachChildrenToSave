@@ -200,6 +200,8 @@ public class CachingDatabase implements DatabaseFacade {
     public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
         User result = database.modifyUserPersonalFields(userId, formData);
         availableEvents.refreshNow();
+        volunteerWithBankData.refreshNow();
+        teacherWithSchoolData.refreshNow();
         return result;
     }
 
@@ -247,6 +249,8 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException {
         database.deleteVolunteer(volunteerId);
+        volunteerWithBankData.refreshNow();
+        teacherWithSchoolData.refreshNow();
     }
 
     @Override
@@ -260,6 +264,7 @@ public class CachingDatabase implements DatabaseFacade {
         database.modifySchool(school);
         availableEvents.refreshNow();
         allSchools.refreshNow();
+        teacherWithSchoolData.refreshNow();
     }
 
     @Override
