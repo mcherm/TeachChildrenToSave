@@ -22,11 +22,7 @@
 
             <h1>Register a New Volunteer</h1>
 
-            <c:if test="${not empty errorMessage}">
-                <div class="errorMessage">
-                    <c:out value="${errorMessage}" default=""  />
-                </div>
-            </c:if>
+            <%@include file="include/errors.jsp"%>
 
             <form:form method="POST" action="registerVolunteer.htm" modelAttribute="formData">
 

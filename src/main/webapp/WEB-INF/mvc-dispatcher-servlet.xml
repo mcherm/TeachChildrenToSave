@@ -36,4 +36,18 @@
         </constructor-arg>
     </bean>
 
+    <!--
+        The following is the proper way to stash a bean into a STATIC variable. We want
+        it there because we will create instances of the factory beans ourselves, and we
+        want them have access to the bean.
+    -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.tcts.formdata.ValidatedFormData.setDatabase"/>
+        <property name="arguments">
+            <list>
+                <ref bean="database"/>
+            </list>
+        </property>
+    </bean>
+
 </beans>

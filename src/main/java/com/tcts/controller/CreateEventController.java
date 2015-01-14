@@ -7,7 +7,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 
-import com.tcts.exception.InvalidParameterFromGUIException;
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -47,17 +47,17 @@ public class CreateEventController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         model.addAttribute("formData", new CreateEventFormData());
-        return showFormWithErrorMessage(model, "");
+        return showFormWithErrors(model, null);
     }
 
     /**
      * A subroutine used to set up and then show the register teacher form. It
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
-    private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
+    private String showFormWithErrors(Model model, Errors errors) throws SQLException {
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errors", errors);
         return "createEvent";
     }
 
@@ -75,21 +75,14 @@ public class CreateEventController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         // --- Validation Rules ---
-        if (!database.getAllowedDates().contains(formData.getEventDate())) {
-            return showFormWithErrorMessage(model, "You must select a valid date.");
-        }
-        if (!database.getAllowedTimes().contains(formData.getEventTime())) {
-            return showFormWithErrorMessage(model, "You must select a time from the list.");
-        }
-        if (formData.getGrade() == null || formData.getGrade().length() == 0) {
-            return showFormWithErrorMessage(model, "You must specify the grade.");
-        }
-        if (!(formData.getGrade().equals("3") || formData.getGrade().equals("4"))) {
-            throw new InvalidParameterFromGUIException("GUI should only let you chose valid grades.");
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showFormWithErrors(model, errors);
         }
 
         // --- Create Event ---
-        database.insertEvent(teacher == null?sessionData.getSiteAdmin().getUserId():teacher.getUserId(), formData);
+        database.insertEvent(teacher.getUserId(), formData);
+
         // --- Navigate onward ---
         return "redirect:" + sessionData.getUser().getUserType().getHomepage();
     }

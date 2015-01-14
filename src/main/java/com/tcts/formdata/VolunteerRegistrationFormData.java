@@ -3,53 +3,17 @@ package com.tcts.formdata;
 /**
  * Data that will be entered on the volunteer registration form.
  */
-public class VolunteerRegistrationFormData {
-    private String email;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
+public class VolunteerRegistrationFormData extends UserRegistrationFormData {
     private String bankId;
 
-    public String getEmail() {
-        return email;
+    @Override
+    protected void validationRules(Errors errors) throws RuntimeException {
+        super.validationRules(errors);
+        if (bankId == null || bankId.trim().length() == 0 || bankId.equals("0")) {
+            errors.addError("You must select a bank.");
+        }
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 
     public String getBankId() {
         return bankId;

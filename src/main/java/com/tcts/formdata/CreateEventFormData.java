@@ -1,16 +1,47 @@
 package com.tcts.formdata;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * Data fields in the form used to creae a new event.
+ * Data fields in the form used to create a new event.
  */
-public class CreateEventFormData {
+public class CreateEventFormData extends ValidatedFormData<SQLException> {
     private Date eventDate;
     private String eventTime;
     private String grade;
     private String numberStudents;
     private String notes;
+
+
+    @Override
+    public void validationRules(Errors errors) throws SQLException {
+        if (!database.getAllowedDates().contains(eventDate)) {
+            errors.addError("You must select a valid date.");
+        }
+        if (!database.getAllowedTimes().contains(eventTime)) {
+            errors.addError("You must select a time from the list.");
+        }
+        if (grade == null || grade.length() == 0) {
+            errors.addError("You must specify the grade.");
+        } else {
+            if (!(grade.equals("3") || grade.equals("4"))) {
+                errors.addError("That is not a valid grade.");
+            }
+        }
+        if (numberStudents == null || numberStudents.length() == 0) {
+            errors.addError("Please specify the approximate number of students so the volunteers can ensure they have enough materials.");
+        } else {
+            try {
+                int num = Integer.parseInt(numberStudents);
+                if (num < 1) {
+                    throw new NumberFormatException();
+                }
+            } catch(NumberFormatException err) {
+                errors.addError("Please enter a valid number of students so the volunteers can ensure they have enough materials.");
+            }
+        }
+    }
 
     public Date getEventDate() {
         return eventDate;

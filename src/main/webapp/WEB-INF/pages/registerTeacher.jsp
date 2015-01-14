@@ -20,12 +20,8 @@
             <main id="main">
 
 				<h1>Register a New Teacher</h1>
-			
-				<c:if test="${not empty errorMessage}">
-					<div class="errorMessage">
-						<c:out value="${errorMessage}" default=""  />
-					</div>
-				</c:if>
+
+                <%@include file="include/errors.jsp"%>
 
 				<form:form method="POST" action="registerTeacher.htm" modelAttribute="formData">
 

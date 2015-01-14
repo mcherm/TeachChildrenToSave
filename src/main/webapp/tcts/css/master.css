@@ -889,7 +889,7 @@ form textarea {
   border-radius: 4px;
   margin: 0 auto;
   width: 90%;
-  height: 3em;
+  height: auto;
   background-color: #b21b29;
   color: #fff;
   text-align: center;
