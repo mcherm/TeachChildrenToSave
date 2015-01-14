@@ -29,14 +29,10 @@
                         <li class="mb1">
                             <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                         </li>
-                        
-                        <li class="mb1">
-                        	<button onClick ="$('#approvedVolunteersTable').tableExport({type:'excel',escape:'false'});" class="editOrRegister">Export to excel</button>
-                    	</li>
                     
                     </ul>
                 </div>
-
+				<a download="teachers.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'teachers');">Export table to Excel</a>
                 <table id="approvedVolunteersTable">
                     <thead>
                     <tr>
@@ -47,8 +43,9 @@
                         <th scope="col">Last Name</th>
                         <th scope="col">User Type</th>
                         <th scope="col">Phone Number</th>
-                        <th scope="col">Schoold Id</th>
-                        <th scope="col">Linked School</th>
+                        <th scope="col">SLC</th>
+                        <th scope="col">School Name</th>
+                        <th scope="col">District Name</th>
                         <th scope="col">
                             <span class="ada-read">Column of Delete buttons</span>
                         </th>
@@ -73,8 +70,9 @@
                         <td><c:out value="${teacher.lastName}"/></td>
                         <td>Teacher</td>
                         <td><c:out value="${teacher.phoneNumber}"/></td>
-                        <td class="center"><c:out value="${teacher.schoolId}"/></td>
-                        <td><c:out value="${teacher.linkedSchool}"/></td>
+                        <td class="center"><c:out value="${teacher.linkedSchool.slc}"/></td>
+                        <td class="center"><c:out value="${teacher.linkedSchool.name}"/></td>
+                        <td class="center"><c:out value="${teacher.linkedSchool.schoolDistrict}"/></td>
                         
                         <td>
 	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">

@@ -34,13 +34,9 @@
                     <li class="mb1">
                         <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                     </li>
-                    
-                    <li class="mb1">
-                        <button onClick ="$('#approvedVolunteersTable').tableExport({type:'excel',escape:'false'});" class="editOrRegister">Export to excel</button>
-                    </li>
                 </ul>
             </div>
-
+			<a download="banks.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'banks');">Export table to Excel</a>
             <table id="approvedVolunteersTable">
                 <thead>
                     <tr>

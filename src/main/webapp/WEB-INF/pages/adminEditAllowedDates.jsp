@@ -32,14 +32,10 @@
                         <li class="mb1">
                             <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                         </li>
-                        
-                        <li class="mb1">
-                        	<button onClick ="$('#adminEditAllowedTimesTable').tableExport({type:'excel',escape:'false'});" class="editOrRegister">Export to excel</button>
-                    	</li>
-                    	
+                     	
                     </ul>
                 </div>
-
+				<a download="allowedDaes.xls" href="#" onclick="return ExcellentExport.excel(this, 'adminEditAllowedTimesTable', 'allowedDates');">Export table to Excel</a>
                 <table id="adminEditAllowedTimesTable">
                     <thead>
                         <tr>

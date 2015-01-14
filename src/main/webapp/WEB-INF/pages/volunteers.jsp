@@ -29,14 +29,11 @@
                         <li class="mb1">
                             <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                         </li>
-                        
-                        <li class="mb1">
-                        	<button onClick ="$('#approvedVolunteersTable').tableExport({type:'excel',escape:'false'});" class="editOrRegister">Export to excel</button>
-                    	</li>
                     	
                     </ul>
                 </div>
-
+                
+				<a download="volunteers.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'volunteers');">Export table to Excel</a>
                 <table id="approvedVolunteersTable">
                     <thead>
                     <tr>
@@ -47,7 +44,7 @@
                         <th scope="col">Last Name</th>
                         <th scope="col">User Type</th>
                         <th scope="col">Phone Number</th>
-                        <th scope="col">Bank Id</th>
+                        <th scope="col">Bank Name</th>
                         <th scope="col">
                             <span class="ada-read">Column of Delete buttons</span>
                         </th>
@@ -69,7 +66,7 @@
                         <td><c:out value="${volunteer.lastName}"/></td>
                         <td>Volunteer</td>
                         <td><c:out value="${volunteer.phoneNumber}"/></td>
-                        <td class="center"><c:out value="${volunteer.bankId}"/></td>
+                        <td class="center"><c:out value="${volunteer.linkedBank.name}"/></td>
                                                 
                         <td>
 	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">

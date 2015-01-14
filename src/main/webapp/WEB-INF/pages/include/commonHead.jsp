@@ -28,11 +28,7 @@
 
 <script type="text/javascript" src="tcts/js/scripts.js"></script>
 <script type="text/javascript" src="tcts/js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="tcts/js/base64.js"></script>
-<script type="text/javascript" src="tcts/js/html2canvas.js"></script>
-<script type="text/javascript" src="tcts/js/jquery.base64.js"></script>
-<script type="text/javascript" src="tcts/js/sprintf.js"></script>
-<script type="text/javascript" src="tcts/js/tableExport.js"></script>
+<script type="text/javascript" src="tcts/js/excellentexport.js"></script>
 <script type="text/javascript" src="tcts/js/modernizr.custom.11657.js"></script>
 
 <!--[if lt IE 9]>
