@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.exception.InvalidParameterFromGUIException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,7 +70,7 @@ public class EventRegistrationController {
     }
 
     @RequestMapping(value="/eventRegistration", method=RequestMethod.POST)
-    public String createEvent(HttpSession session, Model model,
+    public String createEvent(HttpSession session, Model model, HttpServletRequest request,
                               @ModelAttribute("formData") EventRegistrationFormData formData)
             throws SQLException, NoSuchEventException
     {
@@ -93,13 +95,16 @@ public class EventRegistrationController {
                 throw new InvalidParameterFromGUIException();
             }
 	        //Send email to volunteer
-	        try {
+            try {
 	        	
 	        	Map<String,Object> emailModel = new <String, Object>HashMap();
+	        	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+        		
+        		emailModel.put("logoImage", logoImage);
 	        	emailModel.put("to", volunteer.getEmail());
 	        	emailModel.put("subject", "Your class has a volunteer!");
-	        	emailModel.put("class", event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
-	        	emailModel.put("volunteer", volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber());
+	        	emailModel.put("class", "<br/>" + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
+	        	emailModel.put("volunteer", "<br/>" + volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber() + "<br/>");
 	        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
 	            emailUtil.sendEmail(emailContent, emailModel);
 	        } catch(AppConfigurationException err) {
@@ -111,15 +116,19 @@ public class EventRegistrationController {
 	        }
 	        
 	        //Send email to teacher
-	        if (null != event.getTeacherId()) {
+            if (null != event.getTeacherId()) {
 		        User teacher = database.getUserById(event.getTeacherId());
 		        try {
 		        	
 		        	Map<String,Object> emailModel = new <String, Object>HashMap();
+		        	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+	        		
+	        		emailModel.put("logoImage", logoImage);
 		        	emailModel.put("to", volunteer.getEmail());
 		        	emailModel.put("subject", "You have successfully signed up for a class!");
-		        	emailModel.put("class", event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
-		        	emailModel.put("teacher", teacher.getFirstName() );//+ " - " + teacher.getLastName() + " - " + teacher.getEmail() + " - " + teacher.getPhoneNumber());
+		        	emailModel.put("class", "<br/>" + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
+		        	//emailModel.put("teacher", "<br/>" + teacher.getFirstName() + " - " + teacher.getLastName() + " - " + teacher.getEmail() + " - " + teacher.getPhoneNumber() + "<br/>");
+		        	emailModel.put("volunteer", "<br/>" + volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber() + "<br/>");
 		        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToTeacher", emailModel);
 		            emailUtil.sendEmail(emailContent, emailModel);
 		        } catch(AppConfigurationException err) {

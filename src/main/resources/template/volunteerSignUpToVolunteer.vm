@@ -1,13 +1,13 @@
  
 <html>
 <body>
-<img src="logo-tcts.png" alt="Teach Children To Save logo">
+<img src="${logoImage}" alt="Delaware Bankers Association logo">
 
-Congratulations, you have signed up for the following class:
+<p>Congratulations, you have signed up for the following class:</p>
 
-   ${class}
-Teacher:
-   ${teacher}
+   <p>${class}</p>
+<p>Teacher:</p>
+   <p>${volunteer}</p>
    
 <p>Here’s a link to everything you will need to know:</p>
 <p>o	FAQs</p>

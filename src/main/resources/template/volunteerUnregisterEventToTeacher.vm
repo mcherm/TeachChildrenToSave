@@ -1,12 +1,12 @@
  
 <html>
 <body>
-<img src="../tcts/img/logo-tcts.png" alt="Delaware Bankers Association logo">
+<img src="${logoImage}" alt="Delaware Bankers Association logo">
 
-Unfortunately, your volunteer can no longer attend the following class:
-   ${class}
+<p>Unfortunately, your volunteer can no longer attend the following class:</p>
+   <p>${class}</p>
 
-The class has been made available on the website again so that another volunteer may sign up for it.  You’ll be notified via email when that happens.
+<p>The class has been made available on the website again so that another volunteer may sign up for it.  You’ll be notified via email when that happens.</p>
 
 
 </body>

@@ -96,6 +96,7 @@ public class CancelWithdrawController {
     @RequestMapping(value = "volunteerWithdraw", method = RequestMethod.POST)
     public String doVolunteerWithdraw(
             HttpSession session,
+            HttpServletRequest request,
             @ModelAttribute WithdrawFormData formData
         ) throws SQLException
     {
@@ -121,7 +122,7 @@ public class CancelWithdrawController {
         }
 
         // --- Perform the withdraw ---
-        withdrawFromAnEvent(database, templateUtil, emailUtil, event);
+        withdrawFromAnEvent(database, templateUtil, emailUtil, event, request);
 
         // --- Done ---
         return "redirect:" + loggedInVolunteer.getUserType().getHomepage();
@@ -141,7 +142,8 @@ public class CancelWithdrawController {
             DatabaseFacade database,
             TemplateUtil templateUtil,
             EmailUtil emailUtil,
-            Event event
+            Event event,
+            HttpServletRequest request
         ) throws SQLException
     {
         // --- Update the database ---
@@ -157,22 +159,24 @@ public class CancelWithdrawController {
 
         // 		--- Send Emails ---
         if (event.getVolunteerId() != null) {
-            Volunteer volunteer = (Volunteer) database.getUserById(event.getVolunteerId());
-            try {
-                Map<String,Object> emailModel = new <String, Object>HashMap();
-
-                emailModel.put("to", volunteer.getEmail());
-                emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
-                emailModel.put("class", event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
-                //emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
-                String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
+        	try {
+        		Map<String,Object> emailModel = new <String, Object>HashMap();
+        		
+        		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+        		
+        		emailModel.put("logoImage", logoImage);
+            	emailModel.put("to", event.getLinkedVolunteer().getEmail());
+            	emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
+            	emailModel.put("class", "<br/>" + event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
+            	//emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
+            	String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
                 emailUtil.sendEmail(emailContent, emailModel);
             } catch(AppConfigurationException err) {
                 // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+                System.err.println("Could not send email for new volunteer '" + event.getLinkedVolunteer().getEmail() + "'.");
             } catch(IOException err) {
                 // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
+                System.err.println("Could not send email for new volunteer '" + event.getLinkedVolunteer().getEmail() + "'.");
             }
         }
     }
@@ -265,13 +269,15 @@ public class CancelWithdrawController {
         	try {
         	
             	Map<String,Object> emailModel = new <String, Object>HashMap();
-            	
+            	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+        		
+        		emailModel.put("logoImage", logoImage);
             	emailModel.put("to", volunteer.getEmail());
             	emailModel.put("subject", "Your volunteer event has been canceled.");
-            	emailModel.put("class", event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes());
-            	String singupUrl =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/register.htm";
+            	emailModel.put("class", "<br/>" + event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
+            	String singupUrl =  request.getRequestURL() + "/register.htm";
             	emailModel.put("signupLink", singupUrl);
-            	//emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
+            	emailModel.put("teacher", "<br/>" + loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail() + "<br/>");
             	String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
                 emailUtil.sendEmail(emailContent, emailModel);
             } catch(AppConfigurationException err) {

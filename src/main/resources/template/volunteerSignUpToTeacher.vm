@@ -1,13 +1,13 @@
  
 <html>
 <body>
-<img src="logo-tcts.png" alt="Teahc Children To Save logo">
+<img src="${logoImage}" alt="Delaware Bankers Association logo">
 
-Congratulations, a volunteer has signed up for the following class:
+<p>Congratulations, a volunteer has signed up for the following class:</p>
   
-   ${class}
-Volunteer:
-   ${volunteer}
+   <p>${class}</p>
+<p>Volunteer:</p>
+   <p>${volunteer}</p>
 
 </body>
 </html>

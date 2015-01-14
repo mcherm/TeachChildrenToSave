@@ -135,7 +135,9 @@ public class ResetPasswordController {
                 
                 try {
             		Map<String,Object> emailModel = new <String, Object>HashMap();
-                	
+            		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+            		
+            		emailModel.put("logoImage", logoImage);
                 	emailModel.put("to", potentialUser.getEmail());
                 	emailModel.put("subject", "Password reset link for teach children to save program");
                 	

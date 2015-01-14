@@ -12,6 +12,7 @@ import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.util.EmailUtil;
 import com.tcts.util.TemplateUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -82,6 +85,7 @@ public class BankAdminActionsController {
     @RequestMapping(value = "suspendVolunteer", method = RequestMethod.POST)
     public String suspendVolunteer(
             HttpSession session,
+            HttpServletRequest request,
             @RequestParam("volunteerId") String volunteerId
         ) throws SQLException
     {
@@ -104,7 +108,7 @@ public class BankAdminActionsController {
         // --- Resign from the events ---
         List<Event> events = database.getEventsByVolunteer(volunteerId);
         for (Event event : events) {
-            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event);
+            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request);
         }
 
         // --- Actually suspend the person ---
