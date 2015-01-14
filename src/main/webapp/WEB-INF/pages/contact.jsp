@@ -28,7 +28,7 @@
                 <p>
                     <span class="b">Email</span>
                     <br>
-                    [We should have u of d create a generic email account / online form for inquiries]
+                    <c:out value="${email}"/>
                 </p>
 
 
