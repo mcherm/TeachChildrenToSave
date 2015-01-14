@@ -2,6 +2,7 @@
 aws.access_key=
 aws.secret_access_key=
 googleMapsKey=
+email.from=teach2save@udel.edu
 db.url=
 db.user=
 db.pass=

@@ -28,25 +28,22 @@
                 <p>
                     <span class="b">Email</span>
                     <br>
-                    [We should have u of d create a generic email account / online form for inquiries]
+                    <c:out value="${email}"/>
                 </p>
 
 
                 <p>
                     <span class="b">Social Media</span>
                     <br>
-                    [Do they have a Facebook page?]
+                    <div>Facebook: <a href="https://www.facebook.com/CEEEatUD">https://www.facebook.com/CEEEatUD</a></div>
+                    <div>Twitter: <a href="https://twitter.com/CEEEatUD">https://twitter.com/CEEEatUD</a></div>
                 </p>
 
 
                 <p>
                     <span class="b">Phone</span>
                     <br>
-                    Alexis Vasko
-                    <br>
-                    Teach Children to Save Day Coordinator
-                    <br>
-                    302-831-0268
+                    [Need to insert phone]
                 </p>
 
 
