@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
+import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
@@ -44,7 +45,7 @@ public class TeacherController {
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-        List<? super User> teachers = database.getUsersByType("T");
+        List<Teacher> teachers = database.getTeacherWithSchoolData();
         
         model.addAttribute("teachers", teachers);
         return "teachers";
@@ -65,7 +66,7 @@ public class TeacherController {
 			throw new InvalidParameterFromGUIException();
 		}
         
-       model.addAttribute("teachers", database.getUsersByType("T"));
+       model.addAttribute("teachers", database.getTeacherWithSchoolData());
        return "teachers";
     }
 
@@ -111,7 +112,7 @@ public class TeacherController {
             return showEditUserWithErrorMessage(model, formData, "That email is already in use by another user.");
         }
         
-        List<? super User> teachers = database.getUsersByType("T");
+        List<Teacher> teachers = database.getTeacherWithSchoolData();
         
         model.addAttribute("teachers", teachers);
         return "teachers";

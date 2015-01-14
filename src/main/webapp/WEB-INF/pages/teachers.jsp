@@ -70,7 +70,7 @@
                         <td><c:out value="${teacher.lastName}"/></td>
                         <td>Teacher</td>
                         <td><c:out value="${teacher.phoneNumber}"/></td>
-                        <td class="center"><c:out value="${teacher.linkedSchool.slc}"/></td>
+                        <td class="center"><c:out value="${teacher.linkedSchool.SLC}"/></td>
                         <td class="center"><c:out value="${teacher.linkedSchool.name}"/></td>
                         <td class="center"><c:out value="${teacher.linkedSchool.schoolDistrict}"/></td>
                         

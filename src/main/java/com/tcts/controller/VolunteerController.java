@@ -41,7 +41,7 @@ public class VolunteerController extends AuthenticationController{
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-        List<? super User> volunteers = database.getUsersByType("V");
+        List<Volunteer> volunteers = database.getVolunteerWithBankData();
         
         model.addAttribute("volunteers", volunteers);
         return "volunteers";
@@ -63,7 +63,7 @@ public class VolunteerController extends AuthenticationController{
 			throw new InvalidParameterFromGUIException();
 		}
         
-       model.addAttribute("volunteers", database.getUsersByType("V"));
+       model.addAttribute("volunteers", database.getVolunteerWithBankData());
        return "volunteer";
     }
     
@@ -109,7 +109,7 @@ public class VolunteerController extends AuthenticationController{
             return showEditUserWithErrorMessage(model, formData, "That email is already in use by another user.");
         }
         
-        List<? super User> volunteers = database.getUsersByType("V");
+        List<Volunteer> volunteers = database.getVolunteerWithBankData();
         
         model.addAttribute("volunteers", volunteers);
         return "volunteers";

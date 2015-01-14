@@ -66,7 +66,7 @@
                         <td><c:out value="${volunteer.lastName}"/></td>
                         <td>Volunteer</td>
                         <td><c:out value="${volunteer.phoneNumber}"/></td>
-                        <td class="center"><c:out value="${volunteer.linkedBank.name}"/></td>
+                        <td class="center"><c:out value="${volunteer.linkedBank.bankName}"/></td>
                                                 
                         <td>
 	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">

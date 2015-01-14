@@ -211,4 +211,9 @@ public interface DatabaseFacade {
 
     /** Retrieves a bunch of basic statistics about the database. */
     public SiteStatistics getSiteStatistics() throws SQLException;
+    
+    /** Get list of volunteers with their bank details. */
+	List<Teacher> getTeacherWithSchoolData() throws SQLException;
+	/** Get list of teacher with their school details. */
+	List<Volunteer> getVolunteerWithBankData() throws SQLException;
 }

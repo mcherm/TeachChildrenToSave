@@ -87,6 +87,22 @@ public class CachingDatabase implements DatabaseFacade {
                     return database.getAllAvailableEvents();
                 }
             };
+            
+    private final CachedList<Volunteer, SQLException> volunteerWithBankData =
+            new CachedList<Volunteer, SQLException>(REFRESH_IN_MILLIS) {
+                @Override
+                public List<Volunteer> generateValue() throws SQLException {
+                    return database.getVolunteerWithBankData();
+                }
+            };
+              
+    private final CachedList<Teacher, SQLException> teacherWithSchoolData =
+            new CachedList<Teacher, SQLException>(REFRESH_IN_MILLIS) {
+                @Override
+                public List<Teacher> generateValue() throws SQLException {
+                    return database.getTeacherWithSchoolData();
+                }
+            };
 
 
     /** Constructor requires you to provide an actual database. */
@@ -307,5 +323,15 @@ public class CachingDatabase implements DatabaseFacade {
     public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException {
         allowedDates.refreshNow();
         database.modifyAllowedDate(date);
+    }
+    
+    @Override
+    public List<Volunteer> getVolunteerWithBankData() throws SQLException {
+        return volunteerWithBankData.getCachedValue();
+    }
+    
+    @Override
+    public List<Teacher> getTeacherWithSchoolData() throws SQLException {
+        return teacherWithSchoolData.getCachedValue();
     }
 }

@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.tcts.datamodel.SiteStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.tcts.common.PrettyPrintingDate;
@@ -21,6 +19,7 @@ import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteAdmin;
+import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
@@ -164,6 +163,14 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String deleteAllowedDateSQL =
     		"delete from AllowedDates where event_date = ? ";
+    
+    private final static String getVoluneerWithBankSQL =
+            "select " + userFields + ", " + bankFields + 
+		    " from User left join Bank on bank_id = organization_id  and access_type = 'V'";
+    
+    private final static String getTeacherWithSchoolSQL =
+    		"select " + userFields + ", " + schoolFields + 
+		    " from User left join School on school_id = organization_id  and access_type = 'T'";
 
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
@@ -1332,6 +1339,68 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(null, preparedStatement, resultSet);
         }
 
+    }
+    
+    @Override
+    public List<Volunteer> getVolunteerWithBankData() throws SQLException {
+        Connection connection = null;
+        List<Volunteer> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getVoluneerWithBankSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+            			numberOfRows++;
+                        Volunteer volunteer = new Volunteer();
+                        volunteer.populateFieldsFromResultSetRow(resultSet);
+                        Bank bank = new Bank();
+                        bank.populateFieldsFromResultSetRow(resultSet);
+                        volunteer.setLinkedBank(bank);
+                        usersList.add(volunteer);
+                 }
+             
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public List<Teacher> getTeacherWithSchoolData() throws SQLException {
+        Connection connection = null;
+        List<Teacher> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getTeacherWithSchoolSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+            			numberOfRows++;
+                        Teacher teacher = new Teacher();
+                        teacher.populateFieldsFromResultSetRow(resultSet);
+                        School school = new School();
+                        school.populateFieldsFromResultSetRow(resultSet);
+                        teacher.setLinkedSchool(school);
+                        usersList.add(teacher);
+                 }
+             
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
     }
 
 }
