@@ -1,10 +1,10 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,12 +23,12 @@ import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditSchoolFormData;
 
+
 /**
  * This is a controller for the "home page" for users. It renders substantially
  * different information depending on the type of user who is logged in.
  */
 @Controller
-
 public class SchoolController {
 
     @Autowired
@@ -37,27 +37,8 @@ public class SchoolController {
     /**
      * Render the bank edit page .
      */
-
     @RequestMapping(value = "schools", method = RequestMethod.GET)
-    public String showSchool(HttpSession session, Model model) throws SQLException {
-        SessionData sessionData = SessionData.fromSession(session);
-        
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-        List<School> schools = database.getAllSchools();
-        
-        model.addAttribute("schools", schools);
-        return "schools";
-    }
-
-        
-    /**
-     * Deletes a bank and all users associated with it.
-     */
-    @RequestMapping(value = "deleteSchool", method = RequestMethod.POST)
-    public String deleteSchool(
-            @RequestParam String schoolId,
+    public String viewSchools(
             HttpSession session,
             Model model
         ) throws SQLException
@@ -67,32 +48,31 @@ public class SchoolController {
             throw new NotLoggedInException();
         }
 
-        try {
-        	database.deleteSchool(schoolId);
-        } catch(NoSuchSchoolException err) {
-            throw new InvalidParameterFromGUIException();
-        }
-
-        model.addAttribute("schools", database.getAllSchools());
-        return "schools";
+        return showListSchools(model);
     }
-    
+
+        
     /**
-     * Render the school edit page.
+     * Show the page for creating a new school.
      */
-    @RequestMapping(value = "viewEditSchools", method = RequestMethod.GET)
-    public String enterDataToEditSchool(HttpSession session, Model model) throws SQLException {
+    @RequestMapping(value = "addSchool", method = RequestMethod.GET)
+    public String viewAddSchool(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") CreateSchoolFormData formData
+    ) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
 
-        model.addAttribute("schools", database.getAllSchools());
-        return "schools";
+        // --- Successful; show the master list again ---
+        return showAddSchoolWithErrors(model, null);
     }
-    
+
+
     @RequestMapping(value = "editSchool", method = RequestMethod.GET)
-    public String enterDataToEditBank(
+    public String viewEditSchool(
             HttpSession session,
             Model model,
             @RequestParam String schoolId
@@ -107,25 +87,43 @@ public class SchoolController {
         School school = database.getSchoolById(schoolId);
         
         // --- Show the edit page ---
-        return showEditSchoolWithErrorMessage(model, transformSchoolData(school), "");
+        return showEditSchoolWithErrors(model, transformSchoolData(school), null);
     }
 
 
-    /**
-     * A subroutine used to set up and then show the add bank form. It
-     * returns the string, so you can invoke it as "return showAddBankWithErrorMessage(...)".
-     */
-    public String showEditSchoolWithErrorMessage(Model model, EditSchoolFormData formData, String errorMessage)
-            throws SQLException
+    @RequestMapping(value = "addSchool", method = RequestMethod.POST)
+    public String doAddSchool(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") CreateSchoolFormData formData
+    ) throws SQLException
     {
-        model.addAttribute("formData", formData);
-        model.addAttribute("errorMessage", errorMessage);
-        return "editSchool";
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showAddSchoolWithErrors(model, errors);
+        }
+
+        // --- Do It ---
+        try {
+            database.insertNewSchool(formData);
+        } catch(InconsistentDatabaseException err) {
+            return showAddSchoolWithErrors(model,
+                    new Errors("That school is already in use."));
+        }
+
+        // --- Successful; show the master school edit again ---
+        return showListSchools(model);
     }
 
 
     @RequestMapping(value = "editSchool", method = RequestMethod.POST)
-    public String getUpdatedSchool(
+    public String doEditSchool(
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditSchoolFormData formData
@@ -137,6 +135,12 @@ public class SchoolController {
             throw new NotLoggedInException();
         }
 
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showEditSchoolWithErrors(model, formData, errors);
+        }
+
         try {
             database.modifySchool(formData);
         } catch(NoSuchSchoolException err) {
@@ -144,66 +148,64 @@ public class SchoolController {
         } 
 
         // --- Successful; show the master bank edit again ---
-        model.addAttribute("schools", database.getAllSchools());
-        return "schools";
+        return showListSchools(model);
     }
 
     /**
-     * Show the page for creating a new school.
+     * Deletes a bank and all users associated with it.
      */
-    @RequestMapping(value = "addSchool", method = RequestMethod.GET)
-    public String enterDataToAddSchool(
+    @RequestMapping(value = "deleteSchool", method = RequestMethod.POST)
+    public String doDeleteSchool(
+            @RequestParam String schoolId,
             HttpSession session,
-            Model model,
-            @ModelAttribute("formData") CreateSchoolFormData formData
-    ) throws SQLException {
+            Model model
+    ) throws SQLException
+    {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
 
-        // --- Successful; show the edit page again ---
-        return showAddSchoolWithErrorMessage(model, "");
+        try {
+            database.deleteSchool(schoolId);
+        } catch(NoSuchSchoolException err) {
+            throw new InvalidParameterFromGUIException();
+        }
+
+        return showListSchools(model);
     }
 
-    @RequestMapping(value = "addSchool", method = RequestMethod.POST)
-    public String doAddBank(
-            HttpSession session,
-            Model model,
-            @ModelAttribute("formData") CreateSchoolFormData formData
-    ) throws SQLException {
-    	SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-
-        try {
-            database.insertNewSchool(formData);
-        } catch(InconsistentDatabaseException err) {
-            return showAddSchoolWithErrorMessage(model,
-                    "That school is already in use.");
-        }
-
-        // --- Successful; show the master school edit again ---
-  
+    /**
+     * A subroutine to set up for displaying the list of schools. It returns the
+     * string for the next page so you can invoke it as "return showListOfSchools(...)".
+     */
+    private String showListSchools(Model model) throws SQLException {
         model.addAttribute("schools", database.getAllSchools());
         return "schools";
     }
 
-        
+    /**
+     * A subroutine used to set up and then show the add bank form. It
+     * returns the string, so you can invoke it as "return showAddBankWithErrorMessage(...)".
+     */
+    private String showEditSchoolWithErrors(Model model, EditSchoolFormData formData, Errors errors) {
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "editSchool";
+    }
+
     /**
      * A subroutine used to set up and then show the add school form. It
      * returns the string, so you can invoke it as "return showAddSchoolWithErrorMessage(...)".
      */
-    private String showAddSchoolWithErrorMessage(Model model, String errorMessage) throws SQLException {
-        model.addAttribute("errorMessage", errorMessage);
+    private String showAddSchoolWithErrors(Model model, Errors errors) throws SQLException {
+        model.addAttribute("errors", errors);
         return "addSchool";
     }
-    
+
     /**
      * Transform school modal data
      */
-    
     private EditSchoolFormData transformSchoolData(School school) {
     	EditSchoolFormData formData = new EditSchoolFormData();
         formData.setSchoolId(school.getSchoolId());

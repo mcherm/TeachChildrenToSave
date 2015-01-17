@@ -19,11 +19,7 @@
 
                 <h1>Add New Bank (and Bank Admin)</h1>
 
-                <c:if test="${not empty errorMessage}">
-                    <div class="errorMessage">
-                        <c:out value="${errorMessage}" default=""  />
-                    </div>
-                </c:if>
+                <%@include file="include/errors.jsp"%>
 
                 <div>
 

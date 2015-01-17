@@ -1,9 +1,11 @@
 package com.tcts.formdata;
 
+import java.sql.SQLException;
+
 /**
  * The data fields needed to create a school.
  */
-public class CreateSchoolFormData {
+public class CreateSchoolFormData extends ValidatedFormData<RuntimeException> {
     private String schoolName;
     private String schoolAddress1;
     private String city;
@@ -14,8 +16,39 @@ public class CreateSchoolFormData {
     private String phone;
     private String lmiEligible;
     private String SLC;
-    
-	public String getSchoolName() {
+
+    /** Just a utility to quickly test a string. */
+    private boolean isEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
+
+    @Override
+    protected void validationRules(Errors errors) {
+        if (isEmpty(schoolName)) {
+            errors.addError("You need to enter a name for the school.");
+        }
+        if (isEmpty(schoolAddress1)) {
+            errors.addError("Enter the adddress line for the school.");
+        }
+        if (isEmpty(city)) {
+            errors.addError("Specify the City for the school's address.");
+        }
+        if (isEmpty(zip)) {
+            errors.addError("Specify a zip code for the school.");
+        }
+        if (isEmpty(state)) {
+            errors.addError("Enter the state for the address.");
+        } else {
+            if (state.length() != 2 || !Character.isLetter(state.charAt(0)) || !Character.isLetter(state.charAt(1))) {
+                errors.addError("Please enter a valid state (e.g. \"DE\")");
+            }
+        }
+        if (isEmpty(SLC)) {
+            errors.addError("Enter the valid SLC or \"N/A\" if the school does not have an SLC.");
+        }
+    }
+
+    public String getSchoolName() {
 		return schoolName;
 	}
 	public void setSchoolName(String schoolName) {

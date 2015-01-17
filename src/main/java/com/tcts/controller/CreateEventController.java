@@ -74,6 +74,7 @@ public class CreateEventController {
         if (teacher == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
+
         // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {

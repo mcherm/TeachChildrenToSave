@@ -19,11 +19,7 @@
 
                 <h1>Add New School</h1>
 
-                <c:if test="${not empty errorMessage}">
-                    <div class="errorMessage">
-                        <c:out value="${errorMessage}" default=""  />
-                    </div>
-                </c:if>
+                <%@include file="include/errors.jsp"%>
 
                 <div>
 
@@ -33,7 +29,7 @@
                         <div class="formElementCnt">
                             <label>
                                 <div class="inputCnt">
-                                    <div class="info">School Name</div>
+                                    <div class="info">School Name (*)</div>
                                     <form:input path="schoolName"/>
                                 </div>
                             </label>
@@ -43,7 +39,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        School Address
+                                        School Address (*)
                                     </div>
                                     <form:input path="schoolAddress1" />
                                 </div>
@@ -54,7 +50,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        School City
+                                        School City (*)
                                     </div>
                                     <form:input path="city" />
                                 </div>
@@ -65,7 +61,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        School Zip
+                                        School Zip (*)
                                     </div>
                                     <form:input path="zip" />
                                 </div>
@@ -76,7 +72,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        School County
+                                        School County (*)
                                     </div>
                                     <form:input path="county" />
                                 </div>
@@ -98,7 +94,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        School State
+                                        School State (*)
                                     </div>
                                     <form:input path="state" />
                                 </div>
@@ -131,7 +127,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        SLC
+                                        SLC (*)
                                     </div>
                                     <form:input path="SLC"/>
                                 </div>
@@ -144,7 +140,7 @@
                     </form:form>
 
                     <div class="cancelBlock">
-                        <button onclick="js.loadURL('viewEditSchools.htm')" class="editOrRegister delete">Cancel</button>
+                        <button onclick="js.loadURL('schools.htm')" class="editOrRegister delete">Cancel</button>
                     </div>
 
                 </div>

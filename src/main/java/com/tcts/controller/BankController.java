@@ -12,6 +12,7 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Bank;
 import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * This is a controller for the pages that are used by the site admin to edit the
@@ -145,13 +147,19 @@ public class BankController {
             throw new NotLoggedInException();
         }
 
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showAddBankWithErrors(model, errors);
+        }
+
         try {
             database.modifyBankAndBankAdmin(formData);
         } catch(NoSuchBankException err) {
             throw new InvalidParameterFromGUIException();
         } catch(EmailAlreadyInUseException err) {
-            return showAddBankWithErrorMessage(model,
-                    "That email is already in use; please choose another.");
+            return showAddBankWithErrors(model,
+                    new Errors("That email is already in use; please choose another."));
         }
 
         // --- Successful; show the master bank edit again ---
@@ -174,7 +182,7 @@ public class BankController {
         }
 
         // --- Successful; show the edit page again ---
-        return showAddBankWithErrorMessage(model, "");
+        return showAddBankWithErrors(model, null);
     }
 
     @RequestMapping(value = "addBank", method = RequestMethod.POST)
@@ -182,17 +190,24 @@ public class BankController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") CreateBankFormData formData
-    ) throws SQLException {
+        ) throws SQLException
+    {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
 
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showAddBankWithErrors(model, errors);
+        }
+
         try {
             database.insertNewBankAndAdmin(formData);
         } catch(EmailAlreadyInUseException err) {
-            return showAddBankWithErrorMessage(model,
-                    "That email is already in use; please choose another.");
+            return showAddBankWithErrors(model,
+                    new Errors("That email is already in use; please choose another."));
         }
 
         // --- Successful; show the master bank edit again ---
@@ -204,10 +219,9 @@ public class BankController {
      * A subroutine used to set up and then show the add bank form. It
      * returns the string, so you can invoke it as "return showAddBankWithErrorMessage(...)".
      */
-    private String showAddBankWithErrorMessage(Model model, String errorMessage) throws SQLException {
-        model.addAttribute("errorMessage", errorMessage);
+    private String showAddBankWithErrors(Model model, Errors errors) throws SQLException {
+        model.addAttribute("errors", errors);
         return "addBank";
     }
-
 
 }
