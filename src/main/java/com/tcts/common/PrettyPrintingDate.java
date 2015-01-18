@@ -1,7 +1,7 @@
 package com.tcts.common;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * A subclass of java.util.Date that overrides the toString() to print it out

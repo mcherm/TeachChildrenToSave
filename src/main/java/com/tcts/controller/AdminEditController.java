@@ -1,9 +1,18 @@
 package com.tcts.controller;
 
+import java.sql.Date;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.common.PrettyPrintingDate;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.EditAllowedDateFormData;
+import com.tcts.formdata.EditAllowedTimeFormData;
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +27,7 @@ import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NotLoggedInException;
-import com.tcts.formdata.EditAllowedDateTimeData;
+
 
 /**
  * This is a controller for editing (at least some of) the tables in
@@ -31,178 +40,210 @@ public class AdminEditController {
     private DatabaseFacade database;
 
 
-    @RequestMapping(value = "adminEditAllowedTimes", method = RequestMethod.GET)
-    public String listAllowedTimes(
-            HttpSession session,
-            Model model
-        ) throws SQLException
-    {
-        // --- Make sure it's the site admin that's logged in ---
-        SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-
-        model.addAttribute("allowedTimes", database.getAllowedTimes());
-
-        return "adminEditAllowedTimes";
-    }
-    
-    @RequestMapping(value = "allowedTimeDelete", method = RequestMethod.GET)
-    public String deleteAllowedTime(@RequestParam String time,
-            HttpSession session,
-            Model model) throws SQLException {
-        SessionData sessionData = SessionData.fromSession(session);
-        
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
-        }
-        try {
-			database.deleteAllowedTime(time);
-		} catch (NoSuchAllowedTimeException e) {
-			throw new InvalidParameterFromGUIException();
-		}
-        
-        model.addAttribute("allowedTimes", database.getAllowedTimes());
-
-        return "adminEditAllowedTimes";
-    }
-    
-    @RequestMapping(value = "editAllowedTime", method = RequestMethod.GET)
-    public String enterDataToEditAllowedTime(
-            HttpSession session,
-            Model model,
-            @RequestParam String time
-    ) throws SQLException {
-        // --- Ensure logged in ---
-        SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-        
-        EditAllowedDateTimeData formData = new EditAllowedDateTimeData();
-        formData.setAllowedTime(time);
-        // --- Show the edit page ---
-        return showEditDateTimeWithErrorMessage(model, formData, "");
-    }
-
-    /**
-     * Actually change the values that were entered.
-     */
-    @RequestMapping(value="editAllowedTime", method=RequestMethod.POST)
-    public String doEditAllowedTime(
-            HttpSession session,
-            Model model,
-            @ModelAttribute("formData") EditAllowedDateTimeData formData
-        ) throws SQLException
-    {
-        SessionData sessionData = SessionData.fromSession(session);
-        // FIXME: must validate the fields
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-
-        try {
-           database.modifyAllowedTime(formData);
-        } catch(NoSuchAllowedTimeException err) {
-            return showEditDateTimeWithErrorMessage(model, formData, "Incorrect time value exists.");
-        }
-        
-        model.addAttribute("allowedTimes", database.getAllowedTimes());
-
-        return "adminEditAllowedTimes";
-    }
-    
-    @RequestMapping(value = "adminEditAllowedDates", method = RequestMethod.GET)
+    @RequestMapping(value = "listAllowedDates", method = RequestMethod.GET)
     public String listAllowedDates(
             HttpSession session,
             Model model
         ) throws SQLException
     {
+        ensureSiteAdminLoggedIn(session);
+        return showListAllowedDates(model);
+    }
+
+
+    @RequestMapping(value = "listAllowedTimes", method = RequestMethod.GET)
+    public String listAllowedTimes(
+            HttpSession session,
+            Model model
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+        return showListAllowedTimes(model);
+    }
+
+
+    @RequestMapping(value = "addAllowedDate", method = RequestMethod.GET)
+    public String showAddAllowedDate(
+            HttpSession session,
+            Model model
+        )
+    {
+        ensureSiteAdminLoggedIn(session);
+        AddAllowedDateFormData formData = new AddAllowedDateFormData();
+        return showAddAllowedDateWithErrors(model, formData, null);
+    }
+
+
+    @RequestMapping(value = "addAllowedTime", method = RequestMethod.GET)
+    public String showAddAllowedTime(
+            HttpSession session,
+            Model model
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+        AddAllowedTimeFormData formData = new AddAllowedTimeFormData();
+        return showAddAllowedTimeWithErrors(model, formData, null);
+    }
+
+
+    @RequestMapping(value = "addAllowedDate", method = RequestMethod.POST)
+    public String doAddAllowedDate(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") AddAllowedDateFormData formData
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showAddAllowedDateWithErrors(model, formData, errors);
+        }
+
+        // --- Insert it ---
+        try {
+            database.insertNewAllowedDate(formData);
+        } catch(AllowedDateAlreadyInUseException err) {
+            return showAddAllowedDateWithErrors(model, formData,
+                    new Errors("That date is already listed as an allowed date."));
+        }
+
+        // --- Return to the date list ---
+        return "redirect:listAllowedDates.htm";
+    }
+
+
+    @RequestMapping(value = "addAllowedTime", method = RequestMethod.POST)
+    public String doAddAllowedTime(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") AddAllowedTimeFormData formData
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showAddAllowedTimeWithErrors(model, formData, errors);
+        }
+
+        // --- Insert it ---
+        try {
+            database.insertNewAllowedTime(formData);
+        } catch(AllowedTimeAlreadyInUseException err) {
+            return showAddAllowedTimeWithErrors(model, formData,
+                    new Errors("That time is already listed as an allowed time."));
+        } catch(NoSuchAllowedTimeException err) {
+            return showAddAllowedTimeWithErrors(model, formData,
+                    new Errors("The time you inserted this before does not exist."));
+        }
+
+        // --- Return to the time list ---
+        return "redirect:listAllowedTimes.htm";
+    }
+
+
+    @RequestMapping(value = "deleteAllowedDate", method = RequestMethod.POST)
+    public String deleteAllowedDate(
+            @RequestParam String parseableDateStr,
+            HttpSession session
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+
+        Date date;
+        try {
+            date = Date.valueOf(parseableDateStr);
+        } catch(IllegalArgumentException err) {
+            throw new InvalidParameterFromGUIException();
+        }
+        try {
+            database.deleteAllowedDate(new PrettyPrintingDate(date));
+        } catch (NoSuchAllowedDateException e) {
+            throw new InvalidParameterFromGUIException();
+        }
+
+        return "redirect:listAllowedDates.htm";
+    }
+
+
+    @RequestMapping(value = "deleteAllowedTime", method = RequestMethod.POST)
+    public String deleteAllowedTime(
+            @RequestParam String allowedTime,
+            HttpSession session
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+
+        try {
+			database.deleteAllowedTime(allowedTime);
+		} catch (NoSuchAllowedTimeException e) {
+			throw new InvalidParameterFromGUIException();
+		}
+
+        return "redirect:listAllowedTimes.htm";
+    }
+    
+    public String showListAllowedDates(Model model) throws SQLException {
+        model.addAttribute("allowedDates", database.getAllowedDates());
+        return "listAllowedDates";
+    }
+
+    public String showListAllowedTimes(Model model) throws SQLException {
+        model.addAttribute("allowedTimes", database.getAllowedTimes());
+        return "listAllowedTimes";
+    }
+
+    public String showAddAllowedDateWithErrors(Model model, AddAllowedDateFormData formData, Errors errors) {
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "addAllowedDate";
+    }
+
+    public String showAddAllowedTimeWithErrors(
+            Model model,
+            AddAllowedTimeFormData formData,
+            Errors errors
+        ) throws SQLException
+    {
+        model.addAttribute("allowedTimes", database.getAllowedTimes());
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "addAllowedTime";
+    }
+
+    /**
+     * A subroutine used to display the edit-date form.
+     */
+    public String showEditAllowedDateWithErrors(Model model, EditAllowedDateFormData formData, Errors errors)
+            throws SQLException
+    {
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "editAllowedTime";
+    }
+
+    /**
+     * A subroutine used to set up and then show the add user form. It
+     */
+    public String showEditAllowedTimeWithErrors(Model model, EditAllowedTimeFormData formData, Errors errors)
+            throws SQLException
+    {
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "editAllowedTime";
+    }
+
+
+    /** A subroutine called to ensure it's the site admin who is logged in. */
+    private void ensureSiteAdminLoggedIn(HttpSession session) {
         // --- Make sure it's the site admin that's logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-
-        model.addAttribute("allowedDates", database.getAllowedDates());
-        return "adminEditAllowedDates";
     }
-    
-    @RequestMapping(value = "allowedDateDelete", method = RequestMethod.GET)
-    public String deleteAllowedDate(@RequestParam String date,
-            HttpSession session,
-            Model model) throws SQLException {
-        SessionData sessionData = SessionData.fromSession(session);
-        
-        if (!sessionData.isAuthenticated()) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
-        }
-        try {
-			database.deleteAllowedDate(date);
-		} catch (NoSuchAllowedDateException e) {
-			throw new InvalidParameterFromGUIException();
-		}
-        
-        model.addAttribute("allowedDates", database.getAllowedDates());
-        return "adminEditAllowedDates";
-    }
-    
-    @RequestMapping(value = "editAllowedDate", method = RequestMethod.GET)
-    public String enterDataToEditAllowedDate(
-            HttpSession session,
-            Model model,
-            @RequestParam String date
-    ) throws SQLException {
-        // --- Ensure logged in ---
-        SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-        
-        EditAllowedDateTimeData formData = new EditAllowedDateTimeData();
-        formData.setAllowedDate(date);
-        // --- Show the edit page ---
-        return showEditDateTimeWithErrorMessage(model, formData, "");
-    }
-
-    /**
-     * Actually change the values that were entered.
-     */
-    @RequestMapping(value="editAllowedDate", method=RequestMethod.POST)
-    public String doEditAllowedDate(
-            HttpSession session,
-            Model model,
-            @ModelAttribute("formData") EditAllowedDateTimeData formData
-        ) throws SQLException
-    {
-        SessionData sessionData = SessionData.fromSession(session);
-        // FIXME: must validate the fields
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-
-        try {
-           database.modifyAllowedDate(formData);
-        } catch(NoSuchAllowedDateException err) {
-            return showEditDateTimeWithErrorMessage(model, formData, "Incorrect date value exists.");
-        }
-        
-        model.addAttribute("allowedDates", database.getAllowedDates());
-        return "adminEditAllowedDates";
-    }
-    
-    /**
-     * A subroutine used to set up and then show the add user form. It
-     */
-    
-    public String showEditDateTimeWithErrorMessage(Model model, EditAllowedDateTimeData formData, String errorMessage)
-            throws SQLException
-    {
-        model.addAttribute("formData", formData);
-        model.addAttribute("errorMessage", errorMessage);
-        return "editAllowedTime";
-    }
-
 
 }

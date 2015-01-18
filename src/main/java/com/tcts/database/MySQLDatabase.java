@@ -3,13 +3,16 @@ package com.tcts.database;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.formdata.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -32,16 +35,6 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
-import com.tcts.formdata.CreateBankFormData;
-import com.tcts.formdata.CreateEventFormData;
-import com.tcts.formdata.CreateSchoolFormData;
-import com.tcts.formdata.EditAllowedDateTimeData;
-import com.tcts.formdata.EditBankFormData;
-import com.tcts.formdata.EditPersonalDataFormData;
-import com.tcts.formdata.EditSchoolFormData;
-import com.tcts.formdata.EventRegistrationFormData;
-import com.tcts.formdata.TeacherRegistrationFormData;
-import com.tcts.formdata.VolunteerRegistrationFormData;
 
 
 /**
@@ -115,9 +108,11 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String insertSchoolSQL  =
     		"insert into School (school_name,school_addr1,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible,school_SLC) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-    
     private final static String insertBankSQL =
     		"insert into Bank (bank_name) VALUES (?)";
+    private final static String insertAllowedDateSQL =
+            "insert into AllowedDates (event_date) VALUES (?)";
+
     private final static String modifyBankByIdSQL =
             "update Bank set bank_name = ? where bank_id = ?";
 
@@ -152,12 +147,15 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String updateUserStatusByIdSQL =
             "update User set user_status = ? where user_id = ?";
     
-    private final static String updateAllowedTimeSQL =
-    		"update AllowedTimes set event_time = ? where event_time = ?";
-    
-    private final static String updateAllowedDateSQL =
-    		"update AllowedDates set event_date = ? where event_date = ?";
-    
+    private final static String insertSpaceForAllowedTimeSQL =
+            "update AllowedTimes set sort_order = sort_order + 1 where sort_order >= ? order by sort_order desc;";
+    private final static String getLargestSortOrderForAllowedTimeSQL =
+            "select max(sort_order) from AllowedTimes";
+    private final static String getSortOrderForAllowedTimeSQL =
+            "select sort_order from AllowedTimes where event_time = ?";
+    private final static String insertAllowedTimeSQL =
+            "insert into AllowedTimes (event_time, sort_order) values (?, ?)";
+
     private final static String deleteAllowedTimeSQL =
     		"delete from AllowedTimes where event_time = ? ";
     
@@ -574,8 +572,8 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-    public List<Date> getAllowedDates() throws SQLException {
-        List<Date> dates = new ArrayList<Date>();
+    public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
+        List<PrettyPrintingDate> dates = new ArrayList<PrettyPrintingDate>();
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -1223,24 +1221,6 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 	
 	@Override
-	public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException
-    {
-		Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(updateAllowedTimeSQL);
-            preparedStatement.setString(1, time.getAllowedTime());
-            preparedStatement.setString(2, time.getAllowedTime());
-            preparedStatement.executeUpdate();
-        } 
-        finally {
-            closeSafely(connection, preparedStatement, null);
-            
-        }
-	}
-	
-	@Override
 	public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException
 	{
 		Connection connection = null;
@@ -1256,34 +1236,104 @@ public class MySQLDatabase implements DatabaseFacade {
             
         }
 	}
-	
-	@Override
-	public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException
-    {
-		Connection connection = null;
+
+
+    @Override
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
+        Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(updateAllowedDateSQL);
-            preparedStatement.setString(1, date.getAllowedDate());
-            preparedStatement.setString(2, date.getAllowedDate());
-            preparedStatement.executeUpdate();
-        } 
+            preparedStatement = connection.prepareStatement(insertAllowedDateSQL);
+            preparedStatement.setDate(1, formData.getDate());
+            try {
+                preparedStatement.executeUpdate();
+            } catch(MySQLIntegrityConstraintViolationException err) {
+                throw new AllowedDateAlreadyInUseException();
+            }
+        }
         finally {
             closeSafely(connection, preparedStatement, null);
-            
         }
-	}
-	
+    }
+
+
+    @Override
+    public void insertNewAllowedTime(AddAllowedTimeFormData formData)
+            throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+
+            // --- Figure whether it goes before something or gets put at the end
+            boolean insertAtEnd = "".equals(formData.getTimeToInsertBefore());
+            int newItemSortOrder;
+
+            if (insertAtEnd) {
+
+                // --- Find the maximum value ---
+                preparedStatement = connection.prepareStatement(getLargestSortOrderForAllowedTimeSQL);
+                resultSet = preparedStatement.executeQuery();
+                int maxSortOrder = 0;
+                while(resultSet.next()) {
+                    maxSortOrder = resultSet.getInt(1);
+                }
+                newItemSortOrder = maxSortOrder + 1;
+                resultSet.close();
+                preparedStatement.close();
+
+            } else {
+
+                // --- Figure out which ones need to be updated ---
+                preparedStatement = connection.prepareStatement(getSortOrderForAllowedTimeSQL);
+                preparedStatement.setString(1, formData.getTimeToInsertBefore());
+                resultSet = preparedStatement.executeQuery();
+                newItemSortOrder = Integer.MIN_VALUE;
+                while(resultSet.next()) {
+                    newItemSortOrder = resultSet.getInt("sort_order");
+                }
+                if (newItemSortOrder == Integer.MIN_VALUE) {
+                    throw new NoSuchAllowedTimeException();
+                }
+                resultSet.close();
+                preparedStatement.close();
+
+                // --- Move things down so there's space for it ---
+                preparedStatement = connection.prepareStatement(insertSpaceForAllowedTimeSQL);
+                preparedStatement.setInt(1, newItemSortOrder);
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+
+            }
+
+            // --- Insert the new allowed time ---
+            preparedStatement = connection.prepareStatement(insertAllowedTimeSQL);
+            preparedStatement.setString(1, formData.getAllowedTime());
+            preparedStatement.setInt(2, newItemSortOrder);
+            try {
+                preparedStatement.executeUpdate();
+            } catch(MySQLIntegrityConstraintViolationException err) {
+                throw new AllowedTimeAlreadyInUseException();
+            }
+
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+
 	@Override
-	public void deleteAllowedDate(String date) throws SQLException, NoSuchAllowedDateException
+	public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException
 	{
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(deleteAllowedDateSQL);
-            preparedStatement.setString(1, date);
+            preparedStatement.setDate(1, date);
             preparedStatement.executeUpdate();
         } 
         finally {

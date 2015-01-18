@@ -517,7 +517,7 @@ main thead button {
   text-align: left;
 }
 
-.adminEditAllowedTimes tbody button {
+.listAllowedTimes tbody button {
   width: 68px;
 }
 
@@ -590,7 +590,7 @@ body.evenRegistration table,
 body.banks table,
 body.schools table,
 body.teachers table,
-body.adminEditAllowedTimes table {
+body.listAllowedTimes table {
   width: 100%;
   border: 1px solid #ccc;
   text-align: left;
@@ -607,7 +607,7 @@ body.evenRegistration table thead th,
 body.banks table thead th,
 body.schools table thead th,
 body.teachers table thead th,
-body.adminEditAllowedTimes table thead th {
+body.listAllowedTimes table thead th {
   font-weight: bold;
   background-color: #0c345a;
   color: #fff;
@@ -624,7 +624,7 @@ body.evenRegistration table tbody tr:nth-child(even),
 body.banks table tbody tr:nth-child(even),
 body.schools table tbody tr:nth-child(even),
 body.teachers table tbody tr:nth-child(even),
-body.adminEditAllowedTimes table tbody tr:nth-child(even) {
+body.listAllowedTimes table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
 body.volunteerHome table td,
@@ -635,7 +635,7 @@ body.evenRegistration table td,
 body.banks table td,
 body.schools table td,
 body.teachers table td,
-body.adminEditAllowedTimes table td {
+body.listAllowedTimes table td {
   padding: .5em;
 }
 
@@ -686,16 +686,16 @@ td.emptyTableMessage {
 }
 
 @media (min-width: 320px) {
-  body.adminEditAllowedTimes table {
+  body.listAllowedTimes table {
     width: 100%;
     margin: 0 auto 1em auto;
   }
-  body.adminEditAllowedTimes table .time {
+  body.listAllowedTimes table .time {
     width: 90%;
   }
 }
 @media (min-width: 768px) {
-  body.adminEditAllowedTimes {
+  body.listAllowedTimes {
     /*		table {
     			width:50%;		
     

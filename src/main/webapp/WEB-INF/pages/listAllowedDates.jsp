@@ -4,7 +4,7 @@
         <title>Teach Children To Save - Admin Edit Allowed Times</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body class="adminEditAllowedTimes">
+    <body class="listAllowedTimes">
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -17,7 +17,7 @@
             <main id="main">
 
                 <h1>
-                    Edit Allowed Times
+                    Edit Allowed Dates
                 </h1>
 
                 <div id="actions">
@@ -26,56 +26,42 @@
 
                     <ul class="noUl">
                         <li class="mb1">
-                            <button onclick="alert('not implemented yet')" class="editOrRegister">Add Time</button>
+                            <button onclick="js.loadURL('addAllowedDate.htm')" class="editOrRegister">Add Date</button>
                         </li>
 
                         <li class="mb1">
                             <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                         </li>
-
+                     	
                     </ul>
                 </div>
-			<a download="allowedTimes.xls" href="#" onclick="return ExcellentExport.excel(this, 'adminEditAllowedTimesTable', 'allowedTimes');">Export to Excel</a>
-                <table id="adminEditAllowedTimesTable">
+				<a download="allowedDaes.xls" href="#" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedDates');">Export to Excel</a>
+                <table id="listAllowedTimesTable">
                     <thead>
                         <tr>
-                            <th scope="col" class="time">Time</th>
-                            <th scope="col">
-                                <span class="ada-read">Column of Modify buttons</span>
-                            </th>
+                            <th scope="col" class="time">Date</th>
                             <th scope="col">
                                 <span class="ada-read">Column of Delete buttons</span>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <c:if test="${empty allowedTimes}">
-                            <td colspan="3" class="emptyTableMessage">There are no allowed times now.</td>
+                        <c:if test="${empty allowedDates}">
+                            <td colspan="3" class="emptyTableMessage">There are no allowed dates now.</td>
                         </c:if>
-                        <c:forEach var="time" items="${allowedTimes}">
+                        <c:forEach var="allowedDate" items="${allowedDates}">
                             <tr>
-                                <td class="timeColumn"><c:out value="${time}"/></td>
-                                
+                                <td class="dateColumn"><c:out value="${allowedDate.pretty}"/></td>
                                 <td>
-			                        <form method="POST" action="allowedTimeDelete.htm" modelAttribute="formData">
-			                                    <input type="hidden" name="time" value='<c:out value="${time}"/>' />
+			                        <form method="POST" action="deleteAllowedDate.htm" modelAttribute="formData">
+			                                    <input type="hidden" name="parseableDateStr" value='<c:out value="${allowedDate.parseable}"/>' />
 			                                    <button type="submit" class="editOrRegister delete">Delete</button>
 			                        </form>
 		                    	</td>
-			                    <td>
-			                        <button onclick="js.loadURL('editAllowedTime.htm?time=<c:out value="${time}"/>');" class="editOrRegister">
-			                            Modify
-			                        </button>
-			                    </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-
-
-                <div class="qa-notes">
-                    This table LOOKS all right, but so far the buttons don't DO anything.
-                </div>
 
             </main>
 

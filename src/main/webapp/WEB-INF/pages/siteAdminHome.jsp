@@ -56,13 +56,13 @@
                     </li>
 
                     <li class="mb1">
-                        <button onclick="js.loadURL('adminEditAllowedDates.htm');" class="editOrRegister">
+                        <button onclick="js.loadURL('listAllowedDates.htm');" class="editOrRegister">
                             Add/Remove Event Dates
                         </button>
                     </li>
 
                     <li class="mb1">
-                        <button onclick="js.loadURL('adminEditAllowedTimes.htm');" class="editOrRegister">
+                        <button onclick="js.loadURL('listAllowedTimes.htm');" class="editOrRegister">
                             Add/Remove Event Times
                         </button>
                     </li>

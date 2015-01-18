@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
@@ -14,6 +15,8 @@ import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
@@ -22,16 +25,7 @@ import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchUserException;
-import com.tcts.formdata.CreateBankFormData;
-import com.tcts.formdata.CreateEventFormData;
-import com.tcts.formdata.CreateSchoolFormData;
-import com.tcts.formdata.EditAllowedDateTimeData;
-import com.tcts.formdata.EditBankFormData;
-import com.tcts.formdata.EditPersonalDataFormData;
-import com.tcts.formdata.EditSchoolFormData;
-import com.tcts.formdata.EventRegistrationFormData;
-import com.tcts.formdata.TeacherRegistrationFormData;
-import com.tcts.formdata.VolunteerRegistrationFormData;
+import com.tcts.formdata.*;
 
 /**
  * Methods for accessing the database. It should probably be refactored somehow.
@@ -131,13 +125,12 @@ public interface DatabaseFacade {
     public List<Bank> getAllBanks() throws SQLException;
 
     /** Returns the allowed dates. */
-    public List<Date> getAllowedDates() throws SQLException;
+    public List<PrettyPrintingDate> getAllowedDates() throws SQLException;
 
     /** Returns the allowed times. */
     public List<String> getAllowedTimes() throws SQLException;
-    
+
     /**
-     *     
      * @param userType
      * @return List<? super User>
      * @throws SQLException
@@ -206,7 +199,24 @@ public interface DatabaseFacade {
      */
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException;
 
-	public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
+    /** Inserts a new allowed date. */
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException;
+
+    /**
+     * Inserts a new allowed time. The name of the time must be unique, and is contained in the
+     * allowedTime field of the formData. The timeToInsertBefore field of the form must either
+     * contain an empty string (in which case the sort_order will place this after the last
+     * existing time) or the name of an existing time (in which case that and all subsequent
+     * sort_orders will be incremented to make space for this new one).
+     *
+     * @throws AllowedTimeAlreadyInUseException if an existing time has the same string as this one
+     * @throws NoSuchAllowedTimeException if the timeToInsertBefore field has something that is not
+     *   either an existing time or "".
+     */
+    public void insertNewAllowedTime(AddAllowedTimeFormData formData)
+            throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException;
+
+    public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
 
 
 	/** Changes the password (and salt) for an existing user. */
@@ -219,10 +229,6 @@ public interface DatabaseFacade {
     /** Update the userStatus field of a specific user. */
     public void updateUserStatusById(String userId, int userStatus) throws SQLException;
 
-    /** Update allowed time **/
-	
-	public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException;
-	
 	/**
      *		Delete allowed time
      */
@@ -231,10 +237,7 @@ public interface DatabaseFacade {
     /**
      *		Delete allowed date
      */
-	public void deleteAllowedDate(String date) throws SQLException, NoSuchAllowedDateException;
-
-	/** Update allowed date **/
-	public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException;
+	public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException;
 
     /** Retrieves a bunch of basic statistics about the database. */
     public SiteStatistics getSiteStatistics() throws SQLException;

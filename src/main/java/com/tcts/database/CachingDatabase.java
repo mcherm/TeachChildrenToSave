@@ -2,6 +2,7 @@ package com.tcts.database;
 
 import com.tcts.common.CachedList;
 import com.tcts.common.CachedValue;
+import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
@@ -10,6 +11,8 @@ import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
@@ -18,22 +21,12 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
-import com.tcts.formdata.CreateBankFormData;
-import com.tcts.formdata.CreateEventFormData;
-import com.tcts.formdata.CreateSchoolFormData;
-import com.tcts.formdata.EditAllowedDateTimeData;
-import com.tcts.formdata.EditBankFormData;
-import com.tcts.formdata.EditPersonalDataFormData;
-import com.tcts.formdata.EditSchoolFormData;
-import com.tcts.formdata.EventRegistrationFormData;
-import com.tcts.formdata.TeacherRegistrationFormData;
-import com.tcts.formdata.VolunteerRegistrationFormData;
+import com.tcts.formdata.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,10 +41,10 @@ public class CachingDatabase implements DatabaseFacade {
     /** Refresh values every 4 hours even if we think they're still accurate. */
     private static long REFRESH_IN_MILLIS = 4 * 60 * 60 * 1000;
 
-    private final CachedValue<List<Date>,SQLException> allowedDates =
-            new CachedValue<List<Date>,SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedValue<List<PrettyPrintingDate>,SQLException> allowedDates =
+            new CachedValue<List<PrettyPrintingDate>,SQLException>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<Date> generateValue() throws SQLException {
+                public List<PrettyPrintingDate> generateValue() throws SQLException {
                     return Collections.unmodifiableList(database.getAllowedDates());
                 }
             };
@@ -167,7 +160,7 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Date> getAllowedDates() throws SQLException {
+    public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
         return allowedDates.getCachedValue();
     }
 
@@ -219,6 +212,20 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
         return database.insertNewVolunteer(formData, hashedPassword, salt);
+    }
+
+    @Override
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
+        database.insertNewAllowedDate(formData);
+        allowedDates.refreshNow();
+    }
+
+    @Override
+    public void insertNewAllowedTime(AddAllowedTimeFormData formData)
+            throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException
+    {
+        database.insertNewAllowedTime(formData);
+        allowedTimes.refreshNow();
     }
 
     @Override
@@ -307,29 +314,17 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyAllowedTime(EditAllowedDateTimeData time) throws SQLException, NoSuchAllowedTimeException {
-        allowedTimes.refreshNow();
-        database.modifyAllowedTime(time);
-    }
-
-    @Override
     public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
         allowedTimes.refreshNow();
         database.deleteAllowedTime(time);
     }
 
     @Override
-    public void deleteAllowedDate(String date) throws SQLException, NoSuchAllowedDateException {
+    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
         allowedDates.refreshNow();
         database.deleteAllowedDate(date);
     }
 
-    @Override
-    public void modifyAllowedDate(EditAllowedDateTimeData date) throws SQLException, NoSuchAllowedDateException {
-        allowedDates.refreshNow();
-        database.modifyAllowedDate(date);
-    }
-    
     @Override
     public List<Volunteer> getVolunteerWithBankData() throws SQLException {
         return volunteerWithBankData.getCachedValue();
