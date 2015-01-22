@@ -49,7 +49,7 @@ public class ContactController {
     @RequestMapping(value = "/contactConfirm", method = RequestMethod.GET)
     public String doContactUsConfirm(Model model) {
         model.addAttribute("email", configuration.getProperty("email.from"));
-        model.addAttribute("confirmationMessage", "Your message has been send to site administrator successfully.");
+        model.addAttribute("confirmationMessage", "Your message has been sent to site administrator successfully.");
         model.addAttribute("formData", new ContactUsFormData());
         return "contact";
     }
