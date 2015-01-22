@@ -1,5 +1,11 @@
 package com.tcts.database;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
 import com.tcts.common.CachedList;
 import com.tcts.common.CachedValue;
 import com.tcts.common.PrettyPrintingDate;
@@ -21,13 +27,17 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
-import com.tcts.formdata.*;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
+import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 
 /**
  * This is a database implementation which is intended to wrap a real database
@@ -333,5 +343,25 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public List<Teacher> getTeacherWithSchoolData() throws SQLException {
         return teacherWithSchoolData.getCachedValue();
+    }
+    
+    @Override
+    public List<Teacher> getMatchedTeachers() throws SQLException {
+       return database.getMatchedTeachers();
+    }
+    
+    @Override
+    public List<Teacher> getUnMatchedTeachers() throws SQLException {
+    	return database.getUnMatchedTeachers();
+    }
+    
+    @Override
+    public List<Volunteer> getMatchedVolunteers() throws SQLException {
+    	return database.getMatchedVolunteers();
+    }
+    
+    @Override
+    public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
+    	return database.getUnMatchedVolunteers();
     }
 }

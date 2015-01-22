@@ -74,7 +74,7 @@
                     </li>
 
                     <li class="mb1">
-	                	<button onclick="js.loadURL('adminSendEmailAnnounce.htm');" class="editOrRegister">
+	                	<button onclick="js.loadURL('emailAnnouncement.htm');" class="editOrRegister">
 	                		Send Email Announcement
 	                	</button>
 	                </li>

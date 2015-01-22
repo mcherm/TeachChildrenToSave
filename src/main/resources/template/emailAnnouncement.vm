@@ -1,0 +1,12 @@
+ 
+<html>
+<body>
+
+<img src="${logoImage}" alt="Delaware Bankers Association logo">
+
+<p><h3>Message from teach children to save program.</h3></p>
+<p>${message} </p>
+	
+Thanks
+</body>
+</html>

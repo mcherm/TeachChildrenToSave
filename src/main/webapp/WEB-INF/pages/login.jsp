@@ -59,19 +59,7 @@
 	            
 	        </form:form>
 
-				<div class="qa-notes">
-					<strong>Some valid logins for testing:</strong>
-					<br>
-					larry@foobar.com(V) janedoe@foobar.com(BA) lucy@foobar.com(T) bonnie@mcherm.com(SA) moe@gmail.com(V) curley@gmail.com(V)
-					shemp@hulu.com(V) josuah@wintergreen.com(T) Allen@novel.com(T).
-					<br>
-					V=Volunteer; T=Teacher; BA=BankAdmin; SA=SiteAdmin.
-					<br>
-					All have "pass"
-					as their password.
-		        </div>
-
-            </main>
+			</main>
 
 			<aside>
 				<img src="tcts/img/logo-tcts.png" alt="" aria-hidden="true">

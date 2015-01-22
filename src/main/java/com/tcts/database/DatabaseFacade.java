@@ -3,7 +3,6 @@ package com.tcts.database;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import com.tcts.common.PrettyPrintingDate;
@@ -20,12 +19,22 @@ import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
+import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
-import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchUserException;
-import com.tcts.formdata.*;
+import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 
 /**
  * Methods for accessing the database. It should probably be refactored somehow.
@@ -257,4 +266,36 @@ public interface DatabaseFacade {
 	 * @throws SQLException
 	 */
 	public List<Volunteer> getVolunteerWithBankData() throws SQLException;
+	
+	/**
+	 * Get list of all the teachers whose classes have volunteers.
+	 * @return
+	 * @throws SQLException
+	 */
+
+	List<Teacher> getMatchedTeachers() throws SQLException;
+	
+	/**
+	 * Get list of all the teachers whose classes dont have volunteers.
+	 * @return
+	 * @throws SQLException
+	 */
+
+	List<Teacher> getUnMatchedTeachers() throws SQLException;
+	
+	/**
+	 * Get list of all the volunteers who have signed-up for classes.
+	 * @return
+	 * @throws SQLException
+	 */
+
+	List<Volunteer> getMatchedVolunteers() throws SQLException;
+	
+	/**
+	 * Get list of all the volunteers who does not have signed-up for classes. 
+	 * @return
+	 * @throws SQLException
+	 */
+
+	List<Volunteer> getUnMatchedVolunteers() throws SQLException;
 }

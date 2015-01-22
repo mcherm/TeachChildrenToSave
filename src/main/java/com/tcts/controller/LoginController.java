@@ -30,7 +30,7 @@ public class LoginController {
     
     
 
-    @RequestMapping(value = "/getLoginPage", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String newLoginPage(Model model) {
     	model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "");

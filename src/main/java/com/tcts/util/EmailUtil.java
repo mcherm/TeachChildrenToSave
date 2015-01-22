@@ -1,10 +1,9 @@
 package com.tcts.util;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import com.tcts.common.Configuration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -17,6 +16,7 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.tcts.common.Configuration;
 import com.tcts.exception.AppConfigurationException;
 
 
@@ -29,10 +29,17 @@ public final class EmailUtil {
         // FIXME: Two of these are being created. Find out why, and make only one be created.
     }
     
-    public void sendEmail(String text,Map<String,Object> model) throws IOException, AppConfigurationException {
+    @SuppressWarnings("unchecked")
+	public void sendEmail(String text,Map<String,Object> model) throws IOException, AppConfigurationException {
 
         // Construct an object to contain the recipient address.
-    	 Destination destination = new Destination().withToAddresses(new String[]{model.get("to").toString()});
+    	Destination destination;
+    	if (model.get("to") != null)
+    		destination = new Destination().withToAddresses(new String[]{model.get("to").toString()});
+    	else {
+    		List<String> toBccAddresses = (List<String>) model.get("bcc");
+    		destination = new Destination().withBccAddresses(toBccAddresses);
+    	}
         
         // Create the subject and body of the message.
         Content subject = new Content().withData(model.get("subject").toString());
