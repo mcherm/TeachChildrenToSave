@@ -102,7 +102,7 @@ public class EventRegistrationController {
         		
         		emailModel.put("logoImage", logoImage);
 	        	emailModel.put("to", volunteer.getEmail());
-	        	emailModel.put("subject", "Your class has a volunteer!");
+	        	emailModel.put("subject", "You have successfully signed up for a class!");
 	        	emailModel.put("class", "<br/>" + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
 	        	emailModel.put("volunteer", "<br/>" + volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber() + "<br/>");
 	        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
@@ -124,10 +124,9 @@ public class EventRegistrationController {
 		        	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
 	        		
 	        		emailModel.put("logoImage", logoImage);
-		        	emailModel.put("to", volunteer.getEmail());
-		        	emailModel.put("subject", "You have successfully signed up for a class!");
+		        	emailModel.put("to", teacher.getEmail());
+		        	emailModel.put("subject", "Your class has a volunteer!");
 		        	emailModel.put("class", "<br/>" + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
-		        	//emailModel.put("teacher", "<br/>" + teacher.getFirstName() + " - " + teacher.getLastName() + " - " + teacher.getEmail() + " - " + teacher.getPhoneNumber() + "<br/>");
 		        	emailModel.put("volunteer", "<br/>" + volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber() + "<br/>");
 		        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToTeacher", emailModel);
 		            emailUtil.sendEmail(emailContent, emailModel);

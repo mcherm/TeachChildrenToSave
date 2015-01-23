@@ -54,11 +54,9 @@ public final class EmailUtil {
         
         // Assemble the email.
         String from = configuration.getProperty("email.from");
-        SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
-        
         try
-        {        
-           
+        {
+        	SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
             AWSCredentials credentials = new BasicAWSCredentials(
                     configuration.getProperty("aws.access_key"),
                     configuration.getProperty("aws.secret_access_key"));

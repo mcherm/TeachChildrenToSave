@@ -91,22 +91,6 @@ public class CachingDatabase implements DatabaseFacade {
                 }
             };
             
-    private final CachedList<Volunteer, SQLException> volunteerWithBankData =
-            new CachedList<Volunteer, SQLException>(REFRESH_IN_MILLIS) {
-                @Override
-                public List<Volunteer> generateValue() throws SQLException {
-                    return database.getVolunteerWithBankData();
-                }
-            };
-              
-    private final CachedList<Teacher, SQLException> teacherWithSchoolData =
-            new CachedList<Teacher, SQLException>(REFRESH_IN_MILLIS) {
-                @Override
-                public List<Teacher> generateValue() throws SQLException {
-                    return database.getTeacherWithSchoolData();
-                }
-            };
-
 
     /** Constructor requires you to provide an actual database. */
     public CachingDatabase(DatabaseFacade database) {
@@ -203,8 +187,6 @@ public class CachingDatabase implements DatabaseFacade {
     public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
         User result = database.modifyUserPersonalFields(userId, formData);
         availableEvents.refreshNow();
-        volunteerWithBankData.refreshNow();
-        teacherWithSchoolData.refreshNow();
         return result;
     }
 
@@ -266,8 +248,6 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException {
         database.deleteVolunteer(volunteerId);
-        volunteerWithBankData.refreshNow();
-        teacherWithSchoolData.refreshNow();
     }
 
     @Override
@@ -281,7 +261,6 @@ public class CachingDatabase implements DatabaseFacade {
         database.modifySchool(school);
         availableEvents.refreshNow();
         allSchools.refreshNow();
-        teacherWithSchoolData.refreshNow();
     }
 
     @Override
@@ -337,12 +316,12 @@ public class CachingDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteerWithBankData() throws SQLException {
-        return volunteerWithBankData.getCachedValue();
+        return database.getVolunteerWithBankData();
     }
     
     @Override
     public List<Teacher> getTeacherWithSchoolData() throws SQLException {
-        return teacherWithSchoolData.getCachedValue();
+        return database.getTeacherWithSchoolData();
     }
     
     @Override
