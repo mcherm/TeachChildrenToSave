@@ -96,11 +96,11 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank where bank_id = ?";
     private final static String getAllBanksSQL =
-            "select " + bankFields + " from Bank";
+            "select " + bankFields + " from Bank order by bank_name";
     private final static String getSchoolByIdSQL =
             "select " + schoolFields + " from School where school_id = ?";
     private final static String getAllSchoolsSQL =
-            "select " + schoolFields + " from School";
+            "select " + schoolFields + " from School order by school_name";
     private final static String getAllowedDatesSQL =
             "select event_date from AllowedDates order by event_date";
     private final static String getAllowedTimesSQL =
