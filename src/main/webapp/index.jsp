@@ -27,7 +27,7 @@
                 </h1>
 
                 <h2>
-                    3<sup>rd</sup> and 4<sup>th</sup> graders learn critical lessons on personal finance and economics in a 45 minute lesson
+                    3<sup>rd</sup> and 4<sup>th</sup> grade students learn critical lessons on personal finance and economics in a 45 minute lesson
                 </h2>
 
                 <h3>Teachers</h3>
