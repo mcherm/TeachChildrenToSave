@@ -57,7 +57,7 @@
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
                 <h3>Already Registered?</h3>
-                <button onclick="js.loadURL('getLoginPage.htm');">Sign In</button>
+                <button onclick="js.loadURL('login.htm');">Sign In</button>
 
             </main>
 

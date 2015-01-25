@@ -1,3 +1,4 @@
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <head>
@@ -54,6 +55,40 @@
                     C/O <br>
                     [Need to insert address]
                 </p>
+                
+                <div>
+                
+                <p style="color:green" >
+                    <br>
+                    <c:out value="${confirmationMessage}"/>
+                </p>
+
+                    <form:form method="POST" action="contact.htm" modelAttribute="formData">
+
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">Your Email Address</div>
+                                    <form:input path="emailAddress"/>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        Message
+                                    </div>
+                                    <form:textarea path="message" />
+                                </div>
+                            </label>
+                        </div>
+
+                        <button type="submit" value="SendMessage">Send Message</button>
+
+                    </form:form>
+                </div>
 
             </main>
 
@@ -62,7 +97,8 @@
             </aside>
 
         </div><%-- .mainCnt --%>
-
+        
+        
         <%@include file="include/footer.jsp" %>
 
     </body>

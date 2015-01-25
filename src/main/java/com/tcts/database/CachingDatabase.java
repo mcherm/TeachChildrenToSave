@@ -1,5 +1,11 @@
 package com.tcts.database;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
 import com.tcts.common.CachedList;
 import com.tcts.common.CachedValue;
 import com.tcts.common.PrettyPrintingDate;
@@ -21,13 +27,17 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
-import com.tcts.formdata.*;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
+import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 
 /**
  * This is a database implementation which is intended to wrap a real database
@@ -81,22 +91,6 @@ public class CachingDatabase implements DatabaseFacade {
                 }
             };
             
-    private final CachedList<Volunteer, SQLException> volunteerWithBankData =
-            new CachedList<Volunteer, SQLException>(REFRESH_IN_MILLIS) {
-                @Override
-                public List<Volunteer> generateValue() throws SQLException {
-                    return database.getVolunteerWithBankData();
-                }
-            };
-              
-    private final CachedList<Teacher, SQLException> teacherWithSchoolData =
-            new CachedList<Teacher, SQLException>(REFRESH_IN_MILLIS) {
-                @Override
-                public List<Teacher> generateValue() throws SQLException {
-                    return database.getTeacherWithSchoolData();
-                }
-            };
-
 
     /** Constructor requires you to provide an actual database. */
     public CachingDatabase(DatabaseFacade database) {
@@ -193,8 +187,6 @@ public class CachingDatabase implements DatabaseFacade {
     public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
         User result = database.modifyUserPersonalFields(userId, formData);
         availableEvents.refreshNow();
-        volunteerWithBankData.refreshNow();
-        teacherWithSchoolData.refreshNow();
         return result;
     }
 
@@ -256,8 +248,6 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException {
         database.deleteVolunteer(volunteerId);
-        volunteerWithBankData.refreshNow();
-        teacherWithSchoolData.refreshNow();
     }
 
     @Override
@@ -271,7 +261,6 @@ public class CachingDatabase implements DatabaseFacade {
         database.modifySchool(school);
         availableEvents.refreshNow();
         allSchools.refreshNow();
-        teacherWithSchoolData.refreshNow();
     }
 
     @Override
@@ -327,11 +316,31 @@ public class CachingDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteerWithBankData() throws SQLException {
-        return volunteerWithBankData.getCachedValue();
+        return database.getVolunteerWithBankData();
     }
     
     @Override
     public List<Teacher> getTeacherWithSchoolData() throws SQLException {
-        return teacherWithSchoolData.getCachedValue();
+        return database.getTeacherWithSchoolData();
+    }
+    
+    @Override
+    public List<Teacher> getMatchedTeachers() throws SQLException {
+       return database.getMatchedTeachers();
+    }
+    
+    @Override
+    public List<Teacher> getUnMatchedTeachers() throws SQLException {
+    	return database.getUnMatchedTeachers();
+    }
+    
+    @Override
+    public List<Volunteer> getMatchedVolunteers() throws SQLException {
+    	return database.getMatchedVolunteers();
+    }
+    
+    @Override
+    public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
+    	return database.getUnMatchedVolunteers();
     }
 }

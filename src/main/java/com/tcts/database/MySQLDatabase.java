@@ -10,9 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
-import com.tcts.formdata.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -27,6 +24,8 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
@@ -35,6 +34,17 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
+import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 
 
 /**
@@ -169,7 +179,23 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getTeacherWithSchoolSQL =
     		"select " + userFields + ", " + schoolFields + 
 		    " from User join School on school_id = organization_id  and access_type = 'T'";
-
+    
+    private final static String getMatchedTeachersSQL =
+    		"select " + userFields + " " + 
+		    " from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is not null";
+    
+    private final static String getUnMatchedTeachersSQL =
+    		"select " + userFields + " " + 
+    		" from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is null";
+    
+    private final static String getMatchedVolunteersSQL =
+    		"select " + userFields + " " + 
+    		" from Event join User on user_id = volunteer_id  and access_type = 'V' ";
+    
+    private final static String getUnMatchedVolunteersSQL =
+    		"select " + userFields + " " + 
+		    " from User where access_type = 'V' and not exists ( select * from Event where volunteer_id = user_id) ";
+    
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
     private final static String getNumUnmatchedEventsSQL = "select count(*) from Event where volunteer_id is null";
@@ -1446,6 +1472,118 @@ public class MySQLDatabase implements DatabaseFacade {
                         school.populateFieldsFromResultSetRow(resultSet);
                         teacher.setLinkedSchool(school);
                         usersList.add(teacher);
+                 }
+             
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public List<Teacher> getMatchedTeachers() throws SQLException {
+        Connection connection = null;
+        List<Teacher> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getMatchedTeachersSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+            			numberOfRows++;
+                        Teacher teacher = new Teacher();
+                        teacher.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(teacher);
+                 }
+             
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public List<Teacher> getUnMatchedTeachers() throws SQLException {
+        Connection connection = null;
+        List<Teacher> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getUnMatchedTeachersSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+            			numberOfRows++;
+                        Teacher teacher = new Teacher();
+                        teacher.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(teacher);
+                 }
+             
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public List<Volunteer> getMatchedVolunteers() throws SQLException {
+        Connection connection = null;
+        List<Volunteer> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getMatchedVolunteersSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+            			numberOfRows++;
+            			Volunteer volunteer = new Volunteer();
+            			volunteer.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(volunteer);
+                 }
+             
+            if (numberOfRows < 1) {
+                return null; // No user found
+            } else {
+                return usersList;
+            } 
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+    
+    @Override
+    public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
+        Connection connection = null;
+        List<Volunteer> usersList = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getUnMatchedVolunteersSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+            			numberOfRows++;
+            			Volunteer volunteer = new Volunteer();
+            			volunteer.populateFieldsFromResultSetRow(resultSet);
+                        usersList.add(volunteer);
                  }
              
             if (numberOfRows < 1) {
