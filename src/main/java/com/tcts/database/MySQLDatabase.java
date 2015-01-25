@@ -64,17 +64,18 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + userFields + " from User where user_id = ?";
     
     private final static String getUserByTypeSQL =
-            "select " + userFields + " from User where access_type = ?";
+            "select " + userFields + " from User where access_type = ? order by last_name asc, first_name asc";
     
     private final static String getUserByEmailSQL =
             "select " + userFields + " from User where email = ?";
     private final static String getVolunteersByBankSQL =
-            "select " + userFields + " from User where access_type = 'V' and organization_id = ?";
+            "select " + userFields + " from User where access_type = 'V' and organization_id = ?" +
+            " order by last_name asc, first_name asc";
     private final static String getBankAdminByBankSQL =
             "select " + userFields + " from User where access_type = 'BA' and organization_id = ?";
 
     private final static String getEventByIdSQL =
-            "select " + eventFields + " from Event where event_id = ?";
+            "select " + eventFields + " from Event where event_id = ? order by event_id asc";
     private final static String getAllEventsWithTeacherAndSchoolAndVolunteerAndBankSQL =
             "select " + eventFields + ", " + prefixFieldsWith("teacher.", userFields) + ", " + schoolFields +
                     ", " + prefixFieldsWith("volunteer.",userFields) + ", " + bankFields +
@@ -85,13 +86,14 @@ public class MySQLDatabase implements DatabaseFacade {
                     " left join Bank on volunteer.organization_id = bank_id" +
                     " order by school_name asc, teacher.last_name asc, event_date asc";
     private final static String getEventsByTeacherSQL =
-            "select " + eventFields + " from Event where teacher_id = ?";
+            "select " + eventFields + " from Event where teacher_id = ? order by event_date asc, event_id asc";
     private final static String getEventsByVolunteerSQL =
-            "select " + eventFields + " from Event where volunteer_id = ?";
+            "select " + eventFields + " from Event where volunteer_id = ? order by event_date asc, event_id asc";
     private final static String getAllAvailableEventsWithTeacherAndSchoolSQL =
     		"select " + eventFields + ", " + userFields + ", " + schoolFields +
             " from Event join User on teacher_id = user_id join School on organization_id = school_id" +
-            " where volunteer_id is null";
+            " where volunteer_id is null" +
+            " order by event_id asc"; // Put the oldest unfulfilled requests at the top unless you sort them
 
     private final static String getBankByIdSQL =
             "select " + bankFields + " from Bank where bank_id = ?";
@@ -174,27 +176,33 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String getVoluneerWithBankSQL =
             "select " + userFields + ", " + bankFields + 
-		    " from User join Bank on bank_id = organization_id  and access_type = 'V'";
+		    " from User join Bank on bank_id = organization_id  and access_type = 'V'" +
+            " order by last_name asc, first_name asc";
     
     private final static String getTeacherWithSchoolSQL =
     		"select " + userFields + ", " + schoolFields + 
-		    " from User join School on school_id = organization_id  and access_type = 'T'";
+		    " from User join School on school_id = organization_id  and access_type = 'T'" +
+            " order by last_name asc, first_name asc";
     
     private final static String getMatchedTeachersSQL =
     		"select " + userFields + " " + 
-		    " from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is not null";
+		    " from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is not null" +
+            " order by last_name asc, first_name asc";
     
     private final static String getUnMatchedTeachersSQL =
     		"select " + userFields + " " + 
-    		" from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is null";
+    		" from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is null" +
+            " order by last_name asc, first_name asc";
     
     private final static String getMatchedVolunteersSQL =
     		"select " + userFields + " " + 
-    		" from Event join User on user_id = volunteer_id  and access_type = 'V' ";
+    		" from Event join User on user_id = volunteer_id  and access_type = 'V'" +
+            " order by last_name asc, first_name asc";
     
     private final static String getUnMatchedVolunteersSQL =
     		"select " + userFields + " " + 
-		    " from User where access_type = 'V' and not exists ( select * from Event where volunteer_id = user_id) ";
+		    " from User where access_type = 'V' and not exists ( select * from Event where volunteer_id = user_id)" +
+            " order by last_name asc, first_name asc";
     
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
