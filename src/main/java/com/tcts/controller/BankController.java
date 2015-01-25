@@ -178,7 +178,14 @@ public class BankController {
         }
 
         // --- Successful; show the master bank edit again ---
-        return showForm(model);
+        switch(sessionData.getUser().getUserType()) {
+            case SITE_ADMIN:
+                return "redirect:banks.htm";
+            case BANK_ADMIN:
+                return "redirect:" + UserType.BANK_ADMIN.getHomepage();
+            default:
+                throw new RuntimeException("Should not be able to get here.");
+        }
     }
 
 

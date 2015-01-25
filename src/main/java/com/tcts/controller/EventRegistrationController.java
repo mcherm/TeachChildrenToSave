@@ -9,8 +9,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.Bank;
 import com.tcts.exception.InvalidParameterFromGUIException;
 
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,27 +52,26 @@ public class EventRegistrationController {
     public String showEventRegistrationPage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getVolunteer() == null) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
         model.addAttribute("formData", new EventRegistrationFormData());
-        return showFormWithErrorMessage(model, "");
+        return showForm(model, sessionData);
     }
 
     /**
      * A subroutine used to set up and then show the register teacher form. It
-     * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
+     * returns the string, so you can invoke it as "return showForm(...)".
      */
-    private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
-        List<Event> events = database.getAllAvailableEvents();
-        model.addAttribute("events", events);
+    private String showForm(Model model, SessionData sessionData) throws SQLException {
+        model.addAttribute("bank", database.getBankById(sessionData.getVolunteer().getBankId()));
+        model.addAttribute("events", database.getAllAvailableEvents());
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        model.addAttribute("errorMessage", errorMessage);
         return "eventRegistration";
     }
 
     @RequestMapping(value="/eventRegistration", method=RequestMethod.POST)
-    public String createEvent(HttpSession session, Model model, HttpServletRequest request,
+    public String createEvent(HttpSession session, HttpServletRequest request,
                               @ModelAttribute("formData") EventRegistrationFormData formData)
             throws SQLException, NoSuchEventException
     {

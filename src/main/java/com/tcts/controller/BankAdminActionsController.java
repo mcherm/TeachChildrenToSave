@@ -3,6 +3,7 @@ package com.tcts.controller;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.database.MySQLDatabase;
+import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
@@ -61,7 +62,10 @@ public class BankAdminActionsController {
             throw new NotLoggedInException("Cannot navigate to this page unless you are a logged-in bank admin.");
         }
 
-        // --- Load the data ---
+        // --- Load the bank ---
+        Bank bank = database.getBankById(bankAdmin.getBankId());
+
+        // --- Load the events ---
         // NOTE: We are not bothering to verify that this volunteer volunteers for this
         // particular bank. It was not deemed a security risk.
         List<Event> events = database.getEventsByVolunteer(volunteerId);
@@ -73,6 +77,7 @@ public class BankAdminActionsController {
         }
 
         // --- Show the page (well, detail) ---
+        model.addAttribute("bank", bank);
         model.addAttribute("events", events);
         return "bankAdminHomeDetail";
     }

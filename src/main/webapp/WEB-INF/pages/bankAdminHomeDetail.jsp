@@ -12,6 +12,14 @@
                 <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
                 <td class="center"><c:out value="${event.grade}"/></td>
                 <td class="center"><c:out value="${event.numberStudents}"/></td>
+                <c:if test="${bank.minLMIForCRA != null}">
+                    <td>
+                        <c:choose>
+                            <c:when test="${event.linkedTeacher.linkedSchool.lmiEligible >= bank.minLMIForCRA}">CRA eligible</c:when>
+                            <c:otherwise>Not eligible</c:otherwise>
+                        </c:choose>
+                    </td>
+                </c:if>
             </tr>
         </c:forEach>
     </tbody>

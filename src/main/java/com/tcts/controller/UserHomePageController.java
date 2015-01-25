@@ -43,6 +43,11 @@ public class UserHomePageController {
         if (volunteer == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
+
+        // --- Get the bank ---
+        Bank bank = database.getBankById(volunteer.getBankId());
+
+        // --- Get list of events ---
         List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
         for (Event event : events) {
             Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
@@ -57,6 +62,9 @@ public class UserHomePageController {
             School school = database.getSchoolById(schoolId);
             teacher.setLinkedSchool(school);
         }
+
+        // --- Display the page ---
+        model.addAttribute("bank", bank);
         model.addAttribute("events", events);
         return "volunteerHome";
     }

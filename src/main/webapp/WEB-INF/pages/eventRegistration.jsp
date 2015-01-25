@@ -27,6 +27,9 @@
                         'county': '<c:out value="${event.linkedTeacher.linkedSchool.county}"/>',
                         'schoolDistrict': '<c:out value="${event.linkedTeacher.linkedSchool.schoolDistrict}"/>',
                         'lmiEligible': '<c:out value="${event.linkedTeacher.linkedSchool.lmiEligible}"/>'
+                        <c:if test="${bank.minLMIForCRA != null}">
+                            ,'craEligible': '<c:choose><c:when test="${event.linkedTeacher.linkedSchool.lmiEligible >= bank.minLMIForCRA}">CRA eligible</c:when><c:otherwise>Not eligible</c:otherwise></c:choose>'
+                        </c:if>
                     }<c:if test="${not eventStatus.last}">,</c:if>
                 </c:forEach>
             ];
@@ -72,6 +75,9 @@
                     "    <th width='12%' scope='col' class='sortable' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\")'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
                     "    <th width='19%' scope='col' class='sortable' id='col_for_firstName'><button onclick='sortBy(\"firstName\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
                     "    <th width='30%' scope='col' class='sortable' id='col_for_schoolName''><button onclick='sortBy(\"schoolName\")'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
+                    <c:if test="${bank.minLMIForCRA != null}">
+                        "    <th width='8%' scope='col' class='sortable' id='col_for_craEligible''><button onclick='sortBy(\"craEligible\")'><span class='ada-read'>Sort by&nbsp;</span>CRA</button></th>" +
+                    </c:if>
                     "    <th scope='col'><span class='ada-read'>Column of Details buttons</span></th>" +
                     "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
@@ -101,6 +107,9 @@
                             "    <td class='center'>" + event.numberStudents + "</td>" +
                             "    <td>" + event.firstName + " " + event.lastName + "</td>" +
                             "    <td>" + event.schoolName + "</td>" +
+                            <c:if test="${bank.minLMIForCRA != null}">
+                                "    <td>" + event.craEligible + "</td>" +
+                            </c:if>
                             "    <td class='action'><form action='eventDetails.htm' method='POST'>" +
                             "        <input type='hidden' name='eventId' value='" + event.eventId +"'/>" +
                             "        <input type='hidden' name='doneURL' value='eventRegistration.htm'/>" +

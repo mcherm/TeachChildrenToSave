@@ -69,6 +69,9 @@
                                             <th>Teacher</th>
                                             <th>Grade</th>
                                             <th>Students</th>
+                                            <c:if test="${bank.minLMIForCRA != null}">
+                                                <th scope="col">CRA</th>
+                                            </c:if>
                                         </tr>
                                     </table>
                                 </th>

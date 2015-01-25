@@ -17,7 +17,6 @@
 
             <main id="main">
 
-	
 		        <h1>Your Home Page</h1>
 
 		        <div id="actions">
@@ -50,7 +49,7 @@
 		        <div id="events">
 	
 		            <h2>My Classes</h2>
-	
+
 		            <table id="eventTable" class="displayTable">
 		                <thead>
 		                    <tr>
@@ -60,6 +59,9 @@
 		                        <th scope="col">Teacher</th>
 		                        <th scope="col" class="center">Grade</th>
 		                        <th scope="col" class="center">Students</th>
+                                <c:if test="${bank.minLMIForCRA != null}">
+                                    <th scope="col">CRA</th>
+                                </c:if>
                                 <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
                                 <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
 		                    </tr>
@@ -76,6 +78,14 @@
 		                            <td><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
 		                            <td class="center"><c:out value="${event.grade}"/></td>
 		                            <td class="center"><c:out value="${event.numberStudents}"/></td>
+                                    <c:if test="${bank.minLMIForCRA != null}">
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${event.linkedTeacher.linkedSchool.lmiEligible >= bank.minLMIForCRA}">CRA eligible</c:when>
+                                                <c:otherwise>Not eligible</c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </c:if>
                                     <td>
                                         <form action="eventDetails.htm" method="POST">
                                             <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
