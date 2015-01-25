@@ -75,9 +75,9 @@
                         </label>
                     </div>	
 
-                    <button type="submit" value="Edit">Edit</button>
+                    <button type="submit" value="Save">Save</button>
 
-                    <div class="qa-notes">BUG: We should have a 'cancel' button here!</div>
+                    <button type="button" onclick="js.loadURL('${cancelURL}')">Cancel</button>
 
 	            </form:form>
 		

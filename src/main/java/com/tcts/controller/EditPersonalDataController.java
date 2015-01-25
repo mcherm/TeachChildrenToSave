@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -37,14 +36,15 @@ public class EditPersonalDataController {
         User user = sessionData.getUser();
         model.addAttribute("formData", transformUserData(user));
         
-        return showFormWithErrorMessage(model, "");
+        return showFormWithErrorMessage(model, sessionData, "");
     }
 
     /**
      * A subroutine used to set up and then show the editPersonalData form. It
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
-    public String showFormWithErrorMessage(Model model, String errorMessage) {
+    public String showFormWithErrorMessage(Model model, SessionData sessionData, String errorMessage) {
+        model.addAttribute("cancelURL", sessionData.getUser().getUserType().getHomepage());
         model.addAttribute("errorMessage", errorMessage);
         return "editPersonalData";
     }
@@ -72,7 +72,7 @@ public class EditPersonalDataController {
             sessionData.setUser(newUser);
             return "redirect:" + user.getUserType().getHomepage();
         } catch(EmailAlreadyInUseException err) {
-            return showFormWithErrorMessage(model, "That email is already in use by another user.");
+            return showFormWithErrorMessage(model, sessionData, "That email is already in use by another user.");
         }
     }
     
