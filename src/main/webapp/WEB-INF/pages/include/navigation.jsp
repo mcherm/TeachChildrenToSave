@@ -37,7 +37,7 @@
 
             <li class="last">
                 <c:if test="${sessionData == null || sessionData.user == null}">
-                    <button onclick="js.loadURL('getLoginPage.htm');" class="signIn">
+                    <button onclick="js.loadURL('login.htm');" class="signIn">
                         <span class="iconFont" aria-hidden="true" data-icon="A"></span>
                         <span class="txt">Sign In</span>
                     </button>
