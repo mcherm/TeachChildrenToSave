@@ -100,6 +100,9 @@ public class UserHomePageController {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in bank admin.");
         }
 
+        // --- Load the bank ---
+        Bank bank = database.getBankById(bankAdmin.getBankId());
+
         // --- Obtain and sort the volunteers ---
         List<Volunteer> volunteers = database.getVolunteersByBank(bankAdmin.getBankId());
         List<Volunteer> normalVolunteers = new ArrayList<Volunteer>(volunteers.size());
@@ -113,6 +116,7 @@ public class UserHomePageController {
         }
 
         // --- Show homepage ---
+        model.addAttribute("bank", bank);
         model.addAttribute("normalVolunteers", normalVolunteers);
         model.addAttribute("suspendedVolunteers", suspendedVolunteers);
         return "bankAdminHome";

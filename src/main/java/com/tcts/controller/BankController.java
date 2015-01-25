@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.UserType;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchBankException;
@@ -99,7 +100,7 @@ public class BankController {
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getSiteAdmin() == null) {
+        if (sessionData.getSiteAdmin() == null && sessionData.getBankAdmin() == null) {
             throw new NotLoggedInException();
         }
 
@@ -108,6 +109,7 @@ public class BankController {
         EditBankFormData formData = new EditBankFormData();
         formData.setBankId(bankId);
         formData.setBankName(bank.getBankName());
+        formData.setMinLMIForCRA(bank.getMinLMIForCRA() == null ? "" : bank.getMinLMIForCRA().toString());
         BankAdmin bankAdmin = database.getBankAdminByBank(bankId);
         if (bankAdmin != null) {
             formData.setFirstName(bankAdmin.getFirstName());
@@ -117,19 +119,32 @@ public class BankController {
         }
 
         // --- Show the edit page ---
-        return showEditBankWithErrorMessage(model, formData, "");
+        return showEditBankWithErrors(model, sessionData, formData, null);
     }
 
 
     /**
      * A subroutine used to set up and then show the add bank form. It
-     * returns the string, so you can invoke it as "return showAddBankWithErrorMessage(...)".
+     * returns the string, so you can invoke it as "return showEditBankWithErrors(...)".
      */
-    public String showEditBankWithErrorMessage(Model model, EditBankFormData formData, String errorMessage)
+    public String showEditBankWithErrors(Model model, SessionData sessionData, EditBankFormData formData, Errors errors)
             throws SQLException
     {
+        String cancelURL;
+        switch(sessionData.getUser().getUserType()) {
+            case BANK_ADMIN:
+                cancelURL = UserType.BANK_ADMIN.getHomepage();
+                break;
+            case SITE_ADMIN:
+                cancelURL = "viewEditBanks.htm";
+                break;
+            default:
+                throw new RuntimeException("We checked if they were logged in, so this should be impossible.");
+        }
+
+        model.addAttribute("cancelURL", cancelURL);
         model.addAttribute("formData", formData);
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errors", errors);
         return "editBank";
     }
 
@@ -143,14 +158,14 @@ public class BankController {
     {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getSiteAdmin() == null) {
+        if (sessionData.getSiteAdmin() == null && sessionData.getBankAdmin() == null) {
             throw new NotLoggedInException();
         }
 
         // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
-            return showAddBankWithErrors(model, errors);
+            return showEditBankWithErrors(model, sessionData, formData, errors);
         }
 
         try {
@@ -158,7 +173,7 @@ public class BankController {
         } catch(NoSuchBankException err) {
             throw new InvalidParameterFromGUIException();
         } catch(EmailAlreadyInUseException err) {
-            return showAddBankWithErrors(model,
+            return showEditBankWithErrors(model, sessionData, formData,
                     new Errors("That email is already in use; please choose another."));
         }
 

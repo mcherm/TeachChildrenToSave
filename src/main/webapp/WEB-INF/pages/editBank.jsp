@@ -4,6 +4,7 @@
     <head>
         <title>Teach Children To Save - Edit Bank</title>
         <%@include file="include/commonHead.jsp"%>
+        <script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
     </head>
     <body class="">
 
@@ -19,11 +20,7 @@
 
                 <h1>Edit Bank (and Bank Admin)</h1>
 
-                <c:if test="${not empty errorMessage}">
-                    <div class="errorMessage">
-                        <c:out value="${errorMessage}" default=""  />
-                    </div>
-                </c:if>
+                <%@include file="include/errors.jsp"%>
 
                 <div>
 
@@ -84,13 +81,37 @@
                             </label>
                         </div>
 
+                        <div class="formElementCnt">
+                            <div class="inputCnt">
+                                <div class="info">
+                                    If you like, you can mark certain schools as eligible for CRA
+                                    credits (and other schools as not eligible) for volunteers from
+                                    this bank.
+                                </div>
+                                <div>
+                                    <label>
+                                        <input type="radio" name="craRadio" onclick="$('#minLMIForCRA').val('')" <c:if test="${formData.minLMIForCRA == ''}">checked</c:if>/>
+                                        Do not mark any schools as being CRA eligible.
+                                    </label>
+                                    <br/>
+                                    <label>
+                                        <input type="radio" name="craRadio" <c:if test="${formData.minLMIForCRA != ''}">checked</c:if>/>
+                                        Mark all schools with an LMI
+                                    </label>
+                                    of <form:input path="minLMIForCRA"/> or higher as CRA eligible, and schools
+                                    with a lower LMI or no recorded LMI (including private schools) as not CRA
+                                    eligible.
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" value="Edit">Edit</button>
 
                     </form:form>
 
                 </div>
                 <div>
-                    <button onclick="js.loadURL('viewEditBanks.htm')" class="editOrRegister cancel">Cancel</button>
+                    <button onclick="js.loadURL('<c:out value="${cancelURL}"/>')" class="editOrRegister cancel">Cancel</button>
                 </div>
 
             </main>

@@ -49,6 +49,7 @@ create table Bank
         bank_state VARCHAR(2), /* not used */
         bank_zip VARCHAR(10), /* not used */
         bank_county VARCHAR(45), /* not used */
+        min_lmi_for_cra INT,
         PRIMARY KEY (bank_id),
         UNIQUE KEY ix_name (bank_name)
     );

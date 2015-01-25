@@ -77,6 +77,8 @@
 
                     <button type="submit" value="Edit">Edit</button>
 
+                    <div class="qa-notes">BUG: We should have a 'cancel' button here!</div>
+
 	            </form:form>
 		
 		    </main>

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 public class Bank {
     private String bankId;
     private String bankName;
+    private Integer minLMIForCRA;
 
     // --- Linked data - loaded only when needed ---
     private BankAdmin linkedBankAdmin;
@@ -20,6 +21,11 @@ public class Bank {
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         setBankId(resultSet.getString("bank_id"));
         setBankName(resultSet.getString("bank_name"));
+        Integer minLMIForCRA = resultSet.getInt("min_lmi_for_cra");
+        if (resultSet.wasNull()) {
+            minLMIForCRA = null;
+        }
+        setMinLMIForCRA(minLMIForCRA);
     }
 
     public String getBankId() {
@@ -44,5 +50,13 @@ public class Bank {
 
     public void setLinkedBankAdmin(BankAdmin linkedBankAdmin) {
         this.linkedBankAdmin = linkedBankAdmin;
+    }
+
+    public Integer getMinLMIForCRA() {
+        return minLMIForCRA;
+    }
+
+    public void setMinLMIForCRA(Integer minLMIForCRA) {
+        this.minLMIForCRA = minLMIForCRA;
     }
 }

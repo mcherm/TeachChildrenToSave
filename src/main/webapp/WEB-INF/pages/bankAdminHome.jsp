@@ -41,6 +41,14 @@
 		                	</button>
 	                	</li>
 		            </ul>
+
+                    <ul class="noUl">
+                        <li class="mb1">
+                            <button onclick="js.loadURL('editBank.htm?bankId=<c:out value="${bank.bankId}"/>');" class="editOrRegister">
+                                Edit Bank Settings
+                            </button>
+                        </li>
+                    </ul>
 		        </div>
 
 		        <div id="volunteers">

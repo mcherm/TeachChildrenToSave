@@ -46,7 +46,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
-            "bank_id, bank_name";
+            "bank_id, bank_name, min_lmi_for_cra";
     private final static String schoolFields =
             "school_id, school_name, school_addr1, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible, school_SLC";
 
@@ -114,7 +114,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "insert into AllowedDates (event_date) VALUES (?)";
 
     private final static String modifyBankByIdSQL =
-            "update Bank set bank_name = ? where bank_id = ?";
+            "update Bank set bank_name = ?, min_lmi_for_cra = ? where bank_id = ?";
 
     private final static String deleteUsersByBankId =
             "delete from User where access_type = 'BA' or access_type = 'V' and organization_id = ?";
@@ -1062,7 +1062,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 }
                 UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
                 if (userType != UserType.BANK_ADMIN) {
-                    throw new RuntimeException("This should not occur.");
+                    throw new InconsistentDatabaseException("This should not occur.");
                 }
                 bankAdmin = new BankAdmin();
                 bankAdmin.populateFieldsFromResultSetRow(resultSet);
@@ -1111,7 +1111,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 preparedStatement.setString(2, formData.getFirstName());
                 preparedStatement.setString(3, formData.getLastName());
                 preparedStatement.setString(4, formData.getPhoneNumber());
-                preparedStatement.setString(5, formData.getBankId());
+                preparedStatement.setString(5, bankAdminId);
                 try {
                     preparedStatement.executeUpdate();
                 } catch(MySQLIntegrityConstraintViolationException err) {
@@ -1125,9 +1125,14 @@ public class MySQLDatabase implements DatabaseFacade {
             }
 
             // --- Modify Bank ---
+            String minLMIforCRA = formData.getMinLMIForCRA();
+            if (minLMIforCRA == null || minLMIforCRA.isEmpty()) {
+                minLMIforCRA = null;
+            }
             preparedStatement = connection.prepareStatement(modifyBankByIdSQL);
             preparedStatement.setString(1, formData.getBankName());
-            preparedStatement.setString(2, formData.getBankId());
+            preparedStatement.setString(2, minLMIforCRA);
+            preparedStatement.setString(3, formData.getBankId());
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows != 1) {
                 throw new RuntimeException("How could the bank be deleted before we finish adding it?");
