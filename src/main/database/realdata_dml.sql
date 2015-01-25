@@ -3,8 +3,9 @@
  */
 
 
-insert into AllowedDates (event_date) values (DATE('2015-04-03'));
-insert into AllowedDates (event_date) values (DATE('2015-04-04'));
+insert into AllowedDates (event_date) values (DATE('2015-04-21'));
+insert into AllowedDates (event_date) values (DATE('2015-04-22'));
+insert into AllowedDates (event_date) values (DATE('2015-04-23'));
 
 
 insert into AllowedTimes (event_time, sort_order) values ("9:00 to 9:45 AM", 1);
