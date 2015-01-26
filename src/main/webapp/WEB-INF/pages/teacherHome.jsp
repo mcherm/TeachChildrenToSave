@@ -36,6 +36,23 @@
 							</button>
 		                </li>
 		            </ul>
+		            
+		            <div>Important documents
+			        	<%
+			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pub";
+			        	String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/eacher/2015 Letter to teachers.pub";
+			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pub";
+			        	%>
+			        	<div>
+			        		<a href="<%=helpfulHints%>">Helpful Hints 2015</a>
+			        	</div>
+			        	<div>
+			        		<a href="<%=letterToTeacher%>">Letters to Teachers</a>
+			        	</div>
+			        	<div>
+			        		<a href="<%=helpfulHints%>">Volunteers Guidelines</a>
+			        	</div>
+		       	 </div>
 
 		        <div id="events">
 		            <h2>My Classes</h2>

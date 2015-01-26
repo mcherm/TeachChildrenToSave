@@ -45,6 +45,19 @@
 		                </li>
 		            </ul>
 		        </div>
+		        
+		        <div>Important documents
+			        	<%
+			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pub";
+			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pub";
+			        	%>
+			        	<div>
+			        		<a href="<%=helpfulHints%>">Helpful Hints 2015</a>
+			        	</div>
+			        	<div>
+			        		<a href="<%=helpfulHints%>">Volunteers Guidelines</a>
+			        	</div>
+		        </div>
 	
 		        <div id="events">
 	

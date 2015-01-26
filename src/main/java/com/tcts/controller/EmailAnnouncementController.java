@@ -119,7 +119,7 @@ public class EmailAnnouncementController {
     		emailModel.put("logoImage", logoImage);
     		emailModel.put("message", formData.getMessage());
         	emailModel.put("bcc", emailList);
-        	emailModel.put("subject", "Message from each children to save program!");
+        	emailModel.put("subject", "Message from teach children to save program!");
         	String emailContent = templateUtil.generateTemplate("emailAnnouncement", emailModel);
             emailUtil.sendEmail(emailContent, emailModel);
             
