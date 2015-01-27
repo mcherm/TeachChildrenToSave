@@ -1,6 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
 
         <title>Teach Children To Save - Teachers </title>
@@ -32,8 +33,10 @@
                     
                     </ul>
                 </div>
-				<a download="teachers.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'teachers');">Export to Excel</a>
-                <table id="approvedVolunteersTable">
+
+				<a download="teachers.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'teachers');">Export to Excel</a>
+
+                <table id="approvedVolunteersTable" class="responsive">
                     <thead>
                     <tr>
                         <th scope="col">User ID</th>
@@ -60,27 +63,27 @@
                         </c:if>
                     <c:forEach var="teacher" items="${teachers}">
                     <tr>
-                        <td><c:out value="${teacher.userId}"/></td>
-                        <td><c:out value="${teacher.email}"/></td>
-                        <td>
+                        <td data-title="User ID:"><c:out value="${teacher.userId}"/></td>
+                        <td data-title="Email"><c:out value="${teacher.email}"/></td>
+                        <td data-title="Password">
                             <%-- password throws page error --%>
                             <%--<c:out value="${teacher.password}"/> --%>
                         </td>
-                        <td><c:out value="${teacher.firstName}"/></td>
-                        <td><c:out value="${teacher.lastName}"/></td>
-                        <td>Teacher</td>
-                        <td><c:out value="${teacher.phoneNumber}"/></td>
-                        <td class="center"><c:out value="${teacher.linkedSchool.SLC}"/></td>
-                        <td class="center"><c:out value="${teacher.linkedSchool.name}"/></td>
-                        <td class="center"><c:out value="${teacher.linkedSchool.schoolDistrict}"/></td>
+                        <td data-title="First Name"><c:out value="${teacher.firstName}"/></td>
+                        <td data-title="Last Name"><c:out value="${teacher.lastName}"/></td>
+                        <td data-title="User Type">Teacher</td>
+                        <td data-title="Phone Number"><c:out value="${teacher.phoneNumber}"/></td>
+                        <td class="center" data-title="SLC"><c:out value="${teacher.linkedSchool.SLC}"/></td>
+                        <td class="center" data-title="School"><c:out value="${teacher.linkedSchool.name}"/></td>
+                        <td class="center" data-title="District"><c:out value="${teacher.linkedSchool.schoolDistrict}"/></td>
                         
-                        <td>
+                        <td class="action">
 	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">
 	                                    <input type="hidden" name="userId" value='<c:out value="${teacher.userId}"/>' />
 	                                    <button type="submit" class="editOrRegister delete">Delete</button>
 	                        </form>
 	                    </td>
-	                    <td>
+	                    <td class="action">
 	                        <button onclick="js.loadURL('editTeacherData.htm?userId=<c:out value="${teacher.userId}"/>');" class="editOrRegister">
 	                            Modify
 	                        </button>

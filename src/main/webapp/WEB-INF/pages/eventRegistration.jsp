@@ -1,9 +1,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - Create New Event</title>
         <%@include file="include/commonHead.jsp"%>
+
+        <style>td {display:block;}</style>
+
         <script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
         <script type="text/javascript">
             availableEvents = [
@@ -69,17 +73,17 @@
             function buildTable() {
                 var html =
                     "<thead><tr>" +
-                    "    <th width='5%' scope='col' class='sortable' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\")'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
-                    "    <th width='11%' scope='col' class='sortable' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\")'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
-                    "    <th width='10%' scope='col' class='sortable' id='col_for_grade'><button onclick='sortBy(\"grade\")'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
-                    "    <th width='12%' scope='col' class='sortable' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\")'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
-                    "    <th width='19%' scope='col' class='sortable' id='col_for_firstName'><button onclick='sortBy(\"firstName\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
-                    "    <th width='30%' scope='col' class='sortable' id='col_for_schoolName''><button onclick='sortBy(\"schoolName\")'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
+                    "    <th data-title='Sort list by:' scope='col' class='sortable date' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\")'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
+                    "    <th scope='col' class='sortable time' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\")'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
+                    "    <th scope='col' class='sortable grade' id='col_for_grade'><button onclick='sortBy(\"grade\")'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
+                    "    <th scope='col' class='sortable students' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\")'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
+                    "    <th scope='col' class='sortable teacher' id='col_for_firstName'><button onclick='sortBy(\"firstName\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
+                    "    <th scope='col' class='sortable school' id='col_for_schoolName''><button onclick='sortBy(\"schoolName\")'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
                     <c:if test="${bank.minLMIForCRA != null}">
-                        "    <th width='8%' scope='col' class='sortable' id='col_for_craEligible''><button onclick='sortBy(\"craEligible\")'><span class='ada-read'>Sort by&nbsp;</span>CRA</button></th>" +
+                    "    <th scope='col' class='sortable' id='col_for_craEligible''><button onclick='sortBy(\"craEligible\")'><span class='ada-read'>Sort by&nbsp;</span>CRA</button></th>" +
                     </c:if>
-                    "    <th scope='col'><span class='ada-read'>Column of Details buttons</span></th>" +
-                    "    <th scope='col'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
+                    "    <th scope='col' class='action'><span class='ada-read'>Column of Details buttons</span></th>" +
+                    "    <th scope='col' class='action'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
                     "<tbody>";
                 $.each(availableEvents, function(i,event) {
@@ -101,14 +105,14 @@
                     if (showThisEvent) {
                         html +=
                             "<tr id='rowForEvent" + event.eventId + "'>" +
-                            "    <td>" + event.eventDate + "</td>" +
-                            "    <td>" + event.eventTime + "</td>" +
-                            "    <td class='center'>" + event.grade + "</td>" +
-                            "    <td class='center'>" + event.numberStudents + "</td>" +
-                            "    <td>" + event.firstName + " " + event.lastName + "</td>" +
-                            "    <td>" + event.schoolName + "</td>" +
+                            "    <td class='date' data-title='Date'>" + event.eventDate + "</td>" +
+                            "    <td class='time' data-title='Time'>" + event.eventTime + "</td>" +
+                            "    <td class='grade' class='center' data-title='Grade'>" + event.grade + "</td>" +
+                            "    <td class='students' class='center' data-title='Number of students'>" + event.numberStudents + "</td>" +
+                            "    <td class='teacher' data-title='Teacher'>" + event.firstName + " " + event.lastName + "</td>" +
+                            "    <td class='school' data-title='School'>" + event.schoolName + "</td>" +
                             <c:if test="${bank.minLMIForCRA != null}">
-                                "    <td>" + event.craEligible + "</td>" +
+                            "    <td data-title='CRA'>" + event.craEligible + "</td>" +
                             </c:if>
                             "    <td class='action'><form action='eventDetails.htm' method='POST'>" +
                             "        <input type='hidden' name='eventId' value='" + event.eventId +"'/>" +
@@ -135,6 +139,9 @@
              */
             function toggleFilter(field, value) {
                 filterSettings[field][value] = ! filterSettings[field][value];
+
+                console.log('the filter field/value are: ' + field + ' / ' + value)
+
                 buildTable();
             }
 
@@ -210,16 +217,45 @@
                 $("#col_for_" + field).addClass(descending ? "descending" : "ascending");
             }
 
+            function filterByOptionList(selected){
+
+                var theItem = selected.options[selected.selectedIndex];
+
+                var selectedOption = theItem.value;
+
+                var theCategory = $( 'option:selected', selected).data("name");
+
+
+                if (theCategory != '' && selectedOption != ''){
+
+                    console.log('selectionOption: ' + selectedOption);
+                    console.log('selectedCategory: ' + theCategory);
+
+                    toggleFilter(theCategory, selectedOption);
+
+                } else {
+
+                    // TODO: reset category filter when a dropdown has been cleared, as well as filter based on all select/option
+
+                }
+            }
+
             $(document).ready(function() {
                 var createSelectionCheckboxes = function(args) {
                     filterSettings[args.field] = {};
                     var countsAndValues = countsAndDistinctValuesForField(availableEvents, args.field);
                     var counts = countsAndValues.counts;
                     var values = countsAndValues.values;
+
+
                     var html =
                         "<fieldset>" +
                         "    <legend>" + args.legend + "</legend>" +
-                        "    <ul>";
+                        "       <ul>";
+
+                    /* the selectList is for mobile display, so we don't have to render a lot of checkboxes  */
+                    var selectListHtml = "<label><span>" + args.legend + "</span><select onchange='filterByOptionList(this)'><option data-name='' value='' selected>Select a filter</option>";
+
                     $.each(values, function(i,value) {
                         filterSettings[args.field][value] = false;
                         html +=
@@ -229,11 +265,20 @@
                             "        <span class='txt'>" + args.itemLabel(value) + " (" + counts[value] + ")" + "</span>" +
                             "    </label>" +
                             "</li>";
+
+                        selectListHtml += "<option data-name='" + args.field + "' value='" + value +  "'>" + args.itemLabel(value) + " (" + counts[value] + ")</option>";
+
                     });
                     html +=
                         "    </ul>" +
-                        "</fieldset>"
+                        "</fieldset>";
+
+                    selectListHtml += "</select></label>";
+
                     $('#' + args.field +'_checkboxes').html(html);
+
+                    $('#' + args.field +'_select').html(selectListHtml);
+
                 }
                 createSelectionCheckboxes({
                     field: 'eventDate',
@@ -264,6 +309,7 @@
                 });
                 --%>
                 buildTable();
+
             });
         </script>
     </head>
@@ -286,15 +332,25 @@
                         Refine by:
                     </legend>
 
-                    <div id="eventDate_checkboxes"><%-- populated by javascript --%></div>
-                    <div id="eventTime_checkboxes"><%-- populated by javascript --%></div>
-                    <div id="county_checkboxes"><%-- populated by javascript --%></div>
-                    <div id="grade_checkboxes"><%-- populated by javascript --%></div>
-                    <div id="lmiEligible_checkboxes"><%-- populated by javascript --%></div>
+                    <div class="checkboxLists">
+                        <div id="eventDate_checkboxes"><%-- populated by javascript --%></div>
+                        <div id="eventTime_checkboxes"><%-- populated by javascript --%></div>
+                        <div id="county_checkboxes"><%-- populated by javascript --%></div>
+                        <div id="grade_checkboxes"><%-- populated by javascript --%></div>
+                        <div id="lmiEligible_checkboxes"><%-- populated by javascript --%></div>
+                    </div>
+
+                    <div class="selectLists">
+                        <div id="eventDate_select"><%-- populated by javascript --%></div>
+                        <div id="eventTime_select"><%-- populated by javascript --%></div>
+                        <div id="county_select"><%-- populated by javascript --%></div>
+                        <div id="grade_select"><%-- populated by javascript --%></div>
+                        <div id="lmiEligible_select"><%-- populated by javascript --%></div>
+                    </div>
 
                 </fieldset>
 
-                <table id="dynamicEventTable"><%-- populated by javascript --%></table>
+                <table id="dynamicEventTable" class="responsive"><%-- populated by javascript --%></table>
 
                 <br>
 

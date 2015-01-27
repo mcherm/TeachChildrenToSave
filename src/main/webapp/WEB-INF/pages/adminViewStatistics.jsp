@@ -3,7 +3,8 @@
     demonstrates what should be present on each and every page of the site.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - View Program Statistics</title>
         <%@include file="include/commonHead.jsp"%>
@@ -25,45 +26,45 @@
                 <h1>Program Statistics</h1>
 
                 <div>
-                    <label>
-                        <div class="info">Number of Classes</div>
-                        <div><c:out value="${siteStatistics.numEvents}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of Classes: </span>
+                        <span><c:out value="${siteStatistics.numEvents}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of Classes with a Volunteer</div>
-                        <div><c:out value="${siteStatistics.numMatchedEvents}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of Classes with a Volunteer: </span>
+                        <span><c:out value="${siteStatistics.numMatchedEvents}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of Classes with No Volunteer</div>
-                        <div><c:out value="${siteStatistics.numUnmatchedEvents}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of Classes with No Volunteer: </span>
+                        <span><c:out value="${siteStatistics.numUnmatchedEvents}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of 3rd Grade Classes</div>
-                        <div><c:out value="${siteStatistics.num3rdGradeEvents}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of 3rd Grade Classes: </span>
+                        <span><c:out value="${siteStatistics.num3rdGradeEvents}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of 4th Grade Classes</div>
-                        <div><c:out value="${siteStatistics.num4thGradeEvents}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of 4th Grade Classes: </span>
+                        <span><c:out value="${siteStatistics.num4thGradeEvents}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of Volunteers</div>
-                        <div><c:out value="${siteStatistics.numVolunteers}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of Volunteers: </span>
+                        <span><c:out value="${siteStatistics.numVolunteers}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of Participating Teachers</div>
-                        <div><c:out value="${siteStatistics.numParticipatingTeachers}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of Participating Teachers: </span>
+                        <span><c:out value="${siteStatistics.numParticipatingTeachers}"/></span>
+                    </p>
 
-                    <label>
-                        <div class="info">Number of Participating Schools</div>
-                        <div><c:out value="${siteStatistics.numParticipatingSchools}"/></div>
-                    </label>
+                    <p>
+                        <span>Number of Participating Schools: </span>
+                        <span><c:out value="${siteStatistics.numParticipatingSchools}"/></span>
+                    </p>
                 </div>
 
                 <button class="editOrRegister cancel" type="button" onclick="js.loadURL('siteAdminHome.htm')">Back</button>

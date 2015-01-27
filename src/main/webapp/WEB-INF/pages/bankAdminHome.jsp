@@ -1,6 +1,7 @@
 <%-- Home page for Volunteers --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children to Save - Bank Administrator Home</title>
         <%@include file="include/commonHead.jsp"%>
@@ -54,7 +55,7 @@
 		        <div id="volunteers">
 		            <h2>Volunteers</h2>
 		            
-		            <table id="normalVolunteersTable">
+		            <table id="normalVolunteersTable" class="responsive">
 		                <thead>
 		                    <tr>
 		                        <th>First Name</th>
@@ -84,16 +85,16 @@
                             </c:if>
                             <c:forEach var="volunteer" items="${normalVolunteers}">
                                 <tr>
-                                    <td><c:out value="${volunteer.firstName}"/></td>
-                                    <td><c:out value="${volunteer.lastName}"/></td>
-                                    <td><c:out value="${volunteer.email}"/></td>
-                                    <td>
+                                    <td data-title="First Name"><c:out value="${volunteer.firstName}"/></td>
+                                    <td data-title="Last Name"><c:out value="${volunteer.lastName}"/></td>
+                                    <td data-title="Email"><c:out value="${volunteer.email}"/></td>
+                                    <td data-title="Classes Registered">
                                         <div class="volunteerClasses" id="volunteerClassesFor<c:out value="${volunteer.userId}"/>">
                                             <!-- populated by javascript -->
                                             <em>loading...</em>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="action">
                                         <form method="POST" action="suspendVolunteer.htm">
                                             <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
                                             <button type="submit" class="editOrRegister delete">Suspend</button>
@@ -106,7 +107,7 @@
 
                     <c:if test="${not empty suspendedVolunteers}">
                         <h2>Unapproved Volunteers</h2>
-                        <table id="suspendedVolunteersTable">
+                        <table id="suspendedVolunteersTable" class="responsive">
                             <thead>
                                 <tr>
                                     <th>First Name</th>
@@ -118,10 +119,10 @@
                             <tbody>
                                 <c:forEach var="volunteer" items="${suspendedVolunteers}">
                                     <tr>
-                                        <td><c:out value="${volunteer.firstName}"/></td>
-                                        <td><c:out value="${volunteer.lastName}"/></td>
-                                        <td><c:out value="${volunteer.email}"/></td>
-                                        <td>
+                                        <td data-title="First Name"><c:out value="${volunteer.firstName}"/></td>
+                                        <td data-title="Last Name"><c:out value="${volunteer.lastName}"/></td>
+                                        <td data-title="Email"><c:out value="${volunteer.email}"/></td>
+                                        <td class="action">
                                             <form method="POST" action="reinstateVolunteer.htm">
                                                 <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
                                                 <button type="submit" class="editOrRegister delete">Reinstate</button>

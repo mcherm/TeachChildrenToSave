@@ -1,6 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - Edit School</title>
         <%@include file="include/commonHead.jsp"%>
@@ -135,15 +136,19 @@
                             </label>
                         </div>
 
-                        <button type="submit" value="Edit">Edit</button>
-                        <button type="button" onclick="js.loadURL('schools.htm')">Cancel</button>
+                        <div>
+                            <button type="submit" class="editOrRegister" value="Edit">Edit</button>
+                        </div>
 
+                        <div>
+                            <button type="button" class="editOrRegister" onclick="js.loadURL('schools.htm')">Cancel</button>
+                        </div>
                     </form:form>
 
                 </div>
-                <div>
-                    <button onclick="js.loadURL('viewEditSchools.htm')" class="editOrRegister cancel">Cancel</button>
-                </div>
+                <%--<div>--%>
+                    <%--<button onclick="js.loadURL('viewEditSchools.htm')" class="editOrRegister cancel">Cancel</button>--%>
+                <%--</div>--%>
 
             </main>
 

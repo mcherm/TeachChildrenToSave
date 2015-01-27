@@ -1,13 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
 
         <title>Teach Children To Save</title>
         <%@include file="WEB-INF/pages/include/commonHead.jsp"%>
-
-        <script type="text/javascript" src="/teachchildrentosave/tcts/js/scripts.js"></script>
-
-
+        
     </head>
     <body class="home">
 

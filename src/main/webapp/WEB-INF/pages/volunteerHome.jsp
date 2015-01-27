@@ -1,6 +1,7 @@
 <%-- Home page for Volunteers --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children to Save - Volunteer Home</title>
         <%@include file="include/commonHead.jsp"%>
@@ -19,7 +20,7 @@
 
 		        <h1>Your Home Page</h1>
 
-		        <div id="actions">
+		        <div class="actions">
 		        
 		            <h2>Actions</h2>
 		         
@@ -46,24 +47,31 @@
 		            </ul>
 		        </div>
 		        
-		        <div>Important documents
+		        <div class="documents">
+						<strong>Important documents</strong>
 			        	<%
 			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pub";
 			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pub";
 			        	%>
-			        	<div>
-			        		<a href="<%=helpfulHints%>">Helpful Hints 2015</a>
-			        	</div>
-			        	<div>
-			        		<a href="<%=helpfulHints%>">Volunteers Guidelines</a>
-			        	</div>
+
+						<ul>
+							<li>
+								<a href="<%=helpfulHints%>">Helpful Hints 2015</a>
+							</li>
+
+
+							<li>
+								<a href="<%=helpfulHints%>">Volunteers Guidelines</a>
+							</li>
+						</ul>
 		        </div>
 	
 		        <div id="events">
 	
 		            <h2>My Classes</h2>
 
-		            <table id="eventTable" class="displayTable">
+		            <table id="eventTable" class="displayTable responsive">
+
 		                <thead>
 		                    <tr>
 		                        <th scope="col">Date</th>
@@ -85,28 +93,38 @@
                             </c:if>
 		                    <c:forEach var="event" items="${events}">
 		                        <tr>
-		                            <td><c:out value="${event.eventDate.pretty}"/></td>
-		                            <td><c:out value="${event.eventTime}"/></td>
-		                            <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
-		                            <td><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
-		                            <td class="center"><c:out value="${event.grade}"/></td>
-		                            <td class="center"><c:out value="${event.numberStudents}"/></td>
+
+		                            <td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>
+		                            <td data-title="Time"><c:out value="${event.eventTime}"/></td>
+		                            <td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
+		                            <td data-title="Teacher"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
+		                            <td data-title="Grade" class="center"><c:out value="${event.grade}"/></td>
+		                            <td data-title="Students" class="center"><c:out value="${event.numberStudents}"/></td>
                                     <c:if test="${bank.minLMIForCRA != null}">
-                                        <td>
+                                        <td data-title="CRA">
                                             <c:choose>
                                                 <c:when test="${event.linkedTeacher.linkedSchool.lmiEligible >= bank.minLMIForCRA}">CRA eligible</c:when>
                                                 <c:otherwise>Not eligible</c:otherwise>
                                             </c:choose>
                                         </td>
                                     </c:if>
-                                    <td>
+                                    <td class="action">
+<%--=======--%>
+		                            <%--<td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>--%>
+		                            <%--<td data-title="Time"><c:out value="${event.eventTime}"/></td>--%>
+		                            <%--<td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>--%>
+		                            <%--<td data-title="Teacher"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>--%>
+		                            <%--<td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>--%>
+		                            <%--<td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>--%>
+                                    <%--<td class="action">--%>
+<%-->>>>>>> Stashed changes--%>
                                         <form action="eventDetails.htm" method="POST">
                                             <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
                                             <input type="hidden" name="doneURL" value="volunteerHome.htm"/>
                                             <button class="editOrRegister details" type="submit">Details</button>
                                         </form>
                                     </td>
-                                    <td>
+                                    <td class="action">
 										<button onclick="js.loadURL('volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">
 											Delete
 										</button>

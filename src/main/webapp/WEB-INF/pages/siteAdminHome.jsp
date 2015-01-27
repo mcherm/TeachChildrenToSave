@@ -1,6 +1,7 @@
 <%-- Home page for Volunteers --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children to Save - Site Administrator Home</title>
         <%@include file="include/commonHead.jsp"%>

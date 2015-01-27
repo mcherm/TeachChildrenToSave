@@ -1,6 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - Edit Bank</title>
         <%@include file="include/commonHead.jsp"%>
@@ -105,11 +106,14 @@
                             </div>
                         </div>
 
-                        <button type="submit" value="Edit">Edit</button>
+                        <button type="submit" class="editOrRegister" value="Edit">Edit</button>
 
                     </form:form>
 
                 </div>
+
+                <br>
+
                 <div>
                     <button onclick="js.loadURL('<c:out value="${cancelURL}"/>')" class="editOrRegister cancel">Cancel</button>
                 </div>

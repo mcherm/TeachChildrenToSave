@@ -1,10 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - Admin Edit Allowed Times</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body class="listAllowedTimes">
+    <body class="listAllowedDates">
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -35,8 +36,10 @@
                      	
                     </ul>
                 </div>
-				<a download="allowedDaes.xls" href="#" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedDates');">Export to Excel</a>
-                <table id="listAllowedTimesTable">
+
+				<a download="allowedDaes.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedDates');">Export to Excel</a>
+
+                <table id="listAllowedTimesTable" class="responsive">
                     <thead>
                         <tr>
                             <th scope="col" class="time">Date</th>
@@ -51,8 +54,8 @@
                         </c:if>
                         <c:forEach var="allowedDate" items="${allowedDates}">
                             <tr>
-                                <td class="dateColumn"><c:out value="${allowedDate.pretty}"/></td>
-                                <td>
+                                <td class="dateColumn" data-title="Date"><c:out value="${allowedDate.pretty}"/></td>
+                                <td class="action">
 			                        <form method="POST" action="deleteAllowedDate.htm" modelAttribute="formData">
 			                                    <input type="hidden" name="parseableDateStr" value='<c:out value="${allowedDate.parseable}"/>' />
 			                                    <button type="submit" class="editOrRegister delete">Delete</button>

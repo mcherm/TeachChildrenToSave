@@ -1,6 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
 <head>
 
     <title>Teach Children To Save - Schools Information </title>
@@ -35,8 +36,10 @@
                     </li>
                 </ul>
             </div>
-			<a download="schools.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'schools');">Export to Excel</a>
-            <table id="approvedVolunteersTable">
+
+			<a download="schools.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'schools');">Export to Excel</a>
+
+            <table id="approvedVolunteersTable" class="responsive">
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
@@ -63,23 +66,23 @@
                 </c:if>
                 <c:forEach var="school" items="${schools}">
                 <tr>
-                    <td><c:out value="${school.name}"/></td>
-                    <td><c:out value="${school.addressLine1}"/></td>
-                    <td><c:out value="${school.city}"/></td>
-                    <td class="center"><c:out value="${school.state}"/></td>
-                    <td><c:out value="${school.zip}"/></td>
-                    <td><c:out value="${school.county}"/></td>
-                    <td><c:out value="${school.schoolDistrict}"/></td>
-                    <td><c:out value="${school.phone}"/></td>
-                    <td class="center"><c:out value="${school.lmiEligible}"/></td>
-                    <td><c:out value="${school.SLC}"/></td>
-                    <td>
+                    <td data-title="Name"><c:out value="${school.name}"/></td>
+                    <td data-title="Address"><c:out value="${school.addressLine1}"/></td>
+                    <td data-title="City"><c:out value="${school.city}"/></td>
+                    <td class="center" data-title="State"><c:out value="${school.state}"/></td>
+                    <td data-title="Zip"><c:out value="${school.zip}"/></td>
+                    <td data-title="County"><c:out value="${school.county}"/></td>
+                    <td data-title="District"><c:out value="${school.schoolDistrict}"/></td>
+                    <td data-title="Phone"><c:out value="${school.phone}"/></td>
+                    <td class="center" data-title="LMI Eligible"><c:out value="${school.lmiEligible}"/></td>
+                    <td data-title="SLC"><c:out value="${school.SLC}"/></td>
+                    <td class="action">
                         <form method="POST" action="deleteSchool.htm" modelAttribute="formData">
                                     <input type="hidden" name="schoolId" value='<c:out value="${school.schoolId}"/>' />
                                     <button type="submit" class="editOrRegister delete">Delete</button>
                         </form>
                     </td>
-                    <td>
+                    <td class="action">
                         <button onclick="js.loadURL('editSchool.htm?schoolId=<c:out value="${school.schoolId}"/>');" class="editOrRegister">
                             Modify
                         </button>

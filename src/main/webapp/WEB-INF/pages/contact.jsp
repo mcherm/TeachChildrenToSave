@@ -1,6 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
 
         <title>Teach Children To Save - Contact Us</title>
@@ -22,7 +23,7 @@
                 <h1>Contact Us</h1>
 
                 <p>
-                    If you have any questions, don’t hesitate to contact us.
+                    If you have any questions, don't hesitate to contact us.
                 </p>
 
 
@@ -36,8 +37,8 @@
                 <p>
                     <span class="b">Social Media</span>
                     <br>
-                    <div>Facebook: <a href="https://www.facebook.com/CEEEatUD">https://www.facebook.com/CEEEatUD</a></div>
-                    <div>Twitter: <a href="https://twitter.com/CEEEatUD">https://twitter.com/CEEEatUD</a></div>
+                    <div>Facebook: <a href="https://www.facebook.com/CEEEatUD" target="_blank">https://www.facebook.com/CEEEatUD</a></div>
+                    <div>Twitter: <a href="https://twitter.com/CEEEatUD" target="_blank">https://twitter.com/CEEEatUD</a></div>
                 </p>
 
 

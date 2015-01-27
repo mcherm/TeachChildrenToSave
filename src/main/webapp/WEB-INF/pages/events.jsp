@@ -1,13 +1,14 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
 
         <title>Teach Children To Save - Class </title>
         <%@include file="include/commonHead.jsp"%>
 
     </head>
-    <body class="banks">
+    <body class="viewEditEvents">
 
     <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -32,8 +33,10 @@
                     	
                 </ul>
             </div>
-			<a download="classes.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'classes');">Export to Excel</a>
-            <table id="approvedVolunteersTable">
+
+			<a download="classes.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'classes');">Export to Excel</a>
+
+            <table id="approvedVolunteersTable" class="responsive">
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
@@ -55,41 +58,41 @@
                     </c:if>
                     <c:forEach var="event" items="${events}">
                         <tr>
-                            <td><c:out value="${event.eventDate.pretty}"/></td>
-                            <td><c:out value="${event.eventTime}"/></td>
-                            <td class="center"><c:out value="${event.grade}"/></td>
-                            <td class="center"><c:out value="${event.numberStudents}"/></td>
-                            <td>
+                            <td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>
+                            <td data-title="Time"><c:out value="${event.eventTime}"/></td>
+                            <td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
+                            <td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>
+                            <td data-title="Teacher">
                                 <c:out value="${event.linkedTeacher.firstName}"/>
                                 <c:out value="${event.linkedTeacher.lastName}"/>
                             </td>
-                            <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
+                            <td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
                             <c:choose>
                                 <c:when test="${empty event.volunteerId}">
-                                    <td colspan="2" class="emptyTableMessage">None yet.</td>
+                                    <td colspan="2" class="emptyTableMessage" data-title="Volunteer">None yet.</td>
                                 </c:when>
                                 <c:otherwise>
-                                    <td>
+                                    <td data-title="Volunteer">
                                         <c:out value="${event.linkedVolunteer.firstName}"/>
                                         <c:out value="${event.linkedVolunteer.lastName}"/>
                                     </td>
-                                    <td><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></td>
+                                    <td data-title="Bank"><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></td>
                                 </c:otherwise>
                             </c:choose>
-                            <td>
+                            <td class="action">
                                 <form action="eventDetails.htm" method="POST">
                                     <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
                                     <input type="hidden" name="doneURL" value="viewEditEvents.htm"/>
                                     <button class="editOrRegister details" type="submit">Details</button>
                                 </form>
                             </td>
-                            <td>
+                            <td class="action">
                                 <form method="POST" action="deleteEvent.htm" modelAttribute="formData">
                                     <input type="hidden" name="eventId" value='<c:out value="${event.eventId}"/>' />
                                     <button type="submit" class="editOrRegister delete">Delete</button>
                                 </form>
                             </td>
-                            <td>
+                            <td class="action">
                                 <button onclick="js.loadURL('editEvent.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister">Modify</button>
                             </td>
                         </tr>

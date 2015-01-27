@@ -3,7 +3,8 @@
     demonstrates what should be present on each and every page of the site.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - SOMETHING-ABOUT-THE-PAGE</title>
         <%@include file="include/commonHead.jsp"%>

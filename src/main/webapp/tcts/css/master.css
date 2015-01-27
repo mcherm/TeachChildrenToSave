@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @CHARSET "ISO-8859-1";
 html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, section, summary, time, mark, audio, video {
   margin: 0;
@@ -121,8 +122,11 @@ body {
 }
 
 main {
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
+}
+main .noUl {
+  margin-left: 0 !important;
 }
 
 .mainCnt {
@@ -142,9 +146,17 @@ main {
   margin-bottom: .5em;
 }
 .mainCnt ul.program_highlights {
-  margin-top: .8em;
+  margin-top: .5em;
 }
 
+body.home main p {
+  padding-bottom: 0;
+}
+
+/*body.home main ul {
+	margin-top:0;
+}
+*/
 header,
 .mainCnt,
 footer {
@@ -156,7 +168,7 @@ header {
   max-width: 960px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 1em;
+  margin-top: .5em;
 }
 header:after {
   content: " ";
@@ -166,25 +178,29 @@ header:after {
 header .delc {
   width: 49.65035%;
   float: left;
+  padding-top: .5em;
+}
+header .delc a, header .delc a:visited {
+  height: 100%;
+  width: 100%;
+  max-width: 251px;
+  display: block;
+}
+header .delc img {
+  max-width: 251px;
 }
 header .dba {
   width: 49.65035%;
   float: right;
   text-align: right;
 }
+header .dba img {
+  max-width: 158px;
+}
 header img {
   width: 100%;
   padding-left: 5px;
   padding-right: 5px;
-}
-header .delc button {
-  padding: 0;
-}
-header .delc img {
-  max-width: 251px;
-}
-header .dba img {
-  max-width: 158px;
 }
 
 @media (min-width: 320px) {
@@ -208,7 +224,7 @@ header .dba img {
   }
   nav button {
     display: block;
-    height: 44px;
+    height: 22px;
     width: 100%;
     text-align: left;
     padding-left: 12px;
@@ -287,6 +303,10 @@ header .dba img {
   nav button .txt {
     font-size: .9em;
   }
+
+  main {
+    width: 90%;
+  }
 }
 body.home main {
   padding-left: 5px;
@@ -321,7 +341,20 @@ body.register main {
   text-align: center;
 }
 
+body.addAllowedTime main {
+  line-height: 1.65em;
+}
+
+main ul {
+  list-style-position: outside;
+  margin-left: 16px;
+}
+
 @media (min-width: 768px) {
+  main ul {
+    margin-left: 16px;
+  }
+
   body.home main,
   body.about main,
   body.contact main,
@@ -346,6 +379,22 @@ body.register main {
   body.register aside {
     width: 43.35664%;
     float: left;
+  }
+
+  body.volunteerHome div.actions,
+  body.teacherHome div.actions {
+    width: 49.65035%;
+    float: left;
+  }
+  body.volunteerHome div.documents,
+  body.teacherHome div.documents {
+    width: 49.65035%;
+    float: left;
+    margin-top: 3em;
+  }
+  body.volunteerHome #events,
+  body.teacherHome #events {
+    clear: both;
   }
 }
 .qa-notes {
@@ -387,6 +436,19 @@ fieldset.refine ul {
   list-style: none;
   padding-left: .25em;
 }
+fieldset.refine .selectLists label {
+  display: block;
+  margin-bottom: .5em;
+}
+fieldset.refine .selectLists label span {
+  font-weight: bold;
+  display: block;
+}
+fieldset.refine .selectLists select {
+  height: 20px;
+  width: 100%;
+  max-width: 280px;
+}
 fieldset.refine fieldset legend {
   margin: .25em;
 }
@@ -401,6 +463,27 @@ fieldset.refine fieldset label span {
   display: block;
 }
 
+@media (min-width: 320px) {
+  fieldset.refine div {
+    width: 100%;
+  }
+  fieldset.refine .selectLists {
+    display: block;
+    width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  fieldset.refine div {
+    width: 24.5%;
+    display: inline-block;
+    float: left;
+    padding-left: 1em;
+  }
+  fieldset.refine .selectLists {
+    display: block;
+    width: 100%;
+  }
+}
 h1 {
   font-weight: bold;
   color: #0c345a;
@@ -413,7 +496,7 @@ h1 {
 body.home h3 {
   margin-top: 1.75em;
   font-weight: bold;
-  font-size: 150%;
+  font-size: 1.25em;
 }
 
 body {
@@ -430,6 +513,10 @@ main ul span {
 
 a, a:visited {
   color: #0c345a;
+}
+
+a:hover {
+  text-decoration: none;
 }
 
 /* Webfont: TeachKidsToSaveDE-Regular */
@@ -477,8 +564,8 @@ body.register main button {
   height: 30px;
 }
 
-body.register main button {
-  width: 300px;
+body.register main button,
+body.about main button {
   display: block;
   width: 300px;
   margin: 1em auto;
@@ -518,7 +605,7 @@ main thead button {
   text-align: left;
 }
 
-.listAllowedTimes tbody button {
+.adminEditAllowedTimes tbody button {
   width: 68px;
 }
 
@@ -537,6 +624,11 @@ main thead button {
 
 .likeAnAnchor:hover {
   text-decoration: none;
+}
+
+.downloadExcel {
+  display: inline-block;
+  margin: .5em 0 .5em 0;
 }
 
 /* body.evenRegistration main table .editOrRegister button {} */
@@ -591,6 +683,10 @@ body.evenRegistration table,
 body.banks table,
 body.schools table,
 body.teachers table,
+body.adminEditAllowedTimes table,
+body.volunteerInformation table,
+body.viewEditEvents table,
+body.listAllowedDates table,
 body.listAllowedTimes table {
   width: 100%;
   border: 1px solid #ccc;
@@ -608,6 +704,10 @@ body.evenRegistration table thead th,
 body.banks table thead th,
 body.schools table thead th,
 body.teachers table thead th,
+body.adminEditAllowedTimes table thead th,
+body.volunteerInformation table thead th,
+body.viewEditEvents table thead th,
+body.listAllowedDates table thead th,
 body.listAllowedTimes table thead th {
   font-weight: bold;
   background-color: #0c345a;
@@ -625,6 +725,10 @@ body.evenRegistration table tbody tr:nth-child(even),
 body.banks table tbody tr:nth-child(even),
 body.schools table tbody tr:nth-child(even),
 body.teachers table tbody tr:nth-child(even),
+body.adminEditAllowedTimes table tbody tr:nth-child(even),
+body.volunteerInformation table tbody tr:nth-child(even),
+body.viewEditEvents table tbody tr:nth-child(even),
+body.listAllowedDates table tbody tr:nth-child(even),
 body.listAllowedTimes table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
@@ -636,12 +740,12 @@ body.evenRegistration table td,
 body.banks table td,
 body.schools table td,
 body.teachers table td,
+body.adminEditAllowedTimes table td,
+body.volunteerInformation table td,
+body.viewEditEvents table td,
+body.listAllowedDates table td,
 body.listAllowedTimes table td {
   padding: .5em;
-}
-
-body.teachers table {
-  font-size: .6em;
 }
 
 body.schools table {
@@ -675,7 +779,6 @@ th.sortable.ascending {
   background-image: url("../img/down.gif");
 }
 
-/* FIXME: the event details page badly needs some work from Adrian! */
 body.eventDetails div.label {
   font-weight: bold;
   margin-top: 2em;
@@ -687,16 +790,184 @@ td.emptyTableMessage {
 }
 
 @media (min-width: 320px) {
-  body.listAllowedTimes table {
+  table.responsive {
+    border-collapse: separate;
+    empty-cells: hidden;
+  }
+  table.responsive tr,
+  table.responsive td {
+    display: block;
+    text-align: left;
+    padding: 0;
+    width: 100%;
+  }
+  table.responsive thead {
+    display: block;
+  }
+  table.responsive tbody td.action {
+    width: 50%;
+    display: table-cell;
+  }
+  table.responsive td[data-title]:before {
+    content: attr(data-title) ": ";
+    font-weight: bold;
+  }
+  table.responsive thead th {
+    display: block;
+    border-bottom: 1px solid #b18f22;
+  }
+  table.responsive th.action {
+    display: none;
+    visibility: hidden;
+  }
+  table.responsive .school {
+    border-bottom: none;
+  }
+
+  body.volunteerHome table.responsive thead,
+  body.bankAdminHome table.responsive thead,
+  body.banks table.responsive thead,
+  body.schools table.responsive thead,
+  body.teachers table.responsive thead,
+  body.volunteerInformation table.responsive thead,
+  body.viewEditEvents table.responsive thead,
+  body.listAllowedDates table.responsive thead,
+  body.listAllowedTimes table.responsive thead,
+  body.teacherHome table.responsive thead {
+    display: none;
+    visibility: hidden;
+  }
+
+  body.evenRegistration .checkboxLists {
+    display: none;
+    visibility: hidden;
+  }
+  body.evenRegistration .selectLists {
+    display: block;
+    visibility: visible;
+  }
+  body.evenRegistration table.responsive {
+    margin-top: 30px;
+  }
+  body.evenRegistration table.responsive th[data-title]:before {
+    content: attr(data-title) " ";
+    font-weight: bold;
+    color: #333;
+    position: absolute;
+    margin: -25px 0 0 -8px;
+  }
+
+  body.adminEditAllowedTimes table {
     width: 100%;
     margin: 0 auto 1em auto;
   }
-  body.listAllowedTimes table .time {
+  body.adminEditAllowedTimes table .time {
     width: 90%;
+  }
+
+  body.teachers table.responsive,
+  body.volunteerInformation table.responsive {
+    font-size: 1em;
+  }
+
+  body.viewEditEvents tbody td.action {
+    width: 33%;
   }
 }
 @media (min-width: 768px) {
-  body.listAllowedTimes {
+  table.responsive {
+    border-collapse: collapse;
+    empty-cells: show;
+  }
+  table.responsive thead {
+    display: table-header-group;
+  }
+  table.responsive thead th,
+  table.responsive thead th.action,
+  table.responsive tbody td.action {
+    display: table-cell !important;
+    visibility: visible;
+  }
+  table.responsive tr {
+    display: table-row;
+  }
+  table.responsive td {
+    display: table-cell;
+    text-align: inherit;
+    padding: inherit;
+    width: inherit;
+  }
+  table.responsive td[data-title]:before,
+  table.responsive th[data-title]:before {
+    content: none;
+  }
+  table.responsive th, table.responsive td, table.responsive tbody, table.responsive th.action, table.responsive td.action {
+    width: auto;
+    text-align: inherit;
+  }
+  table.responsive thead th {
+    border-bottom: 0 !important;
+  }
+  table.responsive .date {
+    width: 5%;
+  }
+  table.responsive .time {
+    width: 11%;
+  }
+  table.responsive .grade {
+    width: 10%;
+  }
+  table.responsive .students {
+    width: 11%;
+  }
+  table.responsive .teacher {
+    width: 19%;
+  }
+  table.responsive .school {
+    width: 30%;
+    border-bottom: none;
+  }
+  table.responsive .action {
+    width: 7% !important;
+  }
+
+  body.volunteerHome table.responsive thead,
+  body.bankAdminHome table.responsive thead,
+  body.banks table.responsive thead,
+  body.schools table.responsive thead,
+  body.teachers table.responsive thead,
+  body.volunteerInformation table.responsive thead,
+  body.viewEditEvents table.responsive thead,
+  body.listAllowedDates table.responsive thead,
+  body.listAllowedTimes table.responsive thead,
+  body.teacherHome table.responsive thead {
+    display: table-header-group;
+    visibility: visible;
+  }
+
+  body.evenRegistration .checkboxLists {
+    display: block;
+    visibility: visible;
+    width: 100%;
+  }
+  body.evenRegistration .selectLists {
+    display: none;
+    visibility: hidden;
+  }
+  body.evenRegistration table.responsive {
+    margin-top: 0;
+  }
+  body.evenRegistration table.responsive th[data-title]:before {
+    display: none;
+    visibility: hidden;
+  }
+
+  body.teachers table.responsive,
+  body.volunteerInformation table.responsive {
+    font-size: .6em;
+  }
+
+  body.adminEditAllowedTimes {
     /*		table {
     			width:50%;		
     
@@ -883,6 +1154,14 @@ form textarea {
   margin: 1em auto;
 }
 
+body.evenRegistration .cancelBlock {
+  margin-left: 0;
+  margin-right: 0;
+}
+body.evenRegistration .cancelBlock button {
+  width: 100%;
+}
+
 .errorMessage {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -890,7 +1169,7 @@ form textarea {
   border-radius: 4px;
   margin: 0 auto;
   width: 90%;
-  height: auto;
+  min-height: 3em;
   background-color: #b21b29;
   color: #fff;
   text-align: center;
@@ -936,25 +1215,4 @@ h2, h3 {
 p {
   padding-bottom: 1em;
   font-size: .9em;
-}
-
-body.errorPage .obscuredFootnote {
-  font-size: xx-small;
-  color:  #DDDDDD;
-}
-body.errorPage .hiddenErrorMessage {
-  border: 1px solid black;
-  display: none;
-}
-body.errorPage .exceptionType {
-  text-align: center;
-  font-weight: bold;
-}
-body.errorPage .exceptionMessage {
-  text-align: center;
-  margin-top: 1em;
-}
-body.errorPage .stackTrace {
-  margin-top: 1em;
-  font-size: xx-small;
 }

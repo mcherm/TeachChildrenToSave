@@ -1,6 +1,7 @@
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
 
         <title>Teach Children To Save - Bank </title>
@@ -36,8 +37,10 @@
                     </li>
                 </ul>
             </div>
-			<a download="banks.xls" href="#" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'banks');">Export to Excel</a>
-            <table id="approvedVolunteersTable">
+
+			<a download="banks.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'approvedVolunteersTable', 'banks');">Export to Excel</a>
+
+            <table id="approvedVolunteersTable" class="responsive">
                 <thead>
                     <tr>
                         <th scope="col">Bank Name</th>
@@ -58,20 +61,20 @@
                     </c:if>
                     <c:forEach var="bank" items="${banks}">
                         <tr>
-                            <td><c:out value="${bank.bankName}"/></td>
-                            <td class="center">
+                            <td data-title="Bank Name"><c:out value="${bank.bankName}"/></td>
+                            <td data-title="Bank Admin" class="center">
                                 <c:out value="${bank.linkedBankAdmin.firstName}"/>
                                 <c:out value="${bank.linkedBankAdmin.lastName}"/>
                             </td>
-                            <td class="center"><c:out value="${bank.linkedBankAdmin.email}"/></td>
-                            <td class="center"><c:out value="${bank.linkedBankAdmin.phoneNumber}"/></td>
-                            <td>
+                            <td class="center" data-title="Bank Admin Email"><c:out value="${bank.linkedBankAdmin.email}"/></td>
+                            <td class="center" data-title="Bank Admin Phone"><c:out value="${bank.linkedBankAdmin.phoneNumber}"/></td>
+                            <td class="action">
                                 <form method="POST" action="deleteBank.htm" modelAttribute="formData">
                                     <input type="hidden" name="bankId" value='<c:out value="${bank.bankId}"/>' />
                                     <button type="submit" class="editOrRegister delete">Delete</button>
                                 </form>
                             </td>
-                            <td>
+                            <td class="action">
                                 <button onclick="js.loadURL('editBank.htm?bankId=<c:out value="${bank.bankId}"/>');" class="editOrRegister">Modify</button>
                             </td>
                         </tr>

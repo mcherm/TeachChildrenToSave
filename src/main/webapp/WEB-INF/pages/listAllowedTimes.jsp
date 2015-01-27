@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children To Save - Admin Edit Allowed Times</title>
         <%@include file="include/commonHead.jsp"%>
@@ -35,8 +36,10 @@
 
                     </ul>
                 </div>
-			<a download="allowedTimes.xls" href="#" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedTimes');">Export to Excel</a>
-                <table id="listAllowedTimesTable">
+
+			    <a download="allowedTimes.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedTimes');">Export to Excel</a>
+
+                <table id="listAllowedTimesTable" class="responsive">
                     <thead>
                         <tr>
                             <th scope="col" class="time">Time</th>
@@ -51,8 +54,8 @@
                         </c:if>
                         <c:forEach var="allowedTime" items="${allowedTimes}">
                             <tr>
-                                <td class="timeColumn"><c:out value="${allowedTime}"/></td>
-                                <td>
+                                <td class="timeColumn" data-title="Time"><c:out value="${allowedTime}"/></td>
+                                <td class="action">
 			                        <form method="POST" action="deleteAllowedTime.htm" modelAttribute="formData">
 			                                    <input type="hidden" name="allowedTime" value='<c:out value="${allowedTime}"/>' />
 			                                    <button type="submit" class="editOrRegister delete">Delete</button>
