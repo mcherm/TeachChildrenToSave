@@ -11,8 +11,6 @@
 
     <a href="#main" class="ada-read">Skip to main content</a>
 
-    <%@include file="include/header.jsp" %>
-
     <div class="mainCnt">
 
         <%@include file="include/navigation.jsp" %>

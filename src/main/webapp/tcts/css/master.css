@@ -867,7 +867,7 @@ td.emptyTableMessage {
 
   body.teachers table.responsive,
   body.volunteerInformation table.responsive {
-    font-size: 1em;
+    font-size: .9em;
   }
 
   body.viewEditEvents tbody td.action {
@@ -964,7 +964,7 @@ td.emptyTableMessage {
 
   body.teachers table.responsive,
   body.volunteerInformation table.responsive {
-    font-size: .6em;
+    font-size: .9em;
   }
 
   body.adminEditAllowedTimes {
