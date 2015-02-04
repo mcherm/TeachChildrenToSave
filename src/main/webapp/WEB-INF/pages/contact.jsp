@@ -27,39 +27,36 @@
                 </p>
 
 
+                <h2>Email</h2>
                 <p>
-                    <span class="b">Email</span>
-                    <br>
                     <c:out value="${email}"/>
                 </p>
 
 
+                <h3>Social Media</h3>
                 <p>
-                    <span class="b">Social Media</span>
+                    Facebook: <a href="https://www.facebook.com/CEEEatUD" target="_blank">https://www.facebook.com/CEEEatUD</a>
                     <br>
-                    <div>Facebook: <a href="https://www.facebook.com/CEEEatUD" target="_blank">https://www.facebook.com/CEEEatUD</a></div>
-                    <div>Twitter: <a href="https://twitter.com/CEEEatUD" target="_blank">https://twitter.com/CEEEatUD</a></div>
+                    Twitter: <a href="https://twitter.com/CEEEatUD" target="_blank">https://twitter.com/CEEEatUD</a>
                 </p>
 
 
+                <h3>Phone</h3>
                 <p>
-                    <span class="b">Phone</span>
-                    <br>
-                    [Need to insert phone]
+                    302.831.2559
                 </p>
 
 
                 <h3>Mail</h3>
-
                 <p>
                     Teach Children to Save Day <br>
-                    C/O <br>
-                    [Need to insert address]
+                    102 Alfred Lerner Hall <br>
+                    Newark, DE 19716
                 </p>
                 
                 <div>
                 
-                <p style="color:green" >
+                <p class="successText">
                     <br>
                     <c:out value="${confirmationMessage}"/>
                 </p>
