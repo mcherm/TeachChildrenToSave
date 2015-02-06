@@ -398,6 +398,7 @@ main ul {
   }
 }
 .qa-notes {
+  display: none;
   border: 1px dotted #333;
   background-color: #ccc;
   padding: 10px;
