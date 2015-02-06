@@ -22,13 +22,15 @@
             <main id="main">
 
                 <h1>Event Details</h1>
-                
-                <div>
-	                <form method="POST" action="eventRegistration.htm" modelAttribute="formData">
-	                     <input type="hidden" name="eventId" value='<c:out value="${event.eventId}"/>' />
-	                     <button type="submit" class="editOrRegister">Sign Up</button>
-	                </form>
-                </div>
+
+                <c:if test="${showSignupButton}">
+                    <div>
+                        <form method="POST" action="eventRegistration.htm" modelAttribute="formData">
+                            <input type="hidden" name="eventId" value='<c:out value="${event.eventId}"/>' />
+                            <button type="submit" class="editOrRegister">Sign Up</button>
+                        </form>
+                    </div>
+                </c:if>
 
                 <div id="eventFields">
                     <div id="eventDateField">

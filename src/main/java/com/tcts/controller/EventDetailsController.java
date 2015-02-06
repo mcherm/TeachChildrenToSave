@@ -95,7 +95,11 @@ public class EventDetailsController {
         // --- Fetch the google maps key ---
         String googleMapsKey = configuration.getProperty("googleMapsKey");
 
+        // --- Decide whether to show the signup button ---
+        boolean showSignupButton = (user instanceof Volunteer) && (event.getVolunteerId() == null);
+
         // --- Display the page ---
+        model.addAttribute("showSignupButton", showSignupButton);
         model.addAttribute("event", event);
         model.addAttribute("doneURL", doneURL);
         model.addAttribute("googleMapsKey", googleMapsKey);
