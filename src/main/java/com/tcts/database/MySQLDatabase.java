@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.tcts.common.PrettyPrintingDate;
@@ -119,7 +120,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "update Event set volunteer_id = ? where event_id = ?";
     
     private final static String insertSchoolSQL  =
-    		"insert into School (school_name,school_addr1,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible,school_SLC) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    		"insert into School (school_name,school_addr1,school_city,school_zip,school_county,school_district,school_state,school_phone,school_lmi_eligible,school_SLC) VALUES (?,?,?,?,?,?,?,?,?,?)";
     private final static String insertBankSQL =
     		"insert into Bank (bank_name) VALUES (?)";
     private final static String insertAllowedDateSQL =
@@ -1195,7 +1196,12 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(6, formData.getDistrict());
             preparedStatement.setString(7, formData.getState());
             preparedStatement.setString(8, formData.getPhone());
-            preparedStatement.setInt(9, Integer.parseInt(formData.getLmiEligible()));
+            if(formData.getLmiEligible() != null && !StringUtils.isEmpty(formData.getLmiEligible())) {
+            	preparedStatement.setInt(9, Integer.parseInt(formData.getLmiEligible()));
+            } 
+            else {
+            	preparedStatement.setInt(9, 0);
+            }
             preparedStatement.setString(10, formData.getSLC());
 
             preparedStatement.executeUpdate();

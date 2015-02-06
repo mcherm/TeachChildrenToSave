@@ -45,22 +45,22 @@
 					<div class="documents">
 						<strong>Important documents</strong>
 			        	<%
-			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pub";
-			        	String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/2015 Letter to teachers.pub";
-			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pub";
+			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pdf";
+			        	String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/2015 Letter to teachers.pdf";
+			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pdf";
 			        	%>
 
 						<ul>
 							<li>
-								<a href="<%=helpfulHints%>">Helpful Hints 2015</a>
+								<a href="<%=helpfulHints%>" target="_blank">Helpful Hints 2015</a>
 							</li>
 
 							<li>
-								<a href="<%=letterToTeacher%>">Letters to Teachers</a>
+								<a href="<%=letterToTeacher%>" target="_blank">Letters to Teachers</a>
 							</li>
 
 							<li>
-								<a href="<%=helpfulHints%>">Volunteers Guidelines</a>
+								<a href="<%=helpfulHints%>" target="_blank">Volunteers Guidelines</a>
 							</li>
 						</ul>
 
@@ -78,6 +78,7 @@
 		                        <th scope="col">Volunteer</th>
 		                        <th scope="col">Bank</th>
                                 <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
+                                 <th scope="col"><span class="ada-read">Column of Edit buttons</span></th>
                                 <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
 		                    </tr>
 		                </thead>
@@ -102,6 +103,11 @@
                                             <input type="hidden" name="doneURL" value="teacherHome.htm"/>
                                             <button class="editOrRegister details" type="submit">Details</button>
                                         </form>
+                                    </td>
+                                    <td class="action">
+                                        <button onclick="js.loadURL('editEvent.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister">
+				                            Modify
+				                        </button>
                                     </td>
                                     <td class="action">
 										<button onclick="js.loadURL('teacherCancel.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">

@@ -50,18 +50,18 @@
 		        <div class="documents">
 						<strong>Important documents</strong>
 			        	<%
-			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pub";
-			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pub";
+			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pdf";
+			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pdf";
 			        	%>
 
 						<ul>
 							<li>
-								<a href="<%=helpfulHints%>">Helpful Hints 2015</a>
+								<a href="<%=helpfulHints%>" target="_blank">Helpful Hints 2015</a>
 							</li>
 
 
 							<li>
-								<a href="<%=helpfulHints%>">Volunteers Guidelines</a>
+								<a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a>
 							</li>
 						</ul>
 		        </div>

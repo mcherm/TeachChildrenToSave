@@ -3,7 +3,9 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -22,9 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
+import com.tcts.datamodel.User;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NotLoggedInException;
+import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.EventRegistrationFormData;
 
@@ -111,8 +115,11 @@ public class EventController {
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
+        
         if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
+        	if (sessionData.getTeacher() == null) {
+        		throw new NotLoggedInException();
+        	}
         }
 
         // --- Load existing data ---
@@ -152,7 +159,20 @@ public class EventController {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
+        	if (sessionData.getTeacher() == null) {
+        		throw new NotLoggedInException();
+        	}
+        	else {
+        		Event event = database.getEventById(formData.getEventId());
+                if (event == null) {
+                    // No such event by that ID
+                    throw new InvalidParameterFromGUIException();
+                }
+                if (!sessionData.getTeacher().getUserId().equals(event.getTeacherId())) {
+                    throw new NotOwnedByYouException();
+                }
+        		
+        	}
         }
 
         // --- Validate the event fields ---
@@ -176,8 +196,15 @@ public class EventController {
             throw new InvalidParameterFromGUIException();
         } 
 
-        // --- Successful; show the master event edit again ---
-        model.addAttribute("events", database.getAllAvailableEvents());
+        if (sessionData.getTeacher() != null) {
+        	 User user = sessionData.getTeacher();
+        	 return "redirect:" + user.getUserType().getHomepage();
+    	}
+        else {
+        	// --- Successful; show the master event edit again ---
+            model.addAttribute("events", database.getAllAvailableEvents());
+        }
+        
         return "events";
     }
 
@@ -194,6 +221,7 @@ public class EventController {
         formData.setGrade(event.getGrade());
         formData.setNotes(event.getNotes());
         formData.setEventId(event.getEventId());
+        formData.setNumberStudents(new Integer(event.getNumberStudents()==0?0:event.getNumberStudents()).toString());
         
         return formData;
     }

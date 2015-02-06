@@ -18,14 +18,14 @@
 
             <main id="main">
 
-                <h1>Register</h1>
+                <h3>Register</h1>
 
-                <div><font size="4">I am a banker:</font></div>
+                <div><h3>I am a banker:</h3></div>
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
                 <%--<button onclick="js.loadURL('bank.htm');">Register my bank to join</button>--%>
 
-                <div><font size="4">I am a teacher:</font></div>
+                <div><h3>I am a teacher:</h3></div>
                 <button onclick="js.loadURL('registerTeacher.htm');">Sign up my class</button>
 
             </main>
