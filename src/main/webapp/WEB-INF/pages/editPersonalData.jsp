@@ -31,6 +31,19 @@
 
 
 	            <form:form method="POST" action="editPersonalData.htm" modelAttribute="formData">
+	            
+		            <c:if test="${not empty bankName}">
+		            	<div class="formElementCnt">
+	                        <label>
+	                            <div class="inputCnt">
+	                                <div class="info">
+	                                    Bank Name
+	                                </div>
+	         					   		<c:out value="${bankName}" default=""  />
+				                </div>
+	                        </label>
+	                    </div>	
+	                </c:if>
 
                     <div class="formElementCnt">
                         <label>

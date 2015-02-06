@@ -46,7 +46,7 @@ public class UserHomePageController {
 
         // --- Get the bank ---
         Bank bank = database.getBankById(volunteer.getBankId());
-
+        volunteer.setLinkedBank(bank);
         // --- Get list of events ---
         List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
         for (Event event : events) {

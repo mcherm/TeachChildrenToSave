@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.exception.EmailAlreadyInUseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import com.tcts.exception.NotLoggedInException;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.Volunteer;
 import com.tcts.formdata.EditPersonalDataFormData;
 
 /**
@@ -29,12 +31,18 @@ public class EditPersonalDataController {
 
     /**
      * Render the page for editing personal data.
+     * @throws SQLException 
      */
     @RequestMapping(value="/editPersonalData", method=RequestMethod.GET)
-    public String showEditPersonalDataPage(HttpSession session, Model model) {
+    public String showEditPersonalDataPage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         User user = sessionData.getUser();
         model.addAttribute("formData", transformUserData(user));
+        
+        if (sessionData.getVolunteer() != null) {
+        	Volunteer volunteer = sessionData.getVolunteer();
+         	model.addAttribute("bankName", volunteer.getLinkedBank().getBankName());
+        }
         
         return showFormWithErrorMessage(model, sessionData, "");
     }
