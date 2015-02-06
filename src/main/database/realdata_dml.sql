@@ -508,4 +508,4 @@ insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank
 
 
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status)
-  values ('Urdqicfklbw=','I2uKh9UDwqkhLOppWX4haBMFK+M=','bonnie@mcherm.com','Bonnie','Charles','SA',null,'1-800-234-1234','0');
+  values ('OdCH8NX4lnw=','Cf1dapkAz+rO+E4hoejKEkv1gO8=','teach2save@udel.edu','Site','Admin','SA',null,'1-800-234-1234','0');
