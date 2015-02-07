@@ -851,17 +851,15 @@ public class MySQLDatabase implements DatabaseFacade {
             // --- Delete all users ---
             preparedStatement = connection.prepareStatement(deleteUsersByBankId);
             preparedStatement.setString(1, bankId);
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected == 0) {
-                // It would have to have at LEAST the bank admin
-                throw new NoSuchBankException();
-            }
+            preparedStatement.executeUpdate();
+            // No need to check how many were deleted since it could be ANY number
+            // and it would still be valid.
             preparedStatement.close();
 
             // --- Delete the bank ---
             preparedStatement = connection.prepareStatement(deleteBankSQL);
             preparedStatement.setString(1, bankId);
-            rowsAffected = preparedStatement.executeUpdate();
+            int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected == 0) {
                 throw new NoSuchBankException();
             }
