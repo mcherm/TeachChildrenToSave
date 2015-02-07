@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.NoVolunteerOnThatEventException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -146,6 +147,20 @@ public class CancelWithdrawController {
             HttpServletRequest request
         ) throws SQLException
     {
+        // --- Make sure we have called it where it makes sense ---
+        if (event.getVolunteerId() == null) {
+            throw new NoVolunteerOnThatEventException();
+        }
+
+        // --- Make sure data is loaded ---
+        if (event.getLinkedTeacher() == null) {
+            Teacher linkedTeacher = (Teacher) database.getUserById((event.getTeacherId()));
+            event.setLinkedTeacher(linkedTeacher);
+        }
+
+        // --- Save the info needed for emails ---
+        String teacherEmail = event.getLinkedTeacher().getEmail();
+
         // --- Update the database ---
         try {
             database.volunteerForEvent(event.getEventId(), null);
@@ -154,30 +169,24 @@ public class CancelWithdrawController {
         }
 
         // --- Send Emails ---
-        // FIXME: Here it should send an email to the teacher and perhaps to the site admin,
-        // and the email should include formData.getWithdrawNotes()
+        try {
+            Map<String,Object> emailModel = new <String, Object>HashMap();
 
-        // 		--- Send Emails ---
-        if (event.getVolunteerId() != null) {
-        	try {
-        		Map<String,Object> emailModel = new <String, Object>HashMap();
-        		
-        		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-        		
-        		emailModel.put("logoImage", logoImage);
-            	emailModel.put("to", event.getLinkedVolunteer().getEmail());
-            	emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
-            	emailModel.put("class", "<br/>" + event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
-            	//emailModel.put("teacher", loggedInTeacher.getFirstName() + " - " + loggedInTeacher.getLastName() + " - " + loggedInTeacher.getPhoneNumber() + " - " + loggedInTeacher.getEmail());
-            	String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
-                emailUtil.sendEmail(emailContent, emailModel);
-            } catch(AppConfigurationException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + event.getLinkedVolunteer().getEmail() + "'.");
-            } catch(IOException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + event.getLinkedVolunteer().getEmail() + "'.");
-            }
+            String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+
+            emailModel.put("logoImage", logoImage);
+            emailModel.put("to", teacherEmail);
+            emailModel.put("subject", "Your volunteer for " + new Date().toString() +" cancelled");
+            emailModel.put("class", "<br/>" + event.getEventId() + " - " + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
+            // FIXME: the email should include formData.getWithdrawNotes()
+            String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
+            emailUtil.sendEmail(emailContent, emailModel);
+        } catch(AppConfigurationException err) {
+            // FIXME: Need to log or report this someplace more reliable.
+            System.err.println("Could not send email for volunteer withdraw '" + teacherEmail + "'.");
+        } catch(IOException err) {
+            // FIXME: Need to log or report this someplace more reliable.
+            System.err.println("Could not send email for volunteer withdraw '" + teacherEmail + "'.");
         }
     }
 

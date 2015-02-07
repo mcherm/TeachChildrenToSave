@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.TeacherHasEventsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,19 +53,25 @@ public class TeacherController {
         return "teachers";
     }
 
-    @RequestMapping(value = "teacherDelete", method = RequestMethod.GET)
-    public String deleteTeacher(@RequestParam String userId,
+    @RequestMapping(value = "teacherDelete", method = RequestMethod.POST)
+    public String deleteTeacher(
+            @RequestParam String teacherId,
             HttpSession session,
-            Model model) throws SQLException {
+            Model model
+        ) throws SQLException
+    {
         SessionData sessionData = SessionData.fromSession(session);
         
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
         try {
-			database.deleteVolunteer(userId);
+			database.deleteTeacher(teacherId);
 		} catch (NoSuchUserException e) {
 			throw new InvalidParameterFromGUIException();
+        } catch (TeacherHasEventsException e) {
+            // FIXME: I need to PREVENT this first
+            throw new InconsistentDatabaseException("Deleted events for a teacher but some are still there.");
 		}
         
        model.addAttribute("teachers", database.getTeacherWithSchoolData());

@@ -14,16 +14,7 @@ import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
-import com.tcts.exception.EmailAlreadyInUseException;
-import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
-import com.tcts.exception.NoSuchBankException;
-import com.tcts.exception.NoSuchEventException;
-import com.tcts.exception.NoSuchSchoolException;
-import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.*;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -156,13 +147,16 @@ public interface DatabaseFacade {
     public void deleteBank(String bankId) throws SQLException, NoSuchBankException;
     
     /**
-     * delete volunteer from database
-     * 
-     * @param volunteerId
-     * @throws SQLException
-     * @throws NoSuchUserException
+     * Delete volunteer from database. If the volunteer has signed up for any events,
+     * it will throw an exception.
      */
-    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException;
+    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException;
+
+    /**
+     * Deletes a teacher from the database. If the teacher has any events then it will
+     * throw an exception.
+     */
+    public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException;
 
     /**
      * This deletes the indicated event, or throws NoSuchEventException if it does not exist.

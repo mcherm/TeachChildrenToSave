@@ -78,8 +78,8 @@
                         <td class="center" data-title="District"><c:out value="${teacher.linkedSchool.schoolDistrict}"/></td>
                         
                         <td class="action">
-	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">
-	                                    <input type="hidden" name="userId" value='<c:out value="${teacher.userId}"/>' />
+	                        <form method="POST" action="teacherDelete.htm" modelAttribute="formData">
+	                                    <input type="hidden" name="teacherId" value='<c:out value="${teacher.userId}"/>' />
 	                                    <button type="submit" class="editOrRegister delete">Delete</button>
 	                        </form>
 	                    </td>

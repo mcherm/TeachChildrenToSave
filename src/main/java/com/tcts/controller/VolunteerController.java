@@ -4,14 +4,20 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.Event;
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.NotLoggedInException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.EditPersonalDataFormData;
 
+import com.tcts.util.EmailUtil;
+import com.tcts.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +37,14 @@ public class VolunteerController extends AuthenticationController{
 
 	@Autowired
     private DatabaseFacade database;
-    
+
+    @Autowired
+    private TemplateUtil templateUtil;
+
+    @Autowired
+    private EmailUtil emailUtil;
+
+
     /**
      * Render the list of users .
      */
@@ -41,30 +54,50 @@ public class VolunteerController extends AuthenticationController{
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
+        return showVolunteers(model);
+    }
+
+    /**
+     * A subroutine used to set up and then show the main volunteers list. It returns
+     * a string so it can be called as "return showVolunteers(...);".
+     */
+    public String showVolunteers(Model model) throws SQLException {
         List<Volunteer> volunteers = database.getVolunteerWithBankData();
-        
         model.addAttribute("volunteers", volunteers);
         return "volunteers";
     }
-    
-   
-    @RequestMapping(value = "volunteerDelete", method = RequestMethod.GET)
-    public String deletevolunteer(@RequestParam String userId,
+
+
+    @RequestMapping(value = "volunteerDelete", method = RequestMethod.POST)
+    public String deleteVolunteer(
+            @RequestParam String volunteerId,
             HttpSession session,
-            Model model) throws SQLException {
+            Model model,
+            HttpServletRequest request)
+        throws SQLException
+    {
         SessionData sessionData = SessionData.fromSession(session);
         
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
+
+        // --- First, unregister from any events ---
+        List<Event> events = database.getEventsByVolunteer(volunteerId);
+        for (Event event : events) {
+            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request);
+        }
+
+        // --- Now delete the volunteer ---
         try {
-			database.deleteVolunteer(userId);
+			database.deleteVolunteer(volunteerId);
 		} catch (NoSuchUserException e) {
 			throw new InvalidParameterFromGUIException();
+        } catch (VolunteerHasEventsException e) {
+            throw new InconsistentDatabaseException("Withdrew from events for a volunteer but some are still there.");
 		}
         
-       model.addAttribute("volunteers", database.getVolunteerWithBankData());
-       return "volunteer";
+        return showVolunteers(model);
     }
     
     @RequestMapping(value = "editVolunteerData", method = RequestMethod.GET)
@@ -108,11 +141,8 @@ public class VolunteerController extends AuthenticationController{
         } catch(EmailAlreadyInUseException err) {
             return showEditUserWithErrorMessage(model, formData, "That email is already in use by another user.");
         }
-        
-        List<Volunteer> volunteers = database.getVolunteerWithBankData();
-        
-        model.addAttribute("volunteers", volunteers);
-        return "volunteers";
+
+        return showVolunteers(model);
     }
     
     /**
@@ -130,7 +160,6 @@ public class VolunteerController extends AuthenticationController{
     /**
      * Transform user modal data
      */
-    
     private EditPersonalDataFormData transformUserData(User user) {
     	EditPersonalDataFormData formData = new EditPersonalDataFormData();
         formData.setEmail(user.getEmail());

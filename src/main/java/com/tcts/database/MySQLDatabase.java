@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tcts.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -25,16 +26,6 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
-import com.tcts.exception.EmailAlreadyInUseException;
-import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
-import com.tcts.exception.NoSuchBankException;
-import com.tcts.exception.NoSuchEventException;
-import com.tcts.exception.NoSuchSchoolException;
-import com.tcts.exception.NoSuchUserException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -870,12 +861,28 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException {
+	public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             connection = connectionFactory.getConnection();
+
+            // --- Check if the volunteer has any events ---
+            preparedStatement = connection.prepareStatement(getEventsByVolunteerSQL);
+            preparedStatement.setString(1, volunteerId);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfEvents = 0;
+            while (resultSet.next()) {
+                numberOfEvents++;
+            }
+            if (numberOfEvents > 0) {
+                throw new VolunteerHasEventsException();
+            }
+            resultSet.close();
+            preparedStatement.close();
+
+            // --- Actually delete the volunteer ---
             preparedStatement = connection.prepareStatement(deleteVolunteerSQL);
             preparedStatement.setString(1, volunteerId);
             int rowsAffected = preparedStatement.executeUpdate();
@@ -888,6 +895,11 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
 	}
+
+
+    public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
+        // FIXME: I must write this!!!
+    }
 
 
 	@Override

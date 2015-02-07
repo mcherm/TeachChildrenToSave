@@ -17,16 +17,7 @@ import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
-import com.tcts.exception.EmailAlreadyInUseException;
-import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
-import com.tcts.exception.NoSuchBankException;
-import com.tcts.exception.NoSuchEventException;
-import com.tcts.exception.NoSuchSchoolException;
-import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.*;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -246,8 +237,13 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException {
+    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
         database.deleteVolunteer(volunteerId);
+    }
+
+    @Override
+    public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
+        database.deleteTeacher(teacherId);
     }
 
     @Override

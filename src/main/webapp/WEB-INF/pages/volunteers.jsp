@@ -71,8 +71,8 @@
                         <td class="center" data-title="Bank Name"><c:out value="${volunteer.linkedBank.bankName}"/></td>
                                                 
                         <td class="action">
-	                        <form method="POST" action="deleteUser.htm" modelAttribute="formData">
-	                                    <input type="hidden" name="userId" value='<c:out value="${volunteer.userId}"/>' />
+	                        <form method="POST" action="volunteerDelete.htm" modelAttribute="formData">
+	                                    <input type="hidden" name="volunteerId" value='<c:out value="${volunteer.userId}"/>' />
 	                                    <button type="submit" class="editOrRegister delete">Delete</button>
 	                        </form>
 	                    </td>
