@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.Event;
 import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.TeacherHasEventsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -61,16 +63,27 @@ public class TeacherController {
         ) throws SQLException
     {
         SessionData sessionData = SessionData.fromSession(session);
-        
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
+
+        // --- First, delete any events ---
+        List<Event> events = database.getEventsByTeacher(teacherId);
+        for (Event event : events) {
+            try {
+                database.deleteEvent(event.getEventId());
+            } catch(NoSuchEventException err) {
+                throw new RuntimeException("Event returned but cannot be deleted.");
+            }
+            // FIXME: We are not notifying the volunteer that their event has been deleted.
+        }
+
+        // --- Now delete the volunteer ---
         try {
 			database.deleteTeacher(teacherId);
 		} catch (NoSuchUserException e) {
 			throw new InvalidParameterFromGUIException();
         } catch (TeacherHasEventsException e) {
-            // FIXME: I need to PREVENT this first
             throw new InconsistentDatabaseException("Deleted events for a teacher but some are still there.");
 		}
         

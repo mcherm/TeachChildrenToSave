@@ -128,7 +128,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String deleteSchooldSQL =
     		"delete from School where school_id = ?";
       
-    private final static String deleteVolunteerSQL =
+    private final static String deleteUserSQL =
     		"delete from User where user_id = ? ";
         
     private final static String deleteEventSQL =
@@ -883,7 +883,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.close();
 
             // --- Actually delete the volunteer ---
-            preparedStatement = connection.prepareStatement(deleteVolunteerSQL);
+            preparedStatement = connection.prepareStatement(deleteUserSQL);
             preparedStatement.setString(1, volunteerId);
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected == 0) {
@@ -898,7 +898,38 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
-        // FIXME: I must write this!!!
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+
+            // --- Check if the teacher has any events ---
+            preparedStatement = connection.prepareStatement(getEventsByTeacherSQL);
+            preparedStatement.setString(1, teacherId);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfEvents = 0;
+            while (resultSet.next()) {
+                numberOfEvents++;
+            }
+            if (numberOfEvents > 0) {
+                throw new TeacherHasEventsException();
+            }
+            resultSet.close();
+            preparedStatement.close();
+
+            // --- Actually delete the teacher ---
+            preparedStatement = connection.prepareStatement(deleteUserSQL);
+            preparedStatement.setString(1, teacherId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new NoSuchUserException();
+            } else if (rowsAffected > 1) {
+                throw new InconsistentDatabaseException("More than one user had id of '" + teacherId + "'.");
+            }
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
     }
 
 
