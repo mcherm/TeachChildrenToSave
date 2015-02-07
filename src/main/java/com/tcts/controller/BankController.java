@@ -180,7 +180,7 @@ public class BankController {
         // --- Successful; show the master bank edit again ---
         switch(sessionData.getUser().getUserType()) {
             case SITE_ADMIN:
-                return "redirect:banks.htm";
+                return "redirect:viewEditBanks.htm";
             case BANK_ADMIN:
                 return "redirect:" + UserType.BANK_ADMIN.getHomepage();
             default:
