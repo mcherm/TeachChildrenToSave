@@ -93,7 +93,7 @@
                         </label>
                     </div>
 
-                   <button type="submit" value="Register">Register</button>
+                   <button type="submit" value="Register">Save</button>
 
                 </form:form>
 
