@@ -32,76 +32,115 @@
                     </div>
                 </c:if>
 
-                <div id="eventFields">
-                    <div id="eventDateField">
-                        <div class="label">Date</div>
-                        <div class="value"><c:out value="${event.eventDate.pretty}"/></div>
-                    </div>
-                    <div id="eventTimeField">
-                        <div class="label">Time</div>
-                        <div class="value"><c:out value="${event.eventTime}"/></div>
-                    </div>
-                    <div id="gradeField">
-                        <div class="label">Grade</div>
-                        <div class="value"><c:out value="${event.grade}"/></div>
-                    </div>
-                    <div id="numberStudentsField">
-                        <div class="label">Students</div>
-                        <div class="value"><c:out value="${event.numberStudents}"/></div>
-                    </div>
-                    <div id="notesField">
-                        <div class="label">Notes</div>
-                        <div class="value"><c:out value="${event.notes}"/></div>
-                    </div>
-                </div>
+                <div class="section group">
+                    <div class="col span_1_of_2">
+                        <fieldset>
+                            <legend>Class</legend>
+                            <div id="eventDateField">
+                                <label>Date:</label>
+                                <span class="value"><c:out value="${event.eventDate.pretty}"/></span>
+                            </div>
+                            <div id="eventTimeField">
+                                <label>Time:</label>
+                                <span class="value"><c:out value="${event.eventTime}"/></span>
+                            </div>
+                            <div id="gradeField">
+                                <label>Grade:</label>
+                                <span class="value"><c:out value="${event.grade}"/></span>
+                            </div>
+                            <div id="numberStudentsField">
+                                <label>Students:</label>
+                                <span class="value"><c:out value="${event.numberStudents}"/></span>
+                            </div>
+                            <div id="notesField">
+                                <label>Notes:</label>
+                                <span class="value"><c:out value="${event.notes}"/></span>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Volunteer</legend>
 
-                <div id="teacherFields">
-                    <div id="teacherNameField">
-                        <div class="label">Teacher Name</div>
-                        <div class="value">
-                            <c:out value="${event.linkedTeacher.firstName}"/>
-                            <c:out value="${event.linkedTeacher.lastName}"/>
-                        </div>
-                    </div>
-                    <div id="teacherEmailField">
-                        <div class="label">Teacher Email</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.email}"/></div>
-                    </div>
-                    <div id="teacherPhoneField">
-                        <div class="label">Teacher Phone</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.phoneNumber}"/></div>
-                    </div>
-                </div>
 
-                <div id="schoolFields">
-                    <div id="schoolNameField">
-                        <div class="label">School Name</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></div>
+                            <c:choose>
+                                <c:when test="${event.linkedVolunteer == null}">
+                                    <div id="noVolunteerYet">
+                                        <div>No volunteer yet.</div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div id="volunteerNameField">
+                                        <label>Volunteer Name:</label>
+                                        <span class="value">
+                                            <c:out value="${event.linkedVolunteer.firstName}"/>
+                                            <c:out value="${event.linkedVolunteer.lastName}"/>
+                                        </span>
+                                    </div>
+                                    <div id="volunteerEmailField">
+                                        <label>Volunteer Email:</label>
+                                        <span class="value"><c:out value="${event.linkedVolunteer.email}"/></span>
+                                    </div>
+                                    <div id="volunteerPhoneField">
+                                        <label>Volunteer Phone:</label>
+                                        <span class="value"><c:out value="${event.linkedVolunteer.phoneNumber}"/></span>
+                                    </div>
+                                    <div id="bankNameField">
+                                        <label>Bank Name:</label>
+                                        <span class="value"><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></span>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+
+
+
+                        </fieldset>
                     </div>
-                    <div id="schoolAddressField">
-                        <div class="label">School Address</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.addressLine1}"/></div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.city}"/></div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.state}"/></div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.zip}"/></div>
-                    </div>
-                    <div id="schoolCountyField">
-                        <div class="label">School County</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.county}"/></div>
-                    </div>
-                    <div id="schoolDistrictField">
-                        <div class="label">School District</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.schoolDistrict}"/></div>
-                    </div>
-                    <div id="schoolPhoneField">
-                        <div class="label">School Phone</div>
-                        <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.phone}"/></div>
-                    </div>
-                    <div id="schoolLMIEligibleField">
-                        <div class="label">School Eligible for CRA Credits?</div>
-                        <div class="value">
-                            <div class="qa-notes">Not implemented yet</div>
-                        </div>
+                    <div class="col span_1_of_2">
+                        <fieldset>
+                            <legend>Teacher</legend>
+                            <div id="teacherNameField">
+                                <label>Teacher Name:</label>
+                                <span class="value">
+                                    <c:out value="${event.linkedTeacher.firstName}"/>
+                                    <c:out value="${event.linkedTeacher.lastName}"/>
+                                </span>
+                            </div>
+                            <div id="teacherEmailField">
+                                <label>Teacher Email:</label>
+                                <span class="value"><c:out value="${event.linkedTeacher.email}"/></span>
+                            </div>
+                            <div id="teacherPhoneField">
+                                <label>Teacher Phone:</label>
+                                <span class="value"><c:out value="${event.linkedTeacher.phoneNumber}"/></span>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>School</legend>
+                            <div id="schoolNameField">
+                                <label>School Name:</label>
+                                <span class="value"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></span>
+                            </div>
+                            <div id="schoolAddressField">
+                                <label>School Address:</label>
+                                <div style="margin-left: 2em">
+                                    <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.addressLine1}"/></div>
+                                    <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.city}"/></div>
+                                    <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.state}"/></div>
+                                    <div class="value"><c:out value="${event.linkedTeacher.linkedSchool.zip}"/></div>
+                                </div>
+                            </div>
+                            <div id="schoolCountyField">
+                                <label>School County:</label>
+                                <span class="value"><c:out value="${event.linkedTeacher.linkedSchool.county}"/></span>
+                            </div>
+                            <div id="schoolDistrictField">
+                                <label>School District:</label>
+                                <span class="value"><c:out value="${event.linkedTeacher.linkedSchool.schoolDistrict}"/></span>
+                            </div>
+                            <div id="schoolPhoneField">
+                                <label>School Phone:</label>
+                                <span class="value"><c:out value="${event.linkedTeacher.linkedSchool.phone}"/></span>
+                            </div>
+                        </fieldset>
                     </div>
                 </div>
 
@@ -115,43 +154,7 @@
                     </iframe>
                 </div>
 
-                <c:choose>
-                    <c:when test="${event.linkedVolunteer == null}">
-
-                        <div id="noVolunteerYet">
-                            <div>No volunteer yet.</div>
-                        </div>
-
-                    </c:when>
-                    <c:otherwise>
-
-                        <div id="volunteerFields">
-                            <div id="volunteerNameField">
-                                <div class="label">Volunteer Name</div>
-                                <div class="value">
-                                    <c:out value="${event.linkedVolunteer.firstName}"/>
-                                    <c:out value="${event.linkedVolunteer.lastName}"/>
-                                </div>
-                            </div>
-                            <div id="volunteerEmailField">
-                                <div class="label">Volunteer Email</div>
-                                <div class="value"><c:out value="${event.linkedVolunteer.email}"/></div>
-                            </div>
-                            <div id="volunteerPhoneField">
-                                <div class="label">Volunteer Phone</div>
-                                <div class="value"><c:out value="${event.linkedVolunteer.phoneNumber}"/></div>
-                            </div>
-                            <div id="bankNameField">
-                                <div class="label">Bank Name</div>
-                                <div class="value"><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></div>
-                            </div>
-                        </div>
-
-                    </c:otherwise>
-                </c:choose>
-
                 <div>
-                    <%-- FIXME: Need to code this --%>
                     <button class="editOrRegister" onclick="js.loadURL('<c:out value="${doneURL}"/>');">Done</button>
                 </div>
 

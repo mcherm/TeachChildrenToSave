@@ -794,7 +794,7 @@ th.sortable.ascending {
   background-image: url("../img/down.gif");
 }
 
-body.eventDetails div.label {
+body.eventDetails label {
   font-weight: bold;
   margin-top: 2em;
 }
@@ -1247,3 +1247,72 @@ body.errorPage .stackTrace {
     margin-top: 1em;
     font-size: xx-small;
 }
+
+/* --- This section for layout of the event detail page --- */
+/*   If we wanted to use it elsewhere, we might generalize, */
+/*   but since I'm not the expert on the design I thought   */
+/*   I should keep my changes localized.                    */
+/*                                                          */
+/*   CSS design from "http://www.responsivegridsystem.com". */
+
+
+/*  SECTIONS  */
+body.eventDetails .section {
+    clear: both;
+    padding: 0px;
+    margin: 0px;
+}
+
+/*  COLUMN SETUP  */
+body.eventDetails .col {
+    display: block;
+    float:left;
+    margin: 1% 0 1% 1.6%;
+}
+body.eventDetails .col:first-child { margin-left: 0; }
+
+/*  GROUPING  */
+body.eventDetails .group:before,
+body.eventDetails .group:after { content:""; display:table; }
+body.eventDetails .group:after { clear:both;}
+body.eventDetails .group { zoom:1; /* For IE 6/7 */ }
+
+/*  GRID OF TWO  */
+body.eventDetails .span_2_of_2 {
+    width: 100%;
+}
+body.eventDetails .span_1_of_2 {
+    width: 49.2%;
+}
+
+/*  GO FULL WIDTH AT LESS THAN 600 PIXELS */
+
+@media only screen and (max-width: 600px) {
+    body.eventDetails .col {
+        margin: 1% 0 1% 0%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    body.eventDetails .span_2_of_2 { width: 100%; }
+    body.eventDetails .span_1_of_2 { width: 100%; }
+}
+
+body.eventDetails fieldset {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #cdcdcd;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+fieldset legend {
+    font-weight: bold;
+    padding: .25em;
+    margin: 1em;
+}
+
+/* --- End of layout for the event detail page --- */
