@@ -1225,3 +1225,25 @@ p {
   padding-bottom: 1em;
   font-size: .9em;
 }
+
+
+body.errorPage .obscuredFootnote {
+    font-size: xx-small;
+    color:  #DDDDDD;
+}
+body.errorPage .hiddenErrorMessage {
+    border: 1px solid black;
+    display: none;
+}
+body.errorPage .exceptionType {
+    text-align: center;
+    font-weight: bold;
+}
+body.errorPage .exceptionMessage {
+    text-align: center;
+    margin-top: 1em;
+}
+body.errorPage .stackTrace {
+    margin-top: 1em;
+    font-size: xx-small;
+}
