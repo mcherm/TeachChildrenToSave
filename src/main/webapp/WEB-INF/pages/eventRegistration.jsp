@@ -55,7 +55,18 @@
                         counts[value] += 1;
                     }
                 });
-                values.sort();
+
+                values.sort(function(a,b) {
+                    if (isLessThan(field, a, b)) {
+                        return -1;
+                    } else {
+                        if (isLessThan(field, b, a)) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                });
                 return {'counts': counts, 'values': values};
             }
 
