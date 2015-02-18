@@ -41,12 +41,13 @@ public interface DatabaseFacade {
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException;
 
     /**
-     * Modify certain fields of a User. The user with the userId given will be edited
-     * to set their email, firstName, lastName, and phoneNumber to the values given
-     * in this data structure. Other fields are not modified. The newly modified
+     * Modify certain fields of a User. The user with the userId given in formData
+     * will be edited to set their email, firstName, lastName, and phoneNumber to
+     * the values given in the other fields of formData. Other properties of a user
+     * (such as password and userType) are not modified. The newly modified
      * user is returned.
      */
-    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData)
+    public User modifyUserPersonalFields(EditPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException;
 
     /**

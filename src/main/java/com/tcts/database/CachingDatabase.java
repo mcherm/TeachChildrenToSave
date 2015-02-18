@@ -175,8 +175,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
-        User result = database.modifyUserPersonalFields(userId, formData);
+    public User modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
+        User result = database.modifyUserPersonalFields(formData);
         availableEvents.refreshNow();
         return result;
     }

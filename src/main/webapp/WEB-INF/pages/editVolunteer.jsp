@@ -22,13 +22,8 @@
 		        <h1>
 					Edit Volunteer Data
 				</h1>
-		        
-				<c:if test="${not empty errorMessage}">
-					<div class="errorMessage">
-				   		<c:out value="${errorMessage}" default=""  />
-			   		</div>			
-				</c:if>
 
+                <%@include file="include/errors.jsp"%>
 
 	            <form:form method="POST" action="editVolunteerData.htm" modelAttribute="formData">
 					
@@ -71,25 +66,15 @@
                         <label>
                             <div class="inputCnt">
                                 <div class="info">
-                                    Password
-                                </div>
-                                <form:input path="password" type="password"/>
-                            </div>
-                        </label>
-                    </div>	
-
-                    <div class="formElementCnt">
-                        <label>
-                            <div class="inputCnt">
-                                <div class="info">
                                     Phone Number
                                 </div>
                                 <form:input path="phoneNumber"/>
                             </div>
                         </label>
-                    </div>	
+                    </div>
 
-                    <button type="submit" value="Edit">Edit</button>
+                    <button type="submit" value="Edit">Save</button>
+                    <button onclick="js.loadURL('volunteers.htm')" type="button" class="editOrRegister delete">Cancel</button>
 
 	            </form:form>
 		

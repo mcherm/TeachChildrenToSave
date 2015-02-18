@@ -6,9 +6,12 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.Event;
+import com.tcts.datamodel.UserType;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -107,7 +110,7 @@ public class TeacherController {
         User user = database.getUserById(userId);
         
         // --- Show the edit page ---
-        return showEditUserWithErrorMessage(model, transformUserData(user), "");
+        return showEditUserWithErrors(model, transformUserData(user), null);
     }
 
     /**
@@ -121,16 +124,24 @@ public class TeacherController {
         ) throws SQLException
     {
         SessionData sessionData = SessionData.fromSession(session);
-        // FIXME: must validate the fields
         User user = sessionData.getUser();
         if (user == null) {
             throw new NotLoggedInException();
         }
+        if (user.getUserType() != UserType.SITE_ADMIN) {
+            throw new NotOwnedByYouException();
+        }
+
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showEditUserWithErrors(model, formData, errors);
+        }
 
         try {
-           database.modifyUserPersonalFields(user.getUserId(), formData);
+           database.modifyUserPersonalFields(formData);
         } catch(EmailAlreadyInUseException err) {
-            return showEditUserWithErrorMessage(model, formData, "That email is already in use by another user.");
+            return showEditUserWithErrors(model, formData, new Errors("That email is already in use by another user."));
         }
         
         List<Teacher> teachers = database.getTeacherWithSchoolData();
@@ -141,13 +152,13 @@ public class TeacherController {
     
     /**
      * A subroutine used to set up and then show the add user form. It
-     * returns the string, so you can invoke it as "return showEditSchoolWithErrorMessage(...)".
+     * returns the string, so you can invoke it as "return showEditSchoolWithErrors(...)".
      */
-    public String showEditUserWithErrorMessage(Model model, EditPersonalDataFormData formData, String errorMessage)
+    public String showEditUserWithErrors(Model model, EditPersonalDataFormData formData, Errors errors)
             throws SQLException
     {
         model.addAttribute("formData", formData);
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errors", errors);
         return "editTeacher";
     }
     
@@ -161,6 +172,7 @@ public class TeacherController {
         formData.setFirstName(user.getFirstName());
         formData.setLastName(user.getLastName());
         formData.setPhoneNumber(user.getPhoneNumber());
+        formData.setUserId(user.getUserId());
         return formData;
     }
     

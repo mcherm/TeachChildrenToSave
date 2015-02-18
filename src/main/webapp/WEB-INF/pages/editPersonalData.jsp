@@ -22,28 +22,12 @@
 		        <h1>
 					Edit Your Account
 				</h1>
-		        
-				<c:if test="${not empty errorMessage}">
-					<div class="errorMessage">
-				   		<c:out value="${errorMessage}" default=""  />
-			   		</div>			
-				</c:if>
 
+                <%@include file="include/errors.jsp"%>
 
 	            <form:form method="POST" action="editPersonalData.htm" modelAttribute="formData">
-	            
-		            <c:if test="${not empty bankName}">
-		            	<div class="formElementCnt">
-	                        <label>
-	                            <div class="inputCnt">
-	                                <div class="info">
-	                                    Bank Name
-	                                </div>
-	         					   		<c:out value="${bankName}" default=""  />
-				                </div>
-	                        </label>
-	                    </div>	
-	                </c:if>
+
+                    <input type="hidden" name="userId" value="<c:out value="${userId}"/>"/>
 
                     <div class="formElementCnt">
                         <label>

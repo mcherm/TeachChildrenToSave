@@ -303,7 +303,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-    public User modifyUserPersonalFields(String userId, EditPersonalDataFormData formData)
+    public User modifyUserPersonalFields(EditPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException
     {
         Connection connection = null;
@@ -315,7 +315,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(2, formData.getFirstName());
             preparedStatement.setString(3, formData.getLastName());
             preparedStatement.setString(4, formData.getPhoneNumber());
-            preparedStatement.setString(5, userId);
+            preparedStatement.setString(5, formData.getUserId());
             try {
                 preparedStatement.executeUpdate();
             } catch(MySQLIntegrityConstraintViolationException err) {
@@ -328,7 +328,7 @@ public class MySQLDatabase implements DatabaseFacade {
         } finally {
             closeSafely(connection, preparedStatement, null);
         }
-        return getUserById(userId);
+        return getUserById(formData.getUserId());
     }
 
     @Override

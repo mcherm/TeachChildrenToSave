@@ -8,14 +8,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.Event;
+import com.tcts.datamodel.UserType;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.NotLoggedInException;
+import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.EditPersonalDataFormData;
 
+import com.tcts.formdata.Errors;
 import com.tcts.util.EmailUtil;
 import com.tcts.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +119,7 @@ public class VolunteerController extends AuthenticationController{
         User user = database.getUserById(userId);
         
         // --- Show the edit page ---
-        return showEditUserWithErrorMessage(model, transformUserData(user), "");
+        return showEditUserWithErrors(model, transformUserData(user), null);
     }
 
     /**
@@ -130,16 +133,24 @@ public class VolunteerController extends AuthenticationController{
         ) throws SQLException
     {
         SessionData sessionData = SessionData.fromSession(session);
-        // FIXME: must validate the fields
         User user = sessionData.getUser();
         if (user == null) {
             throw new NotLoggedInException();
         }
+        if (user.getUserType() != UserType.SITE_ADMIN) {
+            throw new NotOwnedByYouException();
+        }
+
+        // --- Validation Rules ---
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showEditUserWithErrors(model, formData, errors);
+        }
 
         try {
-           database.modifyUserPersonalFields(user.getUserId(), formData);
+           database.modifyUserPersonalFields(formData);
         } catch(EmailAlreadyInUseException err) {
-            return showEditUserWithErrorMessage(model, formData, "That email is already in use by another user.");
+            return showEditUserWithErrors(model, formData, new Errors("That email is already in use by another user."));
         }
 
         return showVolunteers(model);
@@ -147,13 +158,13 @@ public class VolunteerController extends AuthenticationController{
     
     /**
      * A subroutine used to set up and then show the add user form. It
-     * returns the string, so you can invoke it as "return showEditSchoolWithErrorMessage(...)".
+     * returns the string, so you can invoke it as "return showEditSchoolWithErrors(...)".
      */
-    public String showEditUserWithErrorMessage(Model model, EditPersonalDataFormData formData, String errorMessage)
+    public String showEditUserWithErrors(Model model, EditPersonalDataFormData formData, Errors errors)
             throws SQLException
     {
         model.addAttribute("formData", formData);
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("errors", errors);
         return "editVolunteer";
     }
     
@@ -166,6 +177,7 @@ public class VolunteerController extends AuthenticationController{
         formData.setFirstName(user.getFirstName());
         formData.setLastName(user.getLastName());
         formData.setPhoneNumber(user.getPhoneNumber());
+        formData.setUserId(user.getUserId());
         return formData;
     }
 
