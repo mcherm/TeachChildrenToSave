@@ -50,19 +50,15 @@
 		        <div class="documents">
 						<strong>Important documents</strong>
 			        	<%
-			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful Hints 2015.pdf";
-			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer Guidelines 2015.pdf";
+			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints%202015.pdf";
+			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines%202015.pdf";
+                        String certificateOfRecognition = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2015%20TCTSD%20Certificate.pdf";
 			        	%>
 
 						<ul>
-							<li>
-								<a href="<%=helpfulHints%>" target="_blank">Helpful Hints 2015</a>
-							</li>
-
-
-							<li>
-								<a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a>
-							</li>
+							<li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints 2015</a></li>
+							<li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
+                            <li><a href="<%=certificateOfRecognition%>" target="_blank">Certificate of Recognition</a></li>
 						</ul>
 		        </div>
 	
