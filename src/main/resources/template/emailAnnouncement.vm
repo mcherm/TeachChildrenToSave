@@ -2,7 +2,7 @@
 <html>
 <body>
 
-<img src="${logoImage}" alt="Delaware Bankers Association logo">
+<img src="${logoImage}" alt="Teach Children To Save Program">
 
 <p><h3>Message from teach children to save program.</h3></p>
 <p>${message} </p>

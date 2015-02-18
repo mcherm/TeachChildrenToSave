@@ -1,7 +1,7 @@
  
 <html>
 <body>
-<img src="${logoImage}" alt="Delaware Bankers Association logo">
+<img src="${logoImage}" alt="Teach Children To Save Program">
 
 <p>Unfortunately, your volunteer can no longer attend the following class:</p>
    <p>${class}</p>
