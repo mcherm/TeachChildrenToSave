@@ -35,10 +35,10 @@ public final class EmailUtil {
         // Construct an object to contain the recipient address.
     	Destination destination;
     	if (model.get("to") != null)
-    		destination = new Destination().withToAddresses(new String[]{model.get("to").toString()});
+    		destination = new Destination().withToAddresses("devendrakumardave@gmail.com");
     	else {
     		List<String> toBccAddresses = (List<String>) model.get("bcc");
-    		destination = new Destination().withBccAddresses(toBccAddresses);
+    		destination = new Destination().withBccAddresses("devendrakumardave@gmail.com");
     	}
         
         // Create the subject and body of the message.

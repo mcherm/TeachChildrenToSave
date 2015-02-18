@@ -3,16 +3,11 @@ package com.tcts.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.tcts.datamodel.Bank;
-import com.tcts.exception.InvalidParameterFromGUIException;
-
-import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +15,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tcts.common.PrettyPrintingDate;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AppConfigurationException;
+import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.util.EmailUtil;
@@ -91,21 +88,50 @@ public class EventRegistrationController {
         if (null != formData.getEventId()) {
         	
 	        Event event = database.getEventById(formData.getEventId());
+	        
             if (event == null) {
                 // No such event by that ID, but somehow we just volunteered for it???!!
                 throw new InvalidParameterFromGUIException();
             }
 	        //Send email to volunteer
+            if (null != event.getVolunteerId()) {
             try {
 	        	
 	        	Map<String,Object> emailModel = new <String, Object>HashMap();
 	        	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-        		
+	        	User teacher = database.getUserById(event.getTeacherId());
         		emailModel.put("logoImage", logoImage);
 	        	emailModel.put("to", volunteer.getEmail());
 	        	emailModel.put("subject", "You have successfully signed up for a class!");
-	        	emailModel.put("class", "<br/>" + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
-	        	emailModel.put("volunteer", "<br/>" + volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber() + "<br/>");
+	        	
+	        	String htmlTableDataHeader = "<table><tr> " +
+						"<td style=\"background-color:#66CCFF\">Class Date</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Class Time</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Teacher</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Grade</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Number of student</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
+	            String htmlTableDataValue = "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +	
+							"<td>" + event.getEventTime()  + "</td>" +
+							"<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
+							"<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
+							"<td>" + event.getGrade()  + "</td>" +
+							"<td>" + event.getNumberStudents()  + "</td>" +
+							"<td>" + event.getNotes()  + "</td></tr>";
+	            emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
+	            
+	        	String htmlTableDataHeaderForValunteer = "<br/><table><tr> " +
+						"<td style=\"background-color:#66CCFF\">Teach Name</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Teacher Email Id</td>" +
+	                   "<td style=\"background-color:#66CCFF\">Teacher Phone Number</td></tr>";
+	                   
+	            String htmlTableDataValueForVolunteer = "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +	
+							"<td>" + teacher.getEmail()  + "</td>" +
+							"<td>" + teacher.getPhoneNumber() +"</td></tr>";
+							
+	            emailModel.put("teacher", htmlTableDataHeaderForValunteer + htmlTableDataValueForVolunteer);
+	            
 	        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
 	            emailUtil.sendEmail(emailContent, emailModel);
 	        } catch(AppConfigurationException err) {
@@ -115,10 +141,11 @@ public class EventRegistrationController {
 	            // FIXME: Need to log or report this someplace more reliable.
 	            System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
 	        }
+        }
 	        
 	        //Send email to teacher
             if (null != event.getTeacherId()) {
-		        User teacher = database.getUserById(event.getTeacherId());
+            	User teacher = database.getUserById(event.getTeacherId());
 		        try {
 		        	
 		        	Map<String,Object> emailModel = new <String, Object>HashMap();
@@ -127,8 +154,35 @@ public class EventRegistrationController {
 	        		emailModel.put("logoImage", logoImage);
 		        	emailModel.put("to", teacher.getEmail());
 		        	emailModel.put("subject", "Your class has a volunteer!");
-		        	emailModel.put("class", "<br/>" + event.getEventDate() + " - " + event.getEventTime() + " - " + event.getNotes() + "<br/>");
-		        	emailModel.put("volunteer", "<br/>" + volunteer.getFirstName() + " - " + volunteer.getLastName() + " - " + volunteer.getEmail() + " - " + volunteer.getPhoneNumber() + "<br/>");
+		        	
+		        	String htmlTableDataHeader = "<table><tr> " +
+							"<td style=\"background-color:#66CCFF\">Class Date</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Class Time</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Teacher</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Grade</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Number of student</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
+		            String htmlTableDataValue = "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +	
+								"<td>" + event.getEventTime()  + "</td>" +
+								"<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
+								"<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
+								"<td>" + event.getGrade()  + "</td>" +
+								"<td>" + event.getNumberStudents()  + "</td>" +
+								"<td>" + event.getNotes()  + "</td></tr>";
+		            emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
+		            
+		        	String htmlTableDataHeaderForTeacher = "<br/><table><tr> " +
+							"<td style=\"background-color:#66CCFF\">Volunteer Name</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Volunteer Email Id</td>" +
+		                   "<td style=\"background-color:#66CCFF\">Volunteer Phone Number</td></tr>";
+		                   
+		            String htmlTableDataValueForTeacher = "<tr><td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +	
+								"<td>" + volunteer.getEmail()  + "</td>" +
+								"<td>" + volunteer.getPhoneNumber() + "</td></tr>";
+		            
+		        	emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
+		        	emailModel.put("volunteer", htmlTableDataHeaderForTeacher + htmlTableDataValueForTeacher);
 		        	String emailContent = templateUtil.generateTemplate("volunteerSignUpToTeacher", emailModel);
 		            emailUtil.sendEmail(emailContent, emailModel);
 		        } catch(AppConfigurationException err) {

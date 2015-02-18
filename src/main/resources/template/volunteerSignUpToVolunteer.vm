@@ -7,7 +7,7 @@
 
    <p>${class}</p>
 <p>Teacher:</p>
-   <p>${volunteer}</p>
+   <p>${teacher}</p>
    
 <p>Here’s a link to everything you will need to know:</p>
 <p>o	FAQs</p>
@@ -16,5 +16,5 @@
 
 </body>
 <p>© Copyright 2015 Teach Children to Save, Delaware.</p> 
-<p>© Created by Capital One volunteers.</p>
+<p>  Created by Capital One volunteers.</p>
 </html>
