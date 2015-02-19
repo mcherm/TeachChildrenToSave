@@ -319,7 +319,7 @@ public class CancelWithdrawController {
             								"<td>" + event.getNotes()  + "</td></tr>";
             	
             	emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
-            	String singupUrl =  request.getRequestURL() + "/register.htm";
+            	String singupUrl =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/register.htm";
             	emailModel.put("signupLink", singupUrl);
             	
             	String htmlTableDataHeaderForTeacher = "<br/><table><tr> " +
