@@ -121,10 +121,10 @@ public class EventRegistrationController {
 							"<td>" + event.getNotes()  + "</td></tr>";
 	            emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
 	            
-	        	String htmlTableDataHeaderForValunteer = "<br/><table><tr> " +
+	        	String htmlTableDataHeaderForValunteer = "<table><tr> " +
 						"<td style=\"background-color:#66CCFF\">Teach Name</td>" +
 	                   "<td style=\"background-color:#66CCFF\">Teacher Email Id</td>" +
-	                   "<td style=\"background-color:#66CCFF\">Teacher Phone Number</td></tr>";
+	                   "<td style=\"background-color:#66CCFF\">Teacher Phone Number</td></tr><tr>";
 	                   
 	            String htmlTableDataValueForVolunteer = "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +	
 							"<td>" + teacher.getEmail()  + "</td>" +
@@ -172,7 +172,7 @@ public class EventRegistrationController {
 								"<td>" + event.getNotes()  + "</td></tr>";
 		            emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
 		            
-		        	String htmlTableDataHeaderForTeacher = "<br/><table><tr> " +
+		        	String htmlTableDataHeaderForTeacher = "<table><tr> " +
 							"<td style=\"background-color:#66CCFF\">Volunteer Name</td>" +
 		                   "<td style=\"background-color:#66CCFF\">Volunteer Email Id</td>" +
 		                   "<td style=\"background-color:#66CCFF\">Volunteer Phone Number</td></tr>";

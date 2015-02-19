@@ -1,7 +1,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
     <head>
         <title>Teach Children to Save - Email Announcement</title>
         <%@include file="include/commonHead.jsp"%>
@@ -10,6 +11,7 @@
     <body class="registerVolunteer">
 
     <a href="#main" class="ada-read">Skip to main content</a>
+    <%@include file="include/header.jsp" %>
 
     <div class="mainCnt">
 
