@@ -46,10 +46,10 @@
 
                 <ul class="program_highlights">
                     <li><span>Research has shown that when people are taught the basics of money management as children they are more likely to be fiscally fit as adults</span></li>
-                    <li><span>Provide valuable financial lessons most children don't won't receive any other time</span></li>
+                    <li><span>Provide valuable financial lessons most children won't receive any other time</span></li>
                     <li><span>Choose from a variety of locations that are convenient for you</span></li>
                     <li><span>It only takes 45 minutes</span></li>
-                    <li><span>You'll receive all the training material you need</span></li>
+                    <li><span>You'll receive all the training materials you need</span></li>
                 </ul>
 
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
