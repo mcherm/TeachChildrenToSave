@@ -71,12 +71,19 @@
                     </ul>
                 </p>
 
-                <h2>The Day-of the event</h2>
+                <h2>Sponsors of the Program</h2>
 
                 <p>
-                    On the actual day of the event, volunteer bankers, organized by the DBA/FEA and trained by the
-                    CEEE, visit schools throughout Delaware. The volunteers teach students the importance of saving,
-                    the basics of financial education, and the benefits of prudent money management.
+                    The Delaware Bankers Association Financial Education Alliance (DBA/FEA) works with the University
+                    of Delaware's Center for Economic Education and Entrepreneurship (CEEE) to administer this program
+                    in the First State. The age-appropriate curricula were developed by the CEEE to meet State
+                    economic competency standards. The DBA/FEA helps to raise the funding for the program, and assists
+                    in the coordination and training of the volunteer faculty comprised of bankers. Through financial
+                    education grants, the DBA/FEA also develops and distributes the materials used on TCTSD, including
+                    the bilingual take-home financial education information piece for the children to share with their
+                    parents and other adults. The DBA/FEA also pays for the books used in each classroom, which are
+                    then donated to the school following the event. The CEEE pairs the volunteer bank employees with
+                    the classroom teachers and students.
                 </p>
 
                 <h2>Contact us</h2>
