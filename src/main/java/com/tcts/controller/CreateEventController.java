@@ -7,7 +7,6 @@ import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 
-import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -22,6 +21,7 @@ import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Teacher;
 import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.Errors;
 
 /**
  * A controller for the screens used to create a new event (a class for volunteers to help with).
@@ -87,4 +87,5 @@ public class CreateEventController {
         // --- Navigate onward ---
         return "redirect:" + sessionData.getUser().getUserType().getHomepage();
     }
+    
 }

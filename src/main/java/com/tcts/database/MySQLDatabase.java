@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tcts.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -26,6 +25,18 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchAllowedDateException;
+import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -410,7 +421,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(3, formData.getEventTime());
             preparedStatement.setString(4, formData.getGrade());
             preparedStatement.setInt(5, Integer.parseInt(formData.getNumberStudents()));
-            preparedStatement.setString(6, formData.getNotes());
+            preparedStatement.setString(6, stringToHTMLString(formData.getNotes()));
             preparedStatement.setString(7, null); // volunteerId
             preparedStatement.executeUpdate();
         } finally {
@@ -946,7 +957,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(2, formData.getEventTime());
             preparedStatement.setString(3, formData.getGrade());
             preparedStatement.setInt(4, Integer.parseInt(formData.getNumberStudents().equalsIgnoreCase("")?"0":formData.getNumberStudents()));
-            preparedStatement.setString(5, formData.getNotes());
+            preparedStatement.setString(5, stringToHTMLString(formData.getNotes()));
             preparedStatement.setString(6, formData.getEventId());
             preparedStatement.executeUpdate();
         } 
@@ -1649,6 +1660,65 @@ public class MySQLDatabase implements DatabaseFacade {
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
+    }
+    
+    public static String stringToHTMLString(String string) {
+        StringBuffer sb = new StringBuffer(string.length());
+        // true if last char was blank
+        boolean lastWasBlankChar = false;
+        int len = string.length();
+        char c;
+
+        for (int i = 0; i < len; i++)
+            {
+            c = string.charAt(i);
+            if (c == ' ') {
+                // blank gets extra work,
+                // this solves the problem you get if you replace all
+                // blanks with &nbsp;, if you do that you loss 
+                // word breaking
+                if (lastWasBlankChar) {
+                    lastWasBlankChar = false;
+                    sb.append("&nbsp;");
+                    }
+                else {
+                    lastWasBlankChar = true;
+                    sb.append(' ');
+                    }
+                }
+            else {
+                lastWasBlankChar = false;
+                //
+                // HTML Special Chars
+                if (c == '"')
+                    sb.append("&quot;");
+                else if (c == '&')
+                    sb.append("&amp;");
+                else if (c == '<')
+                    sb.append("&lt;");
+                else if (c == '>')
+                    sb.append("&gt;");
+                else if (c == '\n')
+                    // Handle Newline
+                    sb.append("");
+                else if (c == '\r')
+                    // Handle Newline
+                    sb.append("");
+                else {
+                    int ci = 0xffff & c;
+                    if (ci < 160 )
+                        // nothing special only 7 Bit
+                        sb.append(c);
+                    else {
+                        // Not 7 Bit use the unicode system
+                        sb.append("&#");
+                        sb.append(new Integer(ci).toString());
+                        sb.append(';');
+                        }
+                    }
+                }
+            }
+        return sb.toString();
     }
 
 }
