@@ -56,7 +56,13 @@
 
                 <h3>Already Registered?</h3>
                 <button onclick="js.loadURL('login.htm');">Sign In</button>
-
+                
+                <%
+			        	String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
+			    %>
+            
+                <h3><a href="<%=faq%>" target="_blank">FAQs</a></h3>
+                
             </main>
 
             <aside>
