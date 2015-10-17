@@ -1,0 +1,42 @@
+Steps to Deploy the Application on AWS:
+
+(1) Set up a build environment.
+   (a) Install Git.
+   (b) Install a JDK.
+   (c) Install Maven.
+   (d) Use Git to check out the code.
+   (e) Copy the file ./src/main/resources/application.properties.template
+       to "application.properties" in the same directory.
+   (f) Edit application.properties to add all the correct passwords. (The
+       correct passwords to use are obviously not checked in here.)
+(2) Use "mvn install" to build the .war file.
+(3) Log on to https://console.aws.amazon.com and open "Elastic Beanstalk".
+(4) Create a new Elastic Beanstalk environment. Amazon changes their
+    interface from time to time, but these instructions were accurate when
+    they were written.
+   (a) Click "Create new" which may be in the "Actions" menu.
+   (b) Click "Create web server".
+   (c) For a platform, select "Tomcat".
+   (d) Click "Next".
+   (e) For "Source" either specify an already-uploaded version, or use
+       "Upload your own" and select the .war file built in step (2).
+   (f) For Deployment Limits, select "Fixed" with "1" instance at a time.
+   (g) Click "Next".
+   (h) Provide an environment name (anything you like) and environment
+       URL (we traditionally use teachchildrentosavedayde[.elasticbeanstalk.com]).
+       The URL used here will be needed in Route 52.
+   (i) Click "Next" 5 times.
+   (j) Click "Launch".
+   (k) Wait ~5 minutes while the servers are started up. It will tell you when
+       that is finished.
+(5) Verify that it works by going to <URL-from-step-h> (there will be a link shown
+    once the startup is complete).
+
+- - - - - - - - - - - - - - - - - - - -
+
+Steps to remove an environment:
+
+(1) Log on to https://console.aws.amazon.com and open "Elastic Beanstalk".
+(2) Find the environment you want to stop, and click on its name to open it.
+(3) On the "Actions" menu, click "Terminate Environment".
+(4) Wait ~3 minutes while it shuts down. It will tell you when it is finished.

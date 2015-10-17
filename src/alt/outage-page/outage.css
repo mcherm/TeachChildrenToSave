@@ -1,0 +1,1318 @@
+@charset "UTF-8";
+@CHARSET "ISO-8859-1";
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* apply a natural box layout model to all elements */
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.ada-read {
+    position: absolute;
+    left: -180701px;
+    overflow: hidden;
+    line-height: 0;
+    font-size: 0;
+    height: 0;
+    width: 0;
+    display: block;
+}
+
+.b, strong {
+    font-weight: bold;
+}
+
+.block {
+    display: block;
+}
+
+em {
+    font-style: italic;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.hide {
+    visibility: hidden;
+    display: none;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+sup {
+    font-size: 75%;
+    position: relative;
+    top: -.3em;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+.noUl li {
+    list-style: none;
+}
+
+.mb1 {
+    margin-bottom: 1em;
+}
+
+/* Webfont: TeachKidsToSaveDE-Regular */
+@font-face {
+    font-family: 'TeachKidsToSaveDE';
+    src: url("../fonts/TeachKidsToSaveDE-Regular.eot");
+    src: url("../fonts/TeachKidsToSaveDE-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/TeachKidsToSaveDE-Regular.woff") format("woff"), url("../fonts/TeachKidsToSaveDE-Regular.ttf") format("truetype"), url("../fonts/TeachKidsToSaveDE-Regular.svg#TeachKidsToSaveDE-Regular") format("svg");
+    font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+.iconFont {
+    font-family: 'TeachKidsToSaveDE' !important;
+}
+
+.iconFont:before {
+    content: attr(data-icon);
+}
+
+body {
+    font: 100%/1em Verdana, Arial, sans-serif;
+}
+
+body {
+    padding-bottom: 20px;
+}
+
+main {
+    width: 100%;
+    margin: 0 auto;
+}
+main .noUl {
+    margin-left: 0 !important;
+}
+
+.mainCnt {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.1em;
+    font-size: .9em;
+}
+.mainCnt:after {
+    content: " ";
+    display: block;
+    clear: both;
+}
+.mainCnt ul {
+    margin-top: .15em;
+    margin-bottom: .5em;
+}
+.mainCnt ul.program_highlights {
+    margin-top: .5em;
+}
+
+body.home main p {
+    padding-bottom: 0;
+}
+
+/*body.home main ul {
+	margin-top:0;
+}
+*/
+header,
+.mainCnt,
+footer {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+header {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: .5em;
+}
+header:after {
+    content: " ";
+    display: block;
+    clear: both;
+}
+header .delc {
+    width: 49.65035%;
+    float: left;
+    padding-top: .5em;
+}
+header .delc a, header .delc a:visited {
+    height: 100%;
+    width: 100%;
+    max-width: 251px;
+    display: block;
+}
+header .delc img {
+    max-width: 251px;
+}
+header .dba {
+    width: 49.65035%;
+    float: right;
+    text-align: right;
+}
+header .dba img {
+    max-width: 158px;
+}
+header img {
+    width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+@media (min-width: 320px) {
+    .delc img {
+        margin-top: 15px;
+    }
+}
+@media (min-width: 768px) {
+    .delc img {
+        margin-top: 5px;
+    }
+}
+@media (min-width: 320px) {
+    nav ul {
+        list-style: none;
+        border-top: 1px solid #ccc;
+        margin-bottom: 1em;
+    }
+    nav li {
+        border-bottom: 1px solid #ccc;
+    }
+    nav button {
+        display: block;
+        height: 22px;
+        width: 100%;
+        text-align: left;
+        padding-left: 12px;
+        font-weight: bold;
+    }
+    nav button .iconFont {
+        font-size: .8em;
+        color: #8b6d09;
+        position: relative;
+        top: -1px;
+        display: inline-block;
+        width: 20px;
+        text-decoration: none !important;
+    }
+    nav button .txt {
+        font-size: 1.25em;
+    }
+}
+@media (min-width: 768px) {
+    nav {
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -ms-border-radius: 4px;
+        border-radius: 4px;
+        background-color: #0c345a;
+        /* Fallback Color */
+        background-image: -webkit-gradient(linear, left, right, left, right);
+        /* Saf4+, Chrome */
+        background-image: -webkit-linear-gradient(to right, #315d87, #0c345a);
+        /* Chrome 10+, Saf5.1+, iOS 5+ */
+        background-image: -moz-linear-gradient(to right, #315d87, #0c345a);
+        /* FF3.6 */
+        background-image: -ms-linear-gradient(to right, #315d87, #0c345a);
+        /* IE10 */
+        background-image: -o-linear-gradient(to right, #315d87, #0c345a);
+        /* Opera 11.10+ */
+        background-image: linear-gradient(to right, #315d87, #0c345a);
+        filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#315d87', EndColorStr='#0c345a');
+        height: 38px;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 1em;
+    }
+    nav button:hover .txt {
+        text-decoration: underline;
+    }
+    nav ul {
+        padding-top: .65em;
+        border: 0;
+        margin-bottom: 0;
+    }
+    nav li {
+        display: inline-block;
+        padding-right: 4%;
+        /* 6 */
+        border: 0;
+    }
+    nav li.last {
+        padding-right: 0;
+    }
+    nav button {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        height: auto;
+        font-size: .9em;
+        width: auto;
+    }
+    nav button .iconFont {
+        font-size: .7em;
+        color: #ffe89b;
+        top: -2px;
+        display: inline;
+        width: auto;
+    }
+    nav button .txt {
+        font-size: .9em;
+    }
+
+    main {
+        width: 90%;
+    }
+}
+body.home main {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+body.home aside,
+body.about aside,
+body.contact aside,
+body.signIn aside,
+body.register aside {
+    text-align: center;
+    padding-top: 3em;
+}
+body.home aside img,
+body.about aside img,
+body.contact aside img,
+body.signIn aside img,
+body.register aside img {
+    width: 95%;
+    max-width: 380px;
+}
+
+body.home aside {
+    padding-top: 3em;
+}
+body.home aside img {
+    max-width: 278px;
+}
+
+body.register main {
+    text-align: center;
+}
+
+body.addAllowedTime main {
+    line-height: 1.65em;
+}
+
+main ul {
+    list-style-position: outside;
+    margin-left: 16px;
+}
+
+@media (min-width: 768px) {
+    main ul {
+        margin-left: 16px;
+    }
+
+    body.home main,
+    body.about main,
+    body.contact main,
+    body.signIn main,
+    body.register main {
+        width: 55.94406%;
+        float: right;
+        font-size: .9em;
+    }
+    body.home main li,
+    body.about main li,
+    body.contact main li,
+    body.signIn main li,
+    body.register main li {
+        margin-bottom: .15em;
+    }
+
+    body.home aside,
+    body.about aside,
+    body.contact aside,
+    body.signIn aside,
+    body.register aside {
+        width: 43.35664%;
+        float: left;
+    }
+
+    body.volunteerHome div.actions,
+    body.teacherHome div.actions {
+        width: 49.65035%;
+        float: left;
+    }
+    body.volunteerHome div.documents,
+    body.teacherHome div.documents {
+        width: 49.65035%;
+        float: left;
+        margin-top: 3em;
+    }
+    body.volunteerHome #events,
+    body.teacherHome #events {
+        clear: both;
+    }
+}
+.qa-notes {
+    display: none;
+    border: 1px dotted #333;
+    background-color: #ccc;
+    padding: 10px;
+    margin: 10px;
+}
+
+body.siteAdminHome main {
+    text-align: center;
+}
+
+body.teachers main {
+    width: 99%;
+}
+
+fieldset.refine {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #cdcdcd;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+}
+fieldset.refine legend {
+    font-weight: bold;
+    padding: .25em;
+    margin: 1em;
+}
+fieldset.refine div {
+    width: 25%;
+    display: inline-block;
+    float: left;
+    padding-left: 1em;
+}
+fieldset.refine ul {
+    list-style: none;
+    padding-left: .25em;
+}
+fieldset.refine .selectLists label {
+    display: block;
+    margin-bottom: .5em;
+}
+fieldset.refine .selectLists label span {
+    font-weight: bold;
+    display: block;
+}
+fieldset.refine .selectLists select {
+    height: 20px;
+    width: 100%;
+    max-width: 280px;
+}
+fieldset.refine fieldset legend {
+    margin: .25em;
+}
+fieldset.refine fieldset input[type=checkbox] {
+    float: left;
+}
+fieldset.refine fieldset label {
+    display: block;
+    clear: both;
+}
+fieldset.refine fieldset label span {
+    display: block;
+}
+
+@media (min-width: 320px) {
+    fieldset.refine div {
+        width: 100%;
+    }
+    fieldset.refine .selectLists {
+        display: block;
+        width: 100%;
+    }
+}
+@media (min-width: 768px) {
+    fieldset.refine div {
+        width: 24.5%;
+        display: inline-block;
+        float: left;
+        padding-left: 1em;
+    }
+    fieldset.refine .selectLists {
+        display: block;
+        width: 100%;
+    }
+}
+h1 {
+    font-weight: bold;
+    color: #0c345a;
+    font-size: 1.1em;
+    line-height: 1.8em;
+    text-align: center;
+    margin: .5em 0 1em 0;
+}
+
+h2, h3 {
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: .5em;
+}
+
+body.home h3 {
+    margin-top: 1.75em;
+    font-weight: bold;
+    font-size: 1.25em;
+}
+
+body.contact h2, body.contact h3 {
+    margin-bottom: 0;
+}
+
+body {
+    color: #333;
+}
+
+main ul {
+    color: #9c1d20;
+}
+
+main ul span {
+    color: #333;
+}
+
+a, a:visited {
+    color: #0c345a;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.successText {
+    color: #31873f;
+}
+
+/* Webfont: TeachKidsToSaveDE-Regular */
+@font-face {
+    font-family: 'TeachKidsToSaveDE';
+    src: url("../fonts/TeachKidsToSaveDE-Regular.eot");
+    src: url("../fonts/TeachKidsToSaveDE-Regular.eot?#iefix") format("embedded-opentype"), url("../fonts/TeachKidsToSaveDE-Regular.woff") format("woff"), url("../fonts/TeachKidsToSaveDE-Regular.ttf") format("truetype"), url("../fonts/TeachKidsToSaveDE-Regular.svg#TeachKidsToSaveDE-Regular") format("svg");
+    font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+.iconFont {
+    font-family: 'TeachKidsToSaveDE' !important;
+}
+
+.iconFont:before {
+    content: attr(data-icon);
+}
+
+body {
+    font: 100%/1em Verdana, Arial, sans-serif;
+}
+
+button {
+    border: 0;
+    background-color: transparent;
+}
+
+button:hover {
+    cursor: pointer !important;
+}
+
+body.home main button,
+body.register main button {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    font-size: .9em;
+    background-color: #31873f;
+    -webkit-appearance: none;
+    text-transform: uppercase;
+    color: #fff;
+    border: 0;
+    height: 30px;
+}
+
+body.register main button,
+body.about main button {
+    display: block;
+    width: 300px;
+    margin: 1em auto;
+}
+
+main .editOrRegister {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-appearance: none;
+    width: 300px;
+    border: 0;
+    background-color: #31873f;
+    height: 44px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+main .editOrRegister.delete {
+    background-color: #b21b29;
+}
+
+main table .editOrRegister {
+    width: 100%;
+    margin-top: 0;
+}
+
+main .editOrRegister.doneAdding {
+    margin-top: 1em;
+    height: 44px;
+}
+
+main thead button {
+    color: #fff;
+    width: 100%;
+    text-align: left;
+}
+
+.adminEditAllowedTimes tbody button {
+    width: 68px;
+}
+
+.likeAnAnchor {
+    display: inline !important;
+    background-color: transparent;
+    color: #0c345a;
+    text-transform: none;
+    text-decoration: underline;
+    height: initial !important;
+    width: initial !important;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+.likeAnAnchor:hover {
+    text-decoration: none;
+}
+
+.downloadExcel {
+    display: inline-block;
+    margin: .5em 0 .5em 0;
+}
+
+/* body.evenRegistration main table .editOrRegister button {} */
+@media (min-width: 320px) {
+    body.home main button {
+        width: 100%;
+    }
+}
+@media (min-width: 768px) {
+    body.home main button {
+        width: 225px;
+    }
+}
+/* majority of nav css moved to layout file */
+body.home nav .home .txt {
+    text-decoration: underline !important;
+}
+
+body.about nav .about .txt {
+    text-decoration: underline !important;
+}
+
+body.openings nav .openings .txt {
+    text-decoration: underline !important;
+}
+
+body.registerTeacher nav .register .txt,
+body.register nav .register .txt,
+body.volunteer_registration nav .register .txt,
+body.registerVolunteer nav .register .txt {
+    text-decoration: underline !important;
+}
+
+body.signIn nav .signIn .txt {
+    text-decoration: underline !important;
+}
+
+body.contact nav .contact .txt {
+    text-decoration: underline !important;
+}
+
+th.center,
+td.center {
+    text-align: center;
+}
+
+body.volunteerHome table,
+body.bankAdminHome table,
+body.teacherHome table,
+body.createEvent table,
+body.evenRegistration table,
+body.banks table,
+body.schools table,
+body.teachers table,
+body.adminEditAllowedTimes table,
+body.volunteerInformation table,
+body.viewEditEvents table,
+body.listAllowedDates table,
+body.listAllowedTimes table {
+    width: 100%;
+    border: 1px solid #ccc;
+    text-align: left;
+    /*		thead {
+                @include border-radius-tops(4px);
+            }
+    */
+}
+body.volunteerHome table thead th,
+body.bankAdminHome table thead th,
+body.teacherHome table thead th,
+body.createEvent table thead th,
+body.evenRegistration table thead th,
+body.banks table thead th,
+body.schools table thead th,
+body.teachers table thead th,
+body.adminEditAllowedTimes table thead th,
+body.volunteerInformation table thead th,
+body.viewEditEvents table thead th,
+body.listAllowedDates table thead th,
+body.listAllowedTimes table thead th {
+    font-weight: bold;
+    background-color: #0c345a;
+    color: #fff;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    padding-left: .5em;
+    vertical-align: middle;
+}
+body.volunteerHome table tbody tr:nth-child(even),
+body.bankAdminHome table tbody tr:nth-child(even),
+body.teacherHome table tbody tr:nth-child(even),
+body.createEvent table tbody tr:nth-child(even),
+body.evenRegistration table tbody tr:nth-child(even),
+body.banks table tbody tr:nth-child(even),
+body.schools table tbody tr:nth-child(even),
+body.teachers table tbody tr:nth-child(even),
+body.adminEditAllowedTimes table tbody tr:nth-child(even),
+body.volunteerInformation table tbody tr:nth-child(even),
+body.viewEditEvents table tbody tr:nth-child(even),
+body.listAllowedDates table tbody tr:nth-child(even),
+body.listAllowedTimes table tbody tr:nth-child(even) {
+    background: #eaeaea;
+}
+body.volunteerHome table td,
+body.bankAdminHome table td,
+body.teacherHome table td,
+body.createEvent table td,
+body.evenRegistration table td,
+body.banks table td,
+body.schools table td,
+body.teachers table td,
+body.adminEditAllowedTimes table td,
+body.volunteerInformation table td,
+body.viewEditEvents table td,
+body.listAllowedDates table td,
+body.listAllowedTimes table td {
+    padding: .5em;
+}
+
+body.schools table {
+    width: 98%;
+    font-size: .9em;
+    margin: 0 auto;
+}
+
+body.evenRegistration td {
+    vertical-align: middle;
+}
+body.evenRegistration td.action {
+    vertical-align: top;
+}
+body.evenRegistration .editOrRegister {
+    width: 70px;
+}
+
+th.sortable {
+    background-image: url("../img/updown.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+th.sortable.descending {
+    background-image: url("../img/up.gif");
+}
+
+th.sortable.ascending {
+    background-image: url("../img/down.gif");
+}
+
+body.eventDetails label {
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+td.emptyTableMessage {
+    font-style: italic;
+    text-align: center;
+}
+
+@media (min-width: 320px) {
+    table.responsive {
+        border-collapse: separate;
+        empty-cells: hidden;
+    }
+    table.responsive tr,
+    table.responsive td {
+        display: block;
+        text-align: left;
+        padding: 0;
+        width: 100%;
+    }
+    table.responsive thead {
+        display: block;
+    }
+    table.responsive tbody td.action {
+        width: 50%;
+        display: table-cell;
+    }
+    table.responsive td[data-title]:before {
+        content: attr(data-title) ": ";
+        font-weight: bold;
+    }
+    table.responsive thead th {
+        display: block;
+        border-bottom: 1px solid #b18f22;
+    }
+    table.responsive th.action {
+        display: none;
+        visibility: hidden;
+    }
+    table.responsive .school {
+        border-bottom: none;
+    }
+
+    body.volunteerHome table.responsive thead,
+    body.bankAdminHome table.responsive thead,
+    body.banks table.responsive thead,
+    body.schools table.responsive thead,
+    body.teachers table.responsive thead,
+    body.volunteerInformation table.responsive thead,
+    body.viewEditEvents table.responsive thead,
+    body.listAllowedDates table.responsive thead,
+    body.listAllowedTimes table.responsive thead,
+    body.teacherHome table.responsive thead {
+        display: none;
+        visibility: hidden;
+    }
+
+    body.evenRegistration .checkboxLists {
+        display: none;
+        visibility: hidden;
+    }
+    body.evenRegistration .selectLists {
+        display: block;
+        visibility: visible;
+    }
+    body.evenRegistration table.responsive {
+        margin-top: 30px;
+    }
+    body.evenRegistration table.responsive th[data-title]:before {
+        content: attr(data-title) " ";
+        font-weight: bold;
+        color: #333;
+        position: absolute;
+        margin: -25px 0 0 -8px;
+    }
+
+    body.adminEditAllowedTimes table {
+        width: 100%;
+        margin: 0 auto 1em auto;
+    }
+    body.adminEditAllowedTimes table .time {
+        width: 90%;
+    }
+
+    body.teachers table.responsive,
+    body.volunteerInformation table.responsive {
+        font-size: 1em;
+    }
+
+    body.viewEditEvents tbody td.action {
+        width: 33%;
+    }
+}
+@media (min-width: 768px) {
+    table.responsive {
+        border-collapse: collapse;
+        empty-cells: show;
+    }
+    table.responsive thead {
+        display: table-header-group;
+    }
+    table.responsive thead th,
+    table.responsive thead th.action,
+    table.responsive tbody td.action {
+        display: table-cell !important;
+        visibility: visible;
+    }
+    table.responsive tr {
+        display: table-row;
+    }
+    table.responsive td {
+        display: table-cell;
+        text-align: inherit;
+        padding: inherit;
+        width: inherit;
+    }
+    table.responsive td[data-title]:before,
+    table.responsive th[data-title]:before {
+        content: none;
+    }
+    table.responsive th, table.responsive td, table.responsive tbody, table.responsive th.action, table.responsive td.action {
+        width: auto;
+        text-align: inherit;
+    }
+    table.responsive thead th {
+        border-bottom: 0 !important;
+    }
+    table.responsive .date {
+        width: 5%;
+    }
+    table.responsive .time {
+        width: 11%;
+    }
+    table.responsive .grade {
+        width: 10%;
+    }
+    table.responsive .students {
+        width: 11%;
+    }
+    table.responsive .teacher {
+        width: 19%;
+    }
+    table.responsive .school {
+        width: 30%;
+        border-bottom: none;
+    }
+    table.responsive .action {
+        width: 7% !important;
+    }
+
+    body.volunteerHome table.responsive thead,
+    body.bankAdminHome table.responsive thead,
+    body.banks table.responsive thead,
+    body.schools table.responsive thead,
+    body.teachers table.responsive thead,
+    body.volunteerInformation table.responsive thead,
+    body.viewEditEvents table.responsive thead,
+    body.listAllowedDates table.responsive thead,
+    body.listAllowedTimes table.responsive thead,
+    body.teacherHome table.responsive thead {
+        display: table-header-group;
+        visibility: visible;
+    }
+
+    body.evenRegistration .checkboxLists {
+        display: block;
+        visibility: visible;
+        width: 100%;
+    }
+    body.evenRegistration .selectLists {
+        display: none;
+        visibility: hidden;
+    }
+    body.evenRegistration table.responsive {
+        margin-top: 0;
+    }
+    body.evenRegistration table.responsive th[data-title]:before {
+        display: none;
+        visibility: hidden;
+    }
+
+    body.teachers table.responsive,
+    body.volunteerInformation table.responsive {
+        font-size: .6em;
+    }
+
+    body.adminEditAllowedTimes {
+        /*		table {
+                    width:50%;
+
+                }*/
+    }
+}
+form button {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    background-color: #31873f;
+    -webkit-appearance: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 2em;
+    border: 0;
+    height: 44px !important;
+}
+form input[type=text],
+form input[type=password],
+form input[type=email],
+form input[type=tel],
+form input[type=number],
+form textarea {
+    border: 1px solid #cdcdcd;
+    padding: .25em;
+}
+form .formElementCnt {
+    margin-top: 1em;
+}
+form .inputCnt {
+    display: inline-block;
+    width: 100%;
+}
+form .info {
+    font-weight: bold;
+    font-size: .9em;
+}
+form .error {
+    border: 1px solid #b21b29;
+    padding: 2px;
+    display: inline-block;
+}
+form .errorText {
+    color: #b21b29;
+}
+form .addlInfo {
+    font-size: .85em;
+    font-style: italic;
+}
+form textarea {
+    width: 100%;
+    height: 88px;
+}
+
+@media (min-width: 320px) {
+    body.volunteer_registration form,
+    body.registerTeacher form,
+    body.signIn form,
+    body.editPersonalData form,
+    body.eventRegistration form,
+    body.createEvent form,
+    body.addVolunteer form,
+    body.registerVolunteer form,
+    body.addBank form,
+    body.addSchool form {
+        width: 100%;
+        margin: 0 auto;
+    }
+    body.volunteer_registration form input[type=text],
+    body.volunteer_registration form input[type=password],
+    body.registerTeacher form input[type=text],
+    body.registerTeacher form input[type=password],
+    body.signIn form input[type=text],
+    body.signIn form input[type=password],
+    body.editPersonalData form input[type=text],
+    body.editPersonalData form input[type=password],
+    body.eventRegistration form input[type=text],
+    body.eventRegistration form input[type=password],
+    body.createEvent form input[type=text],
+    body.createEvent form input[type=password],
+    body.addVolunteer form input[type=text],
+    body.addVolunteer form input[type=password],
+    body.registerVolunteer form input[type=text],
+    body.registerVolunteer form input[type=password],
+    body.addBank form input[type=text],
+    body.addBank form input[type=password],
+    body.addSchool form input[type=text],
+    body.addSchool form input[type=password] {
+        width: 100%;
+        height: 22px;
+    }
+    body.volunteer_registration form .error,
+    body.registerTeacher form .error,
+    body.signIn form .error,
+    body.editPersonalData form .error,
+    body.eventRegistration form .error,
+    body.createEvent form .error,
+    body.addVolunteer form .error,
+    body.registerVolunteer form .error,
+    body.addBank form .error,
+    body.addSchool form .error {
+        width: 100%;
+    }
+    body.volunteer_registration form button,
+    body.registerTeacher form button,
+    body.signIn form button,
+    body.editPersonalData form button,
+    body.eventRegistration form button,
+    body.createEvent form button,
+    body.addVolunteer form button,
+    body.registerVolunteer form button,
+    body.addBank form button,
+    body.addSchool form button {
+        width: 100%;
+    }
+}
+@media (min-width: 768px) {
+    body.volunteer_registration form,
+    body.registerTeacher form,
+    body.signIn form,
+    body.editPersonalData form,
+    body.eventRegistration form,
+    body.createEvent form,
+    body.addVolunteer form,
+    body.registerVolunteer form,
+    body.addBank form,
+    body.addSchool form {
+        width: 300px;
+        margin: 0 auto;
+    }
+    body.volunteer_registration form input[type=text],
+    body.volunteer_registration form input[type=password],
+    body.registerTeacher form input[type=text],
+    body.registerTeacher form input[type=password],
+    body.signIn form input[type=text],
+    body.signIn form input[type=password],
+    body.editPersonalData form input[type=text],
+    body.editPersonalData form input[type=password],
+    body.eventRegistration form input[type=text],
+    body.eventRegistration form input[type=password],
+    body.createEvent form input[type=text],
+    body.createEvent form input[type=password],
+    body.addVolunteer form input[type=text],
+    body.addVolunteer form input[type=password],
+    body.registerVolunteer form input[type=text],
+    body.registerVolunteer form input[type=password],
+    body.addBank form input[type=text],
+    body.addBank form input[type=password],
+    body.addSchool form input[type=text],
+    body.addSchool form input[type=password] {
+        width: 300px;
+        height: 22px;
+    }
+    body.volunteer_registration form .error,
+    body.registerTeacher form .error,
+    body.signIn form .error,
+    body.editPersonalData form .error,
+    body.eventRegistration form .error,
+    body.createEvent form .error,
+    body.addVolunteer form .error,
+    body.registerVolunteer form .error,
+    body.addBank form .error,
+    body.addSchool form .error {
+        width: auto;
+    }
+    body.volunteer_registration form button,
+    body.registerTeacher form button,
+    body.signIn form button,
+    body.editPersonalData form button,
+    body.eventRegistration form button,
+    body.createEvent form button,
+    body.addVolunteer form button,
+    body.registerVolunteer form button,
+    body.addBank form button,
+    body.addSchool form button {
+        width: 300px;
+    }
+}
+.cancelBlock {
+    width: 300px;
+    margin: 1em auto;
+}
+
+body.evenRegistration .cancelBlock {
+    margin-left: 0;
+    margin-right: 0;
+}
+body.evenRegistration .cancelBlock button {
+    width: 100%;
+}
+
+.errorMessage {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    margin: 0 auto;
+    width: 90%;
+    min-height: 3em;
+    background-color: #b21b29;
+    color: #fff;
+    text-align: center;
+    padding: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+}
+
+footer {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.7em;
+    border-top: 1px solid #ccc;
+    padding-top: .75em;
+}
+footer:after {
+    content: " ";
+    display: block;
+    clear: both;
+}
+
+footer small {
+    font-size: .8em;
+}
+
+.decor {
+    background-color: #0c345a;
+    height: 5px;
+}
+
+/*body.about main {
+	width:90%;
+	margin:0 auto;
+}
+*/
+p {
+    padding-bottom: 1em;
+    font-size: .9em;
+}
+
+
+body.errorPage .obscuredFootnote {
+    font-size: xx-small;
+    color:  #DDDDDD;
+}
+body.errorPage .hiddenErrorMessage {
+    border: 1px solid black;
+    display: none;
+}
+body.errorPage .exceptionType {
+    text-align: center;
+    font-weight: bold;
+}
+body.errorPage .exceptionMessage {
+    text-align: center;
+    margin-top: 1em;
+}
+body.errorPage .stackTrace {
+    margin-top: 1em;
+    font-size: xx-small;
+}
+
+/* --- This section for layout of the event detail page --- */
+/*   If we wanted to use it elsewhere, we might generalize, */
+/*   but since I'm not the expert on the design I thought   */
+/*   I should keep my changes localized.                    */
+/*                                                          */
+/*   CSS design from "http://www.responsivegridsystem.com". */
+
+
+/*  SECTIONS  */
+body.eventDetails .section {
+    clear: both;
+    padding: 0px;
+    margin: 0px;
+}
+
+/*  COLUMN SETUP  */
+body.eventDetails .col {
+    display: block;
+    float:left;
+    margin: 1% 0 1% 1.6%;
+}
+body.eventDetails .col:first-child { margin-left: 0; }
+
+/*  GROUPING  */
+body.eventDetails .group:before,
+body.eventDetails .group:after { content:""; display:table; }
+body.eventDetails .group:after { clear:both;}
+body.eventDetails .group { zoom:1; /* For IE 6/7 */ }
+
+/*  GRID OF TWO  */
+body.eventDetails .span_2_of_2 {
+    width: 100%;
+}
+body.eventDetails .span_1_of_2 {
+    width: 49.2%;
+}
+
+/*  GO FULL WIDTH AT LESS THAN 600 PIXELS */
+
+@media only screen and (max-width: 600px) {
+    body.eventDetails .col {
+        margin: 1% 0 1% 0%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    body.eventDetails .span_2_of_2 { width: 100%; }
+    body.eventDetails .span_1_of_2 { width: 100%; }
+}
+
+body.eventDetails fieldset {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #cdcdcd;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+fieldset legend {
+    font-weight: bold;
+    padding: .25em;
+    margin: 1em;
+}
+
+/* --- End of layout for the event detail page --- */
