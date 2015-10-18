@@ -47,9 +47,9 @@
                         <th scope="col">School</th>
                         <th scope="col">Volunteer</th>
                         <th scope="col">Bank</th>
-                        <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
-                        <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
-                        <th scope="col"><span class="ada-read">Column of Modify buttons</span></th>
+                        <th scope="col">Details&nbsp;&nbsp;&nbsp;&nbsp;<span class="ada-read">Column of Details buttons</span></th>
+                        <th scope="col">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="ada-read">Column of Delete buttons</span></th>
+                        <th scope="col">Modify&nbsp;&nbsp;&nbsp;&nbsp;<span class="ada-read">Column of Modify buttons</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,7 +74,8 @@
                                 <c:otherwise>
                                     <td data-title="Volunteer">
                                         <c:out value="${event.linkedVolunteer.firstName}"/>
-                                        <c:out value="${event.linkedVolunteer.lastName}"/>
+                                        <c:out value="${event.linkedVolunteer.lastName}"/><br>
+                                        <c:out value="${event.linkedVolunteer.email}"/>
                                     </td>
                                     <td data-title="Bank"><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></td>
                                 </c:otherwise>
