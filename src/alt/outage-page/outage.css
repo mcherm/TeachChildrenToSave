@@ -1314,5 +1314,7 @@ fieldset legend {
     padding: .25em;
     margin: 1em;
 }
-
+span.major_announcement {
+    font-size: 1.25em;
+}
 /* --- End of layout for the event detail page --- */
