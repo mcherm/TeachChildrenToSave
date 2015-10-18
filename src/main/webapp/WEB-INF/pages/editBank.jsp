@@ -106,7 +106,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="editOrRegister" value="Edit">Edit</button>
+                        <button type="submit" class="editOrRegister" value="Edit">Save</button>
 
                     </form:form>
 
