@@ -382,18 +382,21 @@ main ul {
   }
 
   body.volunteerHome div.actions,
-  body.teacherHome div.actions {
+  body.teacherHome div.actions,
+  body.bankAdminHome div.actions{
     width: 49.65035%;
     float: left;
   }
   body.volunteerHome div.documents,
-  body.teacherHome div.documents {
+  body.teacherHome div.documents,
+  body.bankAdminHome div.documents {
     width: 49.65035%;
     float: left;
     margin-top: 3em;
   }
   body.volunteerHome #events,
-  body.teacherHome #events {
+  body.teacherHome #events,
+  body.bankAdminHome #volunteers {
     clear: both;
   }
 }

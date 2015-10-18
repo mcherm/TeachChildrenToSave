@@ -29,7 +29,7 @@
 		
 		        <h1>Your Home Page</h1>
 
-		        <div id="actions">
+		        <div id="actions" class="actions">
 		            
 		            <h2>
 		            	Actions
@@ -52,7 +52,27 @@
                     </ul>
 		        </div>
 
-		        <div id="volunteers">
+                <div class="documents">
+                    <strong>Important documents</strong>
+                    <%
+                        String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints%202015.pdf";
+                        String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines%202015.pdf";
+                        String certificateOfRecognition = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2015%20TCTSD%20Certificate.pdf";
+                        String lessonHandout = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%2015%20Lesson_Handout_Answer%20Key.pdf";
+                        String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
+                    %>
+
+                    <ul>
+                        <li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints 2015</a></li>
+                        <li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
+                        <li><a href="<%=certificateOfRecognition%>" target="_blank">Certificate of Recognition</a></li>
+                        <li><a href="<%=lessonHandout%>" target="_blank">Lesson Handout</a></li>
+                        <li><a href="<%=faq%>" target="_blank">FAQs</a></li>
+                    </ul>
+                </div>
+
+
+                <div id="volunteers">
 		            <h2>Volunteers</h2>
 		            
 		            <table id="normalVolunteersTable" class="responsive">
