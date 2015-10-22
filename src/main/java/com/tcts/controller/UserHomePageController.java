@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.ApprovalStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -116,7 +117,7 @@ public class UserHomePageController {
         List<Volunteer> normalVolunteers = new ArrayList<Volunteer>(volunteers.size());
         List<Volunteer> suspendedVolunteers = new ArrayList<Volunteer>();
         for (Volunteer volunteer : volunteers) {
-            if (volunteer.isApproved()) {
+            if (!(volunteer.getApprovalStatus() == ApprovalStatus.Suspended)) {
                 normalVolunteers.add(volunteer);
             } else {
                 suspendedVolunteers.add(volunteer);

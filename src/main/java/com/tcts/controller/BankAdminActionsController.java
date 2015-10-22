@@ -151,7 +151,7 @@ public class BankAdminActionsController {
         }
 
         // --- Actually restore the person ---
-        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_NORMAL);
+        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_CHECKED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();

@@ -216,9 +216,12 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getNumParticipatingTeachersSQL = "select count(distinct teacher_id) from Event";
     private final static String getNumParticipatingSchoolsSQL = "select count(distinct organization_id) from Event join User on teacher_id = user_id";
 
-    public final static int APPROVAL_STATUS_NORMAL = 0;
-    public final static int APPROVAL_STATUS_SUSPENDED = 1;
-    public final static int DEFAULT_APPROVAL_STATUS = APPROVAL_STATUS_NORMAL;
+    public final static int APPROVAL_STATUS_UNCHECKED = 0;
+    public final static int APPROVAL_STATUS_CHECKED = 1;
+    public final static int APPROVAL_STATUS_SUSPENDED = 2;
+
+
+    public final static int DEFAULT_APPROVAL_STATUS = APPROVAL_STATUS_UNCHECKED;
 
 
     /**

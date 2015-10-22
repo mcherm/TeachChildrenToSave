@@ -126,7 +126,7 @@
 		            </table>
 
                     <c:if test="${not empty suspendedVolunteers}">
-                        <h2>Unapproved Volunteers</h2>
+                        <h2>Suspended Volunteers</h2>
                         <table id="suspendedVolunteersTable" class="responsive">
                             <thead>
                                 <tr>

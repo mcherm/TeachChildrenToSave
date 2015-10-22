@@ -11,7 +11,8 @@ import java.sql.SQLException;
 public class Volunteer extends User {
     // --- Basic data fields ---
     private String bankId;
-    private boolean isApproved;
+    private ApprovalStatus approvalStatus;  /*denotes whether a volunteer has been approved by the bank admin*/
+
 
     // --- Linked data - loaded only when needed ---
     private Bank linkedBank;
@@ -28,7 +29,16 @@ public class Volunteer extends User {
     public void populateFieldsFromResultSetRowWithPrefix(ResultSet resultSet, String prefix) throws SQLException {
         super.populateFieldsFromResultSetRowWithPrefix(resultSet, prefix);
         setBankId(resultSet.getString(prefix + "organization_id"));
-        setApproved(resultSet.getInt(prefix + "user_status") == MySQLDatabase.APPROVAL_STATUS_NORMAL);
+        int userStatus = resultSet.getInt(prefix + "user_status");
+        if (userStatus == MySQLDatabase.APPROVAL_STATUS_UNCHECKED){
+            setApprovalStatus(ApprovalStatus.Unchecked);
+        } else if (userStatus == MySQLDatabase.APPROVAL_STATUS_CHECKED) {
+            setApprovalStatus(ApprovalStatus.Checked);
+        } else if (userStatus == MySQLDatabase.APPROVAL_STATUS_SUSPENDED) {
+            setApprovalStatus(ApprovalStatus.Suspended);
+        } else {
+            throw new RuntimeException("Invalid User Status");
+        }
     }
 
     public String getBankId() {
@@ -39,13 +49,15 @@ public class Volunteer extends User {
         this.bankId = bankId;
     }
 
-    public boolean isApproved() {
-        return isApproved;
+
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
     }
 
-    public void setApproved(boolean approved) {
-        isApproved = approved;
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
+
 
     public Bank getLinkedBank() {
         return linkedBank;
