@@ -82,6 +82,69 @@ public class BankAdminActionsController {
         return "bankAdminHomeDetail";
     }
 
+    /**
+     * Sets the given volunteer to "suspended", which will REMOVE them from
+     * all events they had volunteered for.
+     */
+    @RequestMapping(value = "approveVolunteer", method = RequestMethod.POST)
+    public String approveVolunteer(
+            HttpSession session,
+            HttpServletRequest request,
+            @RequestParam("volunteerId") String volunteerId
+    ) throws SQLException
+    {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        BankAdmin bankAdmin = sessionData.getBankAdmin();
+        if (bankAdmin == null) {
+            throw new NotLoggedInException("Cannot navigate to this page unless you are a logged-in bank admin.");
+        }
+
+        // --- Find that volunteer; make sure it's ours ---
+        Volunteer volunteer = (Volunteer) database.getUserById(volunteerId);
+        if (volunteer == null) {
+            throw new InvalidParameterFromGUIException();
+        }
+        if (! volunteer.getBankId().equals(bankAdmin.getBankId())) {
+            throw new InvalidParameterFromGUIException();
+        }
+
+        // --- Actually suspend the person ---
+        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_CHECKED);
+
+        // --- And navigate to home page ---
+        return "redirect:" + bankAdmin.getUserType().getHomepage();
+    }
+
+    @RequestMapping(value = "unApproveVolunteer", method = RequestMethod.POST)
+    public String unApproveVolunteer(
+            HttpSession session,
+            HttpServletRequest request,
+            @RequestParam("volunteerId") String volunteerId
+    ) throws SQLException
+    {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        BankAdmin bankAdmin = sessionData.getBankAdmin();
+        if (bankAdmin == null) {
+            throw new NotLoggedInException("Cannot navigate to this page unless you are a logged-in bank admin.");
+        }
+
+        // --- Find that volunteer; make sure it's ours ---
+        Volunteer volunteer = (Volunteer) database.getUserById(volunteerId);
+        if (volunteer == null) {
+            throw new InvalidParameterFromGUIException();
+        }
+        if (! volunteer.getBankId().equals(bankAdmin.getBankId())) {
+            throw new InvalidParameterFromGUIException();
+        }
+
+        // --- Actually suspend the person ---
+        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_UNCHECKED);
+
+        // --- And navigate to home page ---
+        return "redirect:" + bankAdmin.getUserType().getHomepage();
+    }
 
     /**
      * Sets the given volunteer to "suspended", which will REMOVE them from

@@ -114,10 +114,13 @@ public class UserHomePageController {
 
         // --- Obtain and sort the volunteers ---
         List<Volunteer> volunteers = database.getVolunteersByBank(bankAdmin.getBankId());
+        List<Volunteer> newVolunteers = new ArrayList<Volunteer>();
         List<Volunteer> normalVolunteers = new ArrayList<Volunteer>(volunteers.size());
         List<Volunteer> suspendedVolunteers = new ArrayList<Volunteer>();
         for (Volunteer volunteer : volunteers) {
-            if (!(volunteer.getApprovalStatus() == ApprovalStatus.Suspended)) {
+            if (volunteer.getApprovalStatus() == ApprovalStatus.Unchecked) {
+               newVolunteers.add (volunteer);
+            } else if (volunteer.getApprovalStatus() == ApprovalStatus.Checked) {
                 normalVolunteers.add(volunteer);
             } else {
                 suspendedVolunteers.add(volunteer);
@@ -128,6 +131,7 @@ public class UserHomePageController {
         model.addAttribute("bank", bank);
         model.addAttribute("normalVolunteers", normalVolunteers);
         model.addAttribute("suspendedVolunteers", suspendedVolunteers);
+        model.addAttribute("newVolunteers", newVolunteers);
         return "bankAdminHome";
     }
 

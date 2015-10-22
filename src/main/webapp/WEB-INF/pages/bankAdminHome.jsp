@@ -73,7 +73,66 @@
 
 
                 <div id="volunteers">
-		            <h2>Volunteers</h2>
+
+                <c:if test="${not empty newVolunteers}">
+                    <h2>New Volunteers</h2>
+                    <div>When you've verfied a new user is valid, please approve the user.  This will place it on the approved list.  New users and approved users can sign up for classes normally.  However if you suspend a user that user will be unsigned up from any classes they had previously signed up for and be prevented from signing up for any classes in the future unless they are reinstated by you.</div>
+                    <table id="newVolunteersTable" class="responsive">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>
+                                    <div>Classes Registered</div>
+                                    <table>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Teacher</th>
+                                            <th>Grade</th>
+                                            <th>Students</th>
+                                            <c:if test="${bank.minLMIForCRA != null}">
+                                                <th scope="col">CRA</th>
+                                            </c:if>
+                                        </tr>
+                                    </table>
+                                </th>
+                                <th scope="col">Approve<span class="ada-read">Column of Approve buttons</span></th>
+                                <th scope="col">Suspend<span class="ada-read">Column of Suspend buttons</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <c:forEach var="volunteer" items="${newVolunteers}">
+                                <tr>
+                                    <td data-title="First Name"><c:out value="${volunteer.firstName}"/></td>
+                                    <td data-title="Last Name"><c:out value="${volunteer.lastName}"/></td>
+                                    <td data-title="Email"><c:out value="${volunteer.email}"/></td>
+                                    <td data-title="Classes Registered">
+                                        <div class="volunteerClasses" id="volunteerClassesFor<c:out value="${volunteer.userId}"/>">
+                                            <!-- populated by javascript -->
+                                            <em>loading...</em>
+                                        </div>
+                                    </td>
+                                    <td class="action">
+                                        <form method="POST" action="approveVolunteer.htm">
+                                            <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
+                                            <button type="submit" class="editOrRegister delete">Approve</button>
+                                        </form>
+                                    </td>
+                                    <td class="action">
+                                        <form method="POST" action="suspendVolunteer.htm">
+                                            <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
+                                            <button type="submit" class="editOrRegister delete">Suspend</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+
+                    <h2>Approved Volunteers</h2>
 		            
 		            <table id="normalVolunteersTable" class="responsive">
 		                <thead>
@@ -96,7 +155,8 @@
                                         </tr>
                                     </table>
                                 </th>
-                                <th scope="col"><span class="ada-read">Column of Suspend buttons</span></th>
+                                <th scope="col">Undo Approval<span class="ada-read">Column of Undo Approval buttons</span></th>
+                                <th scope="col">Suspend<span class="ada-read">Column of Suspend buttons</span></th>
 		                    </tr>
 		                </thead>
 		                <tbody>
@@ -113,6 +173,12 @@
                                             <!-- populated by javascript -->
                                             <em>loading...</em>
                                         </div>
+                                    </td>
+                                    <td class="action">
+                                        <form method="POST" action="unApproveVolunteer.htm">
+                                            <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
+                                            <button type="submit" class="editOrRegister delete">Undo Approve</button>
+                                        </form>
                                     </td>
                                     <td class="action">
                                         <form method="POST" action="suspendVolunteer.htm">

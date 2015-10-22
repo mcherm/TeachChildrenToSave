@@ -27,7 +27,7 @@
 		            <ul class="noUl">
 		                <li class="mb1">
                             <c:choose>
-                                <c:when test="${sessionData.volunteer.approved}">
+                                <c:when test="${!(sessionData.volunteer.getApprovalStatus() == ApprovalStatus.Suspended)}">
                                     <button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
                                         Register for a class
                                     </button>
