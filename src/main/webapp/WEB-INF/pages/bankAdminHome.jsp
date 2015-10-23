@@ -117,13 +117,14 @@
                                     <td class="action">
                                         <form method="POST" action="approveVolunteer.htm">
                                             <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
-                                            <button type="submit" class="editOrRegister delete">Approve</button>
+                                            <button type="submit" class="editOrRegister smallButton">Approve</button>
                                         </form>
                                     </td>
                                     <td class="action">
                                         <form method="POST" action="suspendVolunteer.htm">
                                             <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
-                                            <button type="submit" class="editOrRegister delete">Suspend</button>
+                                            <button onclick="return confirm('This will remove the volunteer from any classes she has signed up for.  Are you sure you want to suspend volunteer?' );"
+                                                    type="submit" class="editOrRegister delete smallButton">Suspend</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -177,13 +178,14 @@
                                     <td class="action">
                                         <form method="POST" action="unApproveVolunteer.htm">
                                             <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
-                                            <button type="submit" class="editOrRegister delete">Undo Approve</button>
+                                            <button type="submit" class="editOrRegister smallButton">Undo Approve</button>
                                         </form>
                                     </td>
                                     <td class="action">
                                         <form method="POST" action="suspendVolunteer.htm">
                                             <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
-                                            <button type="submit" class="editOrRegister delete">Suspend</button>
+                                            <button onclick="return confirm('This will remove the volunteer from any classes she has signed up for.  Are you sure you want to suspend volunteer?' );"
+                                                    type="submit" class="editOrRegister delete smallButton">Suspend</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -211,7 +213,7 @@
                                         <td class="action">
                                             <form method="POST" action="reinstateVolunteer.htm">
                                                 <input type="hidden" name="volunteerId" value="<c:out value="${volunteer.userId}"/>"/>
-                                                <button type="submit" class="editOrRegister delete">Reinstate</button>
+                                                <button type="submit" class="editOrRegister smallButton">Reinstate</button>
                                             </form>
                                         </td>
                                     </tr>

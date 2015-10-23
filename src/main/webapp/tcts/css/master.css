@@ -612,6 +612,10 @@ main table .editOrRegister {
   margin-top: 0;
 }
 
+main .editOrRegister.smallButton {
+  font-size: 70%;
+}
+
 main .editOrRegister.doneAdding {
   margin-top: 1em;
   height: 44px;
