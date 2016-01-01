@@ -1,0 +1,29 @@
+Very Easy:
+ * Need to update Year and dates on Home Page [April 25 - 29]
+ * Documents will need to be updated on Teachers and Volunteers Site [I will get you the updated versions once they can be updated, may not be until January.]
+ * Will need to clear out List Classes, Volunteers, Teachers
+ * Site Admin. – Add/Remove/Edit Banks; After you click Modify there is an Edit button needs to be changed to say “Save”
+ * Site Admin - We will need to change the password
+ * Bank Admin. - Important Documents that show on the Volunteer page added to the Bank Admin page.
+ * (NEW) Switch to cheaper server [Amazon has cheaper servers now that didn't exist last year. Can save you some costs.]
+
+Simple:
+ * Site Admin. – List Classes would like the volunteers email to export with the report
+ * Bank Admin. - A verification check-box next to each volunteers name so the bank admin. knows who they already checked and who is new and needs to be checked.
+ * Bank Admin. – Needs “export to excel” function added
+ * Site Outage Page - need a page to display when the site has been taken down for maintenance
+ * (NEW) Apply DB patches
+ * (NEW) Update the list of schools [I will need the updated list of schools.] We will update this list next week.
+
+Manageable:
+ * Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
+ * Site Admin – Would like to be able register volunteers for classes from the site admin page instead of having to use another sign in.
+ * (NEW) Provide written notes and "training" on managing the site. Basically, it would cover how to Startup, Shutdown, and Deploy new versions.
+
+Difficult:
+ * Bank Admin. – Would like to be able to register for a class from their Bank Admin page instead of having to set up another log-in to register.
+ 
+--------
+ LATER:
+ 
+I have attached the updated school list to replace with the current list, the updated school info. is in the 2016 tab.  We will also need to add a field to the volunteer registration for Mail Code.
