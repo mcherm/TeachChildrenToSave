@@ -134,8 +134,10 @@
                 </c:if>
 
                     <h2>Approved Volunteers</h2>
-		            
-		            <table id="normalVolunteersTable" class="responsive">
+                    <a download="bankvolunteers.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'normalVolunteersTable', 'bankAdminHome');">Export to Excel</a>
+
+
+                    <table id="normalVolunteersTable" class="responsive">
 		                <thead>
 		                    <tr>
 		                        <th>First Name</th>
