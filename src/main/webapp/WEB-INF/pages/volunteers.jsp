@@ -41,7 +41,6 @@
                     <tr>
                         <th scope="col">User ID</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Password</th>
                         <th scope="col">First Name</th>
                         <th scope="col">Last Name</th>
                         <th scope="col">User Type</th>
@@ -60,10 +59,6 @@
                     <tr>
                         <td data-title="User ID"><c:out value="${volunteer.userId}"/></td>
                         <td data-title="Email"><c:out value="${volunteer.email}"/></td>
-                        <td data-title="Password">
-                            <%-- password throws page error --%>
-                            <%--<c:out value="${volunteer.password}"/> --%>
-                        </td>
                         <td data-title="First Name"><c:out value="${volunteer.firstName}"/></td>
                         <td data-title="Last Name"><c:out value="${volunteer.lastName}"/></td>
                         <td data-title="User Type">Volunteer</td>

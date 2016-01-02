@@ -51,14 +51,15 @@ Manageable:
  P Bank Admin. – Needs “export to excel” function added
 
 -------- DONE --------
- D Site Admin. – Add/Remove/Edit Banks; After you click Modify there is an Edit button needs to be changed to say “Save”
- D Bank Admin. - Important Documents that show on the Volunteer page added to the Bank Admin page.
- D (NEW) Switch to cheaper server [Amazon has cheaper servers now that didn't exist last year. Can save you some costs.]
- D Bank Admin. - A verification check-box next to each volunteers name so the bank admin. knows who they already checked and who is new and needs to be checked.
- D Site Outage Page - need a page to display when the site has been taken down for maintenance
- N Start fresh MySQL instance.
- N Create SQL insert statements for the updated school list.
- N Site Admin - We will need to change the password
+ * Site Admin. – Add/Remove/Edit Banks; After you click Modify there is an Edit button needs to be changed to say “Save”
+ * Bank Admin. - Important Documents that show on the Volunteer page added to the Bank Admin page.
+ * (NEW) Switch to cheaper server [Amazon has cheaper servers now that didn't exist last year. Can save you some costs.]
+ * Bank Admin. - A verification check-box next to each volunteers name so the bank admin. knows who they already checked and who is new and needs to be checked.
+ * Site Outage Page - need a page to display when the site has been taken down for maintenance
+ * Start fresh MySQL instance.
+ * Create SQL insert statements for the updated school list.
+ * Site Admin - We will need to change the password
+ * Remove password column from teachers and volunteers listings in site admin screens.
 
 -------- SKIP --------
 
