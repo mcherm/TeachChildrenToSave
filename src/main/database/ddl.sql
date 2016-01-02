@@ -92,13 +92,3 @@ create table School
         UNIQUE KEY ix_name (school_name)
     );
 
-
-/* --- The following are just TEMPORARY tables for now, and are not used by the app --- */
-
-DROP TABLE Activity_Logging;
-CREATE TABLE Activity_Logging
-    (
-        user_id INT,
-        activity_time DATETIME,
-        activity_type VARCHAR(1000)
-    );

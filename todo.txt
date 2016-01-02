@@ -7,23 +7,38 @@ Questions to ask:
  On what days is the volunteering happening in 2016?
  What do you mean by adding mail code to volunteer registration... what kindof data will be in this field?
  What do you want the time slots to be called?
+
  In Important Documents on Volunteer Page:
     Lesson Handout Answer Key and Certificate of Recognition pdf's both need to be updated;  minimally the year removed or updated from 2015 to 2016.
 
  In Important Documents on  Teacher Page:
     Should we include 2015 Logo Slogan Contest Flyer in the important documents and if so can you update the pdf to say 2016?
 
+ During 2015, the following banks were removed:
+      AIG Federal Savings Bank
+      The First National Bank of Wyoming
+      Wilmington Trust Company
+    and the following "banks" were added (without any address):
+      "Delaware Bankers Association"
+      "CEEE Volunteers"
+      "Middletown High School - Bank at School"
+      "The Bryn Mawr Trust Company of DE"
+    What would you like loaded for 2016?
+ Our expectation was that all teacher, volunteer, and bank administrator accounts from 2015 would
+    be removed (although, obviously, the same person could sign up again). Is that how you want
+    to go about this?
+ In the list of schools "Gateway Lab School" is listed twice, once as a public school and once
+    as a non-public school. I presume this is a mistake and it's actually just a public school, right?
+
+-------- OPEN TASKS --------
 
 Very Easy:
  N Need to update Year and dates on Home Page [April 25 - 29]
  N Documents will need to be updated on Teachers and Volunteers Site [I will get you the updated versions once they can be updated, may not be until January.]
  N Will need to clear out List Classes, Volunteers, Teachers
- N Site Admin - We will need to change the password
  N Document "Helpful Hints 2015" should be renamed.
 
 Simple:
- N Start fresh MySQL instance.
- N Create SQL insert statements for the updated school list.
  N Add a field to the volunteer registration for "Mail Code".
 
 Manageable:
@@ -41,6 +56,9 @@ Manageable:
  D (NEW) Switch to cheaper server [Amazon has cheaper servers now that didn't exist last year. Can save you some costs.]
  D Bank Admin. - A verification check-box next to each volunteers name so the bank admin. knows who they already checked and who is new and needs to be checked.
  D Site Outage Page - need a page to display when the site has been taken down for maintenance
+ N Start fresh MySQL instance.
+ N Create SQL insert statements for the updated school list.
+ N Site Admin - We will need to change the password
 
 -------- SKIP --------
 
