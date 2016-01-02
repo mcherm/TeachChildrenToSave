@@ -155,8 +155,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException {
-        return database.getUsersByType(userType);
+    public List<BankAdmin> getBankAdmins() throws SQLException {
+        return database.getBankAdmins();
     }
 
     @Override

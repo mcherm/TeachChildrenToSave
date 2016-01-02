@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.BankAdmin;
+import com.tcts.exception.InconsistentDatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Teacher;
-import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.NotLoggedInException;
@@ -50,14 +49,14 @@ public class EmailAnnouncementController {
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-        return showFormWithErrorMessage(model, "");
+        return showForm(model);
     }
 
     /**
      * A subroutine used to set up and then show the email announcement form. It
-     * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
+     * returns the string, so you can invoke it as "return showForm(...)".
      */
-    private String showFormWithErrorMessage(Model model, String errorMessage) throws SQLException {
+    private String showForm(Model model) throws SQLException {
     	model.addAttribute("formData", new EmailAnnouncementFormData());
     	return "emailAnnouncement";
     }
@@ -65,55 +64,45 @@ public class EmailAnnouncementController {
     @RequestMapping(value="/emailAnnouncement", method=RequestMethod.POST)
     public String doEmailAnnouncement(HttpSession session, Model model, HttpServletRequest request,
                               @ModelAttribute("formData") EmailAnnouncementFormData formData)
-            throws SQLException
+            throws SQLException, InconsistentDatabaseException
     {
     	SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
         
-        ArrayList<String> emailList = new ArrayList<>();
+        ArrayList<String> emailList = new ArrayList<String>();
         
         if ("Yes".equalsIgnoreCase(formData.getMatchedTeachers())){
-        	List<Teacher> teachersList = database.getMatchedTeachers();
-        	for (Iterator<Teacher>it=teachersList.iterator();it.hasNext();) {
-        		Teacher teacher = (Teacher)it.next(); 
-        		emailList.add(teacher.getEmail() );
-        	}
+            for (Teacher teacher : database.getMatchedTeachers()) {
+                emailList.add(teacher.getEmail() );
+            }
         }
         if ("Yes".equalsIgnoreCase(formData.getUnmachedTeachers())){
-        	List<Teacher> teachersList = database.getUnMatchedTeachers();
-        	for (Iterator<Teacher>it=teachersList.iterator();it.hasNext();) {
-        		Teacher teacher = (Teacher)it.next(); 
-        		emailList.add(teacher.getEmail() );
-        	}
+            for (Teacher teacher : database.getUnMatchedTeachers()) {
+                emailList.add(teacher.getEmail() );
+            }
         }
         if ("Yes".equalsIgnoreCase(formData.getMatchedVolunteer())){
-        	List<Volunteer> volunteersList = database.getMatchedVolunteers();
-        	for (Iterator<Volunteer>it=volunteersList.iterator();it.hasNext();) {
-        		Volunteer volunteer = (Volunteer)it.next(); 
-        		emailList.add(volunteer.getEmail() );
-        	}
+            for (Volunteer volunteer : database.getMatchedVolunteers()) {
+                emailList.add(volunteer.getEmail() );
+            }
         }
         if ("Yes".equalsIgnoreCase(formData.getUnmatchedvolunteers())){
-        	List<Volunteer> volunteersList = database.getUnMatchedVolunteers();
-        	for (Iterator<Volunteer>it=volunteersList.iterator();it.hasNext();) {
-        		Volunteer volunteer = (Volunteer)it.next(); 
-        		emailList.add(volunteer.getEmail() );
-        	}
+            for (Volunteer volunteer : database.getUnMatchedVolunteers()) {
+                emailList.add(volunteer.getEmail());
+            }
         }
-        if ("Yes".equalsIgnoreCase(formData.getBankAdmins())){
-        	List<User> bankAdminList = (List<User>) database.getUsersByType("BA");
-        	for (Iterator<User>it=bankAdminList.iterator();it.hasNext();) {
-        		User user = (User)it.next(); 
-        		emailList.add(user.getEmail() );
-        	}
+        if ("Yes".equalsIgnoreCase(formData.getBankAdmins())) {
+            for (BankAdmin bankAdmin : database.getBankAdmins()) {
+                emailList.add(bankAdmin.getEmail());
+            }
         }
         
        //Send email to volunteer
         try {
         	
-        	Map<String,Object> emailModel = new <String, Object>HashMap();
+        	Map<String,Object> emailModel = new HashMap<String, Object>();
         	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
     		
     		emailModel.put("logoImage", logoImage);

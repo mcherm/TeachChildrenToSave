@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.Bank;
@@ -13,6 +14,7 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.*;
 import com.tcts.formdata.AddAllowedDateFormData;
@@ -48,7 +50,7 @@ public interface DatabaseFacade {
      * user is returned.
      */
     public User modifyUserPersonalFields(EditPersonalDataFormData formData)
-            throws SQLException, EmailAlreadyInUseException;
+            throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException;
 
     /**
      * Insert a new Teacher in the database, and return it. Expects that all
@@ -131,13 +133,6 @@ public interface DatabaseFacade {
     /** Returns the allowed times. */
     public List<String> getAllowedTimes() throws SQLException;
 
-    /**
-     * @param userType
-     * @return List<? super User>
-     * @throws SQLException
-     * @throws InconsistentDatabaseException
-     */
-    public List<? super User> getUsersByType(String userType) throws SQLException, InconsistentDatabaseException;
 
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 
@@ -293,4 +288,12 @@ public interface DatabaseFacade {
 	 */
 
 	List<Volunteer> getUnMatchedVolunteers() throws SQLException;
+
+    /**
+     * Returns a list of all the bank admins.
+     *
+     * @return
+     * @throws SQLException
+     */
+    List<BankAdmin> getBankAdmins() throws SQLException;
 }
