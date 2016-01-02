@@ -45,16 +45,16 @@
 					<div class="documents">
 						<strong>Important documents</strong>
 			        	<%
-			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints%202015.pdf";
-			        	String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/2015%20Letter%20to%20teachers.pdf";
-			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines%202015.pdf";
+			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints.pdf";
+			        	String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/Letter%20to%20teachers.pdf";
+			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines.pdf";
                         String logoContest = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/2015%20Logo_Slogan%20Contest%20Flyer.pdf";
                         String lessonHandout = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%2015%20Lesson_Handout_Answer%20Key.pdf";
                         String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
 			        	%>
 
 						<ul>
-							<li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints 2015</a></li>
+							<li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints</a></li>
 							<li><a href="<%=letterToTeacher%>" target="_blank">Letters to Teachers</a></li>
 							<li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
                             <li><a href="<%=logoContest%>" target="_blank">Logo &amp Slogan Contest Flyer</a></li>
