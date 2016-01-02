@@ -8,7 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -215,6 +218,8 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getNumVolunteersSQL = "select count(*) from User where access_type = 'V'";
     private final static String getNumParticipatingTeachersSQL = "select count(distinct teacher_id) from Event";
     private final static String getNumParticipatingSchoolsSQL = "select count(distinct organization_id) from Event join User on teacher_id = user_id";
+    private final static String getSiteSettingsSQL = "select * from SiteSettings";
+    private final static String insertOrModifySiteSettingSQL = "insert into SiteSettings (setting_name, setting_value) VALUES(?, ?) on duplicate key update setting_value = ?";
 
     public final static int APPROVAL_STATUS_UNCHECKED = 0;
     public final static int APPROVAL_STATUS_CHECKED = 1;
@@ -749,9 +754,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement = connection.prepareStatement(getUserByTypeSQL);
             preparedStatement.setString(1, UserType.BANK_ADMIN.getDBValue());
             resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
             while (resultSet.next()) {
-                numberOfRows++;
                 BankAdmin bankAdmin = new BankAdmin();
                 bankAdmin.populateFieldsFromResultSetRow(resultSet);
                 if (bankAdmin.getUserType() != UserType.BANK_ADMIN) {
@@ -1694,4 +1697,41 @@ public class MySQLDatabase implements DatabaseFacade {
         return sb.toString();
     }
 
+    @Override
+    public Map<String, String> getSiteSettings() throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getSiteSettingsSQL);
+            resultSet = preparedStatement.executeQuery();
+            Map<String,String> result = new HashMap<String,String>();
+            while (resultSet.next()) {
+                String setting_name = resultSet.getString("setting_name");
+                String setting_value = resultSet.getString("setting_value");
+                result.put(setting_name, setting_value);
+            }
+            return Collections.unmodifiableMap(result);
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
+    @Override
+    public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(insertOrModifySiteSettingSQL);
+            preparedStatement.setString(1, settingName);
+            preparedStatement.setString(2, settingValue);
+            preparedStatement.setString(3, settingValue);
+            preparedStatement.executeUpdate();
+        }
+        finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+    }
 }

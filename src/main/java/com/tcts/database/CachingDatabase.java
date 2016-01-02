@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.tcts.common.CachedList;
 import com.tcts.common.CachedValue;
@@ -79,6 +80,14 @@ public class CachingDatabase implements DatabaseFacade {
                 @Override
                 public List<Event> generateValue() throws SQLException {
                     return database.getAllAvailableEvents();
+                }
+            };
+
+    private final CachedValue<Map<String,String>, SQLException> siteSettings =
+            new CachedValue<Map<String,String>, SQLException>(REFRESH_IN_MILLIS) {
+                @Override
+                public Map<String, String> generateValue() throws SQLException {
+                    return database.getSiteSettings();
                 }
             };
             
@@ -338,5 +347,16 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
     	return database.getUnMatchedVolunteers();
+    }
+
+    @Override
+    public Map<String, String> getSiteSettings() throws SQLException {
+        return siteSettings.getCachedValue();
+    }
+
+    @Override
+    public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
+        siteSettings.refreshNow();
+        database.modifySiteSetting(settingName, settingValue);
     }
 }

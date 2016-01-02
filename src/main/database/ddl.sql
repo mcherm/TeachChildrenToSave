@@ -3,6 +3,14 @@ This has DML for creating tables. WARNING - if you execute this,
 it wipes out the entire database!
 */
 
+drop table SiteSettings;
+create table SiteSettings
+    (
+        setting_name VARCHAR(30) NOT NULL,
+        setting_value VARCHAR(100) NOT NULL,
+        PRIMARY KEY (setting_name)
+    );
+
 drop table AllowedDates;
 create table AllowedDates
     (

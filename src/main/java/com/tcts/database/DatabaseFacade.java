@@ -296,4 +296,23 @@ public interface DatabaseFacade {
      * @throws SQLException
      */
     List<BankAdmin> getBankAdmins() throws SQLException;
+
+    /**
+     * Retrieves the full collection of all site settings.
+     * @return
+     * @throws SQLException
+     */
+    Map<String, String> getSiteSettings() throws SQLException;
+
+    /**
+     * This modifies a specific site setting. If the existing setting name already
+     * exists, then this modifies it; if it does not exist then this creates a
+     * new setting.
+     *
+     * @param settingName the new site setting to modify or create
+     * @param settingName the new value for the site setting
+     * @throws SQLException
+     */
+    void modifySiteSetting(String settingName, String settingValue) throws SQLException;
+
 }
