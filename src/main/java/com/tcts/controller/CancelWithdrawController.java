@@ -174,7 +174,7 @@ public class CancelWithdrawController {
         // --- Send Emails ---
         // Send email to Teacher
         try {
-            Map<String,Object> emailModel = new <String, Object>HashMap();
+            Map<String,Object> emailModel = new HashMap<String, Object>();
 
             String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
 
@@ -296,7 +296,7 @@ public class CancelWithdrawController {
         	User volunteer = database.getUserById(event.getVolunteerId());
         	try {
         	
-            	Map<String,Object> emailModel = new <String, Object>HashMap();
+            	Map<String,Object> emailModel = new HashMap<String, Object>();
             	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
         		
         		emailModel.put("logoImage", logoImage);

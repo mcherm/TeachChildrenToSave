@@ -68,6 +68,12 @@
                         </button>
                     </li>
 
+					<li class="mb1">
+						<button onclick="js.loadURL('viewSiteSettings.htm');" class="editOrRegister">
+						    View/Edit Site Settings
+						</button>
+					</li>
+
                     <li class="mb1">
                         <button onclick="js.loadURL('adminViewStatistics.htm');" class="editOrRegister">
                             View Program Statistics

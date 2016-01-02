@@ -709,7 +709,8 @@ body.adminEditAllowedTimes table,
 body.volunteerInformation table,
 body.viewEditEvents table,
 body.listAllowedDates table,
-body.listAllowedTimes table {
+body.listAllowedTimes table,
+body.viewSiteSettings table {
   width: 100%;
   border: 1px solid #ccc;
   text-align: left;
@@ -730,7 +731,8 @@ body.adminEditAllowedTimes table thead th,
 body.volunteerInformation table thead th,
 body.viewEditEvents table thead th,
 body.listAllowedDates table thead th,
-body.listAllowedTimes table thead th {
+body.listAllowedTimes table thead th,
+body.viewSiteSettings table thead th {
   font-weight: bold;
   background-color: #0c345a;
   color: #fff;
@@ -751,7 +753,8 @@ body.adminEditAllowedTimes table tbody tr:nth-child(even),
 body.volunteerInformation table tbody tr:nth-child(even),
 body.viewEditEvents table tbody tr:nth-child(even),
 body.listAllowedDates table tbody tr:nth-child(even),
-body.listAllowedTimes table tbody tr:nth-child(even) {
+body.listAllowedTimes table tbody tr:nth-child(even),
+body.viewSiteSettings table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
 body.volunteerHome table td,
@@ -766,7 +769,8 @@ body.adminEditAllowedTimes table td,
 body.volunteerInformation table td,
 body.viewEditEvents table td,
 body.listAllowedDates table td,
-body.listAllowedTimes table td {
+body.listAllowedTimes table td,
+body.viewSiteSettings table td {
   padding: .5em;
 }
 
@@ -855,6 +859,7 @@ td.emptyTableMessage {
   body.viewEditEvents table.responsive thead,
   body.listAllowedDates table.responsive thead,
   body.listAllowedTimes table.responsive thead,
+  body.viewSiteSettings table.responsive thead,
   body.teacherHome table.responsive thead {
     display: none;
     visibility: hidden;
@@ -962,6 +967,7 @@ td.emptyTableMessage {
   body.viewEditEvents table.responsive thead,
   body.listAllowedDates table.responsive thead,
   body.listAllowedTimes table.responsive thead,
+  body.viewSiteSettings table.responsive thead,
   body.teacherHome table.responsive thead {
     display: table-header-group;
     visibility: visible;

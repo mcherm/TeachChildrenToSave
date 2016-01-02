@@ -8,10 +8,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -1698,7 +1703,7 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Map<String, String> getSiteSettings() throws SQLException {
+    public SortedMap<String, String> getSiteSettings() throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -1706,13 +1711,13 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getSiteSettingsSQL);
             resultSet = preparedStatement.executeQuery();
-            Map<String,String> result = new HashMap<String,String>();
+            SortedMap<String,String> result = new TreeMap<String, String>();
             while (resultSet.next()) {
                 String setting_name = resultSet.getString("setting_name");
                 String setting_value = resultSet.getString("setting_value");
                 result.put(setting_name, setting_value);
             }
-            return Collections.unmodifiableMap(result);
+            return Collections.unmodifiableSortedMap(result);
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }

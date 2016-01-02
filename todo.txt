@@ -33,13 +33,10 @@ Questions to ask:
 -------- OPEN TASKS --------
 
 Very Easy:
- N Need to update Year and dates on Home Page [April 25 - 29]
- N Documents will need to be updated on Teachers and Volunteers Site [I will get you the updated versions once they can be updated, may not be until January.]
- N Will need to clear out List Classes, Volunteers, Teachers
- N Document "Helpful Hints 2015" should be renamed.
+ * Documents will need to be updated on Teachers and Volunteers Site [I will get you the updated versions once they can be updated, may not be until January.]
 
 Simple:
- N Add a field to the volunteer registration for "Mail Code".
+ * Add a field to the volunteer registration for "Mail Code".
 
 Manageable:
  N Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
@@ -60,6 +57,9 @@ Manageable:
  * Create SQL insert statements for the updated school list.
  * Site Admin - We will need to change the password
  * Remove password column from teachers and volunteers listings in site admin screens.
+ * Need to update Year and dates on Home Page [April 25 - 29]
+ * Will need to clear out List Classes, Volunteers, Teachers
+ * Document "Helpful Hints 2015" should be renamed.
 
 -------- SKIP --------
 
