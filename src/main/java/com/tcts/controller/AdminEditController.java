@@ -12,6 +12,7 @@ import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.EditAllowedDateFormData;
 import com.tcts.formdata.EditAllowedTimeFormData;
+import com.tcts.formdata.EditSiteSettingFormData;
 import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,7 @@ public class AdminEditController {
         ) throws SQLException
     {
         ensureSiteAdminLoggedIn(session);
-        return showListAllowedDates(model);
+        return showListAllowedDatesPage(model);
     }
 
 
@@ -58,7 +59,21 @@ public class AdminEditController {
         ) throws SQLException
     {
         ensureSiteAdminLoggedIn(session);
-        return showListAllowedTimes(model);
+        return showListAllowedTimesPage(model);
+    }
+
+
+    /**
+     * A site admin views the current settings
+     */
+    @RequestMapping(value = "viewSiteSettings", method = RequestMethod.GET)
+    public String viewSiteSettings(
+            HttpSession session,
+            Model model
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+        return showViewSiteSettingsPage(model);
     }
 
 
@@ -70,7 +85,7 @@ public class AdminEditController {
     {
         ensureSiteAdminLoggedIn(session);
         AddAllowedDateFormData formData = new AddAllowedDateFormData();
-        return showAddAllowedDateWithErrors(model, formData, null);
+        return showAddAllowedDatePageWithErrors(model, formData, null);
     }
 
 
@@ -82,7 +97,7 @@ public class AdminEditController {
     {
         ensureSiteAdminLoggedIn(session);
         AddAllowedTimeFormData formData = new AddAllowedTimeFormData();
-        return showAddAllowedTimeWithErrors(model, formData, null);
+        return showAddAllowedTimePageWithErrors(model, formData, null);
     }
 
 
@@ -98,14 +113,14 @@ public class AdminEditController {
         // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
-            return showAddAllowedDateWithErrors(model, formData, errors);
+            return showAddAllowedDatePageWithErrors(model, formData, errors);
         }
 
         // --- Insert it ---
         try {
             database.insertNewAllowedDate(formData);
         } catch(AllowedDateAlreadyInUseException err) {
-            return showAddAllowedDateWithErrors(model, formData,
+            return showAddAllowedDatePageWithErrors(model, formData,
                     new Errors("That date is already listed as an allowed date."));
         }
 
@@ -126,17 +141,17 @@ public class AdminEditController {
         // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
-            return showAddAllowedTimeWithErrors(model, formData, errors);
+            return showAddAllowedTimePageWithErrors(model, formData, errors);
         }
 
         // --- Insert it ---
         try {
             database.insertNewAllowedTime(formData);
         } catch(AllowedTimeAlreadyInUseException err) {
-            return showAddAllowedTimeWithErrors(model, formData,
+            return showAddAllowedTimePageWithErrors(model, formData,
                     new Errors("That time is already listed as an allowed time."));
         } catch(NoSuchAllowedTimeException err) {
-            return showAddAllowedTimeWithErrors(model, formData,
+            return showAddAllowedTimePageWithErrors(model, formData,
                     new Errors("The time you inserted this before does not exist."));
         }
 
@@ -185,33 +200,74 @@ public class AdminEditController {
 
         return "redirect:listAllowedTimes.htm";
     }
-    
-    public String showListAllowedDates(Model model) throws SQLException {
+
+    @RequestMapping(value = "showEditSiteSetting", method = RequestMethod.GET)
+    public String showEditSiteSetting(
+            @RequestParam String settingToEdit,
+            HttpSession session,
+            Model model
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+        return showEditSiteSettingPage(model, settingToEdit);
+    }
+
+    @RequestMapping(value = "editSiteSetting", method = RequestMethod.POST)
+    public String editSiteSetting(
+            @ModelAttribute("formData") EditSiteSettingFormData formData,
+            HttpSession session
+        ) throws SQLException
+    {
+        ensureSiteAdminLoggedIn(session);
+        database.modifySiteSetting(formData.getSettingName(), formData.getSettingValue());
+        return "redirect:viewSiteSettings.htm";
+    }
+
+    public String showListAllowedDatesPage(Model model) throws SQLException {
         model.addAttribute("allowedDates", database.getAllowedDates());
         return "listAllowedDates";
     }
 
-    public String showListAllowedTimes(Model model) throws SQLException {
+    public String showListAllowedTimesPage(Model model) throws SQLException {
         model.addAttribute("allowedTimes", database.getAllowedTimes());
         return "listAllowedTimes";
     }
 
-    public String showAddAllowedDateWithErrors(Model model, AddAllowedDateFormData formData, Errors errors) {
+    public String showViewSiteSettingsPage(Model model) throws SQLException {
+        model.addAttribute("siteSettings", database.getSiteSettings());
+        return "viewSiteSettings";
+    }
+
+    public String showAddAllowedDatePageWithErrors(Model model, AddAllowedDateFormData formData, Errors errors) {
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "addAllowedDate";
     }
 
-    public String showAddAllowedTimeWithErrors(
+    public String showAddAllowedTimePageWithErrors(
             Model model,
             AddAllowedTimeFormData formData,
             Errors errors
-        ) throws SQLException
+    ) throws SQLException
     {
         model.addAttribute("allowedTimes", database.getAllowedTimes());
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "addAllowedTime";
+    }
+
+    /**
+     * A subroutine that launches the page for editing a site setting.
+     * @param model
+     * @param settingToEdit
+     * @return
+     */
+    public String showEditSiteSettingPage(Model model, String settingToEdit) throws SQLException {
+        EditSiteSettingFormData formData = new EditSiteSettingFormData();
+        formData.setSettingName(settingToEdit);
+        formData.setSettingValue(database.getSiteSettings().get(settingToEdit));
+        model.addAttribute("formData", formData);
+        return "editSiteSetting";
     }
 
     /**

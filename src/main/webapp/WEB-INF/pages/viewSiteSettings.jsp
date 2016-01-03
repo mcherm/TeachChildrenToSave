@@ -20,6 +20,17 @@
 
                 <h1>Site Settings</h1>
 
+                <div id="actions">
+
+                    <h2>Actions</h2>
+
+                    <ul class="noUl">
+                        <li class="mb1">
+                            <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
+                        </li>
+                    </ul>
+                </div>
+
                 <div>
 
                     <table class="responsive">
@@ -27,6 +38,9 @@
                             <tr>
                                 <th scope="col">Setting Name</th>
                                 <th scope="col">Setting Value</th>
+                                <th scope="col">
+                                    <span class="ada-read">Column of Edit buttons</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,6 +51,11 @@
                                 <tr>
                                     <td>${siteSettingEntry.key}</td>
                                     <td>${siteSettingEntry.value}</td>
+                                    <td class="action">
+                                        <button onclick="js.loadURL('showEditSiteSetting.htm?settingToEdit=${siteSettingEntry.key}')" class="editOrRegister">
+                                            Edit
+                                        </button>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </tbody>

@@ -5,7 +5,8 @@ public class LoginFormData {
 	private String password;
 	private String confirmPassword;
 
-    public String getEmail() { return email;
+    public String getEmail() {
+		return email;
     }
 
     public void setEmail(String email) {
@@ -27,5 +28,4 @@ public class LoginFormData {
 		this.confirmPassword = confirmPassword;
 	}
 	
-
 }
