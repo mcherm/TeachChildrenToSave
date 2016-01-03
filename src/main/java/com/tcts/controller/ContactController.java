@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,13 +55,12 @@ public class ContactController {
     
     @RequestMapping(value = "/contact", method = RequestMethod.POST)
     public String doContactUs(
-            ModelMap model,
             HttpServletRequest request,
             @ModelAttribute("formData") ContactUsFormData formData
         ) throws SQLException, InconsistentDatabaseException, UnsupportedEncodingException
     {
     	try {
-    		Map<String,Object> emailModel = new <String, Object>HashMap();
+    		Map<String,Object> emailModel = new HashMap<String, Object>();
     		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
     		
     		emailModel.put("logoImage", logoImage);
