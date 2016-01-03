@@ -4,18 +4,18 @@
     <head>
 
         <title>Teach Children To Save</title>
-        <%@include file="WEB-INF/pages/include/commonHead.jsp"%>
+        <%@include file="include/commonHead.jsp"%>
 
     </head>
     <body class="home">
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
-        <%@include file="WEB-INF/pages/include/header.jsp" %>
+        <%@include file="include/header.jsp" %>
 
         <div class="mainCnt">
 
-        <%@include file="WEB-INF/pages/include/navigation.jsp" %>
+            <%@include file="include/navigation.jsp" %>
 
             <main id="main">
                 <h1>
@@ -37,7 +37,6 @@
                     <li><span>Research has shown that when people are taught the basics of money management as children, they are more likely to be fiscally fit as adults.</span></li>
                     <li><span>Volunteer instructors will come right to your classroom and take only 45 minutes of instructional time to present the lesson.</span></li>
                 </ul>
-
                 <button onclick="js.loadURL('registerTeacher.htm');">Sign up my class</button>
 
                 <h3>Volunteers</h3>
@@ -56,13 +55,13 @@
 
                 <h3>Already Registered?</h3>
                 <button onclick="js.loadURL('login.htm');">Sign In</button>
-                
+
                 <%
-			        	String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
-			    %>
-            
+                    String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
+                %>
+
                 <h3><a href="<%=faq%>" target="_blank">FAQs</a></h3>
-                
+
             </main>
 
             <aside>
@@ -72,6 +71,6 @@
 
         </div><%-- .mainCnt --%>
 
-        <%@include file="WEB-INF/pages/include/footer.jsp" %>
+        <%@include file="include/footer.jsp" %>
     </body>
 </html>
