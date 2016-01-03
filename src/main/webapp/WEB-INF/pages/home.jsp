@@ -19,9 +19,9 @@
 
             <main id="main">
                 <h1>
-                    2016 Teach Children to Save Day!
+                    ${currentYear} Teach Children to Save Day!
                     <br />
-                    April 21-25
+                    ${eventDatesOnHomepage}
                 </h1>
 
                 <h2>

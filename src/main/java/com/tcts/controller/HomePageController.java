@@ -39,8 +39,12 @@ public class HomePageController {
      * This renders the default home page for someone who is not logged in.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String tempTestThing1(HttpServletRequest httpServletRequest) {
+    public String showDefaultHomePage(HttpServletRequest httpServletRequest, Model model) throws SQLException {
         if (httpServletRequest.getRequestURI().endsWith("/")) {
+            String currentYear = database.getSiteSettings().get("CurrentYear");
+            String eventDatesOnHomepage = database.getSiteSettings().get("EventDatesOnHomepage");
+            model.addAttribute("currentYear", currentYear);
+            model.addAttribute("eventDatesOnHomepage", eventDatesOnHomepage);
             return "home";
         } else {
             return "redirect:/";
