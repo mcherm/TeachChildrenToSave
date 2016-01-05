@@ -28,11 +28,13 @@
 					<h2>Actions</h2>
 
 						<ul class="noUl">
-							<li class="mb1">
-								<button onclick="js.loadURL('createEvent.htm');" class="editOrRegister">
-									Create new class
-								</button>
-							</li>
+							<c:if test="${eventCreationOpen}">
+								<li class="mb1">
+									<button onclick="js.loadURL('createEvent.htm');" class="editOrRegister">
+										Create new class
+									</button>
+								</li>
+							</c:if>
 							<li class="mb1">
 								<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
 									Edit my Account
