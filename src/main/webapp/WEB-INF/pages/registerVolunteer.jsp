@@ -7,6 +7,39 @@
         <title>Teach Children to Save - Register New Volunteer</title>
         <%@include file="include/commonHead.jsp"%>
 
+        <script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
+        <script type="text/javascript">
+            var bankSpecificDataLabelMap = {
+                <c:forEach items="${banks}" var="bank" varStatus="loopStatus">
+                    '<c:out value="${bank.bankId}"/>': '${bank.bankSpecificDataLabel}'<c:if test="${!loopStatus.last}">,</c:if>
+                </c:forEach>
+            };
+
+            function onBankChoiceChanged(newBankId) {
+                var bankSpecificLabel = bankSpecificDataLabelMap[newBankId];
+                if (bankSpecificLabel) {
+                    $('#bankSpecificDataPlaceholder').html(
+                            '<div class="formElementCnt">' +
+                            '    <label>' +
+                            '        <div class="inputCnt">' +
+                            '            <div class="info">' + bankSpecificLabel + '</div>' +
+                            '            <input type="text" value="${formData.bankSpecificData}" name="bankSpecificData" id="bankSpecificData">' +
+                            '        </div>' +
+                            '    </label>' +
+                            '</div>'
+                    );
+                } else {
+                    $('#bankSpecificDataPlaceholder').empty();
+                }
+            }
+
+            $(document).ready(function() {
+                $('#bankId').change(function() {
+                    onBankChoiceChanged($(this).val());
+                });
+                onBankChoiceChanged($('#bankId').val());
+            })
+        </script>
     </head>
     <body class="registerVolunteer">
 
@@ -100,6 +133,9 @@
                         </div>
                     </label>
                 </div>
+
+                <div id="bankSpecificDataPlaceholder"></div>
+
 
                 <button type="submit">Register</button>
 

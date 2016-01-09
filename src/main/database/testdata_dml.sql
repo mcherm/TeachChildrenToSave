@@ -190,7 +190,7 @@ insert into School (school_county, school_district, school_name, school_slc, sch
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("AIG Federal Savings Bank", "600 North King Street", "Suite 2"  , "Wilmington", "DE", "19801");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Applied Bank", "660 Plaza Drive", "", "Newark ", "DE", "19702");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Artisan's Bank", "2961 Centerville Road", "", "Wilmington", "DE", "19808");
-insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Bank of America", "1100 North King Street", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip, bank_specific_data_label) VALUES("Bank of America", "1100 North King Street", "", "Wilmington", "DE", "19801", "BofA Internal Mail Code");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Barclay's Bank Delaware", "100 South West Street", "", "Wilmington", "DE", "19801");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("BNY Mellon Trust of Delaware", "301 Bellevue Parkway", "Suite 19A-307", "Wilmington", "DE", "19809");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Brandywine Trust Company", "7234 Lancaster Pike", "", "Hockessin", "DE", "19707");
@@ -223,8 +223,8 @@ insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank
 
 /* They all have the password "pass". */
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','siteadmin@mcherm.com','SiteAdmin','Testuser','SA',null,'1-800-234-1234','0');
-insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','volunteer@mcherm.com','Volunteer','Testuser','V','1','1-800-234-1234','0');
-insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','bankadmin@mcherm.com','BankAdmin','Testuser','BA','1','1000001','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','volunteer@mcherm.com','Volunteer','Testuser','V','4','1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','bankadmin@mcherm.com','BankAdmin','Testuser','BA','4','1000001','0');
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','teacher@mcherm.com','Teacher','Testuser','T','1','1-800-234-1234','0');
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','rchermside+siteadmin@gmail.com','SiteAdmin','Testuser','SA',null,'1-800-234-1234','0');
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','rchermside+volunteer1@gmail.com','Volunteer1','Testuser','V','1','1-800-234-1234','0');

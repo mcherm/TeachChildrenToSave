@@ -1,4 +1,5 @@
 <%-- Home page for Volunteers --%>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -226,10 +227,41 @@
 
                 </div>
 
+                <p>&nbsp;</p>
+
+                <div class="withBorder">
+                    <h2>Bank-Specific Field</h2>
+                    <p>
+                        If you want to collect extra information from volunteers from your bank, then fill in a label
+                        here. Each volunteer from your bank will be presented with an extra text field to fill out
+                        and you will be able to see their answers. For instance, if you needed to know the department
+                        number for all of your bank's volunteers, you could write "Bank of Delaware Department Number"
+                        below and each volunteer would be able to fill out that field. If there is no special
+                        information that you need to collect from you bank's volunteers then simply leave this
+                        field empty.
+                    </p>
+                    <div>
+                        <form:form method="POST" action="setBankSpecificFieldLabel.htm" modelAttribute="formData">
+                            <form:hidden path="bankId"/>
+                            <div class="formElementCnt">
+                                <label>
+                                    <div class="inputCnt">
+                                        <div class="info">
+                                            Bank-Specific Field Label
+                                        </div>
+                                        <form:input path="bankSpecificFieldLabel"/>
+                                    </div>
+                                </label>
+                            </div>
+                            <button type="submit" class="editOrRegister">Update Label</button>
+                        </form:form>
+                    </div>
+                </div>
+
 			</main>
 
-		</div><%-- mainCnt --%>			        
-		        
+		</div><%-- mainCnt --%>
+
         <%@include file="include/footer.jsp"%>
     </body>
 </html>

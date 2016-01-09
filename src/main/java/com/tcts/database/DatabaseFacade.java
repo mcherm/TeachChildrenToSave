@@ -14,9 +14,19 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
-import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.*;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchAllowedDateException;
+import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -25,7 +35,9 @@ import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
 
@@ -51,6 +63,14 @@ public interface DatabaseFacade {
      */
     public User modifyUserPersonalFields(EditPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException;
+
+
+    /**
+     * Modify normal user fields of a volunteer, and ALSO the bank specific data field.
+     */
+    public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
+            throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException;
+
 
     /**
      * Insert a new Teacher in the database, and return it. Expects that all
@@ -190,6 +210,12 @@ public interface DatabaseFacade {
      */
     public void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
+
+    /**
+     * Sets a particular field on a bank.
+     */
+    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData)
+            throws SQLException, NoSuchBankException;
 
     /**
      * Insert new school in database

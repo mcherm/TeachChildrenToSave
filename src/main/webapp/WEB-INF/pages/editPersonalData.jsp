@@ -71,7 +71,7 @@
                                 <form:input path="phoneNumber"/>
                             </div>
                         </label>
-                    </div>	
+                    </div>
 
                     <button type="submit" value="Save">Save</button>
 

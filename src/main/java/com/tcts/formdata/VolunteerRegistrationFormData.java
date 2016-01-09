@@ -5,6 +5,7 @@ package com.tcts.formdata;
  */
 public class VolunteerRegistrationFormData extends UserRegistrationFormData {
     private String bankId;
+    private String bankSpecificData;
 
     @Override
     protected void validationRules(Errors errors) throws RuntimeException {
@@ -21,5 +22,13 @@ public class VolunteerRegistrationFormData extends UserRegistrationFormData {
 
     public void setBankId(String bankId) {
         this.bankId = bankId;
+    }
+
+    public String getBankSpecificData() {
+        return bankSpecificData;
+    }
+
+    public void setBankSpecificData(String bankSpecificData) {
+        this.bankSpecificData = bankSpecificData;
     }
 }

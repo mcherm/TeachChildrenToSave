@@ -8,16 +8,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.CreateEventFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EditVolunteerPersonalDataFormData;
+import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -45,17 +53,6 @@ import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.TeacherHasEventsException;
 import com.tcts.exception.VolunteerHasEventsException;
-import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
-import com.tcts.formdata.CreateBankFormData;
-import com.tcts.formdata.CreateEventFormData;
-import com.tcts.formdata.CreateSchoolFormData;
-import com.tcts.formdata.EditBankFormData;
-import com.tcts.formdata.EditPersonalDataFormData;
-import com.tcts.formdata.EditSchoolFormData;
-import com.tcts.formdata.EventRegistrationFormData;
-import com.tcts.formdata.TeacherRegistrationFormData;
-import com.tcts.formdata.VolunteerRegistrationFormData;
 
 
 /**
@@ -63,11 +60,11 @@ import com.tcts.formdata.VolunteerRegistrationFormData;
  */
 public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
-            "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status, reset_password_token";
+            "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status, reset_password_token, bank_specific_data";
     private final static String eventFields =
             "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
     private final static String bankFields =
-            "bank_id, bank_name, min_lmi_for_cra";
+            "bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label";
     private final static String schoolFields =
             "school_id, school_name, school_addr1, school_city, school_zip, school_county, school_district, school_state, school_phone, school_lmi_eligible, school_SLC";
 
@@ -122,6 +119,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "select last_insert_id() as last_id";
     private final static String modifyUserPersonalFieldsSQL =
             "update User set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
+    private final static String modifyVolunteerPersonalFieldsSQL =
+            "update User set email=?, first_name=?, last_name=?, phone_number=?, bank_specific_data=? where user_id=?";
     private final static String insertUserSQL =
             "insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
@@ -214,7 +213,13 @@ public class MySQLDatabase implements DatabaseFacade {
     		"select " + userFields + " " + 
 		    " from User where access_type = 'V' and not exists ( select * from Event where volunteer_id = user_id)" +
             " order by last_name asc, first_name asc";
-    
+
+    private final static String setBankSpecificFieldLabelSQL =
+            "update Bank set bank_specific_data_label = ? where bank_id = ?";
+
+    private final static String setBankSpecificFieldSQL =
+            "update USer set bank_specific_data = ? where user_id = ?";
+
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
     private final static String getNumUnmatchedEventsSQL = "select count(*) from Event where volunteer_id is null";
@@ -353,6 +358,36 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, null);
         }
         return getUserById(formData.getUserId());
+    }
+
+    @Override
+    public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
+            throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(modifyVolunteerPersonalFieldsSQL);
+            preparedStatement.setString(1, formData.getEmail());
+            preparedStatement.setString(2, formData.getFirstName());
+            preparedStatement.setString(3, formData.getLastName());
+            preparedStatement.setString(4, formData.getPhoneNumber());
+            preparedStatement.setString(5, formData.getBankSpecificData());
+            preparedStatement.setString(6, formData.getUserId());
+            try {
+                preparedStatement.executeUpdate();
+            } catch(MySQLIntegrityConstraintViolationException err) {
+                if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
+                    throw new EmailAlreadyInUseException();
+                } else {
+                    throw err;
+                }
+            }
+        } finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+        return (Volunteer) getUserById(formData.getUserId());
     }
 
     @Override
@@ -721,9 +756,25 @@ public class MySQLDatabase implements DatabaseFacade {
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchBankException, EmailAlreadyInUseException
     {
-        return (Volunteer) insertNewUser(hashedPassword, salt, formData.getEmail(),
+        User newUser = insertNewUser(hashedPassword, salt, formData.getEmail(),
                 formData.getFirstName(), formData.getLastName(), UserType.VOLUNTEER, formData.getBankId(),
                 formData.getPhoneNumber());
+        String newUserId = newUser.getUserId();
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(setBankSpecificFieldSQL);
+            preparedStatement.setString(1, formData.getBankSpecificData());
+            preparedStatement.setString(2, newUserId);
+            preparedStatement.executeUpdate();
+        }
+        finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+
+        return (Volunteer) getUserById(newUserId);
     }
 
     
@@ -1211,6 +1262,29 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
+
+    @Override
+    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData)
+            throws SQLException, NoSuchBankException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(setBankSpecificFieldLabelSQL);
+            preparedStatement.setString(1, emptyMeansNull(formData.getBankSpecificFieldLabel()));
+            preparedStatement.setString(2, formData.getBankId());
+
+            preparedStatement.executeUpdate();
+        } finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+    }
+
+    /** Just a simple string helper. Returns the string, but empty or blank is returned as null. */
+    private String emptyMeansNull(String s) {
+        return s == null || s.trim().length() == 0 ? null : s;
+    }
 
     @Override
 	public void insertNewSchool(CreateSchoolFormData formData) throws SQLException,

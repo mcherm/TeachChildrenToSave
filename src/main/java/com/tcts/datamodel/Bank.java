@@ -10,6 +10,7 @@ public class Bank {
     private String bankId;
     private String bankName;
     private Integer minLMIForCRA;
+    private String bankSpecificDataLabel;
 
     // --- Linked data - loaded only when needed ---
     private BankAdmin linkedBankAdmin;
@@ -26,6 +27,7 @@ public class Bank {
             minLMIForCRA = null;
         }
         setMinLMIForCRA(minLMIForCRA);
+        setBankSpecificDataLabel(resultSet.getString("bank_specific_data_label"));
     }
 
     public String getBankId() {
@@ -58,5 +60,13 @@ public class Bank {
 
     public void setMinLMIForCRA(Integer minLMIForCRA) {
         this.minLMIForCRA = minLMIForCRA;
+    }
+
+    public String getBankSpecificDataLabel() {
+        return bankSpecificDataLabel;
+    }
+
+    public void setBankSpecificDataLabel(String bankSpecificDataLabel) {
+        this.bankSpecificDataLabel = bankSpecificDataLabel;
     }
 }

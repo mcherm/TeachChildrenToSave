@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.ApprovalStatus;
+import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -146,11 +147,17 @@ public class HomePageController {
             }
         }
 
+        // --- Set up a form in case they want to change the bank specific field label ---
+        SetBankSpecificFieldLabelFormData formData = new SetBankSpecificFieldLabelFormData();
+        formData.setBankId(bank.getBankId());
+        formData.setBankSpecificFieldLabel(bank.getBankSpecificDataLabel());
+
         // --- Show homepage ---
         model.addAttribute("bank", bank);
         model.addAttribute("normalVolunteers", normalVolunteers);
         model.addAttribute("suspendedVolunteers", suspendedVolunteers);
         model.addAttribute("newVolunteers", newVolunteers);
+        model.addAttribute("formData", formData);
         return "bankAdminHome";
     }
 

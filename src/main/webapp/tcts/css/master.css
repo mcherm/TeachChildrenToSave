@@ -1261,6 +1261,12 @@ body.errorPage .stackTrace {
     font-size: xx-small;
 }
 
+
+.withBorder {
+    border: 1px solid #cdcdcd;
+    padding: 3px;
+}
+
 /* --- This section for layout of the event detail page --- */
 /*   If we wanted to use it elsewhere, we might generalize, */
 /*   but since I'm not the expert on the design I thought   */

@@ -18,7 +18,18 @@ import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.*;
+import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchAllowedDateException;
+import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -27,9 +38,12 @@ import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
+
 
 /**
  * This is a database implementation which is intended to wrap a real database
@@ -191,6 +205,13 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
+        Volunteer result = database.modifyVolunteerPersonalFields(formData);
+        availableEvents.refreshNow();
+        return result;
+    }
+
+    @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         return database.insertNewTeacher(formData, hashedPassword, salt);
     }
@@ -277,6 +298,12 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
         database.modifyBankAndBankAdmin(formData);
+        allBanks.refreshNow();
+    }
+
+    @Override
+    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
+        database.setBankSpecificFieldLabel(formData);
         allBanks.refreshNow();
     }
 

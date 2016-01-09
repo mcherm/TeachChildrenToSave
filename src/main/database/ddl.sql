@@ -58,6 +58,7 @@ create table Bank
         bank_zip VARCHAR(10), /* not used */
         bank_county VARCHAR(45), /* not used */
         min_lmi_for_cra INT,
+        bank_specific_data_label VARCHAR(70),
         PRIMARY KEY (bank_id),
         UNIQUE KEY ix_name (bank_name)
     );
@@ -76,6 +77,7 @@ create table User
         phone_number VARCHAR(45),
         user_status INT NOT NULL,
         reset_password_token VARCHAR(500),
+        bank_specific_data VARCHAR(500),
         PRIMARY KEY (user_id),
         UNIQUE KEY ix_email (email),
         INDEX ix_organization (organization_id),

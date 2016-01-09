@@ -31,7 +31,6 @@ Simple:
  * Admin field to hide the documents.
 
 Manageable:
- * Create a per-bank named field set to "mail code" for BofA and a field for volunteers that can take on this value.
  N Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
  N Site Admin – Would like to be able register volunteers for classes from the site admin page instead of having to use another sign in.
 
@@ -52,6 +51,7 @@ Manageable:
  * Need to update Year and dates on Home Page [April 25 - 29]
  * Will need to clear out List Classes, Volunteers, Teachers
  * Document "Helpful Hints 2015" should be renamed.
+ * Create a per-bank named field set to "mail code" for BofA and a field for volunteers that can take on this value.
 
 -------- SKIP --------
 

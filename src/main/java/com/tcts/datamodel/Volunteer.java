@@ -12,6 +12,7 @@ public class Volunteer extends User {
     // --- Basic data fields ---
     private String bankId;
     private ApprovalStatus approvalStatus;  /*denotes whether a volunteer has been approved by the bank admin*/
+    private String bankSpecificData; /* An optional field that may contain extra information for a specific bank. */
 
 
     // --- Linked data - loaded only when needed ---
@@ -39,6 +40,7 @@ public class Volunteer extends User {
         } else {
             throw new RuntimeException("Invalid User Status");
         }
+        setBankSpecificData(resultSet.getString(prefix + "bank_specific_data"));
     }
 
     public String getBankId() {
@@ -65,5 +67,13 @@ public class Volunteer extends User {
 
     public void setLinkedBank(Bank linkedBank) {
         this.linkedBank = linkedBank;
+    }
+
+    public String getBankSpecificData() {
+        return bankSpecificData;
+    }
+
+    public void setBankSpecificData(String bankSpecificData) {
+        this.bankSpecificData = bankSpecificData;
     }
 }
