@@ -50,7 +50,7 @@
 			        	String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints.pdf";
 			        	String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/Letter%20to%20teachers.pdf";
 			        	String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines.pdf";
-                        String logoContest = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/2015%20Logo_Slogan%20Contest%20Flyer.pdf";
+                        String logoContest = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/Logo_Slogan%20Contest%20Flyer.pdf";
                         String lessonHandout = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%2015%20Lesson_Handout_Answer%20Key.pdf";
                         String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
 			        	%>
