@@ -4,44 +4,36 @@
  S - skip
 
 Questions to ask:
- On what days is the volunteering happening in 2016?
- What do you mean by adding mail code to volunteer registration... what kindof data will be in this field?
- What do you want the time slots to be called?
-
- In Important Documents on Volunteer Page:
-    Lesson Handout Answer Key and Certificate of Recognition pdf's both need to be updated;  minimally the year removed or updated from 2015 to 2016.
-
- In Important Documents on  Teacher Page:
-    Should we include 2015 Logo Slogan Contest Flyer in the important documents and if so can you update the pdf to say 2016?
-
- During 2015, the following banks were removed:
-      AIG Federal Savings Bank
-      The First National Bank of Wyoming
-      Wilmington Trust Company
-    and the following "banks" were added (without any address):
-      "Delaware Bankers Association"
-      "CEEE Volunteers"
-      "Middletown High School - Bank at School"
-      "The Bryn Mawr Trust Company of DE"
-    What would you like loaded for 2016?
- Our expectation was that all teacher, volunteer, and bank administrator accounts from 2015 would
-    be removed (although, obviously, the same person could sign up again). Is that how you want
-    to go about this?
- In the list of schools "Gateway Lab School" is listed twice, once as a public school and once
-    as a non-public school. I presume this is a mistake and it's actually just a public school, right?
 
 -------- OPEN TASKS --------
 
 Very Easy:
- * Documents will need to be updated on Teachers and Volunteers Site [I will get you the updated versions once they can be updated, may not be until January.]
+ * Use the new documents that were sent.
+     In Important Documents on Volunteer Page:
+        Lesson Handout Answer Key and Certificate of Recognition pdf's both need to be updated;  minimally the year removed or updated from 2015 to 2016.
+
+     In Important Documents on  Teacher Page:
+        Should we include 2015 Logo Slogan Contest Flyer in the important documents and if so can you update the pdf to say 2016?
+
+ * Enter volunteering days - all 5 days.
+ * Update list of banks:
+     During 2015, the following banks were removed:
+          AIG Federal Savings Bank
+          The First National Bank of Wyoming
+          Wilmington Trust Company
+        and the following "banks" were added (without any address):
+          "Delaware Bankers Association"
+          "CEEE Volunteers"
+          "Middletown High School - Bank at School"
+          "The Bryn Mawr Trust Company of DE"
 
 Simple:
- * Add a field to the volunteer registration for "Mail Code".
+ * Admin field to hide the documents.
 
 Manageable:
+ * Create a per-bank named field set to "mail code" for BofA and a field for volunteers that can take on this value.
  N Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
  N Site Admin – Would like to be able register volunteers for classes from the site admin page instead of having to use another sign in.
- N (NEW) Provide written notes and "training" on managing the site. Basically, it would cover how to Startup, Shutdown, and Deploy new versions.
 
 -------- PARTIAL --------
  P Site Admin. – List Classes would like the volunteers email to export with the report
@@ -65,3 +57,4 @@ Manageable:
 
 Difficult:
  S Bank Admin. – Would like to be able to register for a class from their Bank Admin page instead of having to set up another log-in to register.
+ N (NEW) Provide written notes and "training" on managing the site. Basically, it would cover how to Startup, Shutdown, and Deploy new versions.
