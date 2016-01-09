@@ -110,7 +110,9 @@ public class HomePageController {
                 volunteer.setLinkedBank(bank);
             }
         }
+        boolean eventCreationOpen = CreateEventController.isEventCreationOpen(database);
         model.addAttribute("events", events);
+        model.addAttribute("eventCreationOpen", eventCreationOpen);
         return "teacherHome";
     }
 

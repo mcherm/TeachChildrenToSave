@@ -46,6 +46,7 @@ public class CreateEventController {
         if (sessionData.getTeacher() == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
+        ensureEventCreationIsOpen();
         model.addAttribute("formData", new CreateEventFormData());
         return showFormWithErrors(model, null);
     }
@@ -74,6 +75,7 @@ public class CreateEventController {
         if (teacher == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
+        ensureEventCreationIsOpen();
 
         // --- Validation Rules ---
         Errors errors = formData.validate();
@@ -87,5 +89,25 @@ public class CreateEventController {
         // --- Navigate onward ---
         return "redirect:" + sessionData.getUser().getUserType().getHomepage();
     }
-    
+
+
+    /**
+     * This method ensures that the volunteer registration is open, throwing an exception
+     * it is not.
+     */
+    public void ensureEventCreationIsOpen() throws SQLException {
+        if (!isEventCreationOpen(database)) {
+            throw new RuntimeException("Cannot register for classes if teacher registration is not open.");
+        }
+    }
+
+    /**
+     * This method uses the database connection to verify whether the volunteer registration
+     * is open. It return true if it is open, false if not.
+     */
+    public static boolean isEventCreationOpen(DatabaseFacade database) throws SQLException {
+        String setting = database.getSiteSettings().get("CourseCreationOpen");
+        return setting != null && setting.trim().toLowerCase().equals("yes");
+    }
+
 }
