@@ -135,7 +135,7 @@ public class ResetPasswordController {
                 String url =  request.getRequestURL() + "?token=" + URLEncoder.encode(randomToken, "UTF-8").replace("+", "%20");
                 
                 try {
-            		Map<String,Object> emailModel = new <String, Object>HashMap();
+            		Map<String,Object> emailModel = new HashMap<String, Object>();
             		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
             		
             		emailModel.put("logoImage", logoImage);

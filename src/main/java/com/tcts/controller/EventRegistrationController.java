@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.ApprovalStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -132,7 +133,7 @@ public class EventRegistrationController {
             if (null != event.getVolunteerId()) {
             try {
                 
-                Map<String,Object> emailModel = new <String, Object>HashMap();
+                Map<String,Object> emailModel = new HashMap<String, Object>();
                 String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
                 User teacher = database.getUserById(event.getTeacherId());
                 emailModel.put("logoImage", logoImage);
@@ -183,7 +184,7 @@ public class EventRegistrationController {
                 User teacher = database.getUserById(event.getTeacherId());
                 try {
                     
-                    Map<String,Object> emailModel = new <String, Object>HashMap();
+                    Map<String,Object> emailModel = new HashMap<String, Object>();
                     String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
                     
                     emailModel.put("logoImage", logoImage);
