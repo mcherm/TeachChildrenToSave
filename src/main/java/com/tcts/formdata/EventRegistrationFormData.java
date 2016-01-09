@@ -6,12 +6,19 @@ package com.tcts.formdata;
  */
 public class EventRegistrationFormData extends CreateEventFormData {
     public String eventId;
+    public String volunteerId;
 
     public String getEventId() {
         return eventId;
     }
+    public String getVolunteerId() {
+        return volunteerId;
+    }
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
+    }
+    public void setVolunteerId(String volunteerId) {
+        this.volunteerId =volunteerId;
     }
 }
