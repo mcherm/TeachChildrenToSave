@@ -47,10 +47,13 @@
                         <th scope="col">Phone Number</th>
                         <th scope="col">Bank Name</th>
                         <th scope="col">
+                            <span class="ada-read">Column of Modify buttons</span>
+                        </th>
+                        <th scope="col">
                             <span class="ada-read">Column of Delete buttons</span>
                         </th>
                         <th scope="col">
-                            <span class="ada-read">Column of Modify buttons</span>
+                            <span class="ada-read">Column of SignUp buttons</span>
                         </th>
                     </tr>
                     </thead>
@@ -64,18 +67,22 @@
                         <td data-title="User Type">Volunteer</td>
                         <td data-title="Phone Number"><c:out value="${volunteer.phoneNumber}"/></td>
                         <td class="center" data-title="Bank Name"><c:out value="${volunteer.linkedBank.bankName}"/></td>
-                                                
+                        <td class="action">
+                            <button onclick="js.loadURL('editVolunteerData.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
+                                Modify
+                            </button>
+                        </td>
                         <td class="action">
 	                        <form method="POST" action="volunteerDelete.htm" modelAttribute="formData">
 	                                    <input type="hidden" name="volunteerId" value='<c:out value="${volunteer.userId}"/>' />
 	                                    <button type="submit" class="editOrRegister delete">Delete</button>
 	                        </form>
 	                    </td>
-	                    <td class="action">
-	                        <button onclick="js.loadURL('editVolunteerData.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
-	                            Modify
-	                        </button>
-	                    </td>
+	                   <td class="action">
+                            <button onclick="js.loadURL('eventRegistrationBySiteAdmin.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
+                                SignUp
+                            </button>
+                        </td>
                     </tr>
                     </c:forEach>
                     </tbody>

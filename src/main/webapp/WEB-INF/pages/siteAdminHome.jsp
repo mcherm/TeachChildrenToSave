@@ -46,7 +46,7 @@
 	                
 	                <li class="mb1">
 	                	<button onclick="js.loadURL('volunteers.htm');" class="editOrRegister">
-	                		Remove/Edit Volunteers
+	                		Remove/Edit/SignUp Volunteers
 	                	</button>
 	                </li>
 

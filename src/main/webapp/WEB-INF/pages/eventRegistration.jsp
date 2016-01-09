@@ -133,6 +133,7 @@
                             "    <td class='action'>" +
                             "            <form method='POST' action='eventRegistration.htm'>" +
                             "                <input type='hidden' name='eventId' value='" + event.eventId + "'>" +
+                            "                <input type='hidden' name='volunteerId' value = '${volunteerId}'>" +
                             "                <button type='submit' class='editOrRegister details'>Sign Up</button>" +
                             "            </form>" +
                             "    </td>" +
@@ -336,9 +337,18 @@
 
         <main id="main">
 
-                <h1>Classes</h1>
+            <c:if test = "${calledBy == 'siteAdmin'}">
+                <h1> Sign Up  ${volunteerFirstName} ${volunteerLastName} for a Class</h1>
 
-                <fieldset class="refine">
+                <h2>Classes</h2>
+                <div> When you sign-up a volunteer an automatic email will be generated to the volunteer and the teacher of the class</div>
+            </c:if>
+            <c:if test = "${calledBy == 'volunteer'}">
+                <h1>Classes</h1>
+            </c:if>
+
+
+            <fieldset class="refine">
                     <legend>
                         Refine by:
                     </legend>
@@ -366,7 +376,7 @@
                 <br>
 
                 <div class="cancelBlock">
-                    <button onclick="js.loadURL('volunteerHome.htm');" class="editOrRegister delete">Cancel</button>
+                    <button onclick="js.loadURL('${calledBy}Home.htm');" class="editOrRegister delete">Cancel</button>
                 </div>
         </main>
 
