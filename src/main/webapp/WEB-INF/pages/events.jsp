@@ -96,6 +96,7 @@
                             <td class="action">
                                 <button onclick="js.loadURL('editEvent.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister">Modify</button>
                             </td>
+
                         </tr>
                     </c:forEach>
                 </tbody>

@@ -3,12 +3,14 @@ package com.tcts.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.tcts.datamodel.ApprovalStatus;
+import com.tcts.datamodel.*;
+import com.tcts.exception.InconsistentDatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
-import com.tcts.datamodel.Event;
-import com.tcts.datamodel.User;
-import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchEventException;
@@ -94,6 +93,23 @@ public class EventRegistrationController {
             model.addAttribute("calledBy", "volunteer");
         } else  if (sessionData.getSiteAdmin() != null) {
             model.addAttribute("calledBy", "siteAdmin");
+            // get a list of events the volunteer is currently signed up for
+            List<Event> volunteerEvents = database.getEventsByVolunteer(volunteer.getUserId());
+            for (Event event : volunteerEvents) {
+                Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
+                if (teacher == null) {
+                    throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
+                }
+                event.setLinkedTeacher(teacher);
+                String schoolId = teacher.getSchoolId();
+                if (schoolId == null) {
+                    throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
+                }
+                School school = database.getSchoolById(schoolId);
+                teacher.setLinkedSchool(school);
+            }
+
+            model.addAttribute("volunteerEvents", volunteerEvents);
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
         }
@@ -229,6 +245,10 @@ public class EventRegistrationController {
                     System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
                 }
             }
+        }
+        if (sessionData.getSiteAdmin() != null)
+        {
+            return "redirect:eventRegistrationBySiteAdmin.htm?userId=" + volunteer.getUserId();
         }
 
         return "redirect:" + sessionData.getUser().getUserType().getHomepage();
