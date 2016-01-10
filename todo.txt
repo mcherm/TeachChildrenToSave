@@ -15,17 +15,6 @@ Very Easy:
      In Important Documents on  Teacher Page:
         Should we include 2015 Logo Slogan Contest Flyer in the important documents and if so can you update the pdf to say 2016?
 
- * Enter volunteering days - all 5 days.
- * Update list of banks:
-     During 2015, the following banks were removed:
-          AIG Federal Savings Bank
-          The First National Bank of Wyoming
-          Wilmington Trust Company
-        and the following "banks" were added (without any address):
-          "Delaware Bankers Association"
-          "CEEE Volunteers"
-          "Middletown High School - Bank at School"
-          "The Bryn Mawr Trust Company of DE"
 
 Simple:
  * Admin field to hide the documents.
@@ -52,6 +41,8 @@ Manageable:
  * Will need to clear out List Classes, Volunteers, Teachers
  * Document "Helpful Hints 2015" should be renamed.
  * Create a per-bank named field set to "mail code" for BofA and a field for volunteers that can take on this value.
+ * Enter volunteering days - all 5 days.
+ * Update list of banks.
 
 -------- SKIP --------
 

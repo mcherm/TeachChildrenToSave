@@ -190,7 +190,6 @@ insert into School (school_county, school_district, school_name, school_slc, sch
 
 
 
-insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("AIG Federal Savings Bank", "600 North King Street", "Suite 2"  , "Wilmington", "DE", "19801");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Applied Bank", "660 Plaza Drive", "", "Newark ", "DE", "19702");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Artisan's Bank", "2961 Centerville Road", "", "Wilmington", "DE", "19808");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip, bank_specific_data_label) VALUES("Bank of America", "1100 North King Street", "", "Wilmington", "DE", "19801", "BofA Internal Mail Code");
@@ -218,11 +217,13 @@ insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Morgan Stanley Private Bank", "919 North Market Street", "", "Wilmington", "DE", "19801");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("PNC Bank", "222 Delaware Avenue", "", "Wilmington", "DE", "19899");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Principal Trust Company", "1013 Center Road", "", "Wilmington", "DE", "19805");
-insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("The First National Bank of Wyoming", "120 West Camden-Wyoming Avenue", "", "Camden-Wyoming", "DE", "19934");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("UBS Trust Company", "500 Delaware Avenue", "9th Floor", "Wilmington", "DE", "19801");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Wells Fargo Bank", "814 Philadelphia Pike", "", "Wilmington", "DE", "19809");
-insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Wilmington Trust Company", "100 North Market Street", "", "Wilmington", "DE", "19890");
 insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("WSFS Bank", "500 Delaware Avenue", "", "Wilmington", "DE", "19801");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Delaware Bankers Association", "", "", "", "", "");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("CEEE Volunteers", "", "", "", "", "");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("Middletown High School - Bank at School", "", "", "", "", "");
+insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank_zip) VALUES("The Bryn Mawr Trust Company of DE", "", "", "", "", "");
 
 
 
