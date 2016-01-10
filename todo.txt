@@ -17,7 +17,6 @@ Very Easy:
 
 
 Simple:
- * Admin field to hide the documents.
 
 Manageable:
  N Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
@@ -43,6 +42,7 @@ Manageable:
  * Create a per-bank named field set to "mail code" for BofA and a field for volunteers that can take on this value.
  * Enter volunteering days - all 5 days.
  * Update list of banks.
+ * Admin field to hide the documents.
 
 -------- SKIP --------
 

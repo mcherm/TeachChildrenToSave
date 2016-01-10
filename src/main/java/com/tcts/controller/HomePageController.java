@@ -33,6 +33,8 @@ import com.tcts.exception.InconsistentDatabaseException;
 @Controller
 public class HomePageController {
 
+    final static String SHOW_DOCUMENTS_SETTING = "ShowDocuments";
+
     @Autowired
     private DatabaseFacade database;
 
@@ -85,6 +87,7 @@ public class HomePageController {
         // --- Display the page ---
         model.addAttribute("bank", bank);
         model.addAttribute("events", events);
+        model.addAttribute("showDocuments", getShowDocuments());
         return "volunteerHome";
     }
 
@@ -114,6 +117,7 @@ public class HomePageController {
         boolean eventCreationOpen = CreateEventController.isEventCreationOpen(database);
         model.addAttribute("events", events);
         model.addAttribute("eventCreationOpen", eventCreationOpen);
+        model.addAttribute("showDocuments", getShowDocuments());
         return "teacherHome";
     }
 
@@ -158,6 +162,7 @@ public class HomePageController {
         model.addAttribute("suspendedVolunteers", suspendedVolunteers);
         model.addAttribute("newVolunteers", newVolunteers);
         model.addAttribute("formData", formData);
+        model.addAttribute("showDocuments", getShowDocuments());
         return "bankAdminHome";
     }
 
@@ -175,4 +180,11 @@ public class HomePageController {
         return "siteAdminHome";
     }
 
+
+    /**
+     * Looks at the site setting and returns true if the documents should be shown, false if not.
+     */
+    private boolean getShowDocuments() throws SQLException {
+        return database.getSiteSettings().get(SHOW_DOCUMENTS_SETTING).equalsIgnoreCase("yes");
+    }
 }

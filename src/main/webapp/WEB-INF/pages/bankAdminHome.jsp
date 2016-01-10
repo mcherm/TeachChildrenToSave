@@ -53,24 +53,26 @@
                     </ul>
 		        </div>
 
-                <div class="documents">
-                    <strong>Important documents</strong>
-                    <%
-                        String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints.pdf";
-                        String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines.pdf";
-                        String certificateOfRecognition = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2015%20TCTSD%20Certificate.pdf";
-                        String lessonHandout = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%2015%20Lesson_Handout_Answer%20Key.pdf";
-                        String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
-                    %>
+                <c:if test="${showDocuments}">
+                    <div class="documents">
+                        <strong>Important documents</strong>
+                        <%
+                            String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints.pdf";
+                            String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines.pdf";
+                            String certificateOfRecognition = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2015%20TCTSD%20Certificate.pdf";
+                            String lessonHandout = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%2015%20Lesson_Handout_Answer%20Key.pdf";
+                            String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
+                        %>
 
-                    <ul>
-                        <li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints</a></li>
-                        <li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
-                        <li><a href="<%=certificateOfRecognition%>" target="_blank">Certificate of Recognition</a></li>
-                        <li><a href="<%=lessonHandout%>" target="_blank">Lesson Handout</a></li>
-                        <li><a href="<%=faq%>" target="_blank">FAQs</a></li>
-                    </ul>
-                </div>
+                        <ul>
+                            <li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints</a></li>
+                            <li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
+                            <li><a href="<%=certificateOfRecognition%>" target="_blank">Certificate of Recognition</a></li>
+                            <li><a href="<%=lessonHandout%>" target="_blank">Lesson Handout</a></li>
+                            <li><a href="<%=faq%>" target="_blank">FAQs</a></li>
+                        </ul>
+                    </div>
+                </c:if>
 
 
                 <div id="volunteers">
