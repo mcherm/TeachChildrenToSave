@@ -14,6 +14,7 @@ Very Easy:
 
      In Important Documents on  Teacher Page:
         Should we include 2015 Logo Slogan Contest Flyer in the important documents and if so can you update the pdf to say 2016?
+ * Bug: Go to home page. Click "home" from the menu. Displays an error screen.
 
 
 Simple:

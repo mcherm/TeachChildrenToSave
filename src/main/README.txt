@@ -1,0 +1,33 @@
+Deployment Instructions:
+
+After checkout, before building, go to /src/main/resources and copy
+"application.properties.template" into the file "application.properties", then fill
+in all the passwords and stuff. Obviously, you need to get the passwords from
+someplace that is NOT checked into version control.
+
+Doing "mvn install" will build a war file which can be deployed on Tomcat (or other
+application servers) to serve up the site. We are deploying it on Amazon Web Services.
+
+In AWS, use Elastic Beanstalk (which will auto-create the necessary servers and such).
+
+For now, I'm just keeping notes on what I did to create it. From the GUI, I selected
+"New Environment". Then I said "Create web server". I seem to have a saved
+configuration named "prod-config".
+
+I imported the newly build .war file. I kept the scaling to single instance. I am
+not sure whatthe environment name should be. I'm going to try "teachkidstosavedayde"
+('kids' because 'children' is too long).
+
+I am not creating an RDS DB instance with it (that's separately created). I am
+using an instance type of "t2.micro". I turned OFF "enable rolling updates" and
+"Cross zone load balancing" figuring that those don't apply when you just have one
+server.
+
+No tags. Default permissions. Launched it.
+
+I had a lot of trouble after that -- mostly with the Route 53 setup. In the end, I
+need a CNAME record for the www domain and an A record for the bare domain, with
+the A record pointing to an S3 bucket which is configured to forward requests to
+the www domain. Oh, and after setting it up, wait at least 5 minutes for the
+changes to propogate (perhaps as much as 24 hours).
+
