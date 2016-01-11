@@ -127,7 +127,8 @@
                             </c:if>
                             "    <td class='action'><form action='eventDetails.htm' method='POST'>" +
                             "        <input type='hidden' name='eventId' value='" + event.eventId +"'/>" +
-                            "        <input type='hidden' name='doneURL' value='eventRegistration.htm'/>" +
+
+                            "        <input type='hidden' name='doneURL' value='${calledByURL}'/>" +
                             "        <button class='editOrRegister details' type='submit'>Details</button>" +
                             "    </form></td>" +
                             "    <td class='action'>" +
@@ -360,10 +361,12 @@
                             <c:if test="${bank.minLMIForCRA != null}">
                                 <th scope="col">CRA</th>
                             </c:if>
-                            <%--
+
                             <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
-                            <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
+                            <%--
+                            <th scope="col"><span class="ada-read">Column of Withdraw buttons</span></th>
                             --%>
+
                         </tr>
                         </thead>
                         <tbody>
@@ -387,28 +390,17 @@
                                         </c:choose>
                                     </td>
                                 </c:if>
-                                <%--
                                 <td class="action">
-                                --%>
-                                        <%--=======--%>
-                                        <%--<td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>--%>
-                                        <%--<td data-title="Time"><c:out value="${event.eventTime}"/></td>--%>
-                                        <%--<td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>--%>
-                                        <%--<td data-title="Teacher"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>--%>
-                                        <%--<td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>--%>
-                                        <%--<td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>--%>
-                                        <%--<td class="action">--%>
-                                        <%-->>>>>>> Stashed changes--%>
-                                <%--
                                     <form action="eventDetails.htm" method="POST">
                                         <input type="hidden" name="eventId" value="<c:out value="${event.eventId}"/>"/>
-                                        <input type="hidden" name="doneURL" value="volunteerHome.htm"/>
+                                        <input type="hidden" name="doneURL" value="${calledByURL}"/>
                                         <button class="editOrRegister details" type="submit">Details</button>
                                     </form>
                                 </td>
+                                <%--
                                 <td class="action">
                                     <button onclick="js.loadURL('volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">
-                                        Delete
+                                        Withdraw
                                     </button>
                                 </td>
                                 --%>
@@ -455,8 +447,8 @@
 
                 <br>
 
-                <div class="cancelBlock">
-                    <button onclick="js.loadURL('${calledBy}Home.htm');" class="editOrRegister delete">Cancel</button>
+                <div class="doneBlock">
+                    <button onclick="js.loadURL('${calledBy}Home.htm');" class="editOrRegister delete">Done</button>
                 </div>
         </main>
 

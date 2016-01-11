@@ -91,8 +91,10 @@ public class EventRegistrationController {
         model.addAttribute("allowedTimes", database.getAllowedTimes());
         if (sessionData.getVolunteer() != null) {
             model.addAttribute("calledBy", "volunteer");
+            model.addAttribute("calledByURL", "eventRegistration.htm");
         } else  if (sessionData.getSiteAdmin() != null) {
             model.addAttribute("calledBy", "siteAdmin");
+            model.addAttribute("calledByURL", "eventRegistrationBySiteAdmin.htm?userId=" + volunteer.getUserId());
             // get a list of events the volunteer is currently signed up for
             List<Event> volunteerEvents = database.getEventsByVolunteer(volunteer.getUserId());
             for (Event event : volunteerEvents) {
