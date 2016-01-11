@@ -122,20 +122,30 @@ public class EventRegistrationController {
             throws SQLException, NoSuchEventException
     {
         SessionData sessionData = SessionData.fromSession(session);
-        Volunteer volunteer = (Volunteer) database.getUserById(formData.getVolunteerId());
+        String volunteerId;
+        Volunteer volunteer;
 
-        //If you are not signed in as a volunteer or a SiteAdmin
-        if ((sessionData.getVolunteer() == null) && (sessionData.getSiteAdmin() == null))
-        {
+        if (sessionData.getSiteAdmin() != null) {
+            volunteerId = formData.getVolunteerId();
+        } else if (sessionData.getVolunteer() != null) {
+            volunteerId = sessionData.getVolunteer().getUserId();
+        } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged-in.");
         }
+        volunteer = (Volunteer) database.getUserById(volunteerId);
+
+        //If you are not signed in as a volunteer or a SiteAdmin
         if ((volunteer != null) && (volunteer.getApprovalStatus() == ApprovalStatus.Suspended)) {
            throw new InvalidParameterFromGUIException("GUI should not let a suspended volunteer register for an event.");
         }
         // --- Validation Rules ---
         // FIXME: There may not BE any validation needed!
+
         // --- Create Event ---
-        database.volunteerForEvent(formData.eventId, formData.getVolunteerId());
+
+       database.volunteerForEvent(formData.eventId, volunteerId);
+
+
         // --- Navigate onward ---
         if (null != formData.getEventId()) {
             
