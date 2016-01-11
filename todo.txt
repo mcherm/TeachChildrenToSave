@@ -1,31 +1,10 @@
- D - done
- N - need
- P - partial; maybe follow up
- S - skip
-
-Questions to ask:
 
 -------- OPEN TASKS --------
 
-Very Easy:
- * Use the new documents that were sent.
-     In Important Documents on Volunteer Page:
-        Lesson Handout Answer Key and Certificate of Recognition pdf's both need to be updated;  minimally the year removed or updated from 2015 to 2016.
+ * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
+   "Certificate of Recognition" have the wrong year.
+ * Fix signup button on details page for site admin (Rachel knows what this means).
 
-     In Important Documents on  Teacher Page:
-        Should we include 2015 Logo Slogan Contest Flyer in the important documents and if so can you update the pdf to say 2016?
- * Bug: Go to home page. Click "home" from the menu. Displays an error screen.
-
-
-Simple:
-
-Manageable:
- N Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
- N Site Admin – Would like to be able register volunteers for classes from the site admin page instead of having to use another sign in.
-
--------- PARTIAL --------
- P Site Admin. – List Classes would like the volunteers email to export with the report
- P Bank Admin. – Needs “export to excel” function added
 
 -------- DONE --------
  * Site Admin. – Add/Remove/Edit Banks; After you click Modify there is an Edit button needs to be changed to say “Save”
@@ -44,6 +23,11 @@ Manageable:
  * Enter volunteering days - all 5 days.
  * Update list of banks.
  * Admin field to hide the documents.
+ * Bug: Go to home page. Click "home" from the menu. Displays an error screen.
+ * Need to be able to stop teachers from signing up their classes on a certain date or have a registration closed message.
+ * Site Admin – Would like to be able register volunteers for classes from the site admin page instead of having to use another sign in.
+ * Site Admin. – List Classes would like the volunteers email to export with the report
+ * Bank Admin. – Needs “export to excel” function added
 
 -------- SKIP --------
 
