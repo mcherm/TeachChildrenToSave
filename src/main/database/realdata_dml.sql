@@ -3,11 +3,11 @@
  */
 
 
-insert into AllowedDates (event_date) values (DATE('2015-04-25'));
-insert into AllowedDates (event_date) values (DATE('2015-04-26'));
-insert into AllowedDates (event_date) values (DATE('2015-04-27'));
-insert into AllowedDates (event_date) values (DATE('2015-04-28'));
-insert into AllowedDates (event_date) values (DATE('2015-04-29'));
+insert into AllowedDates (event_date) values (DATE('2016-04-25'));
+insert into AllowedDates (event_date) values (DATE('2016-04-26'));
+insert into AllowedDates (event_date) values (DATE('2016-04-27'));
+insert into AllowedDates (event_date) values (DATE('2016-04-28'));
+insert into AllowedDates (event_date) values (DATE('2016-04-29'));
 
 
 insert into AllowedTimes (event_time, sort_order) values ("9:00 to 9:45 AM", 1);
@@ -227,4 +227,4 @@ insert into Bank (bank_name, bank_addr1, bank_addr2, bank_city, bank_state, bank
 
 
 
-insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('JrCGJAr4HcM=','KMcEQeRkLmdJV6lQJaSWKzkqYhM=','teach2save@udel.edu','Site','Admin','SA',null,'1-800-234-1234','0');
+insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('JrCGJAr4HcM=','KMcEQeRkLmdJV6lQJaSWKzkqYhM=','teach2save@udel.edu','Jennifer','Magaw','SA',null,'302-831-2544','0');
