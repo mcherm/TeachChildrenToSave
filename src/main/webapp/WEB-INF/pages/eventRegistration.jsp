@@ -97,6 +97,11 @@
                     "    <th scope='col' class='action'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
                     "<tbody>";
+                <c:if test="${empty availableEvents}">
+                    html += "<td colspan=\"8\" class=\"emptyTableMessage\">There are currently no open classes.</td>";
+                </c:if>
+
+                html +=
                 $.each(availableEvents, function(i,event) {
                     var showThisEvent = true;
                     $.each(filterSettings, function(field,settings) {
