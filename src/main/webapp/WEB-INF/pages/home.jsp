@@ -54,6 +54,7 @@
                 <button onclick="js.loadURL('registerVolunteer.htm');">Volunteer</button>
 
                 <h3>Already Registered?</h3>
+                <em>   * You must create a new registration each year.</em><br><br>
                 <button onclick="js.loadURL('login.htm');">Sign In</button>
 
                 <%
