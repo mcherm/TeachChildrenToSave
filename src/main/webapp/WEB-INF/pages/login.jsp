@@ -20,7 +20,9 @@
 
             <main id="main">
 
-	        <h1>Teach Children To Save Login</h1>				
+	        <h1>Teach Children To Save Login</h1>
+
+			<div class="centered"><em>NOTE: You must create a new login each year.</em></div>
 
 			<c:if test="${not empty errorMessage}">
 				<div class="errorMessage">
