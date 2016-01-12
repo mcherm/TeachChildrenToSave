@@ -1,5 +1,5 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<c:set var="homeLink" value='${sessionData == null || sessionData.user == null ? "index.jsp" : sessionData.user.userType.homepage}' />
+<c:set var="homeLink" value='${sessionData == null || sessionData.user == null ? "." : sessionData.user.userType.homepage}' />
 <header role="banner">
 	<nav role="navigation">
 		<ul>
