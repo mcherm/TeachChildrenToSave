@@ -218,7 +218,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "update Bank set bank_specific_data_label = ? where bank_id = ?";
 
     private final static String setBankSpecificFieldSQL =
-            "update USer set bank_specific_data = ? where user_id = ?";
+            "update User set bank_specific_data = ? where user_id = ?";
 
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
