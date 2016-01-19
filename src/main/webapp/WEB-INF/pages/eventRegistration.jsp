@@ -101,6 +101,7 @@
                     html += "<td colspan=\"8\" class=\"emptyTableMessage\">There are currently no open classes.</td>";
                 </c:if>
 
+
                 $.each(availableEvents, function(i,event) {
                     var showThisEvent = true;
                     $.each(filterSettings, function(field,settings) {

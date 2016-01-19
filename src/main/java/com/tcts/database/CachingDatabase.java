@@ -244,12 +244,17 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void volunteerForEvent(final String eventId, String volunteerId) throws SQLException, NoSuchEventException {
         database.volunteerForEvent(eventId, volunteerId);
-        availableEvents.deleteItems(new CachedList.Filter<Event>() {
-            @Override
-            public boolean keep(Event item) {
-                return !item.getEventId().equals(eventId);
-            }
-        });
+        if (volunteerId == null) {
+            // Withdrew someone from an event so we need to reload the list
+            availableEvents.refreshNow();
+        } else {
+            availableEvents.deleteItems(new CachedList.Filter<Event>() {
+                @Override
+                public boolean keep(Event item) {
+                    return !item.getEventId().equals(eventId);
+                }
+            });
+        }
     }
 
     @Override
