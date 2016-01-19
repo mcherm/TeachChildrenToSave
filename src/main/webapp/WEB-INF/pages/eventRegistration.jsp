@@ -97,11 +97,10 @@
                     "    <th scope='col' class='action'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
                     "</tr></thead>" +
                     "<tbody>";
-                <c:if test="${empty availableEvents}">
+                <c:if test="${empty events}">
                     html += "<td colspan=\"8\" class=\"emptyTableMessage\">There are currently no open classes.</td>";
                 </c:if>
 
-                html +=
                 $.each(availableEvents, function(i,event) {
                     var showThisEvent = true;
                     $.each(filterSettings, function(field,settings) {
@@ -343,15 +342,28 @@
 
         <main id="main">
 
+            <c:if test = "${calledBy == 'siteAdmin' }">
+                <h1> Sign Up  ${volunteerFirstName} ${volunteerLastName} for a Class</h1>
+            </c:if>
 
-            <c:if test = "${calledBy == 'siteAdmin'}">
+            <c:if test = "${calledBy == 'bankAdmin' }">
+                <h1>My Volunteering</h1>
+            </c:if>
+
+            <c:if test = "${calledBy == 'siteAdmin' || calledBy == 'bankAdmin' }">
                 <%-- If this page is called by the siteAdmin include a list of classes the volunteer is already
                      signed up for--%>
-                <h1> Sign Up  ${volunteerFirstName} ${volunteerLastName} for a Class</h1>
+
 
                 <div id="currentlyRegisteredEvents">
+                    <c:if test = "${calledBy == 'bankAdmin' }">
+                        <h2>Classes I am currently signed up for: </h2>
+                    </c:if>
+                    <c:if test = "${calledBy == 'siteAdmin' }">
+                        <h2>Classes that ${volunteerFirstName} ${volunteerLastName} is currently signed up for: </h2>
+                    </c:if>
 
-                    <h2>Classes that ${volunteerFirstName} ${volunteerLastName} is currently signed up for: </h2>
+
 
                     <table id="eventTable" class="displayTable responsive">
 
@@ -368,7 +380,9 @@
                             </c:if>
 
                             <th scope="col"><span class="ada-read">Column of Details buttons</span></th>
-                            <%--
+                            <th scope="col"><span class="ada-read">Column of Delete buttons</span></th>
+
+                        <%--
                             <th scope="col"><span class="ada-read">Column of Withdraw buttons</span></th>
                             --%>
 
@@ -402,13 +416,13 @@
                                         <button class="editOrRegister details" type="submit">Details</button>
                                     </form>
                                 </td>
-                                <%--
+
                                 <td class="action">
                                     <button onclick="js.loadURL('volunteerWithdraw.htm?eventId=<c:out value="${event.eventId}"/>');" class="editOrRegister delete">
                                         Withdraw
                                     </button>
                                 </td>
-                                --%>
+
                             </tr>
                         </c:forEach>
                         </tbody>

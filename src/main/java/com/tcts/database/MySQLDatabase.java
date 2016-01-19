@@ -77,7 +77,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getUserByEmailSQL =
             "select " + userFields + " from User where email = ?";
     private final static String getVolunteersByBankSQL =
-            "select " + userFields + " from User where access_type = 'V' and organization_id = ?" +
+            "select " + userFields + " from User where (access_type = 'V' or access_type = 'BA') and organization_id = ?" +
             " order by last_name asc, first_name asc";
     private final static String getBankAdminByBankSQL =
             "select " + userFields + " from User where access_type = 'BA' and organization_id = ?";
@@ -507,7 +507,7 @@ public class MySQLDatabase implements DatabaseFacade {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
-                if (userType != UserType.VOLUNTEER) {
+                if ((userType != UserType.VOLUNTEER) && (userType !=UserType.BANK_ADMIN)){
                     throw new RuntimeException("This should not occur.");
                 }
                 Volunteer volunteer = new Volunteer();

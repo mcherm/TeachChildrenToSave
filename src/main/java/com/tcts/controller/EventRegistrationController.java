@@ -65,12 +65,19 @@ public class EventRegistrationController {
 
     @RequestMapping(value = "/eventRegistration", method = RequestMethod.GET)
     public String showEventRegistrationPage(HttpSession session, Model model) throws SQLException {
+        Volunteer volunteer;
         SessionData sessionData = SessionData.fromSession(session);
-        if (sessionData.getVolunteer() == null) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
+
+        if (sessionData.getVolunteer() != null){
+            volunteer = sessionData.getVolunteer();
+        } else if (sessionData.getBankAdmin() != null){
+            volunteer = (Volunteer) sessionData.getBankAdmin();
+        } else {
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
         }
+
         model.addAttribute("formData", new EventRegistrationFormData());
-        Volunteer volunteer = sessionData.getVolunteer();
+
         return showForm(model, volunteer, sessionData);
     }
 
@@ -89,8 +96,11 @@ public class EventRegistrationController {
         model.addAttribute("events", database.getAllAvailableEvents());
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        if (sessionData.getVolunteer() != null) {
+        if (sessionData.getVolunteer() != null)  {
             model.addAttribute("calledBy", "volunteer");
+            model.addAttribute("calledByURL", "eventRegistration.htm");
+        } else if (sessionData.getBankAdmin() != null){
+            model.addAttribute("calledBy", "bankAdmin");
             model.addAttribute("calledByURL", "eventRegistration.htm");
         } else  if (sessionData.getSiteAdmin() != null) {
             model.addAttribute("calledBy", "siteAdmin");
@@ -115,6 +125,27 @@ public class EventRegistrationController {
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
         }
+
+        // the siteadmin and bankadmin both have currently signed up events listed on eventregistration page.  a regular volunteer does not
+        if ((sessionData.getSiteAdmin() != null)|| (sessionData.getBankAdmin() != null)) {
+            // get a list of events the volunteer is currently signed up for
+            List<Event> volunteerEvents = database.getEventsByVolunteer(volunteer.getUserId());
+            for (Event event : volunteerEvents) {
+                Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
+                if (teacher == null) {
+                    throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
+                }
+                event.setLinkedTeacher(teacher);
+                String schoolId = teacher.getSchoolId();
+                if (schoolId == null) {
+                    throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
+                }
+                School school = database.getSchoolById(schoolId);
+                teacher.setLinkedSchool(school);
+            }
+
+            model.addAttribute("volunteerEvents", volunteerEvents); }
+
         return "eventRegistration";
     }
 
@@ -131,12 +162,14 @@ public class EventRegistrationController {
             volunteerId = formData.getVolunteerId();
         } else if (sessionData.getVolunteer() != null) {
             volunteerId = sessionData.getVolunteer().getUserId();
+        } else if (sessionData.getBankAdmin() != null) {
+            volunteerId = sessionData.getBankAdmin().getUserId();
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged-in.");
         }
         volunteer = (Volunteer) database.getUserById(volunteerId);
 
-        //If you are not signed in as a volunteer or a SiteAdmin
+        //If you are signed is as a volunteer but your approval status is suspended
         if ((volunteer != null) && (volunteer.getApprovalStatus() == ApprovalStatus.Suspended)) {
            throw new InvalidParameterFromGUIException("GUI should not let a suspended volunteer register for an event.");
         }

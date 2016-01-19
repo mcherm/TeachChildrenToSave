@@ -5,24 +5,8 @@ import java.sql.SQLException;
 
 /**
  * Represents a single bank administrator. Contains data from one row of the Users table.
+ * currently BankAdmins do not carry any extra information that volunteers don't already have.
  */
-public class BankAdmin extends User {
-    private String bankId;
+public class BankAdmin extends Volunteer {
 
-    /**
-     * This can be called to populate fields from the current row of a resultSet.
-     */
-    @Override
-    public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        super.populateFieldsFromResultSetRow(resultSet);
-        setBankId(resultSet.getString("organization_id"));
-    }
-
-    public String getBankId() {
-        return bankId;
-    }
-
-    public void setBankId(String bankId) {
-        this.bankId = bankId;
-    }
 }

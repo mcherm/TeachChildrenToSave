@@ -64,8 +64,12 @@ public class CancelWithdrawController {
     {
         // --- Ensure logged in as a Volunteer ---
         SessionData sessionData = SessionData.fromSession(session);
-        Volunteer loggedInVolunteer = sessionData.getVolunteer();
-        if (loggedInVolunteer == null) {
+        Volunteer loggedInVolunteer;
+        if (sessionData.getVolunteer()!= null){
+            loggedInVolunteer = sessionData.getVolunteer();
+        } else if (sessionData.getBankAdmin()!=null){
+            loggedInVolunteer = sessionData.getBankAdmin();
+        } else {
             throw new NotLoggedInException();
         }
 
@@ -104,8 +108,12 @@ public class CancelWithdrawController {
     {
         // --- Ensure logged in as a Volunteer ---
         SessionData sessionData = SessionData.fromSession(session);
-        Volunteer loggedInVolunteer = sessionData.getVolunteer();
-        if (loggedInVolunteer == null) {
+        Volunteer loggedInVolunteer;
+        if (sessionData.getVolunteer()!= null){
+            loggedInVolunteer = sessionData.getVolunteer();
+        } else if (sessionData.getBankAdmin()!=null){
+            loggedInVolunteer = sessionData.getBankAdmin();
+        } else {
             throw new NotLoggedInException();
         }
 

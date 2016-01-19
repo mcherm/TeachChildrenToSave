@@ -3,10 +3,15 @@
 
  * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
    "Certificate of Recognition" have the wrong year.
- * Fix signup button on details page for site admin (Rachel knows what this means).
+  *Allow site admin to withdraw volunteers from classes.
+
+-----------BUGS-------------
+* It seems that the "note to teacher" on the withdraw page does not get included in the withdraw email sent to the teacher.
 
 
 -------- DONE --------
+
+
  * Site Admin. – Add/Remove/Edit Banks; After you click Modify there is an Edit button needs to be changed to say “Save”
  * Bank Admin. - Important Documents that show on the Volunteer page added to the Bank Admin page.
  * (NEW) Switch to cheaper server [Amazon has cheaper servers now that didn't exist last year. Can save you some costs.]
@@ -28,6 +33,10 @@
  * Site Admin – Would like to be able register volunteers for classes from the site admin page instead of having to use another sign in.
  * Site Admin. – List Classes would like the volunteers email to export with the report
  * Bank Admin. – Needs “export to excel” function added
+ * Fix signup button on details page for site admin (Rachel knows what this means).
+ * Allow bank admin to signup for classes
+    - Add bank admin to list of volunteers and classes the bankadmin sees.
+
 
 -------- SKIP --------
 

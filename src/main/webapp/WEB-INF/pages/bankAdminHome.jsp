@@ -51,7 +51,15 @@
                             </button>
                         </li>
                     </ul>
-		        </div>
+                    <ul class="noUl">
+                        <li class="mb1">
+                            <button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
+                                My Own Volunteering
+                            </button>
+                        </li>
+                    </ul>
+
+                </div>
 
                 <c:if test="${showDocuments}">
                     <div class="documents">
