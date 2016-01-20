@@ -7,6 +7,9 @@
    <p>${class}</p>
 
 <p>The class has been made available on the website again so that another volunteer may sign up for it.  You will be notified via email when that happens.</p>
+   #if ( $withdrawNotes  && $withdrawNotes != "" )
+      <p><em><b>Withdraw Note:</b> ${withdrawNotes}<em></em></p>
+ #end
 
 
 </body>

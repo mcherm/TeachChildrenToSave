@@ -209,6 +209,7 @@ public class CancelWithdrawController {
 						"<td>" + event.getNumberStudents()  + "</td>" +
 						"<td>" + event.getNotes()  + "</td></tr>";
             emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
+            emailModel.put("withdrawNotes", withdrawNotes);
             // FIXME: the email should include formData.getWithdrawNotes()
             String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
             emailUtil.sendEmail(emailContent, emailModel);
