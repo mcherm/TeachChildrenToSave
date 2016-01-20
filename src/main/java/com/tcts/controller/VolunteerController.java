@@ -88,7 +88,7 @@ public class VolunteerController extends AuthenticationController{
         // --- First, unregister from any events ---
         List<Event> events = database.getEventsByVolunteer(volunteerId);
         for (Event event : events) {
-            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request);
+            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request,null);
         }
 
         // --- Now delete the volunteer ---

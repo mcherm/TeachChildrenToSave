@@ -176,7 +176,7 @@ public class BankAdminActionsController {
         // --- Resign from the events ---
         List<Event> events = database.getEventsByVolunteer(volunteerId);
         for (Event event : events) {
-            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request);
+            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request,null);
         }
 
         // --- Actually suspend the person ---

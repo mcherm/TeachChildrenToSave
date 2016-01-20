@@ -52,8 +52,9 @@ public class CancelWithdrawController {
     private EmailUtil emailUtil;
 
     /**
-     * A volunteer withdraws themselves from a class they had previously
-     * volunteered for.
+     *   A volunteer is withdrawn from a class
+     *   This method can be called by a volunteer or bankadmin to withdraw themselves from a class
+     *   they signed up for or by a siteadmin in which case they are withdrawing the current volunteer from the class
      */
     @RequestMapping(value = "volunteerWithdraw", method = RequestMethod.GET)
     public String showVolunteerWithdraw(
@@ -69,6 +70,8 @@ public class CancelWithdrawController {
             loggedInVolunteer = sessionData.getVolunteer();
         } else if (sessionData.getBankAdmin()!=null){
             loggedInVolunteer = sessionData.getBankAdmin();
+        } else if (sessionData.getSiteAdmin()!=null){
+            loggedInVolunteer = null;
         } else {
             throw new NotLoggedInException();
         }
@@ -82,7 +85,8 @@ public class CancelWithdrawController {
             // No such event by that ID
             throw new InvalidParameterFromGUIException();
         }
-        if (!loggedInVolunteer.getUserId().equals(event.getVolunteerId())) {
+        if ((sessionData.getVolunteer()!= null  || sessionData.getBankAdmin()!= null)
+                && (!loggedInVolunteer.getUserId().equals(event.getVolunteerId()))) {
             throw new NotOwnedByYouException();
         }
 
@@ -108,52 +112,52 @@ public class CancelWithdrawController {
     {
         // --- Ensure logged in as a Volunteer ---
         SessionData sessionData = SessionData.fromSession(session);
-        Volunteer loggedInVolunteer;
-        if (sessionData.getVolunteer()!= null){
-            loggedInVolunteer = sessionData.getVolunteer();
-        } else if (sessionData.getBankAdmin()!=null){
-            loggedInVolunteer = sessionData.getBankAdmin();
-        } else {
-            throw new NotLoggedInException();
-        }
 
-        // --- Ensure the event is valid and is listed for this volunteer ---
         String eventId = formData.getEventId();
         if (eventId == null || eventId.length() == 0) {
             throw new InvalidParameterFromGUIException();
         }
+
         Event event = database.getEventById(eventId);
         if (event == null) {
             // No such event by that ID
             throw new InvalidParameterFromGUIException();
         }
-        if (!loggedInVolunteer.getUserId().equals(event.getVolunteerId())) {
-            throw new NotOwnedByYouException();
+
+        if ((sessionData.getVolunteer()!= null)) {
+            //if a volunteer is logged make sure the volunteer owns the event she is withdrawing from
+            if (!sessionData.getVolunteer().getUserId().equals(event.getVolunteerId())) {
+                throw new NotOwnedByYouException();
+            }
+        } else if ((sessionData.getBankAdmin()!= null)) {
+            //if a bankadmin is logged in make sure the bankadmin  owns the event she is withdrawing from
+            if (!sessionData.getBankAdmin().getUserId().equals(event.getVolunteerId())) {
+                throw new NotOwnedByYouException();
+            }
+       } else if (sessionData.getSiteAdmin() == null) { //siteadmin has permission to withdraw other volunteer's events and we don't do the "owned by you" check
+            //if a bankadmin, volunteer, or siteadmin is not logged in
+            throw new NotLoggedInException();
         }
 
         // --- Perform the withdraw ---
-        withdrawFromAnEvent(database, templateUtil, emailUtil, event, request);
+        withdrawFromAnEvent(database, templateUtil, emailUtil, event, request, formData.getWithdrawNotes());
 
         // --- Done ---
-        return "redirect:" + loggedInVolunteer.getUserType().getHomepage();
-    }
+        return "redirect:" + sessionData.getUser().getUserType().getHomepage();   }
 
 
     /**
      * Subroutine that actually withdraws a volunteer from an event. Exposed
      * here so it can be shared from other locations.
      * <p>
-     * FIXME: I think that this should NOT send an email to the volunteer, but
-     * instead to the TEACHER. (The volunteer will be performing the action
-     * or be notified by some other means. However, I will not make that change
-     * right at the moment.
-     */
+    */
     public static void withdrawFromAnEvent(
             DatabaseFacade database,
             TemplateUtil templateUtil,
             EmailUtil emailUtil,
             Event event,
-            HttpServletRequest request
+            HttpServletRequest request,
+            String withdrawNotes
         ) throws SQLException
     {
         // --- Make sure we have called it where it makes sense ---
@@ -260,7 +264,7 @@ public class CancelWithdrawController {
 
     /**
      * A volunteer withdraws themselves from a class they had previously
-     * volunteered for.
+     * volunteered for.  FIXME: This comment seems wrong
      */
     @RequestMapping(value = "teacherCancel", method = RequestMethod.POST)
     public String doTeacherCancel(
