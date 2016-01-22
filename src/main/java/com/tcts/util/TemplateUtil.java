@@ -22,8 +22,7 @@ public class TemplateUtil {
             throw new AppConfigurationException(
                     "Cannot send any emails because the velocity engine is not properly configured.");
         }
-        
-        String text = 	VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template/"+ templateType + ".vm", model);
+        String text = 	VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template/"+ templateType + ".vm","UTF-8", model);
         return text;
         
     }

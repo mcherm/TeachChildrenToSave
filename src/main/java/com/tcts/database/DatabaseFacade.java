@@ -284,7 +284,7 @@ public interface DatabaseFacade {
 	public List<Volunteer> getVolunteerWithBankData() throws SQLException;
 	
 	/**
-	 * Get list of all the teachers whose classes have volunteers.
+	 * Get list of all the teachers whose classes have volunteers.  If there are none returns an empty list.
 	 * @return
 	 * @throws SQLException
 	 */
@@ -292,7 +292,7 @@ public interface DatabaseFacade {
 	List<Teacher> getMatchedTeachers() throws SQLException;
 	
 	/**
-	 * Get list of all the teachers whose classes dont have volunteers.
+	 * Get list of all the teachers whose classes dont have volunteers.  If there are no teachers like this returns an empty list.
 	 * @return
 	 * @throws SQLException
 	 */
@@ -300,15 +300,15 @@ public interface DatabaseFacade {
 	List<Teacher> getUnMatchedTeachers() throws SQLException;
 	
 	/**
-	 * Get list of all the volunteers who have signed-up for classes.
-	 * @return
+	 * Get list of all the volunteers who have signed-up for classes.  If there are no volunteers returns an empty list.
+	 * @return List<Volunteer>
 	 * @throws SQLException
 	 */
 
 	List<Volunteer> getMatchedVolunteers() throws SQLException;
 	
 	/**
-	 * Get list of all the volunteers who does not have signed-up for classes. 
+	 * Get list of all the volunteers who are not signed up for classes.  If there are no volunteers returns an empty list.
 	 * @return
 	 * @throws SQLException
 	 */
@@ -316,7 +316,7 @@ public interface DatabaseFacade {
 	List<Volunteer> getUnMatchedVolunteers() throws SQLException;
 
     /**
-     * Returns a list of all the bank admins.
+     * Returns a list of all the bank admins.  If there are no bankadmins returns an empty list.
      *
      * @return
      * @throws SQLException

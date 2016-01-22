@@ -206,12 +206,12 @@ public class MySQLDatabase implements DatabaseFacade {
     
     private final static String getMatchedVolunteersSQL =
     		"select " + userFields + " " + 
-    		" from Event join User on user_id = volunteer_id  and access_type = 'V'" +
+    		" from Event join User on user_id = volunteer_id " +
             " order by last_name asc, first_name asc";
     
     private final static String getUnMatchedVolunteersSQL =
     		"select " + userFields + " " + 
-		    " from User where access_type = 'V' and not exists ( select * from Event where volunteer_id = user_id)" +
+		    " from User where (access_type = 'V' or access_type = 'BA') and not exists ( select * from Event where volunteer_id = user_id)" +
             " order by last_name asc, first_name asc";
 
     private final static String setBankSpecificFieldLabelSQL =
@@ -1615,19 +1615,13 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getMatchedTeachersSQL);
             resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
             while (resultSet.next()) {
-            			numberOfRows++;
                         Teacher teacher = new Teacher();
                         teacher.populateFieldsFromResultSetRow(resultSet);
                         usersList.add(teacher);
                  }
-             
-            if (numberOfRows < 1) {
-                return null; // No user found
-            } else {
-                return usersList;
-            } 
+            return usersList;
+
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
@@ -1643,19 +1637,12 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getUnMatchedTeachersSQL);
             resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
             while (resultSet.next()) {
-            			numberOfRows++;
-                        Teacher teacher = new Teacher();
-                        teacher.populateFieldsFromResultSetRow(resultSet);
+                Teacher teacher = new Teacher();
+                teacher.populateFieldsFromResultSetRow(resultSet);
                         usersList.add(teacher);
-                 }
-             
-            if (numberOfRows < 1) {
-                return null; // No user found
-            } else {
-                return usersList;
-            } 
+            }
+            return usersList;
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
@@ -1671,19 +1658,12 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getMatchedVolunteersSQL);
             resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
             while (resultSet.next()) {
-            			numberOfRows++;
             			Volunteer volunteer = new Volunteer();
             			volunteer.populateFieldsFromResultSetRow(resultSet);
                         usersList.add(volunteer);
                  }
-             
-            if (numberOfRows < 1) {
-                return null; // No user found
-            } else {
-                return usersList;
-            } 
+            return usersList;
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
@@ -1699,19 +1679,14 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getUnMatchedVolunteersSQL);
             resultSet = preparedStatement.executeQuery();
-            int numberOfRows = 0;
             while (resultSet.next()) {
-            			numberOfRows++;
             			Volunteer volunteer = new Volunteer();
             			volunteer.populateFieldsFromResultSetRow(resultSet);
                         usersList.add(volunteer);
                  }
              
-            if (numberOfRows < 1) {
-                return null; // No user found
-            } else {
-                return usersList;
-            } 
+            return usersList;
+
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }

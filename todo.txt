@@ -3,11 +3,11 @@
 
  * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
    "Certificate of Recognition" have the wrong year.
-  *Allow site admin to withdraw volunteers from classes.
 
 -----------BUGS-------------
-* It seems that the "note to teacher" on the withdraw page does not get included in the withdraw email sent to the teacher.
-
+*On the email announcement is null if the list of unmatched (and probably other) are empty throws a null pointer exception.
+    getUnmatchedVolunteers *getMatchedVolunteers  getBankAdmins
+    getUnmatchedTeachers *getMatchedTeachers  all changed to return empty list rather than null string if result set is empty
 
 -------- DONE --------
 
@@ -36,10 +36,13 @@
  * Fix signup button on details page for site admin (Rachel knows what this means).
  * Allow bank admin to signup for classes
     - Add bank admin to list of volunteers and classes the bankadmin sees.
+  *Allow site admin to withdraw volunteers from classes.
+ * It seems that the "note to teacher" on the withdraw page does not get included in the withdraw email sent to the teacher.
+
+
 
 
 -------- SKIP --------
 
 Difficult:
- S Bank Admin. – Would like to be able to register for a class from their Bank Admin page instead of having to set up another log-in to register.
  N (NEW) Provide written notes and "training" on managing the site. Basically, it would cover how to Startup, Shutdown, and Deploy new versions.
