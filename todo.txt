@@ -4,10 +4,11 @@
  * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
    "Certificate of Recognition" have the wrong year.
 
+ ----- TESTING  -----
+
+
 -----------BUGS-------------
-*On the email announcement is null if the list of unmatched (and probably other) are empty throws a null pointer exception.
-    getUnmatchedVolunteers *getMatchedVolunteers  getBankAdmins
-    getUnmatchedTeachers *getMatchedTeachers  all changed to return empty list rather than null string if result set is empty
+ * In the code, session.getVolunteer() should return the BankAdmin when there is a bank admin.
 
 -------- DONE --------
 
@@ -38,6 +39,10 @@
     - Add bank admin to list of volunteers and classes the bankadmin sees.
   *Allow site admin to withdraw volunteers from classes.
  * It seems that the "note to teacher" on the withdraw page does not get included in the withdraw email sent to the teacher.
+ * On the email announcement is null if the list of unmatched (and probably other) are empty throws a null pointer exception.
+    getUnmatchedVolunteers *getMatchedVolunteers  getBankAdmins
+    getUnmatchedTeachers *getMatchedTeachers  all changed to return empty list rather than null string if result set is empty
+ * Return some message if on the email announcement the result set was empty and no email was sent.
 
 
 

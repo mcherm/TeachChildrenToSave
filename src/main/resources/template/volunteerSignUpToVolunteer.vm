@@ -1,20 +1,18 @@
- 
 <html>
-<body>
-<img src="${logoImage}" alt="Teach Children To Save Program">
+    <body>
+        <img src="${logoImage}" alt="Teach Children To Save Program">
 
-<p>Congratulations, you have signed up for the following class:</p>
+        <p>Congratulations, you have signed up for the following class:</p>
 
-   <p>${class}</p>
-<p>Teacher:</p>
-   <p>${teacher}</p>
-   
-<p>Here’s a link to everything you will need to know:</p>
-<p>o	FAQs</p>
-<p>o	Training Video</p>
-   
+        <p>${class}</p>
+        <p>Teacher:</p>
+        <p>${teacher}</p>
 
-</body>
-<p>© Copyright 2016 Teach Children to Save, Delaware.</p>
-<p>  Created by Capital One volunteers.</p>
+        <p>Here's a link to everything you will need to know:</p>
+        <p>o	FAQs</p>
+        <p>o	Training Video</p>
+
+
+    </body>
+    <p>(c) Copyright 2016 Teach Children to Save, Delaware.</p>
 </html>

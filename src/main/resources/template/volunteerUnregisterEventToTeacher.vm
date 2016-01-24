@@ -1,18 +1,16 @@
- 
 <html>
-<body>
-<img src="${logoImage}" alt="Teach Children To Save Program">
+    <body>
+        <img src="${logoImage}" alt="Teach Children To Save Program">
 
-<p>Unfortunately, your volunteer can no longer attend the following class:</p>
-   <p>${class}</p>
+        <p>Unfortunately, your volunteer can no longer attend the following class:</p>
+        <p>${class}</p>
 
-<p>The class has been made available on the website again so that another volunteer may sign up for it.  You will be notified via email when that happens.</p>
-   #if ( $withdrawNotes  && $withdrawNotes != "" )
-      <p><em><b>Withdraw Note:</b> ${withdrawNotes}<em></em></p>
- #end
+        <p>The class has been made available on the website again so that another volunteer may sign up for it.  You will be notified via email when that happens.</p>
+        #if ( $withdrawNotes  && $withdrawNotes != "" )
+            <p><em><b>Withdraw Note:</b> ${withdrawNotes}<em></em></p>
+        #end
 
 
-</body>
-<p>© Copyright 2016 Teach Children to Save, Delaware.</p>
-<p> Created by Capital One volunteers.</p>
+    </body>
+    <p>(c) Copyright 2016 Teach Children to Save, Delaware.</p>
 </html>

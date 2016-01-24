@@ -27,16 +27,14 @@
             <form:form method="POST" action="emailAnnouncement.htm" modelAttribute="formData">
 
                         <div class="formElementCnt">
-                            <label>
-                                <div class="inputCnt">
-                                    <p><div class="info">Select User types to send email</div></p>
-                                   	<form:checkbox path="matchedTeachers" value="yes"/>Matched Teachers</br>
-                                   	<form:checkbox path="unmachedTeachers" value="yes"/>Un-Matched Teachers</br>
-                                   	<form:checkbox path="matchedVolunteer" value="yes"/>Matched Volunteers</br>
-                                   	<form:checkbox path="unmatchedvolunteers" value="yes"/>Un-Matched Volunteers</br>
-                                   	<form:checkbox path="bankAdmins" value="yes"/>Bank Admins</br>
-                                </div>
-                            </label>
+                            <div class="inputCnt">
+                                <p><div class="info">Select User types to send email</div></p>
+                                <label><form:checkbox path="matchedTeachers" value="yes"/>Matched Teachers</br></label>
+                                <label><form:checkbox path="unmachedTeachers" value="yes"/>Un-Matched Teachers</br></label>
+                                <label><form:checkbox path="matchedVolunteer" value="yes"/>Matched Volunteers</br></label>
+                                <label><form:checkbox path="unmatchedvolunteers" value="yes"/>Un-Matched Volunteers</br></label>
+                                <label><form:checkbox path="bankAdmins" value="yes"/>Bank Admins</br></label>
+                            </div>
                         </div>
 
                         <div class="formElementCnt">

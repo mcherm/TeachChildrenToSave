@@ -1,15 +1,13 @@
- 
 <html>
-<body>
-<img src="${logoImage}" alt="Teach Children To Save Program">
+    <body>
+        <img src="${logoImage}" alt="Teach Children To Save Program">
 
-<p>Unfortunately, your teacher has canceled the following event you were scheduled to volunteer for:</p>
+        <p>Unfortunately, your teacher has canceled the following event you were scheduled to volunteer for:</p>
 
-   <p>${class}<p>
+        <p>${class}<p>
 
-<p>Feel free to <a href="${signupLink}">sign up</a> for another available class to make a difference in a child’s life.</p>
+        <p>Feel free to <a href="${signupLink}">sign up</a> for another available class to make a difference in a child's life.</p>
 
-</body>
-<p>© Copyright 2016 Teach Children to Save, Delaware.</p>
-<p>  Created by Capital One volunteers.</p>
+    </body>
+    <p>(c) Copyright 2016 Teach Children to Save, Delaware.</p>
 </html>

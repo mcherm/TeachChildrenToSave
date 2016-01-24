@@ -2,15 +2,17 @@ package com.tcts.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,15 +51,16 @@ public class EmailAnnouncementController {
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-        return showForm(model);
+        return showFormWithErrors(model, null);
     }
 
     /**
      * A subroutine used to set up and then show the email announcement form. It
      * returns the string, so you can invoke it as "return showForm(...)".
      */
-    private String showForm(Model model) throws SQLException {
+    private String showFormWithErrors(Model model, Errors errors) throws SQLException {
     	model.addAttribute("formData", new EmailAnnouncementFormData());
+        model.addAttribute("errors", errors);
     	return "emailAnnouncement";
     }
 
@@ -71,55 +74,59 @@ public class EmailAnnouncementController {
             throw new NotLoggedInException();
         }
         
-        ArrayList<String> emailList = new ArrayList<String>();
+        Set<String> emails = new HashSet<String>();
         
         if ("Yes".equalsIgnoreCase(formData.getMatchedTeachers())){
             for (Teacher teacher : database.getMatchedTeachers()) {
-                emailList.add(teacher.getEmail() );
+                emails.add(teacher.getEmail());
             }
         }
         if ("Yes".equalsIgnoreCase(formData.getUnmachedTeachers())){
             for (Teacher teacher : database.getUnMatchedTeachers()) {
-                emailList.add(teacher.getEmail() );
+                emails.add(teacher.getEmail());
             }
         }
         if ("Yes".equalsIgnoreCase(formData.getMatchedVolunteer())){
             for (Volunteer volunteer : database.getMatchedVolunteers()) {
-                emailList.add(volunteer.getEmail() );
+                emails.add(volunteer.getEmail());
             }
         }
         if ("Yes".equalsIgnoreCase(formData.getUnmatchedvolunteers())){
             for (Volunteer volunteer : database.getUnMatchedVolunteers()) {
-                emailList.add(volunteer.getEmail());
+                emails.add(volunteer.getEmail());
             }
         }
         if ("Yes".equalsIgnoreCase(formData.getBankAdmins())) {
             for (BankAdmin bankAdmin : database.getBankAdmins()) {
-                emailList.add(bankAdmin.getEmail());
+                emails.add(bankAdmin.getEmail());
             }
         }
-        
-       //Send email to volunteer
-        try {
-        	
-        	Map<String,Object> emailModel = new HashMap<String, Object>();
-        	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-    		
-    		emailModel.put("logoImage", logoImage);
-    		emailModel.put("message", formData.getMessage());
-        	emailModel.put("bcc", emailList);
-        	emailModel.put("subject", "Message from teach children to save program!");
-        	String emailContent = templateUtil.generateTemplate("emailAnnouncement", emailModel);
-            emailUtil.sendEmail(emailContent, emailModel);
-            
-        } catch(AppConfigurationException err) {
-            // FIXME: Need to log or report this someplace more reliable.
-            System.err.println("Could not send email for email announcement " + err.getStackTrace());
-        } catch(IOException err) {
-            // FIXME: Need to log or report this someplace more reliable.
-        	System.err.println("Could not send email for email announcement " + err.getStackTrace());
+
+        if (emails.isEmpty()) {
+            Errors errors = new Errors("There are no users that meet that criteria.");
+            return showFormWithErrors(model, errors);
+        } else {
+            try {
+
+                Map<String,Object> emailModel = new HashMap<String, Object>();
+                String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
+
+                emailModel.put("logoImage", logoImage);
+                emailModel.put("message", formData.getMessage());
+                emailModel.put("bcc", emails);
+                emailModel.put("subject", "Message from teach children to save program!");
+                String emailContent = templateUtil.generateTemplate("emailAnnouncement", emailModel);
+                emailUtil.sendEmail(emailContent, emailModel);
+
+            } catch(AppConfigurationException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for email announcement " + err.getStackTrace());
+            } catch(IOException err) {
+                // FIXME: Need to log or report this someplace more reliable.
+                System.err.println("Could not send email for email announcement " + err.getStackTrace());
+            }
+
+            return "redirect:" + sessionData.getUser().getUserType().getHomepage();
         }
-        
-        return "redirect:" + sessionData.getUser().getUserType().getHomepage();
     }
 }

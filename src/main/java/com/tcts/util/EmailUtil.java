@@ -1,7 +1,7 @@
 package com.tcts.util;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public final class EmailUtil {
     	if (model.get("to") != null)
     		destination = new Destination().withToAddresses(new String[]{model.get("to").toString()});
     	else {
-    		List<String> toBccAddresses = (List<String>) model.get("bcc");
+    		Collection<String> toBccAddresses = (Collection<String>) model.get("bcc");
     		destination = new Destination().withBccAddresses(toBccAddresses);
     	}
         
