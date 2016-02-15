@@ -143,6 +143,9 @@
 
             <div>* - Required field</div>
 
+            <p>If you do not see your bank listed please <a href="contact.htm">contact us</a> and we will add
+                you bank to the list.</p>
+
         </main>
     </div><%-- mainCnt --%>
 

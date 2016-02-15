@@ -236,7 +236,7 @@ insert into User (password_salt, password_hash, email, first_name, last_name, ac
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','rchermside+curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
 
 
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '1:00 to 1:45 PM', 4, 20, 'These are some notes.', 5);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '1:00 to 1:45 PM', 4, 20, 'These are some notes.', 6);
 insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', 3, 15, '', null);
 insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', 3, 23, '', null);
 insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '2:00 to 2:45 PM', 4, 20, '', null);
