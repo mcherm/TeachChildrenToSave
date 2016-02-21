@@ -3,7 +3,9 @@
 
  * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
    "Certificate of Recognition" have the wrong year.
-
+* A volunteer can't find out what bank they belong to.  That seems wrong.
+* A bankadmin should be able to see their bank on their homepage.
+* The done button on the bankadmin volunteering page should refresh the page not go to the homepage.
  ----- TESTING  -----
 
 

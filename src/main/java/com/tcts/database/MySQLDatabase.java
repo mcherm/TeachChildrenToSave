@@ -97,6 +97,11 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + eventFields + " from Event where teacher_id = ? order by event_date asc, event_id asc";
     private final static String getEventsByVolunteerSQL =
             "select " + eventFields + " from Event where volunteer_id = ? order by event_date asc, event_id asc";
+    private final static String getEventsByVolunteerWithTeacherAndSchoolSQL =
+            "select " + eventFields + ", " + userFields + ", " + schoolFields +
+                    " from Event join User on teacher_id = user_id join School on organization_id = school_id" +
+                    " where volunteer_id = ?" +
+                    " order by event_date asc, event_id asc";
     private final static String getAllAvailableEventsWithTeacherAndSchoolSQL =
     		"select " + eventFields + ", " + userFields + ", " + schoolFields +
             " from Event join User on teacher_id = user_id join School on organization_id = school_id" +
@@ -395,10 +400,31 @@ public class MySQLDatabase implements DatabaseFacade {
         return getEventsByTeacherOrVolunteer(teacherId, getEventsByTeacherSQL);
     }
 
+
     @Override
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
         return getEventsByTeacherOrVolunteer(volunteerId, getEventsByVolunteerSQL);
     }
+
+    @Override
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws SQLException{
+        List<Event> events;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getEventsByVolunteerWithTeacherAndSchoolSQL);
+            preparedStatement.setString(1, volunteerId);
+            resultSet = preparedStatement.executeQuery();
+            events = getEventListWithTeacherAndSchool(resultSet);
+            return events;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+
+    }
+
 
     /**
      * Common code to get events by either teacher or volunteer.
@@ -431,7 +457,7 @@ public class MySQLDatabase implements DatabaseFacade {
     
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
-        List<Event> events = new ArrayList<Event>();
+        List<Event> events;
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -439,21 +465,24 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(getAllAvailableEventsWithTeacherAndSchoolSQL);
             resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                Event event = new Event();
-                event.populateFieldsFromResultSetRow(resultSet);
-                Teacher teacher = new Teacher();
-                teacher.populateFieldsFromResultSetRow(resultSet);
-                event.setLinkedTeacher(teacher);
-                School school = new School();
-                school.populateFieldsFromResultSetRow(resultSet);
-                teacher.setLinkedSchool(school);
-                events.add(event);
-            }
+            events = getEventListWithTeacherAndSchool(resultSet);
             return events;
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
+    }
+
+
+    public List<Event> getEventListWithTeacherAndSchool (ResultSet resultSet) throws SQLException {
+        List<Event> events = new ArrayList<Event>();
+
+        while (resultSet.next()) {
+            Event event = new Event();
+            event.populateFieldsFromResultSetRowWithTeacherAndSchool(resultSet);
+            events.add(event);
+        }
+        return events;
+
     }
 
     @Override
