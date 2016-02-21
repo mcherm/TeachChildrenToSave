@@ -304,8 +304,10 @@ public class EventRegistrationController {
         if (sessionData.getSiteAdmin() != null)
         {
             return "redirect:eventRegistrationBySiteAdmin.htm?userId=" + volunteer.getUserId();
+        } else if ( sessionData.getBankAdmin() != null) {
+            return "redirect:eventRegistration.htm";
+        } else {
+            return "redirect:" + sessionData.getUser().getUserType().getHomepage();
         }
-
-        return "redirect:" + sessionData.getUser().getUserType().getHomepage();
     }
 }

@@ -44,7 +44,7 @@
                         </div>
 
                         <button type="submit" value="withdraw">Withdraw</button>
-                        <button onclick="js.loadURL('volunteerHome.htm');" type="button">Cancel</button>
+                        <button onclick="js.loadURL('eventRegistration.htm');" type="button">Cancel</button>
 
                     </form:form>
                 </div>
