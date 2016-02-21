@@ -196,7 +196,8 @@ public class EventRegistrationController {
                 
                 Map<String,Object> emailModel = new HashMap<String, Object>();
                 String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-                User teacher = database.getUserById(event.getTeacherId());
+                Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
+                School school = database.getSchoolById(teacher.getSchoolId());
                 emailModel.put("logoImage", logoImage);
                 emailModel.put("to", volunteer.getEmail());
                 emailModel.put("subject", "You have successfully signed up for a class!");
@@ -219,7 +220,7 @@ public class EventRegistrationController {
                 emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
                 
                 String htmlTableDataHeaderForValunteer = "<table><tr> " +
-                        "<td style=\"background-color:#66CCFF\">Teach Name</td>" +
+                        "<td style=\"background-color:#66CCFF\">Teacher Name</td>" +
                        "<td style=\"background-color:#66CCFF\">Teacher Email Id</td>" +
                        "<td style=\"background-color:#66CCFF\">Teacher Phone Number</td></tr><tr>";
                        
@@ -228,7 +229,16 @@ public class EventRegistrationController {
                             "<td>" + teacher.getPhoneNumber() +"</td></tr>";
                             
                 emailModel.put("teacher", htmlTableDataHeaderForValunteer + htmlTableDataValueForVolunteer);
-                
+
+                String htmlTableDataHeaderForSchool = "<table><tr> " +
+                        "<td style=\"background-color:#66CCFF\">School Name</td>" +
+                        "<td style=\"background-color:#66CCFF\">School Address</td></tr>";
+
+                String htmlTableDataValueForSchool = "<tr> <td>" + school.getName() + "</td>" +
+                        "<td>" + school.getAddressLine1()  + "  " + school.getCity() +","+ school.getState()  + "</td></tr>";
+
+                emailModel.put ("school", htmlTableDataHeaderForSchool + htmlTableDataValueForSchool);
+
                 String emailContent = templateUtil.generateTemplate("volunteerSignUpToVolunteer", emailModel);
                 emailUtil.sendEmail(emailContent, emailModel);
             } catch(AppConfigurationException err) {

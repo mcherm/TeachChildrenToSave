@@ -336,7 +336,7 @@ public class CancelWithdrawController {
             	emailModel.put("signupLink", singupUrl);
             	
             	String htmlTableDataHeaderForTeacher = "<br/><table><tr> " +
-						"<td style=\"background-color:#66CCFF\">Teach Name</td>" +
+						"<td style=\"background-color:#66CCFF\">Teacher Name</td>" +
 	                   "<td style=\"background-color:#66CCFF\">Teacher Email Id</td>" +
 	                   "<td style=\"background-color:#66CCFF\">Teacher Phone Number</td></tr>";
 	                   

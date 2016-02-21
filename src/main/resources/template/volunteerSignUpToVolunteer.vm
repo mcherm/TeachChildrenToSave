@@ -3,10 +3,11 @@
         <img src="${logoImage}" alt="Teach Children To Save Program">
 
         <p>Congratulations, you have signed up for the following class:</p>
-
         <p>${class}</p>
-        <p>Teacher:</p>
+         <p>Teacher:</p>
         <p>${teacher}</p>
+        <p>School:</p>
+        <p>${school}</p>
 
         <p>Here's a link to everything you will need to know:</p>
         <p>o	<a href="http://www.teachchildrentosavedayde.org/tcts/volunteer/TCTSD%20FAQs.pdf">FAQs</a></p>
