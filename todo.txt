@@ -1,8 +1,6 @@
 
 -------- OPEN TASKS --------
 
- * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
-   "Certificate of Recognition" have the wrong year.
 * A volunteer can't find out what bank they belong to.  That seems wrong.
 * A bankadmin should be able to see their bank on their homepage.
 * The done button on the bankadmin volunteering page should refresh the page not go to the homepage.
@@ -45,6 +43,23 @@
     getUnmatchedVolunteers *getMatchedVolunteers  getBankAdmins
     getUnmatchedTeachers *getMatchedTeachers  all changed to return empty list rather than null string if result set is empty
  * Return some message if on the email announcement the result set was empty and no email was sent.
+ * Some documents still need to be updated. At a minimum "Lesson Handout Answer Key" and
+   "Certificate of Recognition" have the wrong year.
+   * Documents visible to teachers:
+     * 2016 Letter to teachers
+     * 2016 Logo Slogan Contest Flyer
+   * Documents visible to  Volunteers and Bank Admins:
+     * Helpful Hints 2016
+     * Volunteer Guidelines
+ * I just received the certificate which should be visible under the Volunteers and Bank Admins.
+ * Can we have the training video verbiage removed from the Volunteer confirmation
+   email once they have signed up and can also link the FAQ in the email to the FAQ’s
+   that is out on the sight.
+ * Could we also put a note on the Volunteer registration page next to the Select your
+   bank* that says “If you do not see your bank listed please contact us and we will add
+   you bank to the list.”  I found a volunteer registered and didn’t see her bank so she
+   just selected the first one listed and we are not able to change their bank’s after
+   they have signed up.
 
 
 

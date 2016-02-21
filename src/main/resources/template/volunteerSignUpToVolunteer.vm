@@ -9,8 +9,7 @@
         <p>${teacher}</p>
 
         <p>Here's a link to everything you will need to know:</p>
-        <p>o	FAQs</p>
-        <p>o	Training Video</p>
+        <p>o	<a href="http://www.teachchildrentosavedayde.org/tcts/volunteer/TCTSD%20FAQs.pdf">FAQs</a></p>
 
 
     </body>
