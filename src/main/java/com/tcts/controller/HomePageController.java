@@ -69,20 +69,7 @@ public class HomePageController {
         Bank bank = database.getBankById(volunteer.getBankId());
         volunteer.setLinkedBank(bank);
         // --- Get list of events ---
-        List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
-        for (Event event : events) {
-            Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
-            if (teacher == null) {
-                throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
-            }
-            event.setLinkedTeacher(teacher);
-            String schoolId = teacher.getSchoolId();
-            if (schoolId == null) {
-                throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
-            }
-            School school = database.getSchoolById(schoolId);
-            teacher.setLinkedSchool(school);
-        }
+        List<Event> events = database.getEventsByVolunteerWithTeacherAndSchool(volunteer.getUserId());
 
         // --- Display the page ---
         model.addAttribute("bank", bank);

@@ -68,13 +68,7 @@ public class BankAdminActionsController {
         // --- Load the events ---
         // NOTE: We are not bothering to verify that this volunteer volunteers for this
         // particular bank. It was not deemed a security risk.
-        List<Event> events = database.getEventsByVolunteer(volunteerId);
-        for (Event event : events) {
-            Teacher linkedTeacher = (Teacher) database.getUserById(event.getTeacherId());
-            event.setLinkedTeacher(linkedTeacher);
-            School linkedSchool = database.getSchoolById(linkedTeacher.getSchoolId());
-            linkedTeacher.setLinkedSchool(linkedSchool);
-        }
+        List<Event> events = database.getEventsByVolunteerWithTeacherAndSchool(volunteerId);
 
         // --- Show the page (well, detail) ---
         model.addAttribute("bank", bank);

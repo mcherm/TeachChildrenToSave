@@ -84,7 +84,12 @@ public interface DatabaseFacade {
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
 
-    /** Return the list of events that have a particular teacher. */
+    /**
+     *   Returns a list of events created by the passed in teacher.  This list does not have the linked fields filled in.
+     * @param teacherId
+     * @return A sorted list of Events created by this teacher.  Each event does not have the linked bank and volunteer.
+     * @throws SQLException
+     */
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException;
 
     /**
@@ -98,13 +103,22 @@ public interface DatabaseFacade {
      */
     public List<Event> getAllAvailableEvents() throws SQLException;
 
-    /** Return the list of events that have a particular volunteer. */
+    /**
+     * Returns a list of events that the passed in volunteer is volunteering for.  Does not fill in the linked fields bank and school.
+     * @param volunteerId
+     * @return
+     * @throws SQLException
+     */
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException;
 
-    /**
-     * Insert a new Teacher in the database, and return it. Expects that all
-     * fields have been checked for containing valid values.
-     */
+    /**Return the list of events that have a particular volunteer.  Fills in the linked teacher and school object */
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) throws SQLException;
+
+
+        /**
+         * Insert a new Teacher in the database, and return it. Expects that all
+         * fields have been checked for containing valid values.
+         */
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException;
     
     /**

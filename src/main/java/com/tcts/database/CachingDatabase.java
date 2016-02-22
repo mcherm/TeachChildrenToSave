@@ -138,6 +138,11 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) throws SQLException{
+        return database.getEventsByVolunteerWithTeacherAndSchool(volunteerId);
+    }
+
+    @Override
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
         return database.getVolunteersByBank(bankId);
     }

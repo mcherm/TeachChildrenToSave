@@ -39,6 +39,15 @@ public class Event {
         setVolunteerId(resultSet.getString("volunteer_id"));
     }
 
+    public void populateFieldsFromResultSetRowWithTeacherAndSchool (ResultSet resultSet) throws SQLException {
+        populateFieldsFromResultSetRow(resultSet);
+        Teacher teacher = new Teacher();
+        teacher.populateFieldsFromResultSetRow(resultSet);
+        setLinkedTeacher(teacher);
+        School school = new School();
+        school.populateFieldsFromResultSetRow(resultSet);
+        teacher.setLinkedSchool(school);
+    }
 
     public String getEventId() {
         return eventId;

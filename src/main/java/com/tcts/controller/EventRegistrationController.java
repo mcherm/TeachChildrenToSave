@@ -106,21 +106,7 @@ public class EventRegistrationController {
             model.addAttribute("calledBy", "siteAdmin");
             model.addAttribute("calledByURL", "eventRegistrationBySiteAdmin.htm?userId=" + volunteer.getUserId());
             // get a list of events the volunteer is currently signed up for
-            List<Event> volunteerEvents = database.getEventsByVolunteer(volunteer.getUserId());
-            for (Event event : volunteerEvents) {
-                Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
-                if (teacher == null) {
-                    throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
-                }
-                event.setLinkedTeacher(teacher);
-                String schoolId = teacher.getSchoolId();
-                if (schoolId == null) {
-                    throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
-                }
-                School school = database.getSchoolById(schoolId);
-                teacher.setLinkedSchool(school);
-            }
-
+            List<Event> volunteerEvents = database.getEventsByVolunteerWithTeacherAndSchool(volunteer.getUserId());
             model.addAttribute("volunteerEvents", volunteerEvents);
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
@@ -129,21 +115,7 @@ public class EventRegistrationController {
         // the siteadmin and bankadmin both have currently signed up events listed on eventregistration page.  a regular volunteer does not
         if ((sessionData.getSiteAdmin() != null)|| (sessionData.getBankAdmin() != null)) {
             // get a list of events the volunteer is currently signed up for
-            List<Event> volunteerEvents = database.getEventsByVolunteer(volunteer.getUserId());
-            for (Event event : volunteerEvents) {
-                Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
-                if (teacher == null) {
-                    throw new InconsistentDatabaseException("Event " + event.getEventId() + " has no valid teacher.");
-                }
-                event.setLinkedTeacher(teacher);
-                String schoolId = teacher.getSchoolId();
-                if (schoolId == null) {
-                    throw new InconsistentDatabaseException("Teacher " + event.getTeacherId() + " has no valid school.");
-                }
-                School school = database.getSchoolById(schoolId);
-                teacher.setLinkedSchool(school);
-            }
-
+            List<Event> volunteerEvents = database.getEventsByVolunteerWithTeacherAndSchool(volunteer.getUserId());
             model.addAttribute("volunteerEvents", volunteerEvents); }
 
         return "eventRegistration";
