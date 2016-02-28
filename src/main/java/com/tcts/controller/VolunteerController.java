@@ -65,7 +65,7 @@ public class VolunteerController extends AuthenticationController{
      * a string so it can be called as "return showVolunteers(...);".
      */
     public String showVolunteers(Model model) throws SQLException {
-        List<Volunteer> volunteers = database.getVolunteerWithBankData();
+        List<Volunteer> volunteers = database.getVolunteersWithBankData();
         model.addAttribute("volunteers", volunteers);
         return "volunteers";
     }

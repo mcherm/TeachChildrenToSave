@@ -189,9 +189,9 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String deleteAllowedDateSQL =
     		"delete from AllowedDates where event_date = ? ";
     
-    private final static String getVoluneerWithBankSQL =
+    private final static String getVolunteersWithBankSQL =
             "select " + userFields + ", " + bankFields + 
-		    " from User join Bank on bank_id = organization_id  and access_type = 'V'" +
+		    " from User join Bank on bank_id = organization_id  and (access_type = 'V' or access_type ='BA')" +
             " order by last_name asc, first_name asc";
     
     private final static String getTeacherWithSchoolSQL =
@@ -1573,14 +1573,14 @@ public class MySQLDatabase implements DatabaseFacade {
     }
     
     @Override
-    public List<Volunteer> getVolunteerWithBankData() throws SQLException {
+    public List<Volunteer> getVolunteersWithBankData() throws SQLException {
         Connection connection = null;
         List<Volunteer> usersList = new ArrayList<Volunteer>();
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getVoluneerWithBankSQL);
+            preparedStatement = connection.prepareStatement(getVolunteersWithBankSQL);
             resultSet = preparedStatement.executeQuery();
             int numberOfRows = 0;
             while (resultSet.next()) {

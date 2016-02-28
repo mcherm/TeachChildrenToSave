@@ -117,7 +117,7 @@
                             <label>
                                 <div class="inputCnt">
                                     <div class="info">
-                                        LMI Eligible
+                                        LMI Eligible (Enter an integer)
                                     </div>
                                     <form:input path="lmiEligible" />
                                 </div>

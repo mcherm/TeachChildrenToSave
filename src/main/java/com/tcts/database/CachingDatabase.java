@@ -357,8 +357,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteerWithBankData() throws SQLException {
-        return database.getVolunteerWithBankData();
+    public List<Volunteer> getVolunteersWithBankData() throws SQLException {
+        return database.getVolunteersWithBankData();
     }
     
     @Override

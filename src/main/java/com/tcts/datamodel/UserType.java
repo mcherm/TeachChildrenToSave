@@ -12,10 +12,10 @@ import com.tcts.exception.InconsistentDatabaseException;
  * different user types we can embed them in this class.
  */
 public enum UserType {
-    VOLUNTEER("V", "volunteerHome.htm"),
-    TEACHER("T", "teacherHome.htm"),
-    BANK_ADMIN("BA", "bankAdminHome.htm"),
-    SITE_ADMIN("SA", "siteAdminHome.htm");
+    VOLUNTEER("V", "Volunteer", "volunteerHome.htm"),
+    TEACHER("T","Teacher","teacherHome.htm"),
+    BANK_ADMIN("BA", "Bank Admin", "bankAdminHome.htm"),
+    SITE_ADMIN("SA", "Site Admin", "siteAdminHome.htm");
 
 
     private static Map<String,UserType> userTypeByDBValue = new HashMap<String,UserType>() {{
@@ -41,9 +41,11 @@ public enum UserType {
 
     private String dbValue;
     private String homepage;
+    private String displayName;
 
-    private UserType(String dbValue, String homepage) {
+    private UserType(String dbValue, String displayName, String homepage) {
         this.dbValue = dbValue;
+        this.displayName = displayName;
         this.homepage = homepage;
     }
 
@@ -58,6 +60,9 @@ public enum UserType {
      * Returns the path for the page to show after this user logs in or when
      * they click on "home" from the navigation.
      */
+    public String getDisplayName() {
+        return displayName;
+   }
     public String getHomepage() {
         return homepage;
     }

@@ -295,7 +295,7 @@ public interface DatabaseFacade {
 	 * @return List<Volunteer>
 	 * @throws SQLException
 	 */
-	public List<Volunteer> getVolunteerWithBankData() throws SQLException;
+	public List<Volunteer> getVolunteersWithBankData() throws SQLException;
 	
 	/**
 	 * Get list of all the teachers whose classes have volunteers.  If there are none returns an empty list.

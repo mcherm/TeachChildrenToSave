@@ -1,4 +1,4 @@
-<%-- Home page for Volunteers --%>
+<%-- Home page for Site Admins --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -46,7 +46,7 @@
 	                
 	                <li class="mb1">
 	                	<button onclick="js.loadURL('volunteers.htm');" class="editOrRegister">
-	                		Remove/Edit/SignUp Volunteers
+	                		Remove/Edit/SignUp <br> Volunteers and Bank Admin
 	                	</button>
 	                </li>
 

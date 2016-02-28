@@ -64,7 +64,7 @@
                         <td data-title="Email"><c:out value="${volunteer.email}"/></td>
                         <td data-title="First Name"><c:out value="${volunteer.firstName}"/></td>
                         <td data-title="Last Name"><c:out value="${volunteer.lastName}"/></td>
-                        <td data-title="User Type">Volunteer</td>
+                        <td data-title="User Type"><c:out value="${volunteer.userType.getDisplayName()}"/></td>
                         <td data-title="Phone Number"><c:out value="${volunteer.phoneNumber}"/></td>
                         <td class="center" data-title="Bank Name"><c:out value="${volunteer.linkedBank.bankName}"/></td>
                         <td class="action">
@@ -75,8 +75,11 @@
                         <td class="action">
 	                        <form method="POST" action="volunteerDelete.htm" modelAttribute="formData">
 	                                    <input type="hidden" name="volunteerId" value='<c:out value="${volunteer.userId}"/>' />
-	                                    <button type="submit" class="editOrRegister delete">Delete</button>
-	                        </form>
+	                                    <button onclick="return confirm('Are you sure you want to delete the volunteer?' );"
+                                                type="submit"
+                                                class="editOrRegister delete">Delete
+                                        </button>
+                            </form>
 	                    </td>
 	                   <td class="action">
                             <button onclick="js.loadURL('eventRegistrationBySiteAdmin.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
