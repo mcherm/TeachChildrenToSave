@@ -71,7 +71,8 @@
                             <td class="action">
                                 <form method="POST" action="deleteBank.htm" modelAttribute="formData">
                                     <input type="hidden" name="bankId" value='<c:out value="${bank.bankId}"/>' />
-                                    <button type="submit" class="editOrRegister delete">Delete</button>
+                                    <button onclick="return confirm('Deleting this bank will also delete all volunteers and bank admin associated with this bank.  Are you sure you want to delete this bank?' );"
+                                            type="submit" class="editOrRegister delete">Delete</button>
                                 </form>
                             </td>
                             <td class="action">
