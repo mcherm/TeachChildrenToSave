@@ -61,7 +61,17 @@
    just selected the first one listed and we are not able to change their bank’s after
    they have signed up.
 
-
+TODO
+---
+*** fix error where when a bank is deleted all bank admins are deleted
+** change it such that if a volunteer belongs to a bank the bank can't be deleted or at the very least the site admin has to confirm that it is ok
+to delete the volunteers--- if the volunteers are deleted this should be done properly the events they are signed up for should be freed also
+** if a bank admin is deleted that needs to be handled properly also the courses she is signed up for should be freed up
+** investigate what happens to the teachers/courses when you delete a school.
+* shoud the site admin have a way to switch a volunteer to a new bank??  there is no way now
+* the site admin now has the ability to delete a volunteer on the volunteer list... if she deletes this volunteer.. make sure the bank
+* allow site admins to downgrade a bank admin to regular volunteer status. Pick a bank admin off of the volunteer list.
+* send an email to the site admin when they use the mass email function.
 
 
 -------- SKIP --------

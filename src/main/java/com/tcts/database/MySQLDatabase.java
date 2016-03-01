@@ -144,7 +144,7 @@ public class MySQLDatabase implements DatabaseFacade {
             "update Bank set bank_name = ?, min_lmi_for_cra = ? where bank_id = ?";
 
     private final static String deleteUsersByBankId =
-            "delete from User where access_type = 'BA' or access_type = 'V' and organization_id = ?";
+            "delete from User where (access_type = 'BA' or access_type = 'V') and organization_id = ?";
     private final static String deleteBankSQL =
     		"delete from Bank where bank_id = ?";
     
