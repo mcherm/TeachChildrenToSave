@@ -69,11 +69,8 @@
                             <td class="center" data-title="Bank Admin Email"><c:out value="${bank.linkedBankAdmin.email}"/></td>
                             <td class="center" data-title="Bank Admin Phone"><c:out value="${bank.linkedBankAdmin.phoneNumber}"/></td>
                             <td class="action">
-                                <form method="POST" action="deleteBank.htm" modelAttribute="formData">
-                                    <input type="hidden" name="bankId" value='<c:out value="${bank.bankId}"/>' />
-                                    <button onclick="return confirm('Deleting this bank will also delete all volunteers and bank admin associated with this bank.  Are you sure you want to delete this bank?' );"
-                                            type="submit" class="editOrRegister delete">Delete</button>
-                                </form>
+                                <button onclick="js.loadURL('deleteBank.htm?bankId=<c:out value="${bank.bankId}"/>');"
+                                        class="editOrRegister delete">Delete</button>
                             </td>
                             <td class="action">
                                 <button onclick="js.loadURL('editBank.htm?bankId=<c:out value="${bank.bankId}"/>');" class="editOrRegister">Modify</button>

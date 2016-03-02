@@ -3,10 +3,13 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.Event;
 import com.tcts.datamodel.UserType;
+import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchBankException;
@@ -14,6 +17,8 @@ import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.Errors;
+import com.tcts.util.EmailUtil;
+import com.tcts.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +41,13 @@ public class BankController {
 
     @Autowired
     private DatabaseFacade database;
-    
+    @Autowired
+    private TemplateUtil templateUtil;
+
+    @Autowired
+    private EmailUtil emailUtil;
+
+
     /**
      * Render the bank edit page.
      */
@@ -68,10 +79,10 @@ public class BankController {
 
 
     /**
-     * Deletes a bank and all users associated with it.
+     * Displays the Delete Bank Confirmation Page
      */
-    @RequestMapping(value = "deleteBank", method = RequestMethod.POST)
-    public String deleteBank(
+    @RequestMapping(value = "deleteBank", method = RequestMethod.GET)
+    public String deleteBankConfirm(
             @RequestParam String bankId,
             HttpSession session,
             Model model
@@ -81,14 +92,44 @@ public class BankController {
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
+        Bank bank = database.getBankById(bankId);
+        List<Volunteer> volunteers = database.getVolunteersByBank(bankId);
+        model.addAttribute("volunteers", volunteers);
+        model.addAttribute("bank", bank);
+        return "deleteBank";
 
-        try {
-            database.deleteBank(bankId);
-        } catch(NoSuchBankException err) {
-            throw new InvalidParameterFromGUIException();
+    }
+
+    /**
+     * Deletes a bank and all its bank admin and all of its volunteers and withdraws the volunteers from
+     * any classes they were signed up for
+     */
+    @RequestMapping(value = "deleteBank", method = RequestMethod.POST)
+    public String deleteBank(
+            @RequestParam String bankId,
+            HttpSession session,
+            Model model,
+            HttpServletRequest request
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
         }
-
-        return showForm(model);
+        List<Volunteer> volunteers = database.getVolunteersByBank(bankId);
+        for (Volunteer volunteer : volunteers) {
+            // --- First, unregister from any events ---
+            List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
+            for (Event event : events) {
+                CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request,null);
+            }
+        }
+        try {
+            // delete bank, bank admin and all volunteers associated with the bank
+             database.deleteBank(bankId);
+             } catch(NoSuchBankException err) {
+             throw new InvalidParameterFromGUIException();
+         }
+        return "redirect:viewEditBanks.htm";
     }
 
 

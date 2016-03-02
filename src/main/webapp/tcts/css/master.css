@@ -1001,8 +1001,8 @@ td.emptyTableMessage {
 
   body.adminEditAllowedTimes {
     /*		table {
-    			width:50%;		
-    
+    			width:50%;
+
     		}*/
   }
 }
@@ -1339,3 +1339,7 @@ fieldset legend {
 }
 
 /* --- End of layout for the event detail page --- */
+
+#volunteersToBeDeletedTable {
+  font-size: 0.9em;
+}
