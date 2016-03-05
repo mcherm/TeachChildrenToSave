@@ -73,7 +73,9 @@ to delete the volunteers--- if the volunteers are deleted this should be done pr
 * allow site admins to downgrade a bank admin to regular volunteer status. Pick a bank admin off of the volunteer list.
 * send an email to the site admin when they use the mass email function.
 
-
+NON-Priority
+------------
+fix the "not loggin in exception error" that the user sees from "unexpected error has occured" to "Your session has expired.  Please re sign in"
 -------- SKIP --------
 
 Difficult:

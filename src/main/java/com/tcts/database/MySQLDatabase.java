@@ -1163,22 +1163,25 @@ public class MySQLDatabase implements DatabaseFacade {
             }
             preparedStatement.close();
 
-            // --- Insert the bank admin ---
-            String salt = null;
-            String hashedPassword = null;
-            preparedStatement = connection.prepareStatement(insertUserSQL);
-            preparedStatement.setString(1, salt);
-            preparedStatement.setString(2, hashedPassword);
-            preparedStatement.setString(3, formData.getEmail());
-            preparedStatement.setString(4, formData.getFirstName());
-            preparedStatement.setString(5, formData.getLastName());
-            preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
-            preparedStatement.setString(7, bankId);
-            preparedStatement.setString(8, formData.getPhoneNumber());
-            preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
-            affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows != 1) {
-                throw new RuntimeException("Should never happen: we inserted one row!");
+            if (!( formData.getEmail() == null || formData.getEmail().isEmpty())) {
+                // Only add a bank admin if there is a bank admin to add
+                // --- Insert the bank admin ---
+                String salt = null;
+                String hashedPassword = null;
+                preparedStatement = connection.prepareStatement(insertUserSQL);
+                preparedStatement.setString(1, salt);
+                preparedStatement.setString(2, hashedPassword);
+                preparedStatement.setString(3, formData.getEmail());
+                preparedStatement.setString(4, formData.getFirstName());
+                preparedStatement.setString(5, formData.getLastName());
+                preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
+                preparedStatement.setString(7, bankId);
+                preparedStatement.setString(8, formData.getPhoneNumber());
+                preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
+                affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows != 1) {
+                    throw new RuntimeException("Should never happen: we inserted one row!");
+                }
             }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
@@ -1196,82 +1199,84 @@ public class MySQLDatabase implements DatabaseFacade {
         ResultSet resultSet = null;
         try {
             connection = connectionFactory.getConnection();
-
-            // --- Check if Bank Admin Exists ---
-            preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
-            preparedStatement.setString(1, formData.getBankId());
-            resultSet = preparedStatement.executeQuery();
-            BankAdmin bankAdmin = null;
-            int resultCount = 0;
-            while (resultSet.next()) {
-                resultCount += 1;
-                if (resultCount > 1) {
-                    throw new InconsistentDatabaseException("Multiple bank admins for bank " + formData.getBankId());
-                }
-                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
-                if (userType != UserType.BANK_ADMIN) {
-                    throw new InconsistentDatabaseException("This should not occur.");
-                }
-                bankAdmin = new BankAdmin();
-                bankAdmin.populateFieldsFromResultSetRow(resultSet);
-            }
-            String bankAdminId = bankAdmin == null ? null : bankAdmin.getUserId();
-
-            if (bankAdminId == null) {
-                // --- Insert new Bank Admin ---
-                String salt = null;
-                String hashedPassword = null;
-                preparedStatement = connection.prepareStatement(insertUserSQL);
-                preparedStatement.setString(1, salt);
-                preparedStatement.setString(2, hashedPassword);
-                preparedStatement.setString(3, formData.getEmail());
-                preparedStatement.setString(4, formData.getFirstName());
-                preparedStatement.setString(5, formData.getLastName());
-                preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
-                preparedStatement.setString(7, formData.getBankId());
-                preparedStatement.setString(8, formData.getPhoneNumber());
-                preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
-                int affectedRows = preparedStatement.executeUpdate();
-                if (affectedRows != 1) {
-                    throw new RuntimeException("Should never happen: we inserted one row!");
-                }
-                preparedStatement.close();
-
-                // --- Find out its userId ---
-                preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+            // -- Modify or insert Bank Admin
+            // --- Check if a Bank Admin was passed in -- If no bank admin is passed in none needs to be inserted or modified --//
+            if (!(formData.getEmail() == null || formData.getEmail().isEmpty())){
+                // --- Check if Bank Admin Exists ---
+                preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
+                preparedStatement.setString(1, formData.getBankId());
                 resultSet = preparedStatement.executeQuery();
-                int numberOfRows = 0;
+                BankAdmin bankAdmin = null;
+                int resultCount = 0;
                 while (resultSet.next()) {
-                    numberOfRows++;
-                    bankAdminId = resultSet.getString(1);
-                }
-                if (numberOfRows < 1) {
-                    throw new RuntimeException("This should never happen.");
-                } else if (numberOfRows > 1) {
-                    throw new RuntimeException("This should never happen.");
-                }
-                preparedStatement.close();
-
-            } else {
-                // --- Modify existing Bank Admin ---
-                preparedStatement = connection.prepareStatement(modifyUserPersonalFieldsSQL);
-                preparedStatement.setString(1, formData.getEmail());
-                preparedStatement.setString(2, formData.getFirstName());
-                preparedStatement.setString(3, formData.getLastName());
-                preparedStatement.setString(4, formData.getPhoneNumber());
-                preparedStatement.setString(5, bankAdminId);
-                try {
-                    preparedStatement.executeUpdate();
-                } catch(MySQLIntegrityConstraintViolationException err) {
-                    if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
-                        throw new EmailAlreadyInUseException();
-                    } else {
-                        throw err;
+                    resultCount += 1;
+                    if (resultCount > 1) {
+                        throw new InconsistentDatabaseException("Multiple bank admins for bank " + formData.getBankId());
                     }
+                    UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
+                    if (userType != UserType.BANK_ADMIN) {
+                        throw new InconsistentDatabaseException("This should not occur.");
+                    }
+                    bankAdmin = new BankAdmin();
+                    bankAdmin.populateFieldsFromResultSetRow(resultSet);
                 }
-                preparedStatement.close();
-            }
+                String bankAdminId = bankAdmin == null ? null : bankAdmin.getUserId();
 
+                if (bankAdminId == null) {
+                    // --- Insert new Bank Admin ---
+                    String salt = null;
+                    String hashedPassword = null;
+                    preparedStatement = connection.prepareStatement(insertUserSQL);
+                    preparedStatement.setString(1, salt);
+                    preparedStatement.setString(2, hashedPassword);
+                    preparedStatement.setString(3, formData.getEmail());
+                    preparedStatement.setString(4, formData.getFirstName());
+                    preparedStatement.setString(5, formData.getLastName());
+                    preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
+                    preparedStatement.setString(7, formData.getBankId());
+                    preparedStatement.setString(8, formData.getPhoneNumber());
+                    preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
+                    int affectedRows = preparedStatement.executeUpdate();
+                    if (affectedRows != 1) {
+                        throw new RuntimeException("Should never happen: we inserted one row!");
+                    }
+                    preparedStatement.close();
+
+                    // --- Find out its userId ---
+                    preparedStatement = connection.prepareStatement(getLastInsertIdSQL);
+                    resultSet = preparedStatement.executeQuery();
+                    int numberOfRows = 0;
+                    while (resultSet.next()) {
+                        numberOfRows++;
+                        bankAdminId = resultSet.getString(1);
+                    }
+                    if (numberOfRows < 1) {
+                        throw new RuntimeException("This should never happen.");
+                    } else if (numberOfRows > 1) {
+                        throw new RuntimeException("This should never happen.");
+                    }
+                    preparedStatement.close();
+
+                } else {
+                    // --- Modify existing Bank Admin ---
+                    preparedStatement = connection.prepareStatement(modifyUserPersonalFieldsSQL);
+                    preparedStatement.setString(1, formData.getEmail());
+                    preparedStatement.setString(2, formData.getFirstName());
+                    preparedStatement.setString(3, formData.getLastName());
+                    preparedStatement.setString(4, formData.getPhoneNumber());
+                    preparedStatement.setString(5, bankAdminId);
+                    try {
+                        preparedStatement.executeUpdate();
+                    } catch (MySQLIntegrityConstraintViolationException err) {
+                        if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
+                            throw new EmailAlreadyInUseException();
+                        } else {
+                            throw err;
+                        }
+                    }
+                    preparedStatement.close();
+                }
+            }
             // --- Modify Bank ---
             String minLMIforCRA = formData.getMinLMIForCRA();
             if (minLMIforCRA == null || minLMIforCRA.isEmpty()) {
