@@ -1,6 +1,7 @@
 package com.tcts.formdata;
 
 import com.tcts.database.DatabaseFacade;
+import com.tcts.database.DatabaseField;
 
 
 /**
@@ -37,6 +38,20 @@ public abstract class ValidatedFormData<E extends Throwable> {
         Errors errors = new Errors();
         validationRules(errors);
         return errors;
+    }
+
+    /**
+     * This can be used by the methods to verify the length of a field.
+     *
+     * @param value the value the user typed in, or null in which case length is NOT checked
+     * @param field the field to be checked
+     * @param errors the Errors object to which an error should be added if appropriate
+     */
+    public void validateLength(String value, DatabaseField field, Errors errors) {
+        int fieldLength = database.getFieldLength(field);
+        if (value != null && value.length() > fieldLength) {
+            errors.addError("The field " + field.name() + " may not be longer than " + fieldLength + "  characters.");
+        }
     }
 
     /**

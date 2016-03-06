@@ -1,6 +1,6 @@
 package com.tcts.formdata;
 
-import java.sql.SQLException;
+import com.tcts.database.DatabaseField;
 
 
 /**
@@ -35,6 +35,11 @@ public class CreateBankFormData extends ValidatedFormData<RuntimeException> {
                 errors.addError("Provide an email adddress for the bank administrator who can approve or reject volunteers.");
             }
         }
+        validateLength(bankName, DatabaseField.bank_name, errors);
+        validateLength(firstName, DatabaseField.user_first_name, errors);
+        validateLength(lastName, DatabaseField.user_last_name, errors);
+        validateLength(email, DatabaseField.user_email, errors);
+        validateLength(phoneNumber, DatabaseField.user_phone_number, errors);
     }
 
     public String getBankName() {

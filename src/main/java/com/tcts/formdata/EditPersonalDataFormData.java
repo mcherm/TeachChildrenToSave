@@ -1,5 +1,7 @@
 package com.tcts.formdata;
 
+import com.tcts.database.DatabaseField;
+
 /**
  * Form fields for the screen where you can edit your personal data.
  */
@@ -28,6 +30,10 @@ public class EditPersonalDataFormData extends ValidatedFormData<RuntimeException
         if (isEmpty(userId)) {
             errors.addError("The userId field is required.");
         }
+        validateLength(email, DatabaseField.user_email, errors);
+        validateLength(firstName, DatabaseField.user_first_name, errors);
+        validateLength(lastName, DatabaseField.user_last_name, errors);
+        validateLength(phoneNumber, DatabaseField.user_phone_number, errors);
     }
 
 

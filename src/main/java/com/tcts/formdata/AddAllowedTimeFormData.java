@@ -1,5 +1,7 @@
 package com.tcts.formdata;
 
+import com.tcts.database.DatabaseField;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class AddAllowedTimeFormData extends ValidatedFormData<SQLException> {
         if (allowedTime == null || allowedTime.isEmpty()) {
             errors.addError("You must enter a time.");
         }
+        validateLength(allowedTime, DatabaseField.event_time, errors);
         List<String> allowedTimes = database.getAllowedTimes();
         if (!"".equals(timeToInsertBefore) && !allowedTimes.contains(timeToInsertBefore)) {
             errors.addError("You must specify where in the list to insert the new time.");

@@ -1,6 +1,6 @@
 package com.tcts.formdata;
 
-import java.sql.SQLException;
+import com.tcts.database.DatabaseField;
 
 /**
  * The data fields needed to create a school.
@@ -46,6 +46,15 @@ public class CreateSchoolFormData extends ValidatedFormData<RuntimeException> {
         if (isEmpty(SLC)) {
             errors.addError("Enter the valid SLC or \"N/A\" if the school does not have an SLC.");
         }
+		validateLength(schoolName, DatabaseField.school_name, errors);
+		validateLength(schoolAddress1, DatabaseField.school_addr1, errors);
+		validateLength(city, DatabaseField.school_city, errors);
+		validateLength(zip, DatabaseField.school_zip, errors);
+		validateLength(county, DatabaseField.school_county, errors);
+		validateLength(district, DatabaseField.school_district, errors);
+		validateLength(state, DatabaseField.school_state, errors);
+		validateLength(phone, DatabaseField.school_phone, errors);
+		validateLength(SLC, DatabaseField.school_slc, errors);
     }
 
     public String getSchoolName() {

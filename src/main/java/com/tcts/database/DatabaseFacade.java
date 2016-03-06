@@ -45,6 +45,14 @@ import com.tcts.formdata.VolunteerRegistrationFormData;
  * Methods for accessing the database. It should probably be refactored somehow.
  */
 public interface DatabaseFacade {
+
+
+    /**
+     * Passed the name of a table and field, this returns the maximum allowed length
+     * for that field.
+     */
+    public int getFieldLength(DatabaseField field);
+
     /**
      * Return the user with this userId, or null if there is none. The actual class
      * returned will be an appropriate subclass of User.

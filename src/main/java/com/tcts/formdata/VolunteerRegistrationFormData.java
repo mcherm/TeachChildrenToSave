@@ -1,5 +1,7 @@
 package com.tcts.formdata;
 
+import com.tcts.database.DatabaseField;
+
 /**
  * Data that will be entered on the volunteer registration form.
  */
@@ -13,6 +15,7 @@ public class VolunteerRegistrationFormData extends UserRegistrationFormData {
         if (bankId == null || bankId.trim().length() == 0 || bankId.equals("0")) {
             errors.addError("You must select a bank.");
         }
+        validateLength(bankSpecificData, DatabaseField.user_bank_specific_data, errors);
     }
 
 

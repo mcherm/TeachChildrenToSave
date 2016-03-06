@@ -113,6 +113,11 @@ public class CachingDatabase implements DatabaseFacade {
 
 
     @Override
+    public int getFieldLength(DatabaseField field) {
+        return database.getFieldLength(field);
+    }
+
+    @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
         return database.getUserById(userId);
     }

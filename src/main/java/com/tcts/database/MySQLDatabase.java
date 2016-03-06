@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -269,9 +271,36 @@ public class MySQLDatabase implements DatabaseFacade {
     
     @Autowired
     private ConnectionFactory connectionFactory;
-    
-   
- 
+
+    /* Constants used for the field lengths. */
+    private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap() {{
+        put(DatabaseField.site_setting_name, 30);
+        put(DatabaseField.site_setting_value, 100);
+        put(DatabaseField.event_time, 30);
+        put(DatabaseField.event_grade, 8);
+        put(DatabaseField.event_notes, 1000);
+        put(DatabaseField.bank_name, 45);
+        put(DatabaseField.user_email, 50);
+        put(DatabaseField.user_first_name, 50);
+        put(DatabaseField.user_last_name, 50);
+        put(DatabaseField.user_phone_number, 45);
+        put(DatabaseField.user_bank_specific_data, 500);
+        put(DatabaseField.school_name, 80);
+        put(DatabaseField.school_addr1, 60);
+        put(DatabaseField.school_city, 45);
+        put(DatabaseField.school_zip, 10);
+        put(DatabaseField.school_county, 45);
+        put(DatabaseField.school_district, 45);
+        put(DatabaseField.school_state, 2);
+        put(DatabaseField.school_phone, 45);
+        put(DatabaseField.school_slc, 10);
+    }};
+
+    @Override
+    public int getFieldLength(DatabaseField field) {
+        return FIELD_LENGTHS.get(field);
+    }
+
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
         return getUserByIdOrEmail(userId, getUserByIdSQL);

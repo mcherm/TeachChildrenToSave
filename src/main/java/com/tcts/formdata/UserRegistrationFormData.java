@@ -1,5 +1,7 @@
 package com.tcts.formdata;
 
+import com.tcts.database.DatabaseField;
+
 /**
  * A parent class with fields that are common to multiple registrations. Created
  * so that they can share the same validation logic.
@@ -25,6 +27,10 @@ public abstract class UserRegistrationFormData extends ValidatedFormData<Runtime
         if (password == null || password.trim().length()==0) {
             errors.addError("You must select a password.");
         }
+        validateLength(email, DatabaseField.user_email, errors);
+        validateLength(firstName, DatabaseField.user_first_name, errors);
+        validateLength(lastName, DatabaseField.user_last_name, errors);
+        validateLength(phoneNumber, DatabaseField.user_phone_number, errors);
     }
 
     public String getEmail() {

@@ -1,5 +1,7 @@
 package com.tcts.formdata;
 
+import com.tcts.database.DatabaseField;
+
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -41,6 +43,7 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
                 errors.addError("Please enter a valid number of students so the volunteers can ensure they have enough materials.");
             }
         }
+        validateLength(notes, DatabaseField.event_notes, errors);
     }
 
     public Date getEventDate() {
