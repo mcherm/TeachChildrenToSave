@@ -19,7 +19,7 @@ import com.tcts.common.Configuration;
 import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.formdata.ContactUsFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 
 

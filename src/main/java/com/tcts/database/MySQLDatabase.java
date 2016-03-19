@@ -128,6 +128,8 @@ public class MySQLDatabase implements DatabaseFacade {
             "update User set email=?, first_name=?, last_name=?, phone_number=? where user_id=?";
     private final static String modifyVolunteerPersonalFieldsSQL =
             "update User set email=?, first_name=?, last_name=?, phone_number=?, bank_specific_data=? where user_id=?";
+    private final static String modifyTeacherSchoolSQL =
+            "update User set organization_id=? where user_id=?";
     private final static String insertUserSQL =
             "insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
@@ -200,7 +202,11 @@ public class MySQLDatabase implements DatabaseFacade {
     		"select " + userFields + ", " + schoolFields + 
 		    " from User join School on school_id = organization_id  and access_type = 'T'" +
             " order by last_name asc, first_name asc";
-    
+
+    private final static String getTeachersBySchoolSQL =
+            "select " + userFields + " from User where access_type = 'T'  and organization_id = ?" +
+                    " order by last_name asc, first_name asc";
+
     private final static String getMatchedTeachersSQL =
     		"select " + userFields + " " + 
 		    " from Event join User on user_id = teacher_id  and access_type = 'T' and volunteer_id is not null" +
@@ -423,6 +429,30 @@ public class MySQLDatabase implements DatabaseFacade {
         }
         return (Volunteer) getUserById(formData.getUserId());
     }
+
+
+    @Override
+    public void modifyTeacherSchool(String userId, String schoolId)
+            throws SQLException, NoSuchSchoolException, NoSuchUserException
+    {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = connectionFactory.getConnection();
+            if (getSchoolById(schoolId)== null) {
+                throw new  NoSuchSchoolException();
+            }
+            preparedStatement = connection.prepareStatement(modifyTeacherSchoolSQL);
+            preparedStatement.setString(1, schoolId);
+            preparedStatement.setString(2, userId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0){
+                throw new NoSuchUserException();
+            }
+        } finally {
+            closeSafely(connection, preparedStatement, null);
+        }
+   }
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
@@ -1657,17 +1687,39 @@ public class MySQLDatabase implements DatabaseFacade {
                         teacher.setLinkedSchool(school);
                         usersList.add(teacher);
                  }
-             
+
             if (numberOfRows < 1) {
                 return null; // No user found
             } else {
                 return usersList;
-            } 
+            }
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
-    
+
+    @Override
+    public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            List<Teacher> usersList = new ArrayList<Teacher>();
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getTeachersBySchoolSQL);
+            preparedStatement.setString(1, schoolId);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Teacher teacher = new Teacher();
+                teacher.populateFieldsFromResultSetRow(resultSet);
+                usersList.add(teacher);
+            }
+            return usersList;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
     @Override
     public List<Teacher> getMatchedTeachers() throws SQLException {
         Connection connection = null;

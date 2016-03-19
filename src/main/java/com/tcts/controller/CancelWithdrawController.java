@@ -2,13 +2,12 @@ package com.tcts.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.email.EmailSender;
+import com.tcts.exception.InconsistentDatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.tcts.common.PrettyPrintingDate;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
@@ -31,7 +29,7 @@ import com.tcts.exception.NoVolunteerOnThatEventException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.formdata.WithdrawFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 
 
@@ -41,6 +39,9 @@ import com.tcts.util.TemplateUtil;
  */
 @Controller
 public class CancelWithdrawController {
+
+    @Autowired
+    private EmailSender emailSender;
 
     @Autowired
     private DatabaseFacade database;
@@ -140,7 +141,7 @@ public class CancelWithdrawController {
         }
 
         // --- Perform the withdraw ---
-        withdrawFromAnEvent(database, templateUtil, emailUtil, event, request, formData.getWithdrawNotes());
+        withdrawFromAnEvent(event, request, formData.getWithdrawNotes());
 
         // --- Done ---
         return "redirect:" + sessionData.getUser().getUserType().getHomepage();   }
@@ -151,14 +152,11 @@ public class CancelWithdrawController {
      * here so it can be shared from other locations.
      * <p>
     */
-    public static void withdrawFromAnEvent(
-            DatabaseFacade database,
-            TemplateUtil templateUtil,
-            EmailUtil emailUtil,
+    public  void withdrawFromAnEvent(
             Event event,
             HttpServletRequest request,
             String withdrawNotes
-        ) throws SQLException
+    ) throws SQLException
     {
         // --- Make sure we have called it where it makes sense ---
         if (event.getVolunteerId() == null) {
@@ -186,33 +184,7 @@ public class CancelWithdrawController {
         // --- Send Emails ---
         // Send email to Teacher
         try {
-            Map<String,Object> emailModel = new HashMap<String, Object>();
-
-            String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-
-            emailModel.put("logoImage", logoImage);
-            emailModel.put("to", teacherEmail);
-            emailModel.put("subject", "Your volunteer for " + new PrettyPrintingDate(new java.sql.Date(new Date().getTime()))  +" cancelled");
-            String htmlTableDataHeader = "<table><tr> " +
-					"<td style=\"background-color:#66CCFF\">Class Date</td>" +
-                   "<td style=\"background-color:#66CCFF\">Class Time</td>" +
-                   "<td style=\"background-color:#66CCFF\">Teacher</td>" +
-                   "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
-                   "<td style=\"background-color:#66CCFF\">Grade</td>" +
-                   "<td style=\"background-color:#66CCFF\">Number of student</td>" +
-                   "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
-            String htmlTableDataValue = "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +	
-						"<td>" + event.getEventTime()  + "</td>" +
-						"<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
-						"<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
-						"<td>" + event.getGrade()  + "</td>" +
-						"<td>" + event.getNumberStudents()  + "</td>" +
-						"<td>" + event.getNotes()  + "</td></tr>";
-            emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
-            emailModel.put("withdrawNotes", withdrawNotes);
-            // FIXME: the email should include formData.getWithdrawNotes()
-            String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
-            emailUtil.sendEmail(emailContent, emailModel);
+            emailSender.sendVolunteerWithdrawEmailToTeacher(event, request, withdrawNotes, teacherEmail, teacher, volunteer);
         } catch(AppConfigurationException err) {
             // FIXME: Need to log or report this someplace more reliable.
             System.err.println("Could not send email for volunteer withdraw '" + teacherEmail + "'.");
@@ -264,8 +236,7 @@ public class CancelWithdrawController {
 
 
     /**
-     * A volunteer withdraws themselves from a class they had previously
-     * volunteered for.  FIXME: This comment seems wrong
+     * Cancel a teacher's class and sends the volunteer an email saying the class is cancelled.
      */
     @RequestMapping(value = "teacherCancel", method = RequestMethod.POST)
     public String doTeacherCancel(
@@ -297,69 +268,42 @@ public class CancelWithdrawController {
 
         // --- Update the database ---
         try {
-            database.deleteEvent(eventId);
+            cancelEvent(request, loggedInTeacher, event);
         } catch(NoSuchEventException err) {
             throw new RuntimeException("Shouldn't happen; we just checked if it was there.");
         }
 
-        // --- Send Emails ---
-        
-        if (event.getVolunteerId() != null) {
-        	
-        	User volunteer = database.getUserById(event.getVolunteerId());
-        	try {
-        	
-            	Map<String,Object> emailModel = new HashMap<String, Object>();
-            	String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-        		
-        		emailModel.put("logoImage", logoImage);
-            	emailModel.put("to", volunteer.getEmail());
-            	emailModel.put("subject", "Your volunteer event has been canceled.");
-            	String htmlTableDataHeader = "<table><tr> " +
-            							"<td style=\"background-color:#66CCFF\">Class Date</td>" +
-            	                       "<td style=\"background-color:#66CCFF\">Class Time</td>" +
-            	                       "<td style=\"background-color:#66CCFF\">Teacher</td>" +
-            	                       "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
-            	                       "<td style=\"background-color:#66CCFF\">Grade</td>" +
-            	                       "<td style=\"background-color:#66CCFF\">Number of student</td>" +
-            	                       "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
-            	String htmlTableDataValue = "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +	
-            								"<td>" + event.getEventTime()  + "</td>" +
-            								"<td>" + loggedInTeacher.getFirstName() + " " + loggedInTeacher.getLastName()  + "</td>" +
-            								"<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
-            								"<td>" + event.getGrade()  + "</td>" +
-            								"<td>" + event.getNumberStudents()  + "</td>" +
-            								"<td>" + event.getNotes()  + "</td></tr>";
-            	
-            	emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
-            	String singupUrl =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/register.htm";
-            	emailModel.put("signupLink", singupUrl);
-            	
-            	String htmlTableDataHeaderForTeacher = "<br/><table><tr> " +
-						"<td style=\"background-color:#66CCFF\">Teacher Name</td>" +
-	                   "<td style=\"background-color:#66CCFF\">Teacher Email Id</td>" +
-	                   "<td style=\"background-color:#66CCFF\">Teacher Phone Number</td></tr>";
-	                   
-	            String htmlTableDataValueForTeacher = "<td>" + loggedInTeacher.getFirstName() + " " + loggedInTeacher.getLastName()  + "</td>" +	
-							"<td>" + loggedInTeacher.getEmail()  + "</td>" +
-							"<td>" + loggedInTeacher.getPhoneNumber() +"</td></tr>";
-	            
-            	emailModel.put("teacher", htmlTableDataHeaderForTeacher + htmlTableDataValueForTeacher);
-            	String emailContent = templateUtil.generateTemplate("teacherCancelEventToVolunteer", emailModel);
-                emailUtil.sendEmail(emailContent, emailModel);
-            } catch(AppConfigurationException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
-            } catch(IOException err) {
-                // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for new volunteer '" + volunteer.getEmail() + "'.");
-            }
-        }
+
+
         // FIXME: Here we should send an email to the site admin
 
         // --- Done ---
         return "redirect:" + loggedInTeacher.getUserType().getHomepage();
     }
 
+    /**
+     * Subroutine that actually cancels an event. Exposed
+     * here so it can be shared from other locations.  This subroutine deletes
+     * the event from the database and if there is a volunteer signed up for it
+     * sends an email to the volunteer
+     * <p>
+     */
+
+    public void cancelEvent(
+            HttpServletRequest request,
+            Teacher teacher,
+            Event event) throws SQLException, NoSuchEventException {
+
+        // --- Send Emails ---
+
+        if (event.getVolunteerId() != null) {
+            Volunteer volunteer = (Volunteer) database.getUserById(event.getVolunteerId());
+            if (volunteer == null) {
+                throw new InconsistentDatabaseException("volunteer " + event.getVolunteerId() +  " is signed up for event but does not exist.");
+            }
+            emailSender.sendCancelEventEmailToVolunteer(volunteer, event, teacher, request);
+        }
+        database.deleteEvent(event.getEventId());
+    }
 
 }

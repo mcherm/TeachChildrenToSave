@@ -19,7 +19,7 @@ import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.EditPersonalDataFormData;
 
 import com.tcts.formdata.Errors;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,6 +46,9 @@ public class VolunteerController extends AuthenticationController{
 
     @Autowired
     private EmailUtil emailUtil;
+
+    @Autowired
+    private CancelWithdrawController cancelWithdrawController;
 
 
     /**
@@ -88,7 +91,7 @@ public class VolunteerController extends AuthenticationController{
         // --- First, unregister from any events ---
         List<Event> events = database.getEventsByVolunteer(volunteerId);
         for (Event event : events) {
-            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request,null);
+            cancelWithdrawController.withdrawFromAnEvent(event, request,null);
         }
 
         // --- Now delete the volunteer ---

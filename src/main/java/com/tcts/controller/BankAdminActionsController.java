@@ -6,12 +6,10 @@ import com.tcts.database.MySQLDatabase;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
-import com.tcts.datamodel.School;
-import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NotLoggedInException;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,9 @@ public class BankAdminActionsController {
 
     @Autowired
     private EmailUtil emailUtil;
+
+    @Autowired
+    private CancelWithdrawController cancelWithdrawController;
 
 
     /**
@@ -170,7 +171,7 @@ public class BankAdminActionsController {
         // --- Resign from the events ---
         List<Event> events = database.getEventsByVolunteer(volunteerId);
         for (Event event : events) {
-            CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request,null);
+            cancelWithdrawController.withdrawFromAnEvent(event, request,null);
         }
 
         // --- Actually suspend the person ---

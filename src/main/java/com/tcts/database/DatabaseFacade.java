@@ -79,6 +79,14 @@ public interface DatabaseFacade {
     public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException;
 
+    /**
+     *   Modifies the schoolId of a teacher in the User table
+     * @param userId userId of user to be modified
+     * @param organizationId new organzation Id
+     * @throws SQLException
+     */
+    void modifyTeacherSchool(String userId, String organizationId)
+            throws SQLException, NoSuchSchoolException, NoSuchUserException;
 
     /**
      * Insert a new Teacher in the database, and return it. Expects that all
@@ -91,6 +99,7 @@ public interface DatabaseFacade {
      */
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
             throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
+
 
     /**
      *   Returns a list of events created by the passed in teacher.  This list does not have the linked fields filled in.
@@ -290,19 +299,28 @@ public interface DatabaseFacade {
     public SiteStatistics getSiteStatistics() throws SQLException;
 
     /**
-     * Get list of volunteers with their bank details.
+     * Get list of teachers with their school details.
      * 
      * @return List<Teacher>
      * @throws SQLException
      */
 	public List<Teacher> getTeacherWithSchoolData() throws SQLException;
 
-	/**
-	 * Get list of teacher with their school details.
-	 * 
-	 * @return List<Volunteer>
-	 * @throws SQLException
-	 */
+    /**
+     *  Get list of teachers from the specified school
+     * @param schoolId
+     * @return
+     * @throws SQLException
+     */
+    public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException;
+
+
+        /**
+         * Get list of volunteers with their bank details.
+         *
+         * @return List<Volunteer>
+         * @throws SQLException
+         */
 	public List<Volunteer> getVolunteersWithBankData() throws SQLException;
 	
 	/**

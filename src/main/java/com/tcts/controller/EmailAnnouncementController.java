@@ -27,7 +27,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.EmailAnnouncementFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 
 

@@ -1,12 +1,20 @@
 package com.tcts.datamodel;
 
+import com.tcts.database.DatabaseFacade;
+import com.tcts.exception.NoSuchEventException;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Represents a single teacher. Contains data from one row of the Users table.
  */
 public class Teacher extends User {
+    @Autowired
+    private DatabaseFacade database;
+
     // --- Basic data fields ---
     private String schoolId;
 
@@ -43,4 +51,5 @@ public class Teacher extends User {
     public void setLinkedSchool(School linkedSchool) {
         this.linkedSchool = linkedSchool;
     }
+
 }

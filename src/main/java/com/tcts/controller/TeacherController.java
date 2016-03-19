@@ -3,6 +3,7 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.Event;
@@ -29,10 +30,10 @@ import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.EditPersonalDataFormData;
+import com.tcts.controller.CancelWithdrawController;
 
 /**
- * This is a controller for the "home page" for users. It renders substantially
- * different information depending on the type of user who is logged in.
+ * This controller gives the Site Admin ability to manage the teachers, showing the teachers list and giving them the ability to modify or delete them.
  */
 @Controller
 
@@ -40,6 +41,9 @@ public class TeacherController {
 
     @Autowired
     private DatabaseFacade database;
+
+    @Autowired
+    private CancelWithdrawController cancelWithdrawController;
     
     /**
      * Render the list of users .
@@ -62,36 +66,45 @@ public class TeacherController {
     public String deleteTeacher(
             @RequestParam String teacherId,
             HttpSession session,
-            Model model
-        ) throws SQLException
+            Model model,
+            HttpServletRequest request
+            ) throws SQLException
     {
         SessionData sessionData = SessionData.fromSession(session);
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
         }
 
+        deleteTeacherAndCancelEvents(teacherId,request);
+
+        model.addAttribute("teachers", database.getTeacherWithSchoolData());
+       return "teachers";
+    }
+
+ /** This method properly deletes a Teacher from the Database and Cancels Any Events the Teacher has created.  Cancelling an
+    event involves sending a cancel email to the volunteer if one is signed up*/
+
+    public void deleteTeacherAndCancelEvents(String teacherId, HttpServletRequest request) throws SQLException {
+
+        Teacher teacher = (Teacher) database.getUserById(teacherId);
         // --- First, delete any events ---
-        List<Event> events = database.getEventsByTeacher(teacherId);
+        List<Event> events = database.getEventsByTeacher(teacher.getUserId());
         for (Event event : events) {
             try {
-                database.deleteEvent(event.getEventId());
+                cancelWithdrawController.cancelEvent(request, teacher,event);
             } catch(NoSuchEventException err) {
                 throw new RuntimeException("Event returned but cannot be deleted.");
             }
-            // FIXME: We are not notifying the volunteer that their event has been deleted.
         }
 
-        // --- Now delete the volunteer ---
+        // --- Now delete the teacher ---
         try {
-			database.deleteTeacher(teacherId);
+			database.deleteTeacher(teacher.getUserId());
 		} catch (NoSuchUserException e) {
 			throw new InvalidParameterFromGUIException();
         } catch (TeacherHasEventsException e) {
             throw new InconsistentDatabaseException("Deleted events for a teacher but some are still there.");
 		}
-        
-       model.addAttribute("teachers", database.getTeacherWithSchoolData());
-       return "teachers";
     }
 
     @RequestMapping(value = "editTeacherData", method = RequestMethod.GET)

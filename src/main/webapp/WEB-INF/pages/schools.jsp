@@ -52,10 +52,10 @@
                     <th scope="col">Phone</th>
                     <th scope="col">LMI Eligible</th>
                     <th scope="col">SLC</th>
-                    <th scope="col">
+                    <th scope="col">Delete
                         <span class="ada-read">Column of Delete buttons</span>
                     </th>
-                    <th scope="col">
+                    <th scope="col">Modify
                         <span class="ada-read">Column of Modify buttons</span>
                     </th>
                 </tr>
@@ -77,11 +77,12 @@
                     <td class="center" data-title="LMI Eligible"><c:out value="${school.lmiEligible}"/></td>
                     <td data-title="SLC"><c:out value="${school.SLC}"/></td>
                     <td class="action">
-                        <form method="POST" action="deleteSchool.htm" modelAttribute="formData">
+                        <form method="GET" action="deleteSchool.htm" modelAttribute="formData">
                                     <input type="hidden" name="schoolId" value='<c:out value="${school.schoolId}"/>' />
                                     <button type="submit" class="editOrRegister delete">Delete</button>
                         </form>
                     </td>
+
                     <td class="action">
                         <button onclick="js.loadURL('editSchool.htm?schoolId=<c:out value="${school.schoolId}"/>');" class="editOrRegister">
                             Modify

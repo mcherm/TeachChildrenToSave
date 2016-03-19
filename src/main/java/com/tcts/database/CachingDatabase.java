@@ -222,6 +222,13 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public void modifyTeacherSchool(String userId, String schoolId) throws SQLException, NoSuchSchoolException, NoSuchUserException
+    {
+       database.modifyTeacherSchool(userId, schoolId);
+    }
+
+
+    @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         return database.insertNewTeacher(formData, hashedPassword, salt);
     }
@@ -370,7 +377,12 @@ public class CachingDatabase implements DatabaseFacade {
     public List<Teacher> getTeacherWithSchoolData() throws SQLException {
         return database.getTeacherWithSchoolData();
     }
-    
+
+    @Override
+    public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException {
+        return database.getTeachersBySchool(schoolId);
+    }
+
     @Override
     public List<Teacher> getMatchedTeachers() throws SQLException {
        return database.getMatchedTeachers();

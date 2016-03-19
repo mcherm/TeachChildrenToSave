@@ -28,7 +28,7 @@ import com.tcts.datamodel.User;
 import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.formdata.LoginFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.SecurityUtil;
 import com.tcts.util.TemplateUtil;
 

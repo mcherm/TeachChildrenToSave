@@ -75,9 +75,10 @@
                         <td class="action">
 	                        <form method="POST" action="teacherDelete.htm" modelAttribute="formData">
 	                                    <input type="hidden" name="teacherId" value='<c:out value="${teacher.userId}"/>' />
-	                                    <button type="submit" class="editOrRegister delete">Delete</button>
+	                                    <button onclick="return confirm('Are you sure you want to delete this teacher and cancel any classes they may have? (A cancel email will be sent to any volunteers signed up for the cancelled classes.)' );"
+                                                type="submit" class="editOrRegister delete">Delete</button>
 	                        </form>
-	                    </td>
+                        </td>
 	                    <td class="action">
 	                        <button onclick="js.loadURL('editTeacherData.htm?userId=<c:out value="${teacher.userId}"/>');" class="editOrRegister">
 	                            Modify

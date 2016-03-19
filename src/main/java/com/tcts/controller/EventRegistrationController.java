@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.*;
-import com.tcts.exception.InconsistentDatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +24,7 @@ import com.tcts.exception.AppConfigurationException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.formdata.EventRegistrationFormData;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 import org.springframework.web.bind.annotation.RequestParam;
 

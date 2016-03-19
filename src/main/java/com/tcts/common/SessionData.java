@@ -10,6 +10,8 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.ActiveSessionException;
 import com.tcts.exception.NotLoggedInException;
 
+import com.tcts.email.EmailUtil;
+
 /**
  * An instance of this class will be stored in the session. It contains all
  * of the data that will potentially be passed around while navigating the

@@ -17,7 +17,7 @@ import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.Errors;
-import com.tcts.util.EmailUtil;
+import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,6 +46,8 @@ public class BankController {
 
     @Autowired
     private EmailUtil emailUtil;
+
+    @Autowired CancelWithdrawController cancelWithdrawController;
 
 
     /**
@@ -120,7 +122,7 @@ public class BankController {
             // --- First, unregister from any events ---
             List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
             for (Event event : events) {
-                CancelWithdrawController.withdrawFromAnEvent(database, templateUtil, emailUtil, event, request,null);
+                cancelWithdrawController.withdrawFromAnEvent(event, request,null);
             }
         }
         try {
