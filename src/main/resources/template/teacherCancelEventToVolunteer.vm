@@ -6,6 +6,11 @@
 
         <p>${class}<p>
 
+        #if ( $withdrawNotes  && $withdrawNotes != "" )
+            <p><em><b>Withdraw Note:</b> ${withdrawNotes}<em></em></p>
+        #end
+
+
         <p>Feel free to <a href="${signupLink}">sign up</a> for another available class to make a difference in a child's life.</p>
 
     </body>

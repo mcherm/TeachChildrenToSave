@@ -65,7 +65,7 @@ public class EmailSender {
     }
 
 
-    public void sendCancelEventEmailToVolunteer(Volunteer volunteer, Event event, Teacher teacher, HttpServletRequest request) {
+    public void sendCancelEventEmailToVolunteer(Volunteer volunteer, Event event, Teacher teacher, HttpServletRequest request, String withdrawNotes) {
         try {
 
             Map<String,Object> emailModel = new HashMap<String, Object>();
@@ -106,6 +106,7 @@ public class EmailSender {
                     "<td>" + teacher.getPhoneNumber() +"</td></tr>";
 
             emailModel.put("teacher", htmlTableDataHeaderForTeacher + htmlTableDataValueForTeacher);
+            emailModel.put("withdrawNotes", withdrawNotes);
             String emailContent = templateUtil.generateTemplate("teacherCancelEventToVolunteer", emailModel);
             emailUtil.sendEmail(emailContent, emailModel);
         } catch(AppConfigurationException err) {

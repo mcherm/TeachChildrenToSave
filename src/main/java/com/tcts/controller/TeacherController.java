@@ -91,7 +91,7 @@ public class TeacherController {
         List<Event> events = database.getEventsByTeacher(teacher.getUserId());
         for (Event event : events) {
             try {
-                cancelWithdrawController.cancelEvent(request, teacher,event);
+                cancelWithdrawController.cancelEvent(request, teacher,event,"");
             } catch(NoSuchEventException err) {
                 throw new RuntimeException("Event returned but cannot be deleted.");
             }

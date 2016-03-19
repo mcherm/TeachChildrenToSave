@@ -268,7 +268,7 @@ public class CancelWithdrawController {
 
         // --- Update the database ---
         try {
-            cancelEvent(request, loggedInTeacher, event);
+            cancelEvent(request, loggedInTeacher, event, formData.getWithdrawNotes());
         } catch(NoSuchEventException err) {
             throw new RuntimeException("Shouldn't happen; we just checked if it was there.");
         }
@@ -292,7 +292,8 @@ public class CancelWithdrawController {
     public void cancelEvent(
             HttpServletRequest request,
             Teacher teacher,
-            Event event) throws SQLException, NoSuchEventException {
+            Event event,
+            String withdrawNotes) throws SQLException, NoSuchEventException {
 
         // --- Send Emails ---
 
@@ -301,7 +302,7 @@ public class CancelWithdrawController {
             if (volunteer == null) {
                 throw new InconsistentDatabaseException("volunteer " + event.getVolunteerId() +  " is signed up for event but does not exist.");
             }
-            emailSender.sendCancelEventEmailToVolunteer(volunteer, event, teacher, request);
+            emailSender.sendCancelEventEmailToVolunteer(volunteer, event, teacher, request, withdrawNotes);
         }
         database.deleteEvent(event.getEventId());
     }
