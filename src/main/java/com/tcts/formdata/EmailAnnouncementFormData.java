@@ -5,9 +5,9 @@ package com.tcts.formdata;
  */
 public class EmailAnnouncementFormData {
     private String matchedTeachers;
-    private String unmachedTeachers;
+    private String unmatchedTeachers;
     private String matchedVolunteer;
-    private String unmatchedvolunteers;
+    private String unmatchedVolunteers;
     private String bankAdmins;
     private String message;
     
@@ -17,11 +17,11 @@ public class EmailAnnouncementFormData {
 	public void setMatchedTeachers(String matchedTeachers) {
 		this.matchedTeachers = matchedTeachers;
 	}
-	public String getUnmachedTeachers() {
-		return unmachedTeachers;
+	public String getUnmatchedTeachers() {
+		return unmatchedTeachers;
 	}
-	public void setUnmachedTeachers(String unmachedTeachers) {
-		this.unmachedTeachers = unmachedTeachers;
+	public void setUnmatchedTeachers(String unmatchedTeachers) {
+		this.unmatchedTeachers = unmatchedTeachers;
 	}
 	public String getMatchedVolunteer() {
 		return matchedVolunteer;
@@ -29,11 +29,11 @@ public class EmailAnnouncementFormData {
 	public void setMatchedVolunteer(String matchedVolunteer) {
 		this.matchedVolunteer = matchedVolunteer;
 	}
-	public String getUnmatchedvolunteers() {
-		return unmatchedvolunteers;
+	public String getUnmatchedVolunteers() {
+		return unmatchedVolunteers;
 	}
-	public void setUnmatchedvolunteers(String unmatchedvolunteers) {
-		this.unmatchedvolunteers = unmatchedvolunteers;
+	public void setUnmatchedVolunteers(String unmatchedVolunteers) {
+		this.unmatchedVolunteers = unmatchedVolunteers;
 	}
 	public String getBankAdmins() {
 		return bankAdmins;

@@ -1,0 +1,14 @@
+<html>
+    <body>
+        <img src="${logoImage}" alt="Teach Children To Save Program">
+
+        <h3>An email announcement was sent to the groups ${groupsSentTo}</h3>
+        <p>The content of the message was:</p>
+        <p>${message}</p>
+
+        <h3>The full list of addresses receiving the email was:<h3>
+        <p>${emails}</p>
+
+    </body>
+    <p>(c) Copyright 2016 Teach Children to Save, Delaware.</p>
+</html>

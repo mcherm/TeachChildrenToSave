@@ -2,14 +2,17 @@ package com.tcts.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.common.Configuration;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.formdata.Errors;
@@ -44,8 +47,12 @@ public class EmailAnnouncementController {
     @Autowired
     EmailUtil emailUtil;
 
+    @Autowired
+    Configuration configuration;
 
-	@RequestMapping(value = "/emailAnnouncement", method = RequestMethod.GET)
+
+
+    @RequestMapping(value = "/emailAnnouncement", method = RequestMethod.GET)
     public String emailAnnouncement(HttpSession session, Model model) throws SQLException {
 		SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -74,56 +81,99 @@ public class EmailAnnouncementController {
             throw new NotLoggedInException();
         }
         
-        Set<String> emails = new HashSet<String>();
+        SortedSet<String> emails = new TreeSet<String>();
+        String groupsSentTo = null;
         
         if ("Yes".equalsIgnoreCase(formData.getMatchedTeachers())){
+            groupsSentTo = "Matched Teachers";
             for (Teacher teacher : database.getMatchedTeachers()) {
                 emails.add(teacher.getEmail());
             }
         }
-        if ("Yes".equalsIgnoreCase(formData.getUnmachedTeachers())){
+        if ("Yes".equalsIgnoreCase(formData.getUnmatchedTeachers())){
+            if (groupsSentTo == null) {
+                groupsSentTo = "Unmatched Teachers";
+            } else{
+                groupsSentTo = groupsSentTo +" + Unmatched Teachers";
+            }
             for (Teacher teacher : database.getUnMatchedTeachers()) {
                 emails.add(teacher.getEmail());
             }
         }
         if ("Yes".equalsIgnoreCase(formData.getMatchedVolunteer())){
+            if (groupsSentTo == null) {
+                groupsSentTo = "Matched Volunteers";
+            } else{
+                groupsSentTo = groupsSentTo +" + Matched Volunteers";
+            }
+
             for (Volunteer volunteer : database.getMatchedVolunteers()) {
                 emails.add(volunteer.getEmail());
             }
         }
-        if ("Yes".equalsIgnoreCase(formData.getUnmatchedvolunteers())){
+        if ("Yes".equalsIgnoreCase(formData.getUnmatchedVolunteers())){
+            if (groupsSentTo == null) {
+                groupsSentTo = "Unmatched Volunteers";
+            } else{
+                groupsSentTo = groupsSentTo +" + Unmatched Volunteers";
+            }
+
             for (Volunteer volunteer : database.getUnMatchedVolunteers()) {
                 emails.add(volunteer.getEmail());
             }
         }
         if ("Yes".equalsIgnoreCase(formData.getBankAdmins())) {
+            if (groupsSentTo == null) {
+                groupsSentTo = "Bank Admins";
+            } else{
+                groupsSentTo = groupsSentTo +" + BankAdmins";
+            }
+
             for (BankAdmin bankAdmin : database.getBankAdmins()) {
                 emails.add(bankAdmin.getEmail());
             }
         }
 
-        if (emails.isEmpty()) {
+        if (emails.isEmpty() || groupsSentTo == null) {
             Errors errors = new Errors("There are no users that meet that criteria.");
             return showFormWithErrors(model, errors);
         } else {
+            String logoImage = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";
             try {
-
-                Map<String,Object> emailModel = new HashMap<String, Object>();
-                String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
-
+                // Send Email Announcement
+                List<String> emailList = new ArrayList(emails);
+                Map<String, Object> emailModel = new HashMap<String, Object>();
                 emailModel.put("logoImage", logoImage);
                 emailModel.put("message", formData.getMessage());
-                emailModel.put("bcc", emails);
                 emailModel.put("subject", "Message from teach children to save program!");
-                String emailContent = templateUtil.generateTemplate("emailAnnouncement", emailModel);
-                emailUtil.sendEmail(emailContent, emailModel);
+                //we send the emails with a max of 40 addresses in the bcc line because of a limit imposed by amazon simple email (of 50 addresses per email)
+                for (int i=0; i<=(((emailList.size()-1)/40)); i++){
+                    emailModel.put("bcc", emailList.subList(i*40, Math.min(emailList.size(), ((i+1)*40))));
+                    String emailContent = templateUtil.generateTemplate("emailAnnouncement", emailModel);
+                    emailUtil.sendEmail(emailContent, emailModel);
+                }
+                // Send Email Announcement Receipt to Teach Children to Save Email
+                Map<String, Object> receiptModel = new HashMap<String, Object>();
+                receiptModel.put("logoImage", logoImage);
+                receiptModel.put("message", formData.getMessage());
+                receiptModel.put("emails",emailList);
+                receiptModel.put("subject","Teach Children To Save Email Announcement Receipt");
+                receiptModel.put("groupsSentTo",groupsSentTo );
+                String tctsEmail = configuration.getProperty("email.from");
+                receiptModel.put("to", tctsEmail );
+                String receiptContent = templateUtil.generateTemplate("announcementReceipt", receiptModel);
+                emailUtil.sendEmail(receiptContent, receiptModel);
+
 
             } catch(AppConfigurationException err) {
+
                 // FIXME: Need to log or report this someplace more reliable.
                 System.err.println("Could not send email for email announcement " + err.getStackTrace());
+                throw new RuntimeException("Could not send email for email announcement:"  + err.getMessage(), err);
             } catch(IOException err) {
                 // FIXME: Need to log or report this someplace more reliable.
-                System.err.println("Could not send email for email announcement " + err.getStackTrace());
+                System.err.println("Could not send email for email announcement: " + err.getStackTrace());
+                throw new RuntimeException("Could not send email for email announcement: " + err.getMessage(), err);
             }
 
             return "redirect:" + sessionData.getUser().getUserType().getHomepage();
