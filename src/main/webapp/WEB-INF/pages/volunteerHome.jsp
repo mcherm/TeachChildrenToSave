@@ -54,6 +54,7 @@
 							String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints.pdf";
 							String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines.pdf";
 							String certificateOfRecognition = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2016%20TCTSD%20Certificate.pdf";
+							String lessonPlans = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2016%20Lesson%20Plans.pdf";
 							String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
 						%>
 
@@ -61,6 +62,7 @@
 							<li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints</a></li>
 							<li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
 							<li><a href="<%=certificateOfRecognition%>" target="_blank">Certificate of Recognition</a></li>
+							<li><a href="<%=lessonPlans%>" target="_blank">Lesson Plans</a></li>
 							<li><a href="<%=faq%>" target="_blank">FAQs</a></li>
 						</ul>
 					</div>
