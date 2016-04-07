@@ -152,6 +152,9 @@
 		                        <th>First Name</th>
 		                        <th>Last Name</th>
 		                        <th>Email</th>
+                                <c:if test="${not empty bank.bankSpecificDataLabel}">
+                                    <th><c:out value="${bank.bankSpecificDataLabel}"/></th>
+                                </c:if>
 		                        <th>
                                     <div>Classes Registered</div>
                                     <table>
@@ -180,6 +183,9 @@
                                     <td data-title="First Name"><c:out value="${volunteer.firstName}"/></td>
                                     <td data-title="Last Name"><c:out value="${volunteer.lastName}"/></td>
                                     <td data-title="Email"><c:out value="${volunteer.email}"/></td>
+                                    <c:if test="${not empty bank.bankSpecificDataLabel}">
+                                        <td data-title="<c:out value="${bank.bankSpecificDataLabel}"/>"><c:out value="${volunteer.bankSpecificData}"/></td>
+                                    </c:if>
                                     <td data-title="Classes Registered">
                                         <div class="volunteerClasses" id="volunteerClassesFor<c:out value="${volunteer.userId}"/>">
                                             <!-- populated by javascript -->
