@@ -46,6 +46,7 @@
                         <th scope="col">User Type</th>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Bank Name</th>
+                        <th scope="col">Bank Specific Data</th>
                         <th scope="col">
                             <span class="ada-read">Column of Modify buttons</span>
                         </th>
@@ -67,6 +68,7 @@
                         <td data-title="User Type"><c:out value="${volunteer.userType.getDisplayName()}"/></td>
                         <td data-title="Phone Number"><c:out value="${volunteer.phoneNumber}"/></td>
                         <td class="center" data-title="Bank Name"><c:out value="${volunteer.linkedBank.bankName}"/></td>
+                        <td data-title="Bank Specific Data"><c:out value="${volunteer.bankSpecificData}"/></td>
                         <td class="action">
                             <button onclick="js.loadURL('editVolunteerData.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
                                 Modify
