@@ -1,9 +1,42 @@
 
 -------- OPEN TASKS --------
+Need more Info/Not Do
+1. Add 2017’s date to the home page in between Teach Children to Save Day and the Sign up verbiage
+  (month should also be changed for signup to  January 2017):  April 24 – 28, 2017
+  ** NOTE:  This can be changed by site admin in the Site Settings page.
 
-* A volunteer can't find out what bank they belong to.  That seems wrong.
-* A bankadmin should be able to see their bank on their homepage.
-* The done button on the bankadmin volunteering page should refresh the page not go to the homepage.
+2.·         Bank Specific Field (i.e. Mail code) should show when the volunteers are registering.
+** NOTE:  This already seems to work fine!
+
+Small
+1.·         Add the following the message that is sent to the volunteers when they have registered for a class:
+Congratulations, you have signed up for the following class.  Please reach out to your teacher within 2 business days of
+registration to introduce yourself and confirm your date and time.
+Note:  I am assuming an email is already sent to volunteers.  Otherwise this belongs in the medium).
+2.  ·         Add the following the message that is sent to the teachers when they receive notification they have a
+volunteer for their class:  Congratulations, a volunteer has signed up for the following class. If you do not hear from
+your volunteer by the 3rd business day after receiving this email, please contact them to confirm their attendance.
+
+Medium
+1. Export report that shows volunteers matched with classes should include the volunteers and teachers email.
+** Note: The report matches the table on the page, so the easy way to do this is ad info to table.
+2. Can we add a double email entry when teachers and volunteers are registering.  I find emails that have been
+ entered incorrectly and then they do not receive any notifications and sometimes end up creating another registration
+ which causes double class registration.
+
+ Hard
+ 1.  Give site admin ability to create new classes for a registered teacher.  (This ability should be active regardless of the coursecreation
+     site setting.)
+
+2.       On the emails that are sent to the volunteer and the teacher is their anyway that we can have the teacher and
+volunteer contact information moved under the classroom information to make it easier to read.  See the attachments,
+I’m not sure if it’s dependent on the email account or not because another one I opened appeared to look fine.
+Depending on the how the email looks the copyright text appears in between the class info. and teacher/volunteer contact info.
+Can we get that shifted to be underneath the contact info.?
+
+NOTE:  I am not sure I'm up to tackling making emails look pretty in different email viewers..  Of all of them I am most
+dubious about this one.
+
  ----- TESTING  -----
 
 
