@@ -9,10 +9,8 @@ Need more Info/Not Do
 ** NOTE:  This already seems to work fine!
 
 Small
-
+1.  Add teacher and volunteer emails to emails that get sent to teacher and volunteer when a volunteer signs up for a class.
 Medium
-1. Export report that shows volunteers matched with classes should include the volunteers and teachers email.
-** Note: The report matches the table on the page, so the easy way to do this is ad info to table.
 
  Hard
  1.  Give site admin ability to create new classes for a registered teacher.  (This ability should be active regardless of the coursecreation
@@ -34,6 +32,7 @@ dubious about this one.
  * In the code, session.getVolunteer() should return the BankAdmin when there is a bank admin.
 
 -------- DONE --------
+*Export report that shows volunteers matched with classes should include the volunteers and teachers email.
 *Add a double email and password entry when teachers and volunteers are registering.
 *Add the following the message that is sent to the volunteers when they have registered for a class:
 Congratulations, you have signed up for the following class.  Please reach out to your teacher within 2 business days of

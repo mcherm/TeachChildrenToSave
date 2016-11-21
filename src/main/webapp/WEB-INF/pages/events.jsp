@@ -44,8 +44,10 @@
                         <th scope="col" class="center">Grade</th>
                         <th scope="col" class="center">Students</th>
                         <th scope="col">Teacher</th>
+                        <th scope="col">Teacher Email</th>
                         <th scope="col">School</th>
                         <th scope="col">Volunteer</th>
+                        <th scope="col">Volunteer Email</th>
                         <th scope="col">Bank</th>
                         <th scope="col">Details&nbsp;&nbsp;&nbsp;&nbsp;<span class="ada-read">Column of Details buttons</span></th>
                         <th scope="col">Delete&nbsp;&nbsp;&nbsp;&nbsp;<span class="ada-read">Column of Delete buttons</span></th>
@@ -54,7 +56,7 @@
                 </thead>
                 <tbody>
                     <c:if test="${empty events}">
-                        <td colspan="8" class="emptyTableMessage">There are no classes.</td>
+                        <td colspan="10" class="emptyTableMessage">There are no classes.</td>
                     </c:if>
                     <c:forEach var="event" items="${events}">
                         <tr>
@@ -66,17 +68,21 @@
                                 <c:out value="${event.linkedTeacher.firstName}"/>
                                 <c:out value="${event.linkedTeacher.lastName}"/>
                             </td>
+                            <td data-title="Teacher Email"><c:out value="${event.linkedTeacher.email}"/></td>
                             <td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
                             <c:choose>
                                 <c:when test="${empty event.volunteerId}">
-                                    <td colspan="2" class="emptyTableMessage" data-title="Volunteer">None yet.</td>
+                                    <td colspan="3" class="emptyTableMessage" data-title="Volunteer">None yet.</td>
                                 </c:when>
                                 <c:otherwise>
                                     <td data-title="Volunteer">
                                         <c:out value="${event.linkedVolunteer.firstName}"/>
-                                        <c:out value="${event.linkedVolunteer.lastName}"/><br>
+                                        <c:out value="${event.linkedVolunteer.lastName}"/>
+                                    </td>
+                                    <td data-title="Volunteer Email">
                                         <c:out value="${event.linkedVolunteer.email}"/>
                                     </td>
+
                                     <td data-title="Bank"><c:out value="${event.linkedVolunteer.linkedBank.bankName}"/></td>
                                 </c:otherwise>
                             </c:choose>
