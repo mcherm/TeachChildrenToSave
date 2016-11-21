@@ -93,7 +93,17 @@
                     </label>
                 </div>
 
-                <%-- TODO: re-enter email field --%>
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Retype Email (*)
+                            </div>
+                            <form:input path="emailMatch"/>
+                        </div>
+                    </label>
+                </div>
+
 
                 <div class="formElementCnt">
                     <label>
@@ -106,7 +116,16 @@
                     </label>
                 </div>
 
-                <%-- TODO: re-enter password field --%>
+                <div class="formElementCnt">
+                    <label>
+                        <div class="inputCnt">
+                            <div class="info">
+                                Retype Password (*)
+                            </div>
+                            <form:input path="passwordMatch" type="password"/>
+                        </div>
+                    </label>
+                </div>
 
                 <div class="formElementCnt">
                     <label>

@@ -48,29 +48,52 @@
 		                        </label>
 		                    </div>		
 						
-		                    <div class="formElementCnt">
-		                        <label>
-		                            <div class="inputCnt">
-		                                <div class="info">
-		                                    Email (*)
-		                                </div>
-		                                <form:input path="email"/>
-		                            </div>
-		                        </label>
-		                    </div>						
-						
-		                    <div class="formElementCnt">
-		                        <label>
-		                            <div class="inputCnt">
-		                                <div class="info">
-		                                    Password (*)
-		                                </div>
-		                                <form:input path="password" type="password"/>
-		                            </div>
-		                        </label>
-		                    </div>								
 
-		                    <div class="formElementCnt">
+					<div class="formElementCnt">
+						<label>
+							<div class="inputCnt">
+								<div class="info">
+									Email (*)
+								</div>
+								<form:input path="email"/>
+							</div>
+						</label>
+					</div>
+
+					<div class="formElementCnt">
+						<label>
+							<div class="inputCnt">
+								<div class="info">
+									Retype Email (*)
+								</div>
+								<form:input path="emailMatch"/>
+							</div>
+						</label>
+					</div>
+
+					<div class="formElementCnt">
+						<label>
+							<div class="inputCnt">
+								<div class="info">
+									Password (*)
+								</div>
+								<form:input path="password" type="password"/>
+							</div>
+						</label>
+					</div>
+
+					<div class="formElementCnt">
+						<label>
+							<div class="inputCnt">
+								<div class="info">
+									Retype Password (*)
+								</div>
+								<form:input path="passwordMatch" type="password"/>
+							</div>
+						</label>
+					</div>
+
+					<div class="formElementCnt">
 		                        <label>
 		                            <div class="inputCnt">
 		                                <div class="info">

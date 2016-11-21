@@ -8,7 +8,9 @@ import com.tcts.database.DatabaseField;
  */
 public abstract class UserRegistrationFormData extends ValidatedFormData<RuntimeException> {
     private String email;
+    private String emailMatch;
     private String password;
+    private String passwordMatch;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -17,7 +19,12 @@ public abstract class UserRegistrationFormData extends ValidatedFormData<Runtime
     protected void validationRules(Errors errors) throws RuntimeException {
         if (email == null || email.trim().length()==0) {
             errors.addError("You must provide a valid email.");
+        } else {
+            if (!email.equalsIgnoreCase(emailMatch)){
+                errors.addError("Emails do not match.");
+            }
         }
+
         if (firstName == null || firstName.trim().length()==0) {
             errors.addError("You must provide a first name.");
         }
@@ -26,7 +33,12 @@ public abstract class UserRegistrationFormData extends ValidatedFormData<Runtime
         }
         if (password == null || password.trim().length()==0) {
             errors.addError("You must select a password.");
+        } else {
+            if (!password.equals(passwordMatch)){
+                errors.addError("Passwords do not match.");
+            }
         }
+
         validateLength(email, DatabaseField.user_email, errors);
         validateLength(firstName, DatabaseField.user_first_name, errors);
         validateLength(lastName, DatabaseField.user_last_name, errors);
@@ -39,6 +51,22 @@ public abstract class UserRegistrationFormData extends ValidatedFormData<Runtime
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getEmailMatch() {
+        return emailMatch;
+    }
+
+    public void setEmailMatch(String emailMatch) {
+        this.emailMatch = emailMatch;
+    }
+
+    public String getPasswordMatch() {
+        return passwordMatch;
+    }
+
+    public void setPasswordMatch(String passwordMatch) {
+        this.passwordMatch = passwordMatch;
     }
 
     public String getPassword() {

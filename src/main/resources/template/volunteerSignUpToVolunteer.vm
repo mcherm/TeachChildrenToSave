@@ -2,7 +2,8 @@
     <body>
         <img src="${logoImage}" alt="Teach Children To Save Program">
 
-        <p>Congratulations, you have signed up for the following class:</p>
+        <p>Congratulations, you have signed up for the following class.  Please reach out to your teacher within 2 business days of
+            registration to introduce yourself and confirm your date and time.</p>
         <p>${class}</p>
          <p>Teacher:</p>
         <p>${teacher}</p>

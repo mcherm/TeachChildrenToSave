@@ -2,7 +2,9 @@
     <body>
         <img src="${logoImage}" alt="Teach Children To Save Program">
 
-        <p>Congratulations, a volunteer has signed up for the following class:</p>
+        <p>Congratulations, a volunteer has signed up for the following class. If you do not hear from
+            your volunteer by the 3rd business day after receiving this email, please contact them to confirm their attendance.
+        </p>
 
         <p>${class}</p>
         <p>Volunteer:</p>
