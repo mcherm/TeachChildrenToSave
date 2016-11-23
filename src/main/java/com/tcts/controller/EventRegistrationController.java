@@ -187,7 +187,7 @@ public class EventRegistrationController {
                             "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                             "<td>" + event.getGrade()  + "</td>" +
                             "<td>" + event.getNumberStudents()  + "</td>" +
-                            "<td>" + event.getNotes()  + "</td></tr>";
+                            "<td>" + event.getNotes()  + "</td></tr></table>";
                 emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
                 
                 String htmlTableDataHeaderForValunteer = "<table><tr> " +
@@ -197,7 +197,7 @@ public class EventRegistrationController {
                        
                 String htmlTableDataValueForVolunteer = "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +    
                             "<td>" + teacher.getEmail()  + "</td>" +
-                            "<td>" + teacher.getPhoneNumber() +"</td></tr>";
+                            "<td>" + teacher.getPhoneNumber() +"</td></tr></table>";
                             
                 emailModel.put("teacher", htmlTableDataHeaderForValunteer + htmlTableDataValueForVolunteer);
 
@@ -206,7 +206,7 @@ public class EventRegistrationController {
                         "<td style=\"background-color:#66CCFF\">School Address</td></tr>";
 
                 String htmlTableDataValueForSchool = "<tr> <td>" + school.getName() + "</td>" +
-                        "<td>" + school.getAddressLine1()  + "  " + school.getCity() +","+ school.getState()  + "</td></tr>";
+                        "<td>" + school.getAddressLine1()  + "  " + school.getCity() +","+ school.getState()  + "</td></tr></table>";
 
                 emailModel.put ("school", htmlTableDataHeaderForSchool + htmlTableDataValueForSchool);
 
@@ -247,7 +247,7 @@ public class EventRegistrationController {
                                 "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                                 "<td>" + event.getGrade()  + "</td>" +
                                 "<td>" + event.getNumberStudents()  + "</td>" +
-                                "<td>" + event.getNotes()  + "</td></tr>";
+                                "<td>" + event.getNotes()  + "</td></tr></table>";
                     emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
                     
                     String htmlTableDataHeaderForTeacher = "<table><tr> " +
@@ -257,7 +257,7 @@ public class EventRegistrationController {
                            
                     String htmlTableDataValueForTeacher = "<tr><td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +    
                                 "<td>" + volunteer.getEmail()  + "</td>" +
-                                "<td>" + volunteer.getPhoneNumber() + "</td></tr>";
+                                "<td>" + volunteer.getPhoneNumber() + "</td></tr></table>";
                     
                     emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
                     emailModel.put("volunteer", htmlTableDataHeaderForTeacher + htmlTableDataValueForTeacher);

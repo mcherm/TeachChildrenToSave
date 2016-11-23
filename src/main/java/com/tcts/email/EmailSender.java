@@ -57,7 +57,7 @@ public class EmailSender {
                 "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                 "<td>" + event.getGrade()  + "</td>" +
                 "<td>" + event.getNumberStudents()  + "</td>" +
-                "<td>" + event.getNotes()  + "</td></tr>";
+                "<td>" + event.getNotes()  + "</td></tr></table>";
         emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
         emailModel.put("withdrawNotes", withdrawNotes);
         String emailContent = templateUtil.generateTemplate("volunteerUnregisterEventToTeacher", emailModel);
@@ -89,7 +89,7 @@ public class EmailSender {
                     "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                     "<td>" + event.getGrade()  + "</td>" +
                     "<td>" + event.getNumberStudents()  + "</td>" +
-                    "<td>" + event.getNotes()  + "</td></tr>";
+                    "<td>" + event.getNotes()  + "</td></tr></table>";
 
             emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
             String singupUrl =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/register.htm";
@@ -103,7 +103,7 @@ public class EmailSender {
             String htmlTableDataValueForTeacher =
                     "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                     "<td>" + teacher.getEmail()  + "</td>" +
-                    "<td>" + teacher.getPhoneNumber() +"</td></tr>";
+                    "<td>" + teacher.getPhoneNumber() +"</td></tr></table>";
 
             emailModel.put("teacher", htmlTableDataHeaderForTeacher + htmlTableDataValueForTeacher);
             emailModel.put("withdrawNotes", withdrawNotes);
