@@ -152,7 +152,7 @@ public interface DatabaseFacade {
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
 
-    /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin. */
+    /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin or there is no such bank. */
     public BankAdmin getBankAdminByBank(String bankId)
             throws SQLException;
 
