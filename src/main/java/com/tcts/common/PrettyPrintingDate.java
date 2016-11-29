@@ -1,5 +1,6 @@
 package com.tcts.common;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.sql.Date;
 
@@ -22,6 +23,25 @@ public class PrettyPrintingDate extends Date {
         }
     };
 
+    /**
+     * As input, takes a date in yyyy-mm-dd format; returns the PrettyPrintingDate object.
+     */
+    public static PrettyPrintingDate fromParsableDate(String parsableDate) throws ParseException {
+        return new PrettyPrintingDate(parseableFormatter.get().parse(parsableDate).getTime());
+    }
+
+    /**
+     * Constructor used by the fromParsableDate() factory function.
+     *
+     * @param millisSinceTheEpoch the milliseconds since the epoch of the date
+     */
+    private PrettyPrintingDate(long millisSinceTheEpoch) {
+        super(millisSinceTheEpoch);
+    }
+
+    /**
+     * Constructor used by our JDBC driver.
+     */
     public PrettyPrintingDate(Date date) {
         super(date.getTime());
     }

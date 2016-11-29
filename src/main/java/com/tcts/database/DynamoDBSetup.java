@@ -22,13 +22,7 @@ import java.util.Arrays;
  */
 public class DynamoDBSetup {
 
-    /**
-     * Main method that sets up the DynamoDB database.
-     */
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println("Starting...");
-        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB();
-
+    public static void reinitializeDatabase(DynamoDB dynamoDB) throws InterruptedException {
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
         tables.siteSettingsTable.delete();
         tables.allowedDatesTable.delete();
@@ -47,8 +41,8 @@ public class DynamoDBSetup {
         tables.schoolTable.waitForDelete();
 
         Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", "name", ScalarAttributeType.S);
-        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", "date", ScalarAttributeType.S);
-        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", "time", ScalarAttributeType.S);
+        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", "event_date", ScalarAttributeType.S);
+        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", "event_time", ScalarAttributeType.S);
         Table eventTable = createTable(dynamoDB, "Event", "event_id", ScalarAttributeType.N);
         Table bankTable = createTable(dynamoDB, "Bank", "bank_id", ScalarAttributeType.N);
         Table userTable = createTable(dynamoDB, "User", "user_id", ScalarAttributeType.N);
@@ -61,14 +55,24 @@ public class DynamoDBSetup {
         bankTable.waitForActive();
         userTable.waitForActive();
         schoolTable.waitForActive();
+    }
 
-        PutItemOutcome putItemOutcome = siteSettingsTable.putItem(new Item()
+    /**
+     * Main method that sets up the DynamoDB database.
+     */
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("Starting...");
+        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB();
+        reinitializeDatabase(dynamoDB);
+
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+        PutItemOutcome putItemOutcome = tables.siteSettingsTable.putItem(new Item()
                 .withPrimaryKey("name", "TestSetting")
                 .with("value", "2016-12-21"));
 
         System.out.println("Inserted a value");
 
-        Item item = siteSettingsTable.getItem(new PrimaryKey("name", "TestSetting"));
+        Item item = tables.siteSettingsTable.getItem(new PrimaryKey("name", "TestSetting"));
         System.out.println("Got item " + item);
     }
 
