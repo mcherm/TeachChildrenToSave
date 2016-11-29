@@ -3,7 +3,6 @@ package com.tcts.database;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.tcts.common.PrettyPrintingDate;
@@ -52,8 +51,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
- * FIXME: Doc this.
+ * A facade that implements the database functionality using DynamoDB.
  */
 public class DynamoDBDatabase implements DatabaseFacade {
 
@@ -225,7 +225,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
         List<PrettyPrintingDate> result = new ArrayList<PrettyPrintingDate>();
         for (Item scanOutcome : tables.allowedDatesTable.scan()) {
-            String dateStr = scanOutcome.getString("event_date");
+            String dateStr = scanOutcome.getString(DatabaseField.event_date_allowed.name());
             try {
                 result.add(PrettyPrintingDate.fromParsableDate(dateStr));
             }
@@ -305,7 +305,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
         tables.allowedDatesTable.putItem(new Item()
-                .withPrimaryKey("event_date", formData.getParsableDateStr()));
+                .withPrimaryKey(DatabaseField.event_date_allowed.name(), formData.getParsableDateStr()));
     }
 
     @Override
@@ -340,7 +340,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
-        tables.allowedDatesTable.deleteItem(new PrimaryKey("event_date", date.getParseable()));
+        tables.allowedDatesTable.deleteItem(new PrimaryKey(DatabaseField.event_date_allowed.name(), date.getParseable()));
     }
 
     @Override
@@ -392,7 +392,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public Map<String, String> getSiteSettings() throws SQLException {
         Map<String,String> result = new HashMap<String,String>();
         for (Item scanOutcome : tables.siteSettingsTable.scan()) {
-            result.put(scanOutcome.getString("name"), scanOutcome.getString("value"));
+            result.put(
+                    scanOutcome.getString(DatabaseField.site_setting_name.name()),
+                    scanOutcome.getString(DatabaseField.site_setting_value.name()));
         }
         return result;
     }
@@ -400,7 +402,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
         tables.siteSettingsTable.putItem(new Item()
-                .withPrimaryKey("name", settingName)
-                .with("value", settingValue));
+                .withPrimaryKey(DatabaseField.site_setting_name.name(), settingName)
+                .with(DatabaseField.site_setting_value.name(), settingValue));
     }
 }

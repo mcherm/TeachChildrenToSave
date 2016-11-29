@@ -1,10 +1,8 @@
 package com.tcts.database;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
-import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -40,13 +38,13 @@ public class DynamoDBSetup {
         tables.userTable.waitForDelete();
         tables.schoolTable.waitForDelete();
 
-        Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", "name", ScalarAttributeType.S);
-        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", "event_date", ScalarAttributeType.S);
-        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", "event_time", ScalarAttributeType.S);
-        Table eventTable = createTable(dynamoDB, "Event", "event_id", ScalarAttributeType.N);
-        Table bankTable = createTable(dynamoDB, "Bank", "bank_id", ScalarAttributeType.N);
-        Table userTable = createTable(dynamoDB, "User", "user_id", ScalarAttributeType.N);
-        Table schoolTable = createTable(dynamoDB, "School", "school_id", ScalarAttributeType.N);
+        Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", DatabaseField.site_setting_name, ScalarAttributeType.S);
+        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", DatabaseField.event_date_allowed, ScalarAttributeType.S);
+        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", DatabaseField.event_time_allowed, ScalarAttributeType.S);
+        Table eventTable = createTable(dynamoDB, "Event", DatabaseField.event_id, ScalarAttributeType.N);
+        Table bankTable = createTable(dynamoDB, "Bank", DatabaseField.bank_id, ScalarAttributeType.N);
+        Table userTable = createTable(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.N);
+        Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.N);
 
         siteSettingsTable.waitForActive();
         allowedDatesTable.waitForActive();
@@ -66,7 +64,7 @@ public class DynamoDBSetup {
         reinitializeDatabase(dynamoDB);
 
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
-        PutItemOutcome putItemOutcome = tables.siteSettingsTable.putItem(new Item()
+        tables.siteSettingsTable.putItem(new Item()
                 .withPrimaryKey("name", "TestSetting")
                 .with("value", "2016-12-21"));
 
@@ -78,15 +76,15 @@ public class DynamoDBSetup {
 
 
 
-    private static Table createTable(DynamoDB dynamoDB, String tableName, String primaryKeyName, ScalarAttributeType keyType)
+    private static Table createTable(DynamoDB dynamoDB, String tableName, DatabaseField databaseField, ScalarAttributeType keyType)
             throws InterruptedException {
         ArrayList<AttributeDefinition> attributeDefinitions= new ArrayList<AttributeDefinition>();
         attributeDefinitions.add(new AttributeDefinition()
-                .withAttributeName(primaryKeyName).withAttributeType(keyType));
+                .withAttributeName(databaseField.name()).withAttributeType(keyType));
 
         CreateTableRequest createTableRequest = new CreateTableRequest()
                 .withTableName(tableName)
-                .withKeySchema(Arrays.asList(new KeySchemaElement(primaryKeyName, KeyType.HASH)))
+                .withKeySchema(Arrays.asList(new KeySchemaElement(databaseField.name(), KeyType.HASH)))
                 .withAttributeDefinitions(attributeDefinitions)
                 .withProvisionedThroughput(new ProvisionedThroughput()
                         .withReadCapacityUnits(1L)
