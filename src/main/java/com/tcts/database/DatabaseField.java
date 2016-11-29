@@ -6,7 +6,7 @@ package com.tcts.database;
 public enum DatabaseField {
     site_setting_name, site_setting_value,
     event_date_allowed,
-    event_time_allowed,
+    event_time_allowed, event_time_sort_key,
     event_id, event_time, event_grade, event_notes,
     bank_id, bank_name,
     user_id, user_email, user_first_name, user_last_name, user_phone_number, user_bank_specific_data,

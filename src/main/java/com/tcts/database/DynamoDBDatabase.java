@@ -44,7 +44,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -237,9 +236,45 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return result;
     }
 
+    /** Static class used when getting allowed times in the proper sort order. */
+    private static class TimeAndSortKey implements Comparable<TimeAndSortKey> {
+        final String timeStr;
+        final int sortKey;
+
+        /** Constructor. */
+        TimeAndSortKey(String timeStr, int sortKey) {
+            this.timeStr = timeStr;
+            this.sortKey = sortKey;
+        }
+
+        @Override
+        public int compareTo(TimeAndSortKey o) {
+            return Integer.compare(this.sortKey, o.sortKey);
+        }
+
+        @Override
+        public String toString() {
+            return "TimeAndSortKey{" +
+                    "timeStr='" + timeStr + '\'' +
+                    ", sortKey=" + sortKey +
+                    '}';
+        }
+    }
+
     @Override
     public List<String> getAllowedTimes() throws SQLException {
-        return delegate.getAllowedTimes();
+        List<TimeAndSortKey> sortableTimes = new ArrayList<TimeAndSortKey>();
+        for (Item scanOutcome : tables.allowedTimesTable.scan()) {
+            sortableTimes.add(new TimeAndSortKey(
+                    scanOutcome.getString(DatabaseField.event_time_allowed.name()),
+                    scanOutcome.getInt(DatabaseField.event_time_sort_key.name())));
+        }
+        Collections.sort(sortableTimes);
+        List<String> result = new ArrayList<String>(sortableTimes.size());
+        for (TimeAndSortKey sortableTime : sortableTimes) {
+            result.add(sortableTime.timeStr);
+        }
+        return result;
     }
 
     @Override
@@ -310,7 +345,42 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewAllowedTime(AddAllowedTimeFormData formData) throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
-        delegate.insertNewAllowedTime(formData);
+        // -- Get the existing list of times so we can ensure they are properly sorted --
+        List<String> allowedTimes = getAllowedTimes();
+        // -- Make sure it's OK to insert --
+        if (!formData.getTimeToInsertBefore().isEmpty() && !allowedTimes.contains(formData.getTimeToInsertBefore())) {
+            throw new NoSuchAllowedTimeException();
+        }
+        if (allowedTimes.contains(formData.getAllowedTime())) {
+            throw new AllowedTimeAlreadyInUseException();
+        }
+        // -- Delete existing values from the database --
+        // NOTE: not even slightly threadsafe. Won't be a problem in practice.
+        for (String allowedTime : allowedTimes) {
+            deleteAllowedTime(allowedTime);
+        }
+        // -- Now insert the new values --
+        int sortKey = 0;
+        for (String allowedTime : allowedTimes) {
+            if (!formData.getTimeToInsertBefore().isEmpty() && formData.getTimeToInsertBefore().equals(allowedTime)) {
+                // - Now we insert the new one -
+                tables.allowedTimesTable.putItem(new Item()
+                        .withPrimaryKey(DatabaseField.event_time_allowed.name(), formData.getAllowedTime())
+                        .with(DatabaseField.event_time_sort_key.name(), sortKey));
+                sortKey += 1;
+            }
+            // - Now we insert the one from the list -
+            tables.allowedTimesTable.putItem(new Item()
+                    .withPrimaryKey(DatabaseField.event_time_allowed.name(), allowedTime)
+                    .with(DatabaseField.event_time_sort_key.name(), sortKey));
+            sortKey += 1;
+        }
+        if (formData.getTimeToInsertBefore().isEmpty()) {
+            // - Add the new one at the end -
+            tables.allowedTimesTable.putItem(new Item()
+                    .withPrimaryKey(DatabaseField.event_time_allowed.name(), formData.getAllowedTime())
+                    .with(DatabaseField.event_time_sort_key.name(), sortKey));
+        }
     }
 
     @Override
@@ -335,7 +405,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
-        delegate.deleteAllowedTime(time);
+        tables.allowedTimesTable.deleteItem(new PrimaryKey(DatabaseField.event_time_allowed.name(), time));
     }
 
     @Override

@@ -3,8 +3,11 @@ package com.tcts.database;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
+import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.NoSuchAllowedDateException;
+import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.formdata.AddAllowedDateFormData;
+import com.tcts.formdata.AddAllowedTimeFormData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,6 +98,50 @@ public class DynamoDBDatabaseTest {
         assertEquals(
                 Arrays.asList(),
                 allowedDates);
+    }
+
+    @Test
+    public void writeOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+        AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
+        addAllowedTimeFormData.setAllowedTime("2:00");
+        addAllowedTimeFormData.setTimeToInsertBefore("");
+        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
+        List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
+        assertEquals(Arrays.asList("2:00"), allowedTimes);
+    }
+
+    @Test
+    public void writeThreeTimesOutOfOrderAndReadThem() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+        AddAllowedTimeFormData addAllowedTimeFormData1 = new AddAllowedTimeFormData();
+        addAllowedTimeFormData1.setAllowedTime("6:00");
+        addAllowedTimeFormData1.setTimeToInsertBefore("");
+        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData1);
+        AddAllowedTimeFormData addAllowedTimeFormData2 = new AddAllowedTimeFormData();
+        addAllowedTimeFormData2.setAllowedTime("2:00");
+        addAllowedTimeFormData2.setTimeToInsertBefore("6:00");
+        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData2);
+        AddAllowedTimeFormData addAllowedTimeFormData3 = new AddAllowedTimeFormData();
+        addAllowedTimeFormData3.setAllowedTime("4:00");
+        addAllowedTimeFormData3.setTimeToInsertBefore("6:00");
+        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData3);
+        List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
+        assertEquals(
+                Arrays.asList("2:00", "4:00", "6:00"),
+                allowedTimes);
+    }
+
+
+    @Test
+    public void insertTimeDeleteIt() throws SQLException, AllowedTimeAlreadyInUseException, ParseException, NoSuchAllowedTimeException {
+        AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
+        addAllowedTimeFormData.setAllowedTime("2:00");
+        addAllowedTimeFormData.setTimeToInsertBefore("");
+        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
+        dynamoDBDatabase.deleteAllowedTime("2:00");
+        List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
+        assertEquals(
+                Arrays.asList(),
+                allowedTimes);
     }
 
 }
