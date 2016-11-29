@@ -41,10 +41,10 @@ public class DynamoDBSetup {
         Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", DatabaseField.site_setting_name, ScalarAttributeType.S);
         Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", DatabaseField.event_date_allowed, ScalarAttributeType.S);
         Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", DatabaseField.event_time_allowed, ScalarAttributeType.S);
-        Table eventTable = createTable(dynamoDB, "Event", DatabaseField.event_id, ScalarAttributeType.N);
-        Table bankTable = createTable(dynamoDB, "Bank", DatabaseField.bank_id, ScalarAttributeType.N);
-        Table userTable = createTable(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.N);
-        Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.N);
+        Table eventTable = createTable(dynamoDB, "Event", DatabaseField.event_id, ScalarAttributeType.S);
+        Table bankTable = createTable(dynamoDB, "Bank", DatabaseField.bank_id, ScalarAttributeType.S);
+        Table userTable = createTable(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.S);
+        Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.S);
 
         siteSettingsTable.waitForActive();
         allowedDatesTable.waitForActive();
@@ -92,7 +92,6 @@ public class DynamoDBSetup {
 
 
         Table table = dynamoDB.createTable(createTableRequest);
-        System.out.println("Created table " + tableName);
         return table;
     }
 }

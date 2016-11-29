@@ -2,12 +2,16 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.datamodel.School;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditSchoolFormData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 /**
@@ -144,4 +149,120 @@ public class DynamoDBDatabaseTest {
                 allowedTimes);
     }
 
+    @Test
+    public void retrieveNonexistentSchool() throws SQLException {
+        School school = dynamoDBDatabase.getSchoolById("1234");
+        assertNull(school);
+    }
+
+    @Test
+    public void insertSchool() throws SQLException {
+        CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
+        createSchoolFormData.setSchoolName("Mirkwood Elementary");
+        createSchoolFormData.setSchoolAddress1("123 Main St.");
+        createSchoolFormData.setCity("Richmond");
+        createSchoolFormData.setZip("23235");
+        createSchoolFormData.setCounty("Delaware");
+        createSchoolFormData.setDistrict("Roth");
+        createSchoolFormData.setState("VA");
+        createSchoolFormData.setPhone("302-234-5678");
+        createSchoolFormData.setLmiEligible("15.4");
+        createSchoolFormData.setSLC("N120");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+    }
+
+    @Test
+    public void getAllSchoolsWhenThereAreNone() throws SQLException {
+        List<School> schools = dynamoDBDatabase.getAllSchools();
+        assertEquals(0, schools.size());
+    }
+
+    @Test
+    public void createACoupleOfSchoolsThenGetThemAll() throws SQLException {
+        CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
+        createSchoolFormData.setSchoolName("Mirkwood Elementary");
+        createSchoolFormData.setSchoolAddress1("123 Main St.");
+        createSchoolFormData.setCity("Richmond");
+        createSchoolFormData.setZip("23235");
+        createSchoolFormData.setCounty("Delaware");
+        createSchoolFormData.setDistrict("Roth");
+        createSchoolFormData.setState("VA");
+        createSchoolFormData.setPhone("302-234-5678");
+        createSchoolFormData.setLmiEligible("15.4");
+        createSchoolFormData.setSLC("N120");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        createSchoolFormData.setSchoolName("Norton Academy");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        createSchoolFormData.setSchoolName("Landover Elementary");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        List<School> schools = dynamoDBDatabase.getAllSchools();
+        assertEquals(3, schools.size());
+        assertEquals("Landover Elementary", schools.get(0).getName());
+        assertEquals("Mirkwood Elementary", schools.get(1).getName());
+        assertEquals("Norton Academy", schools.get(2).getName());
+    }
+
+    @Test
+    public void createTwoSchoolsDeleteOneThenGetThem() throws SQLException, NoSuchSchoolException {
+        CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
+        createSchoolFormData.setSchoolName("Mirkwood Elementary");
+        createSchoolFormData.setSchoolAddress1("123 Main St.");
+        createSchoolFormData.setCity("Richmond");
+        createSchoolFormData.setZip("23235");
+        createSchoolFormData.setCounty("Delaware");
+        createSchoolFormData.setDistrict("Roth");
+        createSchoolFormData.setState("VA");
+        createSchoolFormData.setPhone("302-234-5678");
+        createSchoolFormData.setLmiEligible("15.4");
+        createSchoolFormData.setSLC("N120");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        createSchoolFormData.setSchoolName("Norton Academy");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        List<School> firstListOfSchools = dynamoDBDatabase.getAllSchools();
+        assertEquals(2, firstListOfSchools.size());
+        dynamoDBDatabase.deleteSchool(firstListOfSchools.get(0).getSchoolId());
+        List<School> secondListOfSchools = dynamoDBDatabase.getAllSchools();
+        assertEquals(1, secondListOfSchools.size());
+    }
+
+    @Test(expected = NoSuchSchoolException.class)
+    public void deleteSchoolThatDoesNotExist() throws SQLException, NoSuchSchoolException {
+        dynamoDBDatabase.deleteSchool("99324");
+    }
+
+    @Test
+    public void createSchoolThenModifyIt() throws SQLException, NoSuchSchoolException {
+        CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
+        createSchoolFormData.setSchoolName("Mirkwood Elementary");
+        createSchoolFormData.setSchoolAddress1("123 Main St.");
+        createSchoolFormData.setCity("Richmond");
+        createSchoolFormData.setZip("23235");
+        createSchoolFormData.setCounty("Delaware");
+        createSchoolFormData.setDistrict("Roth");
+        createSchoolFormData.setState("VA");
+        createSchoolFormData.setPhone("302-234-5678");
+        createSchoolFormData.setLmiEligible("15.4");
+        createSchoolFormData.setSLC("N120");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        List<School> firstListOfSchools = dynamoDBDatabase.getAllSchools();
+        assertEquals(1, firstListOfSchools.size());
+        assertEquals("Mirkwood Elementary", firstListOfSchools.get(0).getName());
+
+        EditSchoolFormData editSchoolFormData = new EditSchoolFormData();
+        editSchoolFormData.setSchoolId(firstListOfSchools.get(0).getSchoolId());
+        editSchoolFormData.setSchoolName("Norton Academy");
+        editSchoolFormData.setSchoolAddress1("123 Main St.");
+        editSchoolFormData.setCity("Richmond");
+        editSchoolFormData.setZip("23235");
+        editSchoolFormData.setCounty("Delaware");
+        editSchoolFormData.setDistrict("Roth");
+        editSchoolFormData.setState("VA");
+        editSchoolFormData.setPhone("302-234-5678");
+        editSchoolFormData.setLmiEligible("15.4");
+        editSchoolFormData.setSLC("N120");
+        dynamoDBDatabase.modifySchool(editSchoolFormData);
+        List<School> secondListOfSchools = dynamoDBDatabase.getAllSchools();
+        assertEquals(1, secondListOfSchools.size());
+        assertEquals("Norton Academy", secondListOfSchools.get(0).getName());
+    }
 }

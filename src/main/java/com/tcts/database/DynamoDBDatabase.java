@@ -1,6 +1,8 @@
 package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
+import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
@@ -46,9 +48,11 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -116,6 +120,45 @@ public class DynamoDBDatabase implements DatabaseFacade {
         Table userTable = dynamoDB.getTable("User");
         Table schoolTable = dynamoDB.getTable("School");
         return new DynamoDBDatabase.Tables(siteSettingsTable, allowedDatesTable, allowedTimesTable, eventTable, bankTable, userTable, schoolTable);
+    }
+
+    // ========== Special Plumbing ==========
+
+    /**
+     * When this is called, it will create a single, unique ID.
+     * <p>
+     * We happen to be using the following approach: pick a random
+     * positive long. Count on luck for it to never collide. It's
+     * not the most perfect algorithm in the world, but using the
+     * birthday problem formula, we would need to issue about 430
+     * million IDs to have a 1% chance of encountering a collision.
+     */
+    private String createUniqueId() {
+        long randomNonNegativeLong = ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+        return Long.toString(randomNonNegativeLong);
+    }
+
+
+    // ========== Methods for populating objects ==========
+
+
+    /**
+     * Creates a School object from the corresponding Item retrieved from DynamoDB.
+     */
+    private School createSchoolFromDynamoDBItem(Item item) {
+        School school = new School();
+        school.setSchoolId(item.getString(DatabaseField.school_id.name()));
+        school.setName(item.getString(DatabaseField.school_name.name()));
+        school.setAddressLine1(item.getString(DatabaseField.school_addr1.name()));
+        school.setCity(item.getString(DatabaseField.school_city.name()));
+        school.setState(item.getString(DatabaseField.school_state.name()));
+        school.setZip(item.getString(DatabaseField.school_zip.name()));
+        school.setCounty(item.getString(DatabaseField.school_county.name()));
+        school.setSchoolDistrict(item.getString(DatabaseField.school_district.name()));
+        school.setPhone(item.getString(DatabaseField.school_phone.name()));
+        school.setLmiEligible(item.getInt(DatabaseField.school_lmi_eligible.name()));
+        school.setSLC(item.getString(DatabaseField.school_slc.name()));
+        return school;
     }
 
     // ========== Methods of DatabaseFacade Class ==========
@@ -207,12 +250,31 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public School getSchoolById(String schoolId) throws SQLException {
-        return delegate.getSchoolById(schoolId);
+        Item item = tables.schoolTable.getItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
+        if (item == null) {
+            return null;
+        }
+        else {
+            return createSchoolFromDynamoDBItem(item);
+        }
     }
 
     @Override
     public List<School> getAllSchools() throws SQLException {
-        return delegate.getAllSchools();
+        List<School> result = new ArrayList<School>();
+        // -- Get the schools --
+        for (Item item : tables.schoolTable.scan()) {
+            result.add(createSchoolFromDynamoDBItem(item));
+        }
+        // -- Sort by name --
+        Collections.sort(result, new Comparator<School>() {
+            @Override
+            public int compare(School school1, School school2) {
+                return school1.getName().compareTo(school2.getName());
+            }
+        });
+        // -- Return the result --
+        return result;
     }
 
     @Override
@@ -279,7 +341,10 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
-        delegate.deleteSchool(schoolId);
+        DeleteItemOutcome outcome = tables.schoolTable.deleteItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
+        if (outcome.getItem() == null) {
+            throw new NoSuchSchoolException();
+        }
     }
 
     @Override
@@ -314,7 +379,19 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
-        delegate.modifySchool(school);
+        // This approach will CREATE the school if it doesn't exist. I THINK that behavior doesn't break anything.
+        tables.schoolTable.updateItem(
+                new PrimaryKey(DatabaseField.school_id.name(), school.getSchoolId()),
+                new AttributeUpdate(DatabaseField.school_name.name()).put(school.getSchoolName()),
+                new AttributeUpdate(DatabaseField.school_addr1.name()).put(school.getSchoolAddress1()),
+                new AttributeUpdate(DatabaseField.school_city.name()).put(school.getCity()),
+                new AttributeUpdate(DatabaseField.school_state.name()).put(school.getState()),
+                new AttributeUpdate(DatabaseField.school_zip.name()).put(school.getZip()),
+                new AttributeUpdate(DatabaseField.school_county.name()).put(school.getCounty()),
+                new AttributeUpdate(DatabaseField.school_district.name()).put(school.getDistrict()),
+                new AttributeUpdate(DatabaseField.school_phone.name()).put(school.getPhone()),
+                new AttributeUpdate(DatabaseField.school_lmi_eligible.name()).put(school.getLmiEligible()),
+                new AttributeUpdate(DatabaseField.school_slc.name()).put(school.getSLC()));
     }
 
     @Override
@@ -334,7 +411,19 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
-        delegate.insertNewSchool(school);
+        Item item = new Item()
+                .withPrimaryKey(DatabaseField.school_id.name(), createUniqueId())
+                .withString(DatabaseField.school_name.name(), school.getSchoolName())
+                .withString(DatabaseField.school_addr1.name(), school.getSchoolAddress1())
+                .withString(DatabaseField.school_city.name(), school.getCity())
+                .withString(DatabaseField.school_state.name(), school.getState())
+                .withString(DatabaseField.school_zip.name(), school.getZip())
+                .withString(DatabaseField.school_county.name(), school.getCounty())
+                .withString(DatabaseField.school_district.name(), school.getDistrict())
+                .withString(DatabaseField.school_phone.name(), school.getPhone())
+                .withString(DatabaseField.school_lmi_eligible.name(), school.getLmiEligible())
+                .withString(DatabaseField.school_slc.name(), school.getSLC());
+        tables.schoolTable.putItem(item);
     }
 
     @Override
@@ -366,7 +455,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 // - Now we insert the new one -
                 tables.allowedTimesTable.putItem(new Item()
                         .withPrimaryKey(DatabaseField.event_time_allowed.name(), formData.getAllowedTime())
-                        .with(DatabaseField.event_time_sort_key.name(), sortKey));
+                        .withInt(DatabaseField.event_time_sort_key.name(), sortKey));
                 sortKey += 1;
             }
             // - Now we insert the one from the list -
@@ -473,6 +562,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
         tables.siteSettingsTable.putItem(new Item()
                 .withPrimaryKey(DatabaseField.site_setting_name.name(), settingName)
-                .with(DatabaseField.site_setting_value.name(), settingValue));
+                .withString(DatabaseField.site_setting_value.name(), settingValue));
     }
 }
