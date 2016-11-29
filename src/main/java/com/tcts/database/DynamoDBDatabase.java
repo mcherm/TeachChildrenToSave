@@ -2,7 +2,6 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
-import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
@@ -53,6 +52,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.tcts.database.DatabaseField.*;
 
 
 /**
@@ -138,14 +139,60 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return Long.toString(randomNonNegativeLong);
     }
 
+    /** Static class used when getting allowed times in the proper sort order. */
+    private static class TimeAndSortKey implements Comparable<TimeAndSortKey> {
+        final String timeStr;
+        final int sortKey;
+
+        /** Constructor. */
+        TimeAndSortKey(String timeStr, int sortKey) {
+            this.timeStr = timeStr;
+            this.sortKey = sortKey;
+        }
+
+        @Override
+        public int compareTo(TimeAndSortKey o) {
+            return Integer.compare(this.sortKey, o.sortKey);
+        }
+
+        @Override
+        public String toString() {
+            return "TimeAndSortKey{" +
+                    "timeStr='" + timeStr + '\'' +
+                    ", sortKey=" + sortKey +
+                    '}';
+        }
+    }
+
+    /**
+     * Helper that creates an AttributeUpdate for setting a particular field to a
+     * particular string value. If the string is "" or null, then the attribute
+     * will be deleted; if it has any other value then it will be set to that.
+     *
+     * @param field the DatabaseField to update
+     * @param attributeValue the value to set it to, including "" or null.
+     */
+    private AttributeUpdate attributeUpdate(DatabaseField field, String attributeValue) {
+        if (attributeValue == null || attributeValue.isEmpty()) {
+            return new AttributeUpdate(field.name()).delete();
+        } else {
+            return new AttributeUpdate(field.name()).put(attributeValue);
+        }
+
+    }
+
 
     // ========== Methods for populating objects ==========
 
 
     /**
-     * Creates a School object from the corresponding Item retrieved from DynamoDB.
+     * Creates a School object from the corresponding Item retrieved from DynamoDB. If passed
+     * null, it returns null.
      */
     private School createSchoolFromDynamoDBItem(Item item) {
+        if (item == null) {
+            return null;
+        }
         School school = new School();
         school.setSchoolId(item.getString(DatabaseField.school_id.name()));
         school.setName(item.getString(DatabaseField.school_name.name()));
@@ -159,6 +206,31 @@ public class DynamoDBDatabase implements DatabaseFacade {
         school.setLmiEligible(item.getInt(DatabaseField.school_lmi_eligible.name()));
         school.setSLC(item.getString(DatabaseField.school_slc.name()));
         return school;
+    }
+
+
+    /**
+     * Creates a Bank object from the corresponding Item retrieved from DynamoDB. If passed
+     * null, it returns null.
+     */
+    private Bank createBankFromDynamoDBItem(Item item) {
+        if (item == null) {
+            return null;
+        }
+        Bank bank = new Bank();
+        bank.setBankId(item.getString(DatabaseField.bank_id.name()));
+        bank.setBankName(item.getString(DatabaseField.bank_name.name()));
+        if (item.get(DatabaseField.min_lmi_for_cra.name()) == null) {
+            bank.setMinLMIForCRA(null); // An int field that nevertheless can store null
+        } else {
+            bank.setMinLMIForCRA(item.getInt(DatabaseField.min_lmi_for_cra.name()));
+        }
+        if (item.getString(DatabaseField.bank_specific_data_label.name()) == null) {
+            bank.setBankSpecificDataLabel(""); // Use "" when there is a null in the DB
+        } else {
+            bank.setBankSpecificDataLabel(item.getString(DatabaseField.bank_specific_data_label.name()));
+        }
+        return bank;
     }
 
     // ========== Methods of DatabaseFacade Class ==========
@@ -245,18 +317,14 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public Bank getBankById(String bankId) throws SQLException {
-        return delegate.getBankById(bankId);
+        Item item = tables.bankTable.getItem(new PrimaryKey(DatabaseField.bank_id.name(), bankId));
+        return createBankFromDynamoDBItem(item);
     }
 
     @Override
     public School getSchoolById(String schoolId) throws SQLException {
         Item item = tables.schoolTable.getItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
-        if (item == null) {
-            return null;
-        }
-        else {
-            return createSchoolFromDynamoDBItem(item);
-        }
+        return createSchoolFromDynamoDBItem(item);
     }
 
     @Override
@@ -279,7 +347,20 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Bank> getAllBanks() throws SQLException {
-        return delegate.getAllBanks();
+        List<Bank> result = new ArrayList<Bank>();
+        // -- Get the banks --
+        for (Item item : tables.bankTable.scan()) {
+            result.add(createBankFromDynamoDBItem(item));
+        }
+        // -- Sort by name --
+        Collections.sort(result, new Comparator<Bank>() {
+            @Override
+            public int compare(Bank bank1, Bank bank2) {
+                return bank1.getBankName().compareTo(bank2.getBankName());
+            }
+        });
+        // -- Return the result --
+        return result;
     }
 
     @Override
@@ -296,31 +377,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
         Collections.sort(result);
         return result;
-    }
-
-    /** Static class used when getting allowed times in the proper sort order. */
-    private static class TimeAndSortKey implements Comparable<TimeAndSortKey> {
-        final String timeStr;
-        final int sortKey;
-
-        /** Constructor. */
-        TimeAndSortKey(String timeStr, int sortKey) {
-            this.timeStr = timeStr;
-            this.sortKey = sortKey;
-        }
-
-        @Override
-        public int compareTo(TimeAndSortKey o) {
-            return Integer.compare(this.sortKey, o.sortKey);
-        }
-
-        @Override
-        public String toString() {
-            return "TimeAndSortKey{" +
-                    "timeStr='" + timeStr + '\'' +
-                    ", sortKey=" + sortKey +
-                    '}';
-        }
     }
 
     @Override
@@ -341,15 +397,14 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
-        DeleteItemOutcome outcome = tables.schoolTable.deleteItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
-        if (outcome.getItem() == null) {
-            throw new NoSuchSchoolException();
-        }
+        // Note: Does NOT verify whether the school exists and throw NoSuchSchoolException where appropriate
+        tables.schoolTable.deleteItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
     }
 
     @Override
     public void deleteBank(String bankId) throws SQLException, NoSuchBankException {
-        delegate.deleteBank(bankId);
+        // Does not verify that the bank exists and throw NoSuchBankException
+        tables.bankTable.deleteItem(new PrimaryKey(DatabaseField.bank_id.name(), bankId));
     }
 
     @Override
@@ -381,32 +436,44 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
         // This approach will CREATE the school if it doesn't exist. I THINK that behavior doesn't break anything.
         tables.schoolTable.updateItem(
-                new PrimaryKey(DatabaseField.school_id.name(), school.getSchoolId()),
-                new AttributeUpdate(DatabaseField.school_name.name()).put(school.getSchoolName()),
-                new AttributeUpdate(DatabaseField.school_addr1.name()).put(school.getSchoolAddress1()),
-                new AttributeUpdate(DatabaseField.school_city.name()).put(school.getCity()),
-                new AttributeUpdate(DatabaseField.school_state.name()).put(school.getState()),
-                new AttributeUpdate(DatabaseField.school_zip.name()).put(school.getZip()),
-                new AttributeUpdate(DatabaseField.school_county.name()).put(school.getCounty()),
-                new AttributeUpdate(DatabaseField.school_district.name()).put(school.getDistrict()),
-                new AttributeUpdate(DatabaseField.school_phone.name()).put(school.getPhone()),
-                new AttributeUpdate(DatabaseField.school_lmi_eligible.name()).put(school.getLmiEligible()),
-                new AttributeUpdate(DatabaseField.school_slc.name()).put(school.getSLC()));
+                new PrimaryKey(school_id.name(), school.getSchoolId()),
+                attributeUpdate(school_name, school.getSchoolName()),
+                attributeUpdate(school_addr1, school.getSchoolAddress1()),
+                attributeUpdate(school_city, school.getCity()),
+                attributeUpdate(school_state, school.getState()),
+                attributeUpdate(school_zip, school.getZip()),
+                attributeUpdate(school_county, school.getCounty()),
+                attributeUpdate(school_district, school.getDistrict()),
+                attributeUpdate(school_phone, school.getPhone()),
+                attributeUpdate(school_lmi_eligible, school.getLmiEligible()),
+                attributeUpdate(school_slc, school.getSLC()));
     }
 
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
-        delegate.insertNewBankAndAdmin(formData);
+        // FIXME: Only does bank for now, and NOT admin, because that table doesn't exist yet.
+        Item item = new Item()
+                .withPrimaryKey(DatabaseField.bank_id.name(), createUniqueId())
+                .withString(DatabaseField.bank_name.name(), formData.getBankName());
+        tables.bankTable.putItem(item);
     }
 
     @Override
     public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
-        delegate.modifyBankAndBankAdmin(formData);
+        // FIXME: Only does bank for now, and NOT admin, because that table doesn't exist yet.
+        // This approach will CREATE the bank if it doesn't exist. I THINK that behavior doesn't break anything.
+        tables.bankTable.updateItem(
+                new PrimaryKey(DatabaseField.bank_id.name(), formData.getBankId()),
+                attributeUpdate(DatabaseField.bank_name, formData.getBankName()),
+                attributeUpdate(DatabaseField.min_lmi_for_cra, formData.getMinLMIForCRA()));
     }
 
     @Override
     public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
-        delegate.setBankSpecificFieldLabel(formData);
+        // This approach will CREATE the bank if it doesn't exist. I THINK that behavior doesn't break anything.
+        tables.bankTable.updateItem(
+                new PrimaryKey(bank_id.name(), formData.getBankId()),
+                attributeUpdate(bank_specific_data_label, formData.getBankSpecificFieldLabel()));
     }
 
     @Override

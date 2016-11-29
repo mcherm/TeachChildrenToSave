@@ -2,16 +2,22 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.School;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
+import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateSchoolFormData;
+import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -225,10 +231,6 @@ public class DynamoDBDatabaseTest {
         assertEquals(1, secondListOfSchools.size());
     }
 
-    @Test(expected = NoSuchSchoolException.class)
-    public void deleteSchoolThatDoesNotExist() throws SQLException, NoSuchSchoolException {
-        dynamoDBDatabase.deleteSchool("99324");
-    }
 
     @Test
     public void createSchoolThenModifyIt() throws SQLException, NoSuchSchoolException {
@@ -264,5 +266,130 @@ public class DynamoDBDatabaseTest {
         List<School> secondListOfSchools = dynamoDBDatabase.getAllSchools();
         assertEquals(1, secondListOfSchools.size());
         assertEquals("Norton Academy", secondListOfSchools.get(0).getName());
+    }
+
+    @Test
+    public void getAllBanksWhenThereAreNone() throws SQLException {
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(0, banks.size());
+    }
+
+
+    // FIXME: This ignores the fields that are part of the BankAdmin because that's not built yet.
+    @Test
+    public void createACoupleOfBanksThenGetThemAll() throws SQLException, EmailAlreadyInUseException {
+        // Note: This doesn't set minLMIForCRA or bankSpecificDataLabel because those aren't available on this form
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        createBankFormData.setBankName("First National Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        createBankFormData.setBankName("Halfway Federal Trust");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(3, banks.size());
+        assertEquals("First National Bank", banks.get(0).getBankName());
+        assertEquals("Halfway Federal Trust", banks.get(1).getBankName());
+        assertEquals("Last Trust Bank", banks.get(2).getBankName());
+    }
+
+    @Test
+    public void createTwoBanksDeleteOneThenGetThem() throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        createBankFormData.setBankName("First National Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+
+        List<Bank> firstListOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(2, firstListOfBanks.size());
+        dynamoDBDatabase.deleteBank(firstListOfBanks.get(0).getBankId());
+        List<Bank> secondListOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, secondListOfBanks.size());
+    }
+
+    @Test
+    public void retrieveBankById() throws SQLException, EmailAlreadyInUseException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        List<Bank> listOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, listOfBanks.size());
+        Bank bank = dynamoDBDatabase.getBankById(listOfBanks.get(0).getBankId());
+        assertEquals("Last Trust Bank", bank.getBankName());
+    }
+
+    // FIXME: This ignores the fields that are part of the BankAdmin because that's not built yet.
+    @Test
+    public void modifyBankWithNumericLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        List<Bank> listOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, listOfBanks.size());
+
+        EditBankFormData editBankFormData = new EditBankFormData();
+        editBankFormData.setBankId(listOfBanks.get(0).getBankId());
+        editBankFormData.setBankName("First Savings");
+        editBankFormData.setMinLMIForCRA("34");
+        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        Bank bank = dynamoDBDatabase.getBankById(listOfBanks.get(0).getBankId());
+        assertEquals("First Savings", bank.getBankName());
+        assertEquals(Integer.valueOf(34), bank.getMinLMIForCRA());
+    }
+
+    // FIXME: This ignores the fields that are part of the BankAdmin because that's not built yet.
+    @Test
+    public void modifyBankWithBlankLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        List<Bank> listOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, listOfBanks.size());
+        String bankId = listOfBanks.get(0).getBankId();
+
+        EditBankFormData editBankFormData = new EditBankFormData();
+        editBankFormData.setBankId(bankId);
+        editBankFormData.setBankName("First Savings");
+        editBankFormData.setMinLMIForCRA("");
+        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        Bank bank = dynamoDBDatabase.getBankById(bankId);
+        assertEquals("First Savings", bank.getBankName());
+        assertNull(bank.getMinLMIForCRA());
+    }
+
+    @Test
+    public void setBankSpecificFieldLabelToString() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        List<Bank> listOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, listOfBanks.size());
+        String bankId = listOfBanks.get(0).getBankId();
+
+        SetBankSpecificFieldLabelFormData formData = new SetBankSpecificFieldLabelFormData();
+        formData.setBankId(bankId);
+        formData.setBankSpecificFieldLabel("Sample Value");
+        dynamoDBDatabase.setBankSpecificFieldLabel(formData);
+        Bank bank = dynamoDBDatabase.getBankById(bankId);
+        assertEquals("Sample Value", bank.getBankSpecificDataLabel());
+    }
+
+
+    @Test
+    public void setBankSpecificFieldLabelToEmpty() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+        List<Bank> listOfBanks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, listOfBanks.size());
+        String bankId = listOfBanks.get(0).getBankId();
+
+        SetBankSpecificFieldLabelFormData formData = new SetBankSpecificFieldLabelFormData();
+        formData.setBankId(bankId);
+        formData.setBankSpecificFieldLabel("");
+        dynamoDBDatabase.setBankSpecificFieldLabel(formData);
+        Bank bank = dynamoDBDatabase.getBankById(bankId);
+        assertEquals("", bank.getBankSpecificDataLabel());
     }
 }

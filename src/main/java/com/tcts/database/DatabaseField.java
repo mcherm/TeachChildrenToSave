@@ -8,7 +8,7 @@ public enum DatabaseField {
     event_date_allowed,
     event_time_allowed, event_time_sort_key,
     event_id, event_time, event_grade, event_notes,
-    bank_id, bank_name,
+    bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label,
     user_id, user_email, user_first_name, user_last_name, user_phone_number, user_bank_specific_data,
     school_id, school_name, school_addr1, school_city, school_zip, school_county,
     school_district, school_state, school_phone, school_lmi_eligible, school_slc;
