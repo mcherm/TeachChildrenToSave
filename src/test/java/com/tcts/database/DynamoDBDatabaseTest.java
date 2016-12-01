@@ -2,7 +2,6 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.tcts.common.PrettyPrintingDate;
-import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
@@ -24,8 +23,6 @@ import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
-import com.tcts.util.SecurityUtil;
-import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +33,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,12 +48,17 @@ import static org.junit.Assert.assertNull;
  * fixed later; but if this comment is still here then run these at your own peril.
  */
 public class DynamoDBDatabaseTest {
+    private final DynamoDB dynamoDB;
     private DynamoDBDatabase dynamoDBDatabase;
+
+    /** Constructor, just connect to the database once. */
+    public DynamoDBDatabaseTest() {
+        dynamoDB = DynamoDBDatabase.connectToDB();
+    }
 
     @Before
     public void initialize() throws InterruptedException {
-        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB();
-        DynamoDBSetup.reinitializeDatabase(dynamoDB);
+        DynamoDBSetup.reinitializeAllDatabaseTables(dynamoDB);
         dynamoDBDatabase = new DynamoDBDatabase(null);
     }
 
@@ -210,13 +211,14 @@ public class DynamoDBDatabaseTest {
         createSchoolFormData.setSLC("N120");
         dynamoDBDatabase.insertNewSchool(createSchoolFormData);
         List<School> schools = dynamoDBDatabase.getAllSchools();
-        assertEquals(1, schools.size());
         return schools.get(0).getSchoolId();
     }
 
     @Test
     public void createOneSchool() throws SQLException {
         insertNewSchoolAndReturnTheId();
+        List<School> schools = dynamoDBDatabase.getAllSchools();
+        assertEquals(1, schools.size());
     }
 
     @Test
@@ -498,6 +500,7 @@ public class DynamoDBDatabaseTest {
 
     @Test
     public void insertTeacherThenSearchByEmail() throws Exception {
+        DynamoDBSetup.initializeUserByEmailIndex(dynamoDB);
         String schoolId = insertNewSchoolAndReturnTheId();
         Teacher teacher = createTeacherJane(schoolId);
         User userFetched = dynamoDBDatabase.getUserByEmail(teacher.getEmail());
@@ -506,6 +509,7 @@ public class DynamoDBDatabaseTest {
 
     @Test
     public void searchByEmailButNotFound() throws Exception {
+        DynamoDBSetup.initializeUserByEmailIndex(dynamoDB);
         User user = dynamoDBDatabase.getUserByEmail("fake@place.com");
         assertNull(user);
     }
@@ -554,6 +558,17 @@ public class DynamoDBDatabaseTest {
         assertEquals("610-842-1102", userFetched.getPhoneNumber());
     }
 
+    @Test
+    public void createTeacherThenModifyTeacherSchool() throws Exception {
+        String schoolId1 = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId1);
+        String schoolId2 = insertNewSchoolAndReturnTheId();
+
+        dynamoDBDatabase.modifyTeacherSchool(teacher.getUserId(), schoolId2);
+
+        Teacher teacherFetched = (Teacher) dynamoDBDatabase.getUserById(teacher.getUserId());
+        assertEquals(teacherFetched.getSchoolId(), schoolId2);
+    }
 
 
     // FIXME: Add this test once I have a volunteer to test with

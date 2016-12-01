@@ -351,7 +351,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void modifyTeacherSchool(String userId, String organizationId) throws SQLException, NoSuchSchoolException, NoSuchUserException {
-        delegate.modifyTeacherSchool(userId, organizationId); // FIXME: User Related
+        // This approach will CREATE the user if it doesn't exist. I THINK that behavior is fine.
+        // It also does not verify that the organization ID actually exists in the database.
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), userId),
+                attributeUpdate(user_organization_id, organizationId));
     }
 
     @Override

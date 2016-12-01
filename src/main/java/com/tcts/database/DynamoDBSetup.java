@@ -17,6 +17,7 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -24,7 +25,11 @@ import java.util.Arrays;
  */
 public class DynamoDBSetup {
 
-    public static void reinitializeDatabase(DynamoDB dynamoDB) throws InterruptedException {
+    /**
+     * When called, this wipes the entire DynamoDB database and then recreates the
+     * tables but none of the indexes.
+     */
+    public static void reinitializeAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
         tables.siteSettingsTable.delete();
         tables.allowedDatesTable.delete();
@@ -50,8 +55,6 @@ public class DynamoDBSetup {
         Table userTable = createTable(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.S);
         Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.S);
 
-        Index userByEmailIndex = createIndex(userTable, "byEmail", DatabaseField.user_email, ScalarAttributeType.S);
-
         siteSettingsTable.waitForActive();
         allowedDatesTable.waitForActive();
         allowedTimesTable.waitForActive();
@@ -59,7 +62,21 @@ public class DynamoDBSetup {
         bankTable.waitForActive();
         userTable.waitForActive();
         schoolTable.waitForActive();
+    }
+
+    /** Initializes the userByEmail index. */
+    public static void initializeUserByEmailIndex(DynamoDB dynamoDB) throws InterruptedException {
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+        Index userByEmailIndex = createIndex(tables.userTable, "byEmail", DatabaseField.user_email, ScalarAttributeType.S);
         userByEmailIndex.waitForActive();
+    }
+
+    /**
+     * When called, this wipes the entire DynamoDB database and then recreates it.
+     */
+    public static void reinitializeDatabase(DynamoDB dynamoDB) throws InterruptedException {
+        reinitializeAllDatabaseTables(dynamoDB);
+        initializeUserByEmailIndex(dynamoDB);
     }
 
     /**
