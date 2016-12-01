@@ -2,8 +2,12 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.School;
+import com.tcts.datamodel.Teacher;
+import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
@@ -16,18 +20,26 @@ import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
+import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.util.SecurityUtil;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 
@@ -181,6 +193,30 @@ public class DynamoDBDatabaseTest {
     public void getAllSchoolsWhenThereAreNone() throws SQLException {
         List<School> schools = dynamoDBDatabase.getAllSchools();
         assertEquals(0, schools.size());
+    }
+
+    /** Will be used in a few other tests. */
+    private String insertNewSchoolAndReturnTheId() throws SQLException {
+        CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
+        createSchoolFormData.setSchoolName("Mirkwood Elementary");
+        createSchoolFormData.setSchoolAddress1("123 Main St.");
+        createSchoolFormData.setCity("Richmond");
+        createSchoolFormData.setZip("23235");
+        createSchoolFormData.setCounty("Delaware");
+        createSchoolFormData.setDistrict("Roth");
+        createSchoolFormData.setState("VA");
+        createSchoolFormData.setPhone("302-234-5678");
+        createSchoolFormData.setLmiEligible("15.4");
+        createSchoolFormData.setSLC("N120");
+        dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+        List<School> schools = dynamoDBDatabase.getAllSchools();
+        assertEquals(1, schools.size());
+        return schools.get(0).getSchoolId();
+    }
+
+    @Test
+    public void createOneSchool() throws SQLException {
+        insertNewSchoolAndReturnTheId();
     }
 
     @Test
@@ -392,4 +428,143 @@ public class DynamoDBDatabaseTest {
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("", bank.getBankSpecificDataLabel());
     }
+
+    /** Inserts a particular set of data to create a teacher and returns the new Teacher object. */
+    private Teacher createTeacherJane(String schoolId) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        TeacherRegistrationFormData teacherRegistrationFormData = new TeacherRegistrationFormData();
+        teacherRegistrationFormData.setEmail("jane@sample.com");
+        teacherRegistrationFormData.setFirstName("Jane");
+        teacherRegistrationFormData.setLastName("Doe");
+        teacherRegistrationFormData.setPhoneNumber("302-255-1234");
+        teacherRegistrationFormData.setSchoolId(schoolId);
+        String hashedPassword = "pIdlMcr8gPuKCTNlKBR7dayaDVk==";
+        String salt = "JEgSZ2VfBC4=";
+        Teacher teacher = dynamoDBDatabase.insertNewTeacher(teacherRegistrationFormData, hashedPassword, salt);
+        return teacher;
+    }
+
+    @Test
+    public void insertTeacherVerifyFields() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        assertNotNull(teacher.getUserId());
+        assertEquals(UserType.TEACHER, teacher.getUserType());
+        assertEquals("jane@sample.com", teacher.getEmail());
+        assertEquals("Jane", teacher.getFirstName());
+        assertEquals("Doe", teacher.getLastName());
+        assertEquals("302-255-1234", teacher.getPhoneNumber());
+        assertEquals(schoolId, teacher.getSchoolId());
+        assertEquals("pIdlMcr8gPuKCTNlKBR7dayaDVk==", teacher.getHashedPassword());
+        assertEquals("JEgSZ2VfBC4=", teacher.getSalt());
+    }
+
+    @Test
+    public void insertTeacherAndListBySchool() throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        // -- Create a school --
+        String schoolId = insertNewSchoolAndReturnTheId();
+        // -- Create a teacher --
+        Teacher teacher = createTeacherJane(schoolId);
+        // -- Check that it is there --
+        List<Teacher> teachers = dynamoDBDatabase.getTeachersBySchool(schoolId);
+        assertEquals(1, teachers.size());
+        assertEquals("Jane", teachers.get(0).getFirstName());
+    }
+
+    @Test
+    public void insertTeacherAndListById() throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        // -- Create a school --
+        String schoolId = insertNewSchoolAndReturnTheId();
+        // -- Create a teacher --
+        Teacher teacherReturned = createTeacherJane(schoolId);
+        // --- Retrieve and verify --
+        User userFetched = dynamoDBDatabase.getUserById(teacherReturned.getUserId());
+        assertEquals("Jane", userFetched.getFirstName());
+    }
+
+    @Test
+    public void getUserByIdWhichDoesNotExist() throws Exception {
+        User user = dynamoDBDatabase.getUserById("0");
+        assertNull(user);
+    }
+
+    @Test
+    public void insertTeacherThenDeleteHer() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        dynamoDBDatabase.deleteTeacher(teacher.getUserId());
+        User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
+        assertNull(userFetched);
+    }
+
+    @Test
+    public void insertTeacherThenSearchByEmail() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        User userFetched = dynamoDBDatabase.getUserByEmail(teacher.getEmail());
+        assertEquals(teacher.getUserId(), userFetched.getUserId());
+    }
+
+    @Test
+    public void searchByEmailButNotFound() throws Exception {
+        User user = dynamoDBDatabase.getUserByEmail("fake@place.com");
+        assertNull(user);
+    }
+
+    @Test
+    public void updateUserCredential() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        String hashedPassword = "81+w3TKFvvrIMjU97abZunWYarw=";
+        String salt = "i1Ncya9/3xI=";
+        dynamoDBDatabase.updateUserCredential(teacher.getUserId(), hashedPassword, salt);
+        User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
+        assertEquals(hashedPassword, userFetched.getHashedPassword());
+        assertEquals(salt, userFetched.getSalt());
+    }
+
+
+    @Test
+    public void updateResetPasswordToken() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        String resetPasswordToken = "RbehTBuEY0i5GV1P7WcoioOvT3M=";
+        dynamoDBDatabase.updateResetPasswordToken(teacher.getUserId(), resetPasswordToken);
+        User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
+        assertEquals(resetPasswordToken, userFetched.getResetPasswordToken());
+    }
+
+
+    @Test
+    public void createTeacherThenModifyUserPersonalFields() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+
+        EditPersonalDataFormData editPersonalDataFormData = new EditPersonalDataFormData();
+        editPersonalDataFormData.setUserId(teacher.getUserId());
+        editPersonalDataFormData.setEmail("other@example.com");
+        editPersonalDataFormData.setFirstName("Arnold");
+        editPersonalDataFormData.setLastName("Smith");
+        editPersonalDataFormData.setPhoneNumber("610-842-1102");
+        dynamoDBDatabase.modifyUserPersonalFields(editPersonalDataFormData);
+
+        User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
+        assertEquals("other@example.com", userFetched.getEmail());
+        assertEquals("Arnold", userFetched.getFirstName());
+        assertEquals("Smith", userFetched.getLastName());
+        assertEquals("610-842-1102", userFetched.getPhoneNumber());
+    }
+
+
+
+    // FIXME: Add this test once I have a volunteer to test with
+    /*
+    @Test
+    public void updateApprovalStatus() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        dynamoDBDatabase.updateApprovalStatusById(teacher.getUserId(), ApprovalStatus.CHECKED);
+        User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
+    }
+    */
+
 }

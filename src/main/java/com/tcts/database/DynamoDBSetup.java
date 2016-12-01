@@ -1,13 +1,17 @@
 package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Index;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
+import com.amazonaws.services.dynamodbv2.model.CreateGlobalSecondaryIndexAction;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
+import com.amazonaws.services.dynamodbv2.model.Projection;
+import com.amazonaws.services.dynamodbv2.model.ProjectionType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 
@@ -46,6 +50,8 @@ public class DynamoDBSetup {
         Table userTable = createTable(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.S);
         Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.S);
 
+        Index userByEmailIndex = createIndex(userTable, "byEmail", DatabaseField.user_email, ScalarAttributeType.S);
+
         siteSettingsTable.waitForActive();
         allowedDatesTable.waitForActive();
         allowedTimesTable.waitForActive();
@@ -53,6 +59,7 @@ public class DynamoDBSetup {
         bankTable.waitForActive();
         userTable.waitForActive();
         schoolTable.waitForActive();
+        userByEmailIndex.waitForActive();
     }
 
     /**
@@ -65,12 +72,12 @@ public class DynamoDBSetup {
 
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
         tables.siteSettingsTable.putItem(new Item()
-                .withPrimaryKey("name", "TestSetting")
-                .with("value", "2016-12-21"));
+                .withPrimaryKey(DatabaseField.site_setting_name.name(), "TestSetting")
+                .with(DatabaseField.site_setting_value.name(), "2016-12-21"));
 
         System.out.println("Inserted a value");
 
-        Item item = tables.siteSettingsTable.getItem(new PrimaryKey("name", "TestSetting"));
+        Item item = tables.siteSettingsTable.getItem(new PrimaryKey(DatabaseField.site_setting_name.name(), "TestSetting"));
         System.out.println("Got item " + item);
     }
 
@@ -93,5 +100,20 @@ public class DynamoDBSetup {
 
         Table table = dynamoDB.createTable(createTableRequest);
         return table;
+    }
+
+    private static Index createIndex(Table table, String indexName, DatabaseField databaseField, ScalarAttributeType keyType) throws InterruptedException {
+        table.waitForActive();
+        return table.createGSI(
+                new CreateGlobalSecondaryIndexAction()
+                .withIndexName(indexName)
+                .withProvisionedThroughput(new ProvisionedThroughput()
+                        .withReadCapacityUnits(1L)
+                        .withWriteCapacityUnits(1L))
+                .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+                .withKeySchema(new KeySchemaElement(databaseField.name(), KeyType.HASH)),
+                new AttributeDefinition().withAttributeName(databaseField.name()).withAttributeType(keyType)
+        );
+
     }
 }

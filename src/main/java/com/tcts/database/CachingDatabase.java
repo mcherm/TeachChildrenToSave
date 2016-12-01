@@ -10,6 +10,7 @@ import java.util.Map;
 import com.tcts.common.CachedList;
 import com.tcts.common.CachedValue;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
@@ -208,10 +209,9 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
-        User result = database.modifyUserPersonalFields(formData);
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
+        database.modifyUserPersonalFields(formData);
         availableEvents.refreshNow();
-        return result;
     }
 
     @Override
@@ -352,8 +352,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void updateUserStatusById(String userId, int userStatus) throws SQLException {
-        database.updateUserStatusById(userId, userStatus);
+    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException {
+        database.updateApprovalStatusById(volunteerId, approvalStatus);
     }
 
     @Override

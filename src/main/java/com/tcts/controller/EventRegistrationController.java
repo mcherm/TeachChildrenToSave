@@ -141,7 +141,7 @@ public class EventRegistrationController {
         volunteer = (Volunteer) database.getUserById(volunteerId);
 
         //If you are signed is as a volunteer but your approval status is suspended
-        if ((volunteer != null) && (volunteer.getApprovalStatus() == ApprovalStatus.Suspended)) {
+        if ((volunteer != null) && (volunteer.getApprovalStatus() == ApprovalStatus.SUSPENDED)) {
            throw new InvalidParameterFromGUIException("GUI should not let a suspended volunteer register for an event.");
         }
         // --- Validation Rules ---

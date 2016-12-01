@@ -20,7 +20,6 @@ import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
-import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteAdmin;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.Volunteer;
@@ -129,9 +128,9 @@ public class HomePageController {
         List<Volunteer> normalVolunteers = new ArrayList<Volunteer>(volunteers.size());
         List<Volunteer> suspendedVolunteers = new ArrayList<Volunteer>();
         for (Volunteer volunteer : volunteers) {
-            if (volunteer.getApprovalStatus() == ApprovalStatus.Unchecked) {
+            if (volunteer.getApprovalStatus() == ApprovalStatus.UNCHECKED) {
                newVolunteers.add (volunteer);
-            } else if (volunteer.getApprovalStatus() == ApprovalStatus.Checked) {
+            } else if (volunteer.getApprovalStatus() == ApprovalStatus.CHECKED) {
                 normalVolunteers.add(volunteer);
             } else {
                 suspendedVolunteers.add(volunteer);

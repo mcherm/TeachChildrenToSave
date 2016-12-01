@@ -3,17 +3,24 @@ package com.tcts.database;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Index;
 import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.ItemCollection;
+import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
+import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
+import com.tcts.datamodel.SiteAdmin;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
@@ -178,9 +185,19 @@ public class DynamoDBDatabase implements DatabaseFacade {
         } else {
             return new AttributeUpdate(field.name()).put(attributeValue);
         }
-
     }
 
+    /**
+     * Helper that creates an AttributeUpdate for setting a particular field to a
+     * particular string value. If the string is "" or null, then the attribute
+     * will be deleted; if it has any other value then it will be set to that.
+     *
+     * @param field the DatabaseField to update
+     * @param attributeValue the value to set it to, including "" or null.
+     */
+    private AttributeUpdate intAttributeUpdate(DatabaseField field, int attributeValue) {
+        return new AttributeUpdate(field.name()).put(attributeValue);
+    }
 
     // ========== Methods for populating objects ==========
 
@@ -194,17 +211,17 @@ public class DynamoDBDatabase implements DatabaseFacade {
             return null;
         }
         School school = new School();
-        school.setSchoolId(item.getString(DatabaseField.school_id.name()));
-        school.setName(item.getString(DatabaseField.school_name.name()));
-        school.setAddressLine1(item.getString(DatabaseField.school_addr1.name()));
-        school.setCity(item.getString(DatabaseField.school_city.name()));
-        school.setState(item.getString(DatabaseField.school_state.name()));
-        school.setZip(item.getString(DatabaseField.school_zip.name()));
-        school.setCounty(item.getString(DatabaseField.school_county.name()));
-        school.setSchoolDistrict(item.getString(DatabaseField.school_district.name()));
-        school.setPhone(item.getString(DatabaseField.school_phone.name()));
-        school.setLmiEligible(item.getInt(DatabaseField.school_lmi_eligible.name()));
-        school.setSLC(item.getString(DatabaseField.school_slc.name()));
+        school.setSchoolId(item.getString(school_id.name()));
+        school.setName(item.getString(school_name.name()));
+        school.setAddressLine1(item.getString(school_addr1.name()));
+        school.setCity(item.getString(school_city.name()));
+        school.setState(item.getString(school_state.name()));
+        school.setZip(item.getString(school_zip.name()));
+        school.setCounty(item.getString(school_county.name()));
+        school.setSchoolDistrict(item.getString(school_district.name()));
+        school.setPhone(item.getString(school_phone.name()));
+        school.setLmiEligible(item.getInt(school_lmi_eligible.name()));
+        school.setSLC(item.getString(school_slc.name()));
         return school;
     }
 
@@ -218,19 +235,70 @@ public class DynamoDBDatabase implements DatabaseFacade {
             return null;
         }
         Bank bank = new Bank();
-        bank.setBankId(item.getString(DatabaseField.bank_id.name()));
-        bank.setBankName(item.getString(DatabaseField.bank_name.name()));
-        if (item.get(DatabaseField.min_lmi_for_cra.name()) == null) {
+        bank.setBankId(item.getString(bank_id.name()));
+        bank.setBankName(item.getString(bank_name.name()));
+        if (item.get(min_lmi_for_cra.name()) == null) {
             bank.setMinLMIForCRA(null); // An int field that nevertheless can store null
         } else {
-            bank.setMinLMIForCRA(item.getInt(DatabaseField.min_lmi_for_cra.name()));
+            bank.setMinLMIForCRA(item.getInt(min_lmi_for_cra.name()));
         }
-        if (item.getString(DatabaseField.bank_specific_data_label.name()) == null) {
+        if (item.getString(bank_specific_data_label.name()) == null) {
             bank.setBankSpecificDataLabel(""); // Use "" when there is a null in the DB
         } else {
-            bank.setBankSpecificDataLabel(item.getString(DatabaseField.bank_specific_data_label.name()));
+            bank.setBankSpecificDataLabel(item.getString(bank_specific_data_label.name()));
         }
         return bank;
+    }
+
+    /**
+     * Creates a User object from the corresponding Item retrieved from DynamoDB. It will
+     * be of the appropriate concrete sub-type of User. If passed null, it returns null.
+     * None of the linked data is filled in.
+     */
+    private User createUserFromDynamoDBItem(Item item) {
+        if (item == null) {
+            return null;
+        }
+        UserType userType = UserType.fromDBValue(item.getString(user_type.name()));
+        User user;
+        switch(userType) {
+            case TEACHER: {
+                Teacher teacher = new Teacher();
+                teacher.setSchoolId(item.getString(user_organization_id.name()));
+                user = teacher;
+            } break;
+            case VOLUNTEER: {
+                Volunteer volunteer = new Volunteer();
+                volunteer.setBankId(item.getString(user_organization_id.name()));
+                volunteer.setApprovalStatus(ApprovalStatus.fromDBValue(item.getInt(user_approval_status.name())));
+                volunteer.setBankSpecificData(item.getString(user_bank_specific_data.name()));
+                user = volunteer;
+            } break;
+            case BANK_ADMIN: {
+                BankAdmin bankAdmin = new BankAdmin();
+                bankAdmin.setBankId(item.getString(user_organization_id.name()));
+                bankAdmin.setApprovalStatus(ApprovalStatus.fromDBValue(item.getInt(user_approval_status.name())));
+                bankAdmin.setBankSpecificData(item.getString(user_bank_specific_data.name()));
+                user = bankAdmin;
+            } break;
+            case SITE_ADMIN: {
+                SiteAdmin siteAdmin = new SiteAdmin();
+                user = siteAdmin;
+            } break;
+            default: {
+                throw new RuntimeException("Invalid type in case statement.");
+            }
+        }
+        user.setUserId(item.getString(user_id.name()));
+        user.setEmail(item.getString(user_email.name()));
+        user.setHashedPassword(item.getString(user_hashed_password.name()));
+        user.setSalt(item.getString(user_password_salt.name()));
+        user.setFirstName(item.getString(user_first_name.name()));
+        user.setLastName(item.getString(user_last_name.name()));
+        user.setPhoneNumber(item.getString(user_phone_number.name()));
+        user.setResetPasswordToken(item.getString(user_reset_password_token.name()));
+        user.setUserType(userType);
+        return user;
     }
 
     // ========== Methods of DatabaseFacade Class ==========
@@ -242,32 +310,76 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
-        return delegate.getUserById(userId);
+        Item item = tables.userTable.getItem(new PrimaryKey(user_id.name(), userId));
+        return createUserFromDynamoDBItem(item);
     }
 
     @Override
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
-        return delegate.getUserByEmail(email);
+        Index userByEmail = tables.userTable.getIndex("byEmail");
+        ItemCollection<QueryOutcome> users = userByEmail.query(new KeyAttribute(user_email.name(), email));
+        User user = null;
+        int numItems = 0;
+        for (Item item : users) {
+            user = createUserFromDynamoDBItem(item);
+            numItems += 1;
+        }
+        if (numItems == 0) {
+            return null;
+        } else if (numItems == 1) {
+            return user;
+        } else {
+            throw new InconsistentDatabaseException("More than one user with email address '" + email + "'.");
+        }
     }
 
     @Override
-    public User modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
-        return delegate.modifyUserPersonalFields(formData);
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
+        // This approach will CREATE the user if it doesn't exist. I THINK that behavior is fine.
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), formData.getUserId()),
+                attributeUpdate(user_email, formData.getEmail()),
+                attributeUpdate(user_first_name, formData.getFirstName()),
+                attributeUpdate(user_last_name, formData.getLastName()),
+                attributeUpdate(user_phone_number, formData.getPhoneNumber()));
     }
 
     @Override
     public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
-        return delegate.modifyVolunteerPersonalFields(formData);
+        return delegate.modifyVolunteerPersonalFields(formData); // FIXME: User Related
     }
 
     @Override
     public void modifyTeacherSchool(String userId, String organizationId) throws SQLException, NoSuchSchoolException, NoSuchUserException {
-        delegate.modifyTeacherSchool(userId, organizationId);
+        delegate.modifyTeacherSchool(userId, organizationId); // FIXME: User Related
     }
 
     @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        return delegate.insertNewTeacher(formData, hashedPassword, salt);
+        // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
+        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        String newTeacherId = createUniqueId();
+        tables.userTable.putItem(new Item()
+                .withPrimaryKey(new PrimaryKey(user_id.name(), newTeacherId))
+                .withString(user_type.name(), UserType.TEACHER.getDBValue())
+                .withString(user_email.name(), formData.getEmail())
+                .withString(user_first_name.name(), formData.getFirstName())
+                .withString(user_last_name.name(), formData.getLastName())
+                .withString(user_phone_number.name(), formData.getPhoneNumber())
+                .withString(user_organization_id.name(), formData.getSchoolId())
+                .withString(user_hashed_password.name(), hashedPassword)
+                .withString(user_password_salt.name(), salt));
+        Teacher result = new Teacher();
+        result.setUserId(newTeacherId);
+        result.setUserType(UserType.TEACHER);
+        result.setEmail(formData.getEmail());
+        result.setFirstName(formData.getFirstName());
+        result.setLastName(formData.getLastName());
+        result.setPhoneNumber(formData.getPhoneNumber());
+        result.setSchoolId(formData.getSchoolId());
+        result.setHashedPassword(hashedPassword);
+        result.setSalt(salt);
+        return result;
     }
 
     @Override
@@ -312,18 +424,18 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
-        return delegate.insertNewVolunteer(formData, hashedPassword, salt);
+        return delegate.insertNewVolunteer(formData, hashedPassword, salt); // FIXME: User Related
     }
 
     @Override
     public Bank getBankById(String bankId) throws SQLException {
-        Item item = tables.bankTable.getItem(new PrimaryKey(DatabaseField.bank_id.name(), bankId));
+        Item item = tables.bankTable.getItem(new PrimaryKey(bank_id.name(), bankId));
         return createBankFromDynamoDBItem(item);
     }
 
     @Override
     public School getSchoolById(String schoolId) throws SQLException {
-        Item item = tables.schoolTable.getItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
+        Item item = tables.schoolTable.getItem(new PrimaryKey(school_id.name(), schoolId));
         return createSchoolFromDynamoDBItem(item);
     }
 
@@ -367,7 +479,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
         List<PrettyPrintingDate> result = new ArrayList<PrettyPrintingDate>();
         for (Item scanOutcome : tables.allowedDatesTable.scan()) {
-            String dateStr = scanOutcome.getString(DatabaseField.event_date_allowed.name());
+            String dateStr = scanOutcome.getString(event_date_allowed.name());
             try {
                 result.add(PrettyPrintingDate.fromParsableDate(dateStr));
             }
@@ -384,8 +496,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         List<TimeAndSortKey> sortableTimes = new ArrayList<TimeAndSortKey>();
         for (Item scanOutcome : tables.allowedTimesTable.scan()) {
             sortableTimes.add(new TimeAndSortKey(
-                    scanOutcome.getString(DatabaseField.event_time_allowed.name()),
-                    scanOutcome.getInt(DatabaseField.event_time_sort_key.name())));
+                    scanOutcome.getString(event_time_allowed.name()),
+                    scanOutcome.getInt(event_time_sort_key.name())));
         }
         Collections.sort(sortableTimes);
         List<String> result = new ArrayList<String>(sortableTimes.size());
@@ -398,23 +510,25 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
         // Note: Does NOT verify whether the school exists and throw NoSuchSchoolException where appropriate
-        tables.schoolTable.deleteItem(new PrimaryKey(DatabaseField.school_id.name(), schoolId));
+        tables.schoolTable.deleteItem(new PrimaryKey(school_id.name(), schoolId));
     }
 
     @Override
     public void deleteBank(String bankId) throws SQLException, NoSuchBankException {
         // Does not verify that the bank exists and throw NoSuchBankException
-        tables.bankTable.deleteItem(new PrimaryKey(DatabaseField.bank_id.name(), bankId));
+        // FIXME: Does not currently delete the bank admin and all volunteers
+        tables.bankTable.deleteItem(new PrimaryKey(bank_id.name(), bankId));
     }
 
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
-        delegate.deleteVolunteer(volunteerId);
+        delegate.deleteVolunteer(volunteerId); // FIXME: User Related
     }
 
     @Override
     public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
-        delegate.deleteTeacher(teacherId);
+        // FIXME: Needs to validate that the teacher has no events and raise an exception if it does.
+        tables.userTable.deleteItem(new PrimaryKey(user_id.name(), teacherId));
     }
 
     @Override
@@ -453,8 +567,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
         // FIXME: Only does bank for now, and NOT admin, because that table doesn't exist yet.
         Item item = new Item()
-                .withPrimaryKey(DatabaseField.bank_id.name(), createUniqueId())
-                .withString(DatabaseField.bank_name.name(), formData.getBankName());
+                .withPrimaryKey(bank_id.name(), createUniqueId())
+                .withString(bank_name.name(), formData.getBankName());
         tables.bankTable.putItem(item);
     }
 
@@ -463,9 +577,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // FIXME: Only does bank for now, and NOT admin, because that table doesn't exist yet.
         // This approach will CREATE the bank if it doesn't exist. I THINK that behavior doesn't break anything.
         tables.bankTable.updateItem(
-                new PrimaryKey(DatabaseField.bank_id.name(), formData.getBankId()),
-                attributeUpdate(DatabaseField.bank_name, formData.getBankName()),
-                attributeUpdate(DatabaseField.min_lmi_for_cra, formData.getMinLMIForCRA()));
+                new PrimaryKey(bank_id.name(), formData.getBankId()),
+                attributeUpdate(bank_name, formData.getBankName()),
+                attributeUpdate(min_lmi_for_cra, formData.getMinLMIForCRA()));
     }
 
     @Override
@@ -479,24 +593,24 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
         Item item = new Item()
-                .withPrimaryKey(DatabaseField.school_id.name(), createUniqueId())
-                .withString(DatabaseField.school_name.name(), school.getSchoolName())
-                .withString(DatabaseField.school_addr1.name(), school.getSchoolAddress1())
-                .withString(DatabaseField.school_city.name(), school.getCity())
-                .withString(DatabaseField.school_state.name(), school.getState())
-                .withString(DatabaseField.school_zip.name(), school.getZip())
-                .withString(DatabaseField.school_county.name(), school.getCounty())
-                .withString(DatabaseField.school_district.name(), school.getDistrict())
-                .withString(DatabaseField.school_phone.name(), school.getPhone())
-                .withString(DatabaseField.school_lmi_eligible.name(), school.getLmiEligible())
-                .withString(DatabaseField.school_slc.name(), school.getSLC());
+                .withPrimaryKey(school_id.name(), createUniqueId())
+                .withString(school_name.name(), school.getSchoolName())
+                .withString(school_addr1.name(), school.getSchoolAddress1())
+                .withString(school_city.name(), school.getCity())
+                .withString(school_state.name(), school.getState())
+                .withString(school_zip.name(), school.getZip())
+                .withString(school_county.name(), school.getCounty())
+                .withString(school_district.name(), school.getDistrict())
+                .withString(school_phone.name(), school.getPhone())
+                .withString(school_lmi_eligible.name(), school.getLmiEligible())
+                .withString(school_slc.name(), school.getSLC());
         tables.schoolTable.putItem(item);
     }
 
     @Override
     public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
         tables.allowedDatesTable.putItem(new Item()
-                .withPrimaryKey(DatabaseField.event_date_allowed.name(), formData.getParsableDateStr()));
+                .withPrimaryKey(event_date_allowed.name(), formData.getParsableDateStr()));
     }
 
     @Override
@@ -521,21 +635,21 @@ public class DynamoDBDatabase implements DatabaseFacade {
             if (!formData.getTimeToInsertBefore().isEmpty() && formData.getTimeToInsertBefore().equals(allowedTime)) {
                 // - Now we insert the new one -
                 tables.allowedTimesTable.putItem(new Item()
-                        .withPrimaryKey(DatabaseField.event_time_allowed.name(), formData.getAllowedTime())
-                        .withInt(DatabaseField.event_time_sort_key.name(), sortKey));
+                        .withPrimaryKey(event_time_allowed.name(), formData.getAllowedTime())
+                        .withInt(event_time_sort_key.name(), sortKey));
                 sortKey += 1;
             }
             // - Now we insert the one from the list -
             tables.allowedTimesTable.putItem(new Item()
-                    .withPrimaryKey(DatabaseField.event_time_allowed.name(), allowedTime)
-                    .with(DatabaseField.event_time_sort_key.name(), sortKey));
+                    .withPrimaryKey(event_time_allowed.name(), allowedTime)
+                    .with(event_time_sort_key.name(), sortKey));
             sortKey += 1;
         }
         if (formData.getTimeToInsertBefore().isEmpty()) {
             // - Add the new one at the end -
             tables.allowedTimesTable.putItem(new Item()
-                    .withPrimaryKey(DatabaseField.event_time_allowed.name(), formData.getAllowedTime())
-                    .with(DatabaseField.event_time_sort_key.name(), sortKey));
+                    .withPrimaryKey(event_time_allowed.name(), formData.getAllowedTime())
+                    .with(event_time_sort_key.name(), sortKey));
         }
     }
 
@@ -546,27 +660,37 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException {
-        delegate.updateUserCredential(userId, hashedPassword, salt);
+        // This approach will CREATE the user if it doesn't exist. I THINK that behavior doesn't break anything.
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), userId),
+                attributeUpdate(user_hashed_password, hashedPassword),
+                attributeUpdate(user_password_salt, salt));
     }
 
     @Override
     public void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException {
-        delegate.updateResetPasswordToken(userId, resetPasswordToken);
+        // This approach will CREATE the user if it doesn't exist. I THINK that behavior doesn't break anything.
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), userId),
+                attributeUpdate(user_reset_password_token, resetPasswordToken));
     }
 
     @Override
-    public void updateUserStatusById(String userId, int userStatus) throws SQLException {
-        delegate.updateUserStatusById(userId, userStatus);
+    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException {
+        // This approach will CREATE the user if it doesn't exist. I THINK that behavior doesn't break anything.
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), volunteerId),
+                intAttributeUpdate(user_approval_status, approvalStatus.getDbValue()));
     }
 
     @Override
     public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
-        tables.allowedTimesTable.deleteItem(new PrimaryKey(DatabaseField.event_time_allowed.name(), time));
+        tables.allowedTimesTable.deleteItem(new PrimaryKey(event_time_allowed.name(), time));
     }
 
     @Override
     public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
-        tables.allowedDatesTable.deleteItem(new PrimaryKey(DatabaseField.event_date_allowed.name(), date.getParseable()));
+        tables.allowedDatesTable.deleteItem(new PrimaryKey(event_date_allowed.name(), date.getParseable()));
     }
 
     @Override
@@ -581,7 +705,17 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException {
-        return delegate.getTeachersBySchool(schoolId);
+        // NOTE: This is a very rare operation (only used for deleting a school) so there is
+        // no need for efficiency. Therefore we will NOT use an index, but a full table scan.
+        List<Teacher> result = new ArrayList<Teacher>();
+        for (Item item : tables.userTable.scan()) {
+            UserType userType = UserType.fromDBValue(item.getString(user_type.name()));
+            String organizationId = item.getString(user_organization_id.name());
+            if (userType == UserType.TEACHER && organizationId.equals(schoolId)) {
+                result.add((Teacher) createUserFromDynamoDBItem(item));
+            }
+        }
+        return result;
     }
 
     @Override
@@ -611,7 +745,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
-        return delegate.getBankAdmins();
+        return delegate.getBankAdmins(); // FIXME: User Related
     }
 
     @Override
@@ -619,8 +753,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         Map<String,String> result = new HashMap<String,String>();
         for (Item scanOutcome : tables.siteSettingsTable.scan()) {
             result.put(
-                    scanOutcome.getString(DatabaseField.site_setting_name.name()),
-                    scanOutcome.getString(DatabaseField.site_setting_value.name()));
+                    scanOutcome.getString(site_setting_name.name()),
+                    scanOutcome.getString(site_setting_value.name()));
         }
         return result;
     }
@@ -628,7 +762,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
         tables.siteSettingsTable.putItem(new Item()
-                .withPrimaryKey(DatabaseField.site_setting_name.name(), settingName)
-                .withString(DatabaseField.site_setting_value.name(), settingValue));
+                .withPrimaryKey(site_setting_name.name(), settingName)
+                .withString(site_setting_value.name(), settingValue));
     }
 }

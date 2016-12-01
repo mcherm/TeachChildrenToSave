@@ -30,16 +30,7 @@ public class Volunteer extends User {
     public void populateFieldsFromResultSetRowWithPrefix(ResultSet resultSet, String prefix) throws SQLException {
         super.populateFieldsFromResultSetRowWithPrefix(resultSet, prefix);
         setBankId(resultSet.getString(prefix + "organization_id"));
-        int userStatus = resultSet.getInt(prefix + "user_status");
-        if (userStatus == MySQLDatabase.APPROVAL_STATUS_UNCHECKED){
-            setApprovalStatus(ApprovalStatus.Unchecked);
-        } else if (userStatus == MySQLDatabase.APPROVAL_STATUS_CHECKED) {
-            setApprovalStatus(ApprovalStatus.Checked);
-        } else if (userStatus == MySQLDatabase.APPROVAL_STATUS_SUSPENDED) {
-            setApprovalStatus(ApprovalStatus.Suspended);
-        } else {
-            throw new RuntimeException("Invalid User Status");
-        }
+        setApprovalStatus(ApprovalStatus.fromDBValue(resultSet.getInt(prefix + "user_status")));
         setBankSpecificData(resultSet.getString(prefix + "bank_specific_data"));
     }
 

@@ -126,9 +126,9 @@ public class EditPersonalDataController {
         }
 
         // --- Make the changes ---
-        User newUser;
         try {
-            newUser = database.modifyUserPersonalFields(formData);
+            database.modifyUserPersonalFields(formData);
+            User newUser = database.getUserById(user.getUserId());
             sessionData.setUser(newUser);
             return "redirect:" + user.getUserType().getHomepage();
         } catch(EmailAlreadyInUseException err) {

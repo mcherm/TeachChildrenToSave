@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -372,7 +373,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-    public User modifyUserPersonalFields(EditPersonalDataFormData formData)
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException
     {
         Connection connection = null;
@@ -397,7 +398,6 @@ public class MySQLDatabase implements DatabaseFacade {
         } finally {
             closeSafely(connection, preparedStatement, null);
         }
-        return getUserById(formData.getUserId());
     }
 
     @Override
@@ -1449,15 +1449,15 @@ public class MySQLDatabase implements DatabaseFacade {
 	}
 
     @Override
-    public void updateUserStatusById(String userId, int userStatus) throws SQLException
+    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException
     {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
             connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateUserStatusByIdSQL);
-            preparedStatement.setInt(1, userStatus);
-            preparedStatement.setString(2, userId);
+            preparedStatement.setInt(1, approvalStatus.getDbValue());
+            preparedStatement.setString(2, volunteerId);
             preparedStatement.executeUpdate();
         }
         finally {

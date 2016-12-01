@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
@@ -66,10 +67,9 @@ public interface DatabaseFacade {
      * Modify certain fields of a User. The user with the userId given in formData
      * will be edited to set their email, firstName, lastName, and phoneNumber to
      * the values given in the other fields of formData. Other properties of a user
-     * (such as password and userType) are not modified. The newly modified
-     * user is returned.
+     * (such as password and userType) are not modified.
      */
-    public User modifyUserPersonalFields(EditPersonalDataFormData formData)
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException;
 
 
@@ -282,8 +282,8 @@ public interface DatabaseFacade {
 	
 	void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException;
 
-    /** Update the userStatus field of a specific user. */
-    public void updateUserStatusById(String userId, int userStatus) throws SQLException;
+    /** Update the userStatus field of a specific volunteer. */
+    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException;
 
 	/**
      *		Delete allowed time

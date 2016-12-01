@@ -2,7 +2,7 @@ package com.tcts.controller;
 
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
-import com.tcts.database.MySQLDatabase;
+import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
@@ -105,7 +105,7 @@ public class BankAdminActionsController {
         }
 
         // --- Actually suspend the person ---
-        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_CHECKED);
+        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();
@@ -135,7 +135,7 @@ public class BankAdminActionsController {
         }
 
         // --- Actually suspend the person ---
-        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_UNCHECKED);
+        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();
@@ -175,7 +175,7 @@ public class BankAdminActionsController {
         }
 
         // --- Actually suspend the person ---
-        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_SUSPENDED);
+        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();
@@ -209,7 +209,7 @@ public class BankAdminActionsController {
         }
 
         // --- Actually restore the person ---
-        database.updateUserStatusById(volunteer.getUserId(), MySQLDatabase.APPROVAL_STATUS_CHECKED);
+        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();
