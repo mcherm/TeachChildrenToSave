@@ -212,7 +212,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
-    private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap() {{
+    private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap<DatabaseField,Integer>() {{
         put(site_setting_name, 30);
         put(site_setting_value, 100);
         put(event_time, 30);
@@ -467,7 +467,20 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
-        return delegate.getBankAdminByBank(bankId);
+        // FIXME: This really needs to have an index to speed it up
+        BankAdmin result = null;
+        List<BankAdmin> bankAdmins = getBankAdmins();
+        for (BankAdmin bankAdmin : bankAdmins) {
+            if (bankId.equals(bankAdmin.getBankId())) {
+                result = bankAdmin;
+                break;
+            }
+        }
+        if (result == null) {
+            throw new InconsistentDatabaseException("No bank admin for bank with ID " + bankId);
+        } else {
+            return result;
+        }
     }
 
     @Override
@@ -640,17 +653,38 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
-        // FIXME: Only does bank for now, and NOT admin, because that table doesn't exist yet.
-        Item item = new Item()
-                .withPrimaryKey(bank_id.name(), createUniqueId())
-                .withString(bank_name.name(), formData.getBankName());
-        tables.bankTable.putItem(item);
+        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        String bankAdminId = createUniqueId();
+        String bankId = createUniqueId();
+        tables.userTable.putItem(new Item()
+                .withPrimaryKey(new PrimaryKey(user_id.name(), bankAdminId))
+                .withString(user_type.name(), UserType.BANK_ADMIN.getDBValue())
+                .withString(user_email.name(), formData.getEmail())
+                .withString(user_first_name.name(), formData.getFirstName())
+                .withString(user_last_name.name(), formData.getLastName())
+                .withString(user_phone_number.name(), formData.getPhoneNumber())
+                .withString(user_organization_id.name(), bankId)
+                .withInt(user_approval_status.name(), ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue()));
+        tables.bankTable.putItem(new Item()
+                .withPrimaryKey(bank_id.name(), bankId)
+                .withString(bank_name.name(), formData.getBankName()));
     }
 
     @Override
     public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
-        // FIXME: Only does bank for now, and NOT admin, because that table doesn't exist yet.
-        // This approach will CREATE the bank if it doesn't exist. I THINK that behavior doesn't break anything.
+        // -- Find the bankAdminId --
+        BankAdmin bankAdmin = getBankAdminByBank(formData.getBankId());
+
+        // -- Update the bank admin --
+        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), bankAdmin.getUserId()),
+                attributeUpdate(user_first_name, formData.getFirstName()),
+                attributeUpdate(user_last_name, formData.getLastName()),
+                attributeUpdate(user_email, formData.getEmail()),
+                attributeUpdate(user_phone_number, formData.getPhoneNumber()));
+
+        // -- Update the bank --
         tables.bankTable.updateItem(
                 new PrimaryKey(bank_id.name(), formData.getBankId()),
                 attributeUpdate(bank_name, formData.getBankName()),
@@ -820,7 +854,15 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
-        return delegate.getBankAdmins(); // FIXME: User Related
+        List<BankAdmin> result = new ArrayList<BankAdmin>();
+        // FIXME: Could be much more efficient if the scan expression excluded all but admins
+        for (Item item : tables.userTable.scan()) {
+            if (UserType.fromDBValue(item.getString(user_type.name())) == UserType.BANK_ADMIN) {
+                BankAdmin bankAdmin = (BankAdmin) createUserFromDynamoDBItem(item);
+                result.add(bankAdmin);
+            }
+        }
+        return result;
     }
 
     @Override
