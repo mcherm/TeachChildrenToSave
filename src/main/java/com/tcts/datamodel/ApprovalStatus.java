@@ -15,6 +15,9 @@ public enum ApprovalStatus {
 
     private final int dbValue;
 
+    /** The value to start with for a new person in the database. */
+    public static ApprovalStatus INITIAL_APPROVAL_STATUS = UNCHECKED;
+
     /** Map used to create instances from the DB. */
     private static Map<Integer,ApprovalStatus> approvalStatusByDBValue = new HashMap<Integer,ApprovalStatus>() {{
         put(0, UNCHECKED);

@@ -165,8 +165,8 @@ public class EditPersonalDataController {
         // --- Make the changes ---
         User newUser;
         try {
-            newUser = database.modifyVolunteerPersonalFields(formData);
-            sessionData.setUser(newUser);
+            database.modifyVolunteerPersonalFields(formData);
+            sessionData.setUser(database.getUserById(formData.getUserId()));
             return "redirect:" + user.getUserType().getHomepage();
         } catch(EmailAlreadyInUseException err) {
             return showVolunteerFormWithErrors(model, sessionData, new Errors("That email is already in use by another user."));

@@ -7,6 +7,7 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
+import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
@@ -21,8 +22,10 @@ import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
+import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
+import com.tcts.formdata.VolunteerRegistrationFormData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -196,10 +199,10 @@ public class DynamoDBDatabaseTest {
         assertEquals(0, schools.size());
     }
 
-    /** Will be used in a few other tests. */
-    private String insertNewSchoolAndReturnTheId() throws SQLException {
+
+    private void insertNewSchool(String schoolName) throws SQLException {
         CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
-        createSchoolFormData.setSchoolName("Mirkwood Elementary");
+        createSchoolFormData.setSchoolName(schoolName);
         createSchoolFormData.setSchoolAddress1("123 Main St.");
         createSchoolFormData.setCity("Richmond");
         createSchoolFormData.setZip("23235");
@@ -210,7 +213,13 @@ public class DynamoDBDatabaseTest {
         createSchoolFormData.setLmiEligible("15.4");
         createSchoolFormData.setSLC("N120");
         dynamoDBDatabase.insertNewSchool(createSchoolFormData);
+    }
+
+    /** Will be used in a few other tests. */
+    private String insertNewSchoolAndReturnTheId() throws SQLException {
+        insertNewSchool("Mirkwood Elementary");
         List<School> schools = dynamoDBDatabase.getAllSchools();
+        assertEquals(1, schools.size());
         return schools.get(0).getSchoolId();
     }
 
@@ -312,6 +321,18 @@ public class DynamoDBDatabaseTest {
         assertEquals(0, banks.size());
     }
 
+
+    // FIXME: This ignores the fields that are part of the BankAdmin because that's not built yet.
+    /** Will be used in a few other tests. */
+    private String insertNewBankAndReturnTheId() throws SQLException, EmailAlreadyInUseException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, banks.size());
+        return banks.get(0).getBankId();
+    }
 
     // FIXME: This ignores the fields that are part of the BankAdmin because that's not built yet.
     @Test
@@ -562,13 +583,88 @@ public class DynamoDBDatabaseTest {
     public void createTeacherThenModifyTeacherSchool() throws Exception {
         String schoolId1 = insertNewSchoolAndReturnTheId();
         Teacher teacher = createTeacherJane(schoolId1);
-        String schoolId2 = insertNewSchoolAndReturnTheId();
+        insertNewSchool("Midtown Prep");
+        List<School> schools = dynamoDBDatabase.getAllSchools();
+        String midtownPrepId = null;
+        for (School school : schools) {
+            if (school.getName().equals("Midtown Prep")) {
+                midtownPrepId = school.getSchoolId();
+            }
+        }
+        assertNotNull(midtownPrepId);
 
-        dynamoDBDatabase.modifyTeacherSchool(teacher.getUserId(), schoolId2);
+        dynamoDBDatabase.modifyTeacherSchool(teacher.getUserId(), midtownPrepId);
 
         Teacher teacherFetched = (Teacher) dynamoDBDatabase.getUserById(teacher.getUserId());
-        assertEquals(teacherFetched.getSchoolId(), schoolId2);
+        assertEquals(teacherFetched.getSchoolId(), midtownPrepId);
     }
+
+    /** Inserts a particular set of data to create a teacher and returns the new Teacher object. */
+    private Volunteer createVolunteerAnika(String bankId) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+        VolunteerRegistrationFormData volunteerRegistrationFormData = new VolunteerRegistrationFormData();
+        volunteerRegistrationFormData.setEmail("anika@sample.com");
+        volunteerRegistrationFormData.setFirstName("Anika");
+        volunteerRegistrationFormData.setLastName("Doe");
+        volunteerRegistrationFormData.setPhoneNumber("302-255-1234");
+        volunteerRegistrationFormData.setBankId(bankId);
+        volunteerRegistrationFormData.setBankSpecificData("Mail Stop");
+        String hashedPassword = "pIdlMcr8gPuKCTNlKBR7dayaDVk==";
+        String salt = "JEgSZ2VfBC4=";
+        Volunteer volunteer = dynamoDBDatabase.insertNewVolunteer(volunteerRegistrationFormData, hashedPassword, salt);
+        return volunteer;
+    }
+
+
+    @Test
+    public void createVolunteer() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = createVolunteerAnika(bankId);
+
+        Volunteer volunteerFetched = (Volunteer) dynamoDBDatabase.getUserById(volunteer.getUserId());
+        assertEquals(volunteer.getUserId(), volunteerFetched.getUserId());
+        assertEquals("anika@sample.com", volunteerFetched.getEmail());
+        assertEquals("Anika", volunteerFetched.getFirstName());
+        assertEquals("Doe", volunteerFetched.getLastName());
+        assertEquals("302-255-1234", volunteerFetched.getPhoneNumber());
+        assertEquals(bankId, volunteerFetched.getBankId());
+        assertEquals("Mail Stop", volunteerFetched.getBankSpecificData());
+        assertEquals("pIdlMcr8gPuKCTNlKBR7dayaDVk==", volunteerFetched.getHashedPassword());
+        assertEquals("JEgSZ2VfBC4=", volunteerFetched.getSalt());
+    }
+
+    @Test
+    public void createVolunteerThenDeleteHer() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = createVolunteerAnika(bankId);
+        dynamoDBDatabase.deleteVolunteer(volunteer.getUserId());
+        User userFetched = dynamoDBDatabase.getUserById(volunteer.getUserId());
+        assertNull(userFetched);
+    }
+
+    @Test
+    public void createVolunteerThenModifyVolunteerPersonalFields() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = createVolunteerAnika(bankId);
+
+        EditVolunteerPersonalDataFormData editVolunteerPersonalDataFormData = new EditVolunteerPersonalDataFormData();
+        editVolunteerPersonalDataFormData.setUserId(volunteer.getUserId());
+        editVolunteerPersonalDataFormData.setEmail("other@example.com");
+        editVolunteerPersonalDataFormData.setFirstName("Arnold");
+        editVolunteerPersonalDataFormData.setLastName("Smith");
+        editVolunteerPersonalDataFormData.setPhoneNumber("610-842-1102");
+        editVolunteerPersonalDataFormData.setBankSpecificData("");
+        dynamoDBDatabase.modifyVolunteerPersonalFields(editVolunteerPersonalDataFormData);
+
+        Volunteer volunteerFetched = (Volunteer) dynamoDBDatabase.getUserById(volunteer.getUserId());
+        assertEquals("other@example.com", volunteerFetched.getEmail());
+        assertEquals("Arnold", volunteerFetched.getFirstName());
+        assertEquals("Smith", volunteerFetched.getLastName());
+        assertEquals("610-842-1102", volunteerFetched.getPhoneNumber());
+        assertEquals("", volunteerFetched.getBankSpecificData());
+    }
+
+
+
 
 
     // FIXME: Add this test once I have a volunteer to test with

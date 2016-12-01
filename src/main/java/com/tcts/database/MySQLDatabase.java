@@ -245,13 +245,6 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getSiteSettingsSQL = "select * from SiteSettings";
     private final static String insertOrModifySiteSettingSQL = "insert into SiteSettings (setting_name, setting_value) VALUES(?, ?) on duplicate key update setting_value = ?";
 
-    public final static int APPROVAL_STATUS_UNCHECKED = 0;
-    public final static int APPROVAL_STATUS_CHECKED = 1;
-    public final static int APPROVAL_STATUS_SUSPENDED = 2;
-
-
-    public final static int DEFAULT_APPROVAL_STATUS = APPROVAL_STATUS_UNCHECKED;
-
 
     /**
      * This is a subroutine used to build the SQL queries in a few complex cases.
@@ -401,7 +394,7 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
+    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException
     {
         Connection connection = null;
@@ -427,7 +420,6 @@ public class MySQLDatabase implements DatabaseFacade {
         } finally {
             closeSafely(connection, preparedStatement, null);
         }
-        return (Volunteer) getUserById(formData.getUserId());
     }
 
 
@@ -804,7 +796,7 @@ public class MySQLDatabase implements DatabaseFacade {
 			preparedStatement.setString(6, userType.getDBValue());
 			preparedStatement.setString(7, organizationId);
 			preparedStatement.setString(8, phoneNumber);
-			preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
+			preparedStatement.setInt(9, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue());
 			try {
 				preparedStatement.executeUpdate();
 			} catch (MySQLIntegrityConstraintViolationException err) {
@@ -1236,7 +1228,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
                 preparedStatement.setString(7, bankId);
                 preparedStatement.setString(8, formData.getPhoneNumber());
-                preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
+                preparedStatement.setInt(9, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue());
                 affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows != 1) {
                     throw new RuntimeException("Should never happen: we inserted one row!");
@@ -1294,7 +1286,7 @@ public class MySQLDatabase implements DatabaseFacade {
                     preparedStatement.setString(6, UserType.BANK_ADMIN.getDBValue());
                     preparedStatement.setString(7, formData.getBankId());
                     preparedStatement.setString(8, formData.getPhoneNumber());
-                    preparedStatement.setInt(9, DEFAULT_APPROVAL_STATUS);
+                    preparedStatement.setInt(9, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue());
                     int affectedRows = preparedStatement.executeUpdate();
                     if (affectedRows != 1) {
                         throw new RuntimeException("Should never happen: we inserted one row!");

@@ -76,7 +76,7 @@ public interface DatabaseFacade {
     /**
      * Modify normal user fields of a volunteer, and ALSO the bank specific data field.
      */
-    public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
+    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
             throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException;
 
     /**

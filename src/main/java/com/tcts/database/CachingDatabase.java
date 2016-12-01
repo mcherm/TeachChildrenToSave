@@ -215,10 +215,9 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Volunteer modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
-        Volunteer result = database.modifyVolunteerPersonalFields(formData);
+    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
+        database.modifyVolunteerPersonalFields(formData);
         availableEvents.refreshNow();
-        return result;
     }
 
     @Override
