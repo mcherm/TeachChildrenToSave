@@ -211,6 +211,31 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return stringValue == null ? "" : stringValue;
     }
 
+    /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
+    private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap() {{
+        put(site_setting_name, 30);
+        put(site_setting_value, 100);
+        put(event_time, 30);
+        put(event_grade, 8);
+        put(event_notes, 1000);
+        put(bank_name, 45);
+        put(user_email, 50);
+        put(user_first_name, 50);
+        put(user_last_name, 50);
+        put(user_phone_number, 45);
+        put(user_bank_specific_data, 500);
+        put(school_name, 80);
+        put(school_addr1, 60);
+        put(school_city, 45);
+        put(school_zip, 10);
+        put(school_county, 45);
+        put(school_district, 45);
+        put(school_state, 2);
+        put(school_phone, 45);
+        put(school_slc, 10);
+    }};
+
+
     // ========== Methods for populating objects ==========
 
 
@@ -317,7 +342,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public int getFieldLength(DatabaseField field) {
-        return delegate.getFieldLength(field);
+        return FIELD_LENGTHS.get(field);
     }
 
     @Override

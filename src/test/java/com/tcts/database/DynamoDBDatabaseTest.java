@@ -65,6 +65,14 @@ public class DynamoDBDatabaseTest {
         dynamoDBDatabase = new DynamoDBDatabase(null);
     }
 
+
+
+    @Test
+    public void getFieldLengths() throws SQLException {
+        assertEquals(8, dynamoDBDatabase.getFieldLength(DatabaseField.event_grade));
+        assertEquals(50, dynamoDBDatabase.getFieldLength(DatabaseField.user_last_name));
+    }
+
     @Test
     public void writeOneSettingAndReadIt() throws SQLException {
         dynamoDBDatabase.modifySiteSetting("TestSetting", "TestValue");
