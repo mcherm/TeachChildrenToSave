@@ -52,7 +52,7 @@
 
                     <li class="mb1">
                         <button onclick="js.loadURL('viewEditEvents.htm');" class="editOrRegister">
-                            List Classes
+                            List/Create Classes
                         </button>
                     </li>
 

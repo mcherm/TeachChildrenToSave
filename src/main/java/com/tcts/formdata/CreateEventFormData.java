@@ -14,6 +14,8 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
     private String grade;
     private String numberStudents;
     private String notes;
+    private String teacherId;
+
 
 
     @Override
@@ -85,4 +87,13 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public String getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(String teacherId) {
+        this.teacherId = teacherId;
+    }
+
 }
