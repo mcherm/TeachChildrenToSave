@@ -218,6 +218,15 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return stringValue == null ? "" : stringValue;
     }
 
+    /**
+     * This retrieves a field which is an int from an Item.
+     *
+     * @throws NumberFormatException if the field is null or is not an integer
+     */
+    private int getIntField(Item item, DatabaseField field) {
+        return item.getInt(field.name());
+    }
+
     /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
     private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap<DatabaseField,Integer>() {{
         put(site_setting_name, 30);
@@ -264,7 +273,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         school.setCounty(getStringField(item, school_county));
         school.setSchoolDistrict(getStringField(item, school_district));
         school.setPhone(getStringField(item, school_phone));
-        school.setLmiEligible(item.getInt(school_lmi_eligible.name()));
+        school.setLmiEligible(getIntField(item, school_lmi_eligible));
         school.setSLC(getStringField(item, school_slc));
         return school;
     }
@@ -284,7 +293,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         if (item.get(min_lmi_for_cra.name()) == null) {
             bank.setMinLMIForCRA(null); // An int field that nevertheless can store null
         } else {
-            bank.setMinLMIForCRA(item.getInt(min_lmi_for_cra.name()));
+            bank.setMinLMIForCRA(getIntField(item, min_lmi_for_cra));
         }
         if (getStringField(item, bank_specific_data_label) == null) {
             bank.setBankSpecificDataLabel(""); // Use "" when there is a null in the DB
@@ -314,14 +323,14 @@ public class DynamoDBDatabase implements DatabaseFacade {
             case VOLUNTEER: {
                 Volunteer volunteer = new Volunteer();
                 volunteer.setBankId(getStringField(item, user_organization_id));
-                volunteer.setApprovalStatus(ApprovalStatus.fromDBValue(item.getInt(user_approval_status.name())));
+                volunteer.setApprovalStatus(ApprovalStatus.fromDBValue(getIntField(item,user_approval_status)));
                 volunteer.setBankSpecificData(getStringField(item, user_bank_specific_data));
                 user = volunteer;
             } break;
             case BANK_ADMIN: {
                 BankAdmin bankAdmin = new BankAdmin();
                 bankAdmin.setBankId(getStringField(item, user_organization_id));
-                bankAdmin.setApprovalStatus(ApprovalStatus.fromDBValue(item.getInt(user_approval_status.name())));
+                bankAdmin.setApprovalStatus(ApprovalStatus.fromDBValue(getIntField(item,user_approval_status)));
                 bankAdmin.setBankSpecificData(getStringField(item, user_bank_specific_data));
                 user = bankAdmin;
             } break;
@@ -343,6 +352,28 @@ public class DynamoDBDatabase implements DatabaseFacade {
         user.setResetPasswordToken(getStringField(item, user_reset_password_token));
         user.setUserType(userType);
         return user;
+    }
+
+
+    private Event createEventFromDynamoDBItem(Item item) {
+        if (item == null) {
+            return null;
+        }
+        Event event = new Event();
+        event.setEventId(getStringField(item, event_id));
+        event.setTeacherId(getStringField(item, event_teacher_id));
+        try {
+            event.setEventDate(PrettyPrintingDate.fromParsableDate(getStringField(item, event_date)));
+        } catch(ParseException err) {
+            throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
+        }
+        event.setEventTime(getStringField(item, event_time));
+        event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        event.setNumberStudents(getIntField(item, event_number_students));
+        event.setNotes(getStringField(item, event_notes));
+        String volunteerString = getStringField(item, event_volunteer_id);
+        event.setVolunteerId(volunteerString.length() == 0 ? null : volunteerString);
+        return event;
     }
 
     // ========== Methods of DatabaseFacade Class ==========
@@ -459,12 +490,23 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
-        delegate.insertEvent(teacherId, formData);
+        String newEventId = createUniqueId();
+        tables.eventTable.putItem(new Item()
+                .withPrimaryKey(new PrimaryKey(event_id.name(), newEventId))
+                .withString(event_teacher_id.name(), teacherId)
+                .withString(event_date.name(), PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
+                .withString(event_time.name(), formData.getEventTime())
+                .withInt(event_grade.name(), Integer.parseInt(formData.getGrade()))
+                .withInt(event_number_students.name(), Integer.parseInt(formData.getNumberStudents()))
+                .withString(event_notes.name(), formData.getNotes()));
     }
 
     @Override
     public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException {
-        delegate.volunteerForEvent(eventId, volunteerId);
+        // FIXME: Really should verify on this update that the volunteer is null before we update it!
+        tables.eventTable.updateItem(
+                new PrimaryKey(event_id.name(), eventId),
+                attributeUpdate(event_volunteer_id, volunteerId));
     }
 
     @Override
@@ -628,17 +670,25 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void deleteEvent(String eventId) throws SQLException, NoSuchEventException {
-        delegate.deleteEvent(eventId);
+        tables.eventTable.deleteItem(new PrimaryKey(event_id.name(), eventId));
     }
 
     @Override
     public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
-        return delegate.getAllEvents();
+        List<Event> result = new ArrayList<Event>();
+        // -- Get the events --
+        for (Item item : tables.eventTable.scan()) {
+            result.add(createEventFromDynamoDBItem(item));
+        }
+        // FIXME: Do these need to be sorted?
+        // -- Return the result --
+        return result;
     }
 
     @Override
     public Event getEventById(String eventId) throws SQLException {
-        return delegate.getEventById(eventId);
+        Item item = tables.eventTable.getItem(new PrimaryKey(event_id.name(), eventId));
+        return createEventFromDynamoDBItem(item);
     }
 
     @Override
@@ -771,7 +821,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
-        delegate.modifyEvent(formData);
+        tables.eventTable.updateItem(
+                new PrimaryKey(event_id.name(), formData.getEventId()),
+                attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
+                attributeUpdate(event_time, formData.getEventTime()),
+                intAttributeUpdate(event_grade, Integer.parseInt(formData.getGrade())),
+                intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
+                attributeUpdate(event_notes, formData.getNotes()));
     }
 
     @Override

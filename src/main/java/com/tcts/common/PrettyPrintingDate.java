@@ -30,6 +30,10 @@ public class PrettyPrintingDate extends Date {
         return new PrettyPrintingDate(parseableFormatter.get().parse(parsableDate).getTime());
     }
 
+    public static PrettyPrintingDate fromJavaUtilDate(java.util.Date date) {
+        return new PrettyPrintingDate(date.getTime());
+    }
+
     /**
      * Constructor used by the fromParsableDate() factory function.
      *

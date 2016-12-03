@@ -17,7 +17,6 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 
 /**

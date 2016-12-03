@@ -11,7 +11,7 @@ public enum DatabaseField {
     // AllowedTimes
     event_time_allowed, event_time_sort_key,
     // Event
-    event_id, event_time, event_grade, event_notes,
+    event_id, event_teacher_id, event_date, event_time, event_grade, event_number_students, event_notes, event_volunteer_id,
     // Bank
     bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label,
     // User

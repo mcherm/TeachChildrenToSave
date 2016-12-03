@@ -6,6 +6,7 @@ import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
@@ -21,11 +22,13 @@ import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
+import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
+import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -38,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -86,11 +90,21 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("TestValue", siteSettings.get("TestSetting"));
     }
 
-    @Test
-    public void writeOneDateAndReadIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    private PrettyPrintingDate insertDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException {
+        String parsableDateStr = "2016-12-19";
         AddAllowedDateFormData addAllowedDateFormData = new AddAllowedDateFormData();
-        addAllowedDateFormData.setParsableDateStr("2016-12-19");
+        addAllowedDateFormData.setParsableDateStr(parsableDateStr);
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData);
+        try {
+            return PrettyPrintingDate.fromParsableDate(parsableDateStr);
+        } catch(ParseException err) {
+            throw new RuntimeException(err);
+        }
+    }
+
+    @Test
+    public void writeOneDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+        insertDateAndReturnIt();
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
         assertEquals(Arrays.asList(PrettyPrintingDate.fromParsableDate("2016-12-19")), allowedDates);
     }
@@ -131,9 +145,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @Test
     public void insertDateDeleteIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException, NoSuchAllowedDateException {
-        AddAllowedDateFormData addAllowedDateFormData = new AddAllowedDateFormData();
-        addAllowedDateFormData.setParsableDateStr("2016-12-19");
-        dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData);
+        insertDateAndReturnIt();
         dynamoDBDatabase.deleteAllowedDate(PrettyPrintingDate.fromParsableDate("2016-12-19"));
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
         assertEquals(
@@ -141,14 +153,21 @@ public class DynamoDBDatabaseIntegrationTest {
                 allowedDates);
     }
 
-    @Test
-    public void writeOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+    /** Used a few places to create a time. */
+    private String insertTimeAndReturnIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+        String result = "2:00";
         AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
-        addAllowedTimeFormData.setAllowedTime("2:00");
+        addAllowedTimeFormData.setAllowedTime(result);
         addAllowedTimeFormData.setTimeToInsertBefore("");
         dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
+        return result;
+    }
+
+    @Test
+    public void writeOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+        String timeStr = insertTimeAndReturnIt();
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
-        assertEquals(Arrays.asList("2:00"), allowedTimes);
+        assertEquals(Arrays.asList(timeStr), allowedTimes);
     }
 
     @Test
@@ -174,11 +193,8 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @Test
     public void insertTimeDeleteIt() throws SQLException, AllowedTimeAlreadyInUseException, ParseException, NoSuchAllowedTimeException {
-        AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
-        addAllowedTimeFormData.setAllowedTime("2:00");
-        addAllowedTimeFormData.setTimeToInsertBefore("");
-        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
-        dynamoDBDatabase.deleteAllowedTime("2:00");
+        String time = insertTimeAndReturnIt();
+        dynamoDBDatabase.deleteAllowedTime(time);
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
         assertEquals(
                 Arrays.asList(),
@@ -706,4 +722,117 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
 
+    private Event createEventAndReturnIt() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = createTeacherJane(schoolId);
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+
+        CreateEventFormData createEventFormData = new CreateEventFormData();
+        createEventFormData.setEventDate(date);
+        createEventFormData.setEventTime(time);
+        createEventFormData.setGrade("3");
+        createEventFormData.setNumberStudents("25");
+        createEventFormData.setNotes("The class is quite unruly.");
+        dynamoDBDatabase.insertEvent(teacher.getUserId(), createEventFormData);
+        List<Event> events = dynamoDBDatabase.getAllEvents();
+        assertEquals(1, events.size());
+        return events.get(0);
+    }
+
+    @Test
+    public void insertEventAndListIt() throws Exception {
+        createEventAndReturnIt();
+        List<Event> events = dynamoDBDatabase.getAllEvents();
+        assertEquals(1, events.size());
+        Event eventFetched = events.get(0);
+        assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
+        assertEquals("2:00", eventFetched.getEventTime());
+        assertEquals("3", eventFetched.getGrade());
+        assertEquals(25, eventFetched.getNumberStudents());
+        assertEquals("The class is quite unruly.", eventFetched.getNotes());
+        assertNotNull(eventFetched.getTeacherId());
+        assertNull(eventFetched.getVolunteerId());
+    }
+
+    @Test
+    public void insertEventThenDeleteIt() throws Exception {
+        Event event = createEventAndReturnIt();
+        dynamoDBDatabase.deleteEvent(event.getEventId());
+        List<Event> events = dynamoDBDatabase.getAllEvents();
+        assertEquals(0, events.size());
+    }
+
+    @Test
+    public void insertEventThenFetchById() throws Exception {
+        Event event = createEventAndReturnIt();
+        Event eventFetched = dynamoDBDatabase.getEventById(event.getEventId());
+        assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
+        assertEquals("2:00", eventFetched.getEventTime());
+        assertEquals("3", eventFetched.getGrade());
+        assertEquals(25, eventFetched.getNumberStudents());
+        assertEquals("The class is quite unruly.", eventFetched.getNotes());
+        assertNotNull(eventFetched.getTeacherId());
+        assertNull(eventFetched.getVolunteerId());
+    }
+
+    @Test
+    public void insertEventThenModifyIt() throws Exception {
+        // -- Create first event --
+        Event event = createEventAndReturnIt();
+
+        // -- Allow second date --
+        PrettyPrintingDate secondDate;
+        String parsableDateStr = "2017-03-12";
+        AddAllowedDateFormData addAllowedDateFormData = new AddAllowedDateFormData();
+        addAllowedDateFormData.setParsableDateStr(parsableDateStr);
+        dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData);
+        try {
+            secondDate = PrettyPrintingDate.fromParsableDate(parsableDateStr);
+        } catch(ParseException err) {
+            throw new RuntimeException(err);
+        }
+
+        // -- Allow second time --
+        String secondTime = "3:00 - 4:00";
+        AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
+        addAllowedTimeFormData.setAllowedTime(secondTime);
+        addAllowedTimeFormData.setTimeToInsertBefore("");
+        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
+
+        // -- Update first event --
+        EventRegistrationFormData eventRegistrationFormData = new EventRegistrationFormData();
+        eventRegistrationFormData.setEventId(event.getEventId());
+        eventRegistrationFormData.setEventDate(secondDate);
+        eventRegistrationFormData.setEventTime(secondTime);
+        eventRegistrationFormData.setGrade("4");
+        eventRegistrationFormData.setNumberStudents("16");
+        eventRegistrationFormData.setNotes("");
+        dynamoDBDatabase.modifyEvent(eventRegistrationFormData);
+        List<Event> events = dynamoDBDatabase.getAllEvents();
+        assertEquals(1, events.size());
+        Event eventFetched = events.get(0);
+
+        // -- Validate --
+        assertEquals("2017-03-12", eventFetched.getEventDate().getParseable());
+        assertEquals(secondTime, eventFetched.getEventTime());
+        assertEquals("4", eventFetched.getGrade());
+        assertEquals(16, eventFetched.getNumberStudents());
+        assertEquals("", eventFetched.getNotes());
+        assertNotNull(eventFetched.getTeacherId());
+        assertNull(eventFetched.getVolunteerId());
+    }
+
+
+    @Test
+    public void volunteerForAnEvent() throws Exception {
+        Event event = createEventAndReturnIt();
+        assertEquals(null, event.getVolunteerId());
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = createVolunteerAnika(bankId);
+
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+        Event eventFetched = dynamoDBDatabase.getEventById(event.getEventId());
+        assertEquals(volunteer.getUserId(), eventFetched.getVolunteerId());
+    }
 }
