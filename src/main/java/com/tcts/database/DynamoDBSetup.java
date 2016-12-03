@@ -25,28 +25,7 @@ import java.util.List;
  */
 public class DynamoDBSetup {
 
-    /**
-     * When called, this wipes the entire DynamoDB database and then recreates the
-     * tables but none of the indexes.
-     */
-    public static void reinitializeAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
-        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
-        tables.siteSettingsTable.delete();
-        tables.allowedDatesTable.delete();
-        tables.allowedTimesTable.delete();
-        tables.eventTable.delete();
-        tables.bankTable.delete();
-        tables.userTable.delete();
-        tables.schoolTable.delete();
-
-        tables.siteSettingsTable.waitForDelete();
-        tables.allowedDatesTable.waitForDelete();
-        tables.allowedTimesTable.waitForDelete();
-        tables.eventTable.waitForDelete();
-        tables.bankTable.waitForDelete();
-        tables.userTable.waitForDelete();
-        tables.schoolTable.waitForDelete();
-
+    public static void createAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
         Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", DatabaseField.site_setting_name, ScalarAttributeType.S);
         Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", DatabaseField.event_date_allowed, ScalarAttributeType.S);
         Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", DatabaseField.event_time_allowed, ScalarAttributeType.S);
@@ -64,6 +43,29 @@ public class DynamoDBSetup {
         schoolTable.waitForActive();
     }
 
+    /**
+     * When called, this wipes the entire DynamoDB database and then recreates the
+     * tables but none of the indexes.
+     */
+    public static void deleteAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+        tables.siteSettingsTable.delete();
+        tables.allowedDatesTable.delete();
+        tables.allowedTimesTable.delete();
+        tables.eventTable.delete();
+        tables.bankTable.delete();
+        tables.userTable.delete();
+        tables.schoolTable.delete();
+
+        tables.siteSettingsTable.waitForDelete();
+        tables.allowedDatesTable.waitForDelete();
+        tables.allowedTimesTable.waitForDelete();
+        tables.eventTable.waitForDelete();
+        tables.bankTable.waitForDelete();
+        tables.userTable.waitForDelete();
+        tables.schoolTable.waitForDelete();
+    }
+
     /** Initializes the userByEmail index. */
     public static void initializeUserByEmailIndex(DynamoDB dynamoDB) throws InterruptedException {
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
@@ -75,7 +77,8 @@ public class DynamoDBSetup {
      * When called, this wipes the entire DynamoDB database and then recreates it.
      */
     public static void reinitializeDatabase(DynamoDB dynamoDB) throws InterruptedException {
-        reinitializeAllDatabaseTables(dynamoDB);
+        deleteAllDatabaseTables(dynamoDB);
+        createAllDatabaseTables(dynamoDB);
         initializeUserByEmailIndex(dynamoDB);
     }
 
