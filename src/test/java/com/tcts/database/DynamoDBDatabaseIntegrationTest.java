@@ -41,7 +41,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -78,13 +77,13 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void getFieldLengths() throws Exception {
+    public void testGetFieldLengths() throws Exception {
         assertEquals(8, dynamoDBDatabase.getFieldLength(DatabaseField.event_grade));
         assertEquals(50, dynamoDBDatabase.getFieldLength(DatabaseField.user_last_name));
     }
 
     @Test
-    public void writeOneSettingAndReadIt() throws SQLException {
+    public void testWriteOneSettingAndReadIt() throws SQLException {
         dynamoDBDatabase.modifySiteSetting("TestSetting", "TestValue");
         Map<String,String> siteSettings = dynamoDBDatabase.getSiteSettings();
         assertEquals("TestValue", siteSettings.get("TestSetting"));
@@ -103,14 +102,14 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void writeOneDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    public void testWriteOneDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
         insertDateAndReturnIt();
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
         assertEquals(Arrays.asList(PrettyPrintingDate.fromParsableDate("2016-12-19")), allowedDates);
     }
 
     @Test
-    public void writeThreeDatesOutOfOrderAndReadThem() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    public void testWriteThreeDatesOutOfOrderAndReadThem() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
         AddAllowedDateFormData addAllowedDateFormData1 = new AddAllowedDateFormData();
         addAllowedDateFormData1.setParsableDateStr("2016-12-21");
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData1);
@@ -130,7 +129,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void writeSameDateTwiceAndReadIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    public void testWriteSameDateTwiceAndReadIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
         AddAllowedDateFormData addAllowedDateFormData1 = new AddAllowedDateFormData();
         addAllowedDateFormData1.setParsableDateStr("2016-12-19");
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData1);
@@ -144,7 +143,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void insertDateDeleteIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException, NoSuchAllowedDateException {
+    public void testInsertDateDeleteIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException, NoSuchAllowedDateException {
         insertDateAndReturnIt();
         dynamoDBDatabase.deleteAllowedDate(PrettyPrintingDate.fromParsableDate("2016-12-19"));
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
@@ -164,14 +163,14 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void writeOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+    public void testWriteOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
         String timeStr = insertTimeAndReturnIt();
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
         assertEquals(Arrays.asList(timeStr), allowedTimes);
     }
 
     @Test
-    public void writeThreeTimesOutOfOrderAndReadThem() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+    public void testWriteThreeTimesOutOfOrderAndReadThem() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
         AddAllowedTimeFormData addAllowedTimeFormData1 = new AddAllowedTimeFormData();
         addAllowedTimeFormData1.setAllowedTime("6:00");
         addAllowedTimeFormData1.setTimeToInsertBefore("");
@@ -192,7 +191,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void insertTimeDeleteIt() throws SQLException, AllowedTimeAlreadyInUseException, ParseException, NoSuchAllowedTimeException {
+    public void testInsertTimeDeleteIt() throws SQLException, AllowedTimeAlreadyInUseException, ParseException, NoSuchAllowedTimeException {
         String time = insertTimeAndReturnIt();
         dynamoDBDatabase.deleteAllowedTime(time);
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
@@ -202,13 +201,13 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void retrieveNonexistentSchool() throws SQLException {
+    public void testRetrieveNonexistentSchool() throws SQLException {
         School school = dynamoDBDatabase.getSchoolById("1234");
         assertNull(school);
     }
 
     @Test
-    public void insertSchool() throws SQLException {
+    public void testInsertSchool() throws SQLException {
         CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
         createSchoolFormData.setSchoolName("Mirkwood Elementary");
         createSchoolFormData.setSchoolAddress1("123 Main St.");
@@ -224,7 +223,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void getAllSchoolsWhenThereAreNone() throws SQLException {
+    public void testGetAllSchoolsWhenThereAreNone() throws SQLException {
         List<School> schools = dynamoDBDatabase.getAllSchools();
         assertEquals(0, schools.size());
     }
@@ -254,14 +253,14 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void createOneSchool() throws SQLException {
+    public void testCreateOneSchool() throws SQLException {
         insertNewSchoolAndReturnTheId();
         List<School> schools = dynamoDBDatabase.getAllSchools();
         assertEquals(1, schools.size());
     }
 
     @Test
-    public void createACoupleOfSchoolsThenGetThemAll() throws SQLException {
+    public void testCreateACoupleOfSchoolsThenGetThemAll() throws SQLException {
         CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
         createSchoolFormData.setSchoolName("Mirkwood Elementary");
         createSchoolFormData.setSchoolAddress1("123 Main St.");
@@ -286,7 +285,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void createTwoSchoolsDeleteOneThenGetThem() throws SQLException, NoSuchSchoolException {
+    public void testCreateTwoSchoolsDeleteOneThenGetThem() throws SQLException, NoSuchSchoolException {
         CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
         createSchoolFormData.setSchoolName("Mirkwood Elementary");
         createSchoolFormData.setSchoolAddress1("123 Main St.");
@@ -310,7 +309,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void createSchoolThenModifyIt() throws SQLException, NoSuchSchoolException {
+    public void testCreateSchoolThenModifyIt() throws SQLException, NoSuchSchoolException {
         CreateSchoolFormData createSchoolFormData = new CreateSchoolFormData();
         createSchoolFormData.setSchoolName("Mirkwood Elementary");
         createSchoolFormData.setSchoolAddress1("123 Main St.");
@@ -346,14 +345,13 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void getAllBanksWhenThereAreNone() throws SQLException {
+    public void testGetAllBanksWhenThereAreNone() throws SQLException {
         List<Bank> banks = dynamoDBDatabase.getAllBanks();
         assertEquals(0, banks.size());
     }
 
-
-    /** Will be used in a few other tests. */
-    private String insertNewBankAndReturnTheId() throws SQLException, EmailAlreadyInUseException {
+    /** Creates a bank and admin. */
+    private void insertNewBank(String bankAdminEmail) throws SQLException, EmailAlreadyInUseException {
         CreateBankFormData createBankFormData = new CreateBankFormData();
         createBankFormData.setBankName("Last Trust Bank");
         createBankFormData.setEmail("weibosum@example.org");
@@ -361,14 +359,18 @@ public class DynamoDBDatabaseIntegrationTest {
         createBankFormData.setLastName("Bo Sum");
         createBankFormData.setPhoneNumber("302-255-1234");
         dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+    }
 
+    /** Will be used in a few other tests. */
+    private String insertNewBankAndReturnTheId() throws SQLException, EmailAlreadyInUseException {
+        insertNewBank("weibosum@example.org");
         List<Bank> banks = dynamoDBDatabase.getAllBanks();
         assertEquals(1, banks.size());
         return banks.get(0).getBankId();
     }
 
     @Test
-    public void createACoupleOfBanksThenGetThemAll() throws SQLException, EmailAlreadyInUseException {
+    public void testCreateACoupleOfBanksThenGetThemAll() throws SQLException, EmailAlreadyInUseException {
         // Note: This doesn't set minLMIForCRA or bankSpecificDataLabel because those aren't available on this form
         CreateBankFormData createBankFormData = new CreateBankFormData();
         createBankFormData.setBankName("Last Trust Bank");
@@ -391,7 +393,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void createTwoBanksDeleteOneThenGetThem() throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+    public void testCreateTwoBanksDeleteOneThenGetThem() throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
         CreateBankFormData createBankFormData = new CreateBankFormData();
         createBankFormData.setBankName("Last Trust Bank");
         createBankFormData.setEmail("weibosum@example.org");
@@ -411,14 +413,14 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void retrieveBankById() throws SQLException, EmailAlreadyInUseException {
+    public void testRetrieveBankById() throws SQLException, EmailAlreadyInUseException {
         String bankId = insertNewBankAndReturnTheId();
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("Last Trust Bank", bank.getBankName());
     }
 
     @Test
-    public void modifyBankWithNumericLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void testModifyBankWithNumericLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
         String bankId = insertNewBankAndReturnTheId();
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
@@ -431,7 +433,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void modifyBankWithBlankLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void testModifyBankWithBlankLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
         String bankId = insertNewBankAndReturnTheId();
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
@@ -444,7 +446,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void modifyBankAdminFields() throws Exception {
+    public void testModifyBankAdminFields() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
@@ -461,7 +463,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void setBankSpecificFieldLabelToString() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void testSetBankSpecificFieldLabelToString() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
         String bankId = insertNewBankAndReturnTheId();
         SetBankSpecificFieldLabelFormData formData = new SetBankSpecificFieldLabelFormData();
         formData.setBankId(bankId);
@@ -473,7 +475,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void setBankSpecificFieldLabelToEmpty() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void testSetBankSpecificFieldLabelToEmpty() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
         String bankId = insertNewBankAndReturnTheId();
         SetBankSpecificFieldLabelFormData formData = new SetBankSpecificFieldLabelFormData();
         formData.setBankId(bankId);
@@ -483,24 +485,27 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("", bank.getBankSpecificDataLabel());
     }
 
-    /** Inserts a particular set of data to create a teacher and returns the new Teacher object. */
-    private Teacher createTeacherJane(String schoolId) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    private Teacher insertTeacher(String schoolId, String email) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         TeacherRegistrationFormData teacherRegistrationFormData = new TeacherRegistrationFormData();
-        teacherRegistrationFormData.setEmail("jane@sample.com");
+        teacherRegistrationFormData.setEmail(email);
         teacherRegistrationFormData.setFirstName("Jane");
         teacherRegistrationFormData.setLastName("Doe");
         teacherRegistrationFormData.setPhoneNumber("302-255-1234");
         teacherRegistrationFormData.setSchoolId(schoolId);
         String hashedPassword = "pIdlMcr8gPuKCTNlKBR7dayaDVk==";
         String salt = "JEgSZ2VfBC4=";
-        Teacher teacher = dynamoDBDatabase.insertNewTeacher(teacherRegistrationFormData, hashedPassword, salt);
-        return teacher;
+        return dynamoDBDatabase.insertNewTeacher(teacherRegistrationFormData, hashedPassword, salt);
+    }
+
+    /** Inserts a particular set of data to create a teacher and returns the new Teacher object. */
+    private Teacher insertTeacherJane(String schoolId) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        return insertTeacher(schoolId, "jane@sample.com");
     }
 
     @Test
-    public void insertTeacherVerifyFields() throws Exception {
+    public void testInsertTeacherVerifyFields() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
         assertNotNull(teacher.getUserId());
         assertEquals(UserType.TEACHER, teacher.getUserType());
         assertEquals("jane@sample.com", teacher.getEmail());
@@ -513,11 +518,11 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void insertTeacherAndListBySchool() throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testInsertTeacherAndListBySchool() throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // -- Create a school --
         String schoolId = insertNewSchoolAndReturnTheId();
         // -- Create a teacher --
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
         // -- Check that it is there --
         List<Teacher> teachers = dynamoDBDatabase.getTeachersBySchool(schoolId);
         assertEquals(1, teachers.size());
@@ -525,26 +530,26 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void insertTeacherAndListById() throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testInsertTeacherAndListById() throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // -- Create a school --
         String schoolId = insertNewSchoolAndReturnTheId();
         // -- Create a teacher --
-        Teacher teacherReturned = createTeacherJane(schoolId);
+        Teacher teacherReturned = insertTeacherJane(schoolId);
         // --- Retrieve and verify --
         User userFetched = dynamoDBDatabase.getUserById(teacherReturned.getUserId());
         assertEquals("Jane", userFetched.getFirstName());
     }
 
     @Test
-    public void getUserByIdWhichDoesNotExist() throws Exception {
+    public void testGetUserByIdWhichDoesNotExist() throws Exception {
         User user = dynamoDBDatabase.getUserById("0");
         assertNull(user);
     }
 
     @Test
-    public void insertTeacherThenDeleteHer() throws Exception {
+    public void testInsertTeacherThenDeleteHer() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
         dynamoDBDatabase.deleteTeacher(teacher.getUserId());
         User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
         assertNull(userFetched);
@@ -552,26 +557,26 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @Test
     @Ignore // Skip this test because those using index give an error when run under maven
-    public void insertTeacherThenSearchByEmail() throws Exception {
+    public void testInsertTeacherThenSearchByEmail() throws Exception {
         DynamoDBSetup.initializeUserByEmailIndex(dynamoDB);
         String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
         User userFetched = dynamoDBDatabase.getUserByEmail(teacher.getEmail());
         assertEquals(teacher.getUserId(), userFetched.getUserId());
     }
 
     @Test
     @Ignore // Skip this test because those using index give an error when run under maven
-    public void searchByEmailButNotFound() throws Exception {
+    public void testSearchByEmailButNotFound() throws Exception {
         DynamoDBSetup.initializeUserByEmailIndex(dynamoDB);
         User user = dynamoDBDatabase.getUserByEmail("fake@place.com");
         assertNull(user);
     }
 
     @Test
-    public void updateUserCredential() throws Exception {
+    public void testUpdateUserCredential() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
         String hashedPassword = "81+w3TKFvvrIMjU97abZunWYarw=";
         String salt = "i1Ncya9/3xI=";
         dynamoDBDatabase.updateUserCredential(teacher.getUserId(), hashedPassword, salt);
@@ -582,9 +587,9 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void updateResetPasswordToken() throws Exception {
+    public void testUpdateResetPasswordToken() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
         String resetPasswordToken = "RbehTBuEY0i5GV1P7WcoioOvT3M=";
         dynamoDBDatabase.updateResetPasswordToken(teacher.getUserId(), resetPasswordToken);
         User userFetched = dynamoDBDatabase.getUserById(teacher.getUserId());
@@ -593,9 +598,9 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void createTeacherThenModifyUserPersonalFields() throws Exception {
+    public void testCreateTeacherThenModifyUserPersonalFields() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
+        Teacher teacher = insertTeacherJane(schoolId);
 
         EditPersonalDataFormData editPersonalDataFormData = new EditPersonalDataFormData();
         editPersonalDataFormData.setUserId(teacher.getUserId());
@@ -613,9 +618,9 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void createTeacherThenModifyTeacherSchool() throws Exception {
+    public void testCreateTeacherThenModifyTeacherSchool() throws Exception {
         String schoolId1 = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId1);
+        Teacher teacher = insertTeacherJane(schoolId1);
         insertNewSchool("Midtown Prep");
         List<School> schools = dynamoDBDatabase.getAllSchools();
         String midtownPrepId = null;
@@ -632,10 +637,10 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(teacherFetched.getSchoolId(), midtownPrepId);
     }
 
-    /** Inserts a particular set of data to create a teacher and returns the new Teacher object. */
-    private Volunteer createVolunteerAnika(String bankId) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+    /** Inserts a volunteer with the specified email. */
+    private Volunteer insertVolunteer(String bankId, String email) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
         VolunteerRegistrationFormData volunteerRegistrationFormData = new VolunteerRegistrationFormData();
-        volunteerRegistrationFormData.setEmail("anika@sample.com");
+        volunteerRegistrationFormData.setEmail(email);
         volunteerRegistrationFormData.setFirstName("Anika");
         volunteerRegistrationFormData.setLastName("Doe");
         volunteerRegistrationFormData.setPhoneNumber("302-255-1234");
@@ -646,11 +651,16 @@ public class DynamoDBDatabaseIntegrationTest {
         return dynamoDBDatabase.insertNewVolunteer(volunteerRegistrationFormData, hashedPassword, salt);
     }
 
+    /** Inserts a particular set of data to create a volunteer and returns the new Volunteer object. */
+    private Volunteer insertVolunteerAnika(String bankId) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+        return insertVolunteer(bankId, "anika@sample.com");
+    }
+
 
     @Test
-    public void createVolunteer() throws Exception {
+    public void testCreateVolunteer() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
-        Volunteer volunteer = createVolunteerAnika(bankId);
+        Volunteer volunteer = insertVolunteerAnika(bankId);
 
         Volunteer volunteerFetched = (Volunteer) dynamoDBDatabase.getUserById(volunteer.getUserId());
         assertEquals(volunteer.getUserId(), volunteerFetched.getUserId());
@@ -665,18 +675,18 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void createVolunteerThenDeleteHer() throws Exception {
+    public void testCreateVolunteerThenDeleteHer() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
-        Volunteer volunteer = createVolunteerAnika(bankId);
+        Volunteer volunteer = insertVolunteerAnika(bankId);
         dynamoDBDatabase.deleteVolunteer(volunteer.getUserId());
         User userFetched = dynamoDBDatabase.getUserById(volunteer.getUserId());
         assertNull(userFetched);
     }
 
     @Test
-    public void createVolunteerThenModifyVolunteerPersonalFields() throws Exception {
+    public void testCreateVolunteerThenModifyVolunteerPersonalFields() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
-        Volunteer volunteer = createVolunteerAnika(bankId);
+        Volunteer volunteer = insertVolunteerAnika(bankId);
 
         EditVolunteerPersonalDataFormData editVolunteerPersonalDataFormData = new EditVolunteerPersonalDataFormData();
         editVolunteerPersonalDataFormData.setUserId(volunteer.getUserId());
@@ -696,25 +706,25 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void updateApprovalStatusToSuspended() throws Exception {
+    public void testUpdateApprovalStatusToSuspended() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
-        Volunteer volunteer = createVolunteerAnika(bankId);
+        Volunteer volunteer = insertVolunteerAnika(bankId);
         dynamoDBDatabase.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.SUSPENDED);
         Volunteer volunteerFetched = (Volunteer) dynamoDBDatabase.getUserById(volunteer.getUserId());
         assertEquals(ApprovalStatus.SUSPENDED, volunteerFetched.getApprovalStatus());
     }
 
     @Test
-    public void updateApprovalStatusToChecked() throws Exception {
+    public void testUpdateApprovalStatusToChecked() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
-        Volunteer volunteer = createVolunteerAnika(bankId);
+        Volunteer volunteer = insertVolunteerAnika(bankId);
         dynamoDBDatabase.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
         Volunteer volunteerFetched = (Volunteer) dynamoDBDatabase.getUserById(volunteer.getUserId());
         assertEquals(ApprovalStatus.CHECKED, volunteerFetched.getApprovalStatus());
     }
 
     @Test
-    public void createBankAdminAndVerifyListOfAllBankAdmins() throws Exception {
+    public void testCreateBankAdminAndVerifyListOfAllBankAdmins() throws Exception {
         insertNewBankAndReturnTheId();
         List<BankAdmin> bankAdmins = dynamoDBDatabase.getBankAdmins();
         assertEquals(1, bankAdmins.size());
@@ -722,27 +732,32 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
 
-    private Event createEventAndReturnIt() throws Exception {
-        String schoolId = insertNewSchoolAndReturnTheId();
-        Teacher teacher = createTeacherJane(schoolId);
-        PrettyPrintingDate date = insertDateAndReturnIt();
-        String time = insertTimeAndReturnIt();
-
+    private void insertEvent(String teacherId, PrettyPrintingDate date, String time) throws Exception {
         CreateEventFormData createEventFormData = new CreateEventFormData();
         createEventFormData.setEventDate(date);
         createEventFormData.setEventTime(time);
         createEventFormData.setGrade("3");
         createEventFormData.setNumberStudents("25");
         createEventFormData.setNotes("The class is quite unruly.");
-        dynamoDBDatabase.insertEvent(teacher.getUserId(), createEventFormData);
+        dynamoDBDatabase.insertEvent(teacherId, createEventFormData);
+    }
+
+    private Event insertEventAndReturnIt(String teacherId) throws Exception {
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+        insertEvent(teacherId, date, time);
         List<Event> events = dynamoDBDatabase.getAllEvents();
         assertEquals(1, events.size());
         return events.get(0);
     }
 
     @Test
-    public void insertEventAndListIt() throws Exception {
-        createEventAndReturnIt();
+    public void testInsertEventAndListIt() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+        insertEvent(teacher.getUserId(), date, time);
         List<Event> events = dynamoDBDatabase.getAllEvents();
         assertEquals(1, events.size());
         Event eventFetched = events.get(0);
@@ -756,16 +771,20 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void insertEventThenDeleteIt() throws Exception {
-        Event event = createEventAndReturnIt();
+    public void testInsertEventThenDeleteIt() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
         dynamoDBDatabase.deleteEvent(event.getEventId());
         List<Event> events = dynamoDBDatabase.getAllEvents();
         assertEquals(0, events.size());
     }
 
     @Test
-    public void insertEventThenFetchById() throws Exception {
-        Event event = createEventAndReturnIt();
+    public void testInsertEventThenFetchById() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
         Event eventFetched = dynamoDBDatabase.getEventById(event.getEventId());
         assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
         assertEquals("2:00", eventFetched.getEventTime());
@@ -777,9 +796,11 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void insertEventThenModifyIt() throws Exception {
+    public void testInsertEventThenModifyIt() throws Exception {
         // -- Create first event --
-        Event event = createEventAndReturnIt();
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
 
         // -- Allow second date --
         PrettyPrintingDate secondDate;
@@ -825,14 +846,114 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void volunteerForAnEvent() throws Exception {
-        Event event = createEventAndReturnIt();
+    public void testVolunteerForAnEvent() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
         assertEquals(null, event.getVolunteerId());
         String bankId = insertNewBankAndReturnTheId();
-        Volunteer volunteer = createVolunteerAnika(bankId);
+        Volunteer volunteer = insertVolunteerAnika(bankId);
 
         dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
         Event eventFetched = dynamoDBDatabase.getEventById(event.getEventId());
         assertEquals(volunteer.getUserId(), eventFetched.getVolunteerId());
+    }
+
+    @Test
+    public void testGetEventsByTeacher() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher1 = insertTeacherJane(schoolId);
+        Teacher teacher2 = insertTeacher(schoolId, "paul@gmail.com");
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+
+        List<Event> events0 = dynamoDBDatabase.getEventsByTeacher(teacher1.getUserId());
+        assertEquals(0, events0.size());
+        insertEvent(teacher1.getUserId(), date, time);
+        List<Event> events1 = dynamoDBDatabase.getEventsByTeacher(teacher1.getUserId());
+        assertEquals(1, events1.size());
+        insertEvent(teacher1.getUserId(), date, time);
+        List<Event> events2 = dynamoDBDatabase.getEventsByTeacher(teacher1.getUserId());
+        assertEquals(2, events2.size());
+        insertEvent(teacher2.getUserId(), date, time);
+        assertEquals(2, events2.size());
+    }
+
+    @Test
+    public void testGetAllAvailableEvents() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+
+        List<Event> events0 = dynamoDBDatabase.getAllAvailableEvents();
+        assertEquals(0, events0.size());
+        insertEvent(teacher.getUserId(), date, time);
+        List<Event> events1 = dynamoDBDatabase.getAllAvailableEvents();
+        assertEquals(1, events1.size());
+        insertEvent(teacher.getUserId(), date, time);
+        List<Event> events2 = dynamoDBDatabase.getAllAvailableEvents();
+        assertEquals(2, events2.size());
+        dynamoDBDatabase.volunteerForEvent(events2.get(0).getEventId(), volunteer.getUserId());
+        List<Event> events3 = dynamoDBDatabase.getAllAvailableEvents();
+        assertEquals(1, events3.size());
+    }
+
+
+    @Test
+    public void testGetEventsByVolunteer() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer1 = insertVolunteerAnika(bankId);
+        Volunteer volunteer2 = insertVolunteer(bankId, "chip@bankofamerica.com");
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+
+        List<Event> events0 = dynamoDBDatabase.getEventsByVolunteer(volunteer1.getUserId());
+        assertEquals(0, events0.size());
+        insertEvent(teacher.getUserId(), date, time);
+        insertEvent(teacher.getUserId(), date, time);
+        insertEvent(teacher.getUserId(), date, time);
+        List<Event> events1 = dynamoDBDatabase.getEventsByVolunteer(volunteer1.getUserId());
+        assertEquals(0, events1.size());
+        List<Event> allEvents1 = dynamoDBDatabase.getAllEvents();
+        assertEquals(3, allEvents1.size());
+        String event0Id = allEvents1.get(0).getEventId();
+        String event1Id = allEvents1.get(1).getEventId();
+        String event2Id = allEvents1.get(2).getEventId();
+        dynamoDBDatabase.volunteerForEvent(event0Id, volunteer1.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event1Id, volunteer1.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event2Id, volunteer2.getUserId());
+        List<Event> events2 = dynamoDBDatabase.getEventsByVolunteer(volunteer1.getUserId());
+        assertEquals(2, events2.size());
+        List<Event> events3 = dynamoDBDatabase.getEventsByVolunteer(volunteer2.getUserId());
+        assertEquals(1, events3.size());
+        assertEquals(event2Id, events3.get(0).getEventId());
+    }
+
+    @Test
+    public void testGetVolunteersByBank() throws Exception {
+        insertNewBank("rick@neptunetrust.com");
+        insertNewBank("glen.smith@bofa.com");
+        insertNewBank("cy.arnold@capitalone.com");
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(3, banks.size());
+        String bank0Id = banks.get(0).getBankId();
+        String bank1Id = banks.get(1).getBankId();
+        String bank2Id = banks.get(2).getBankId();
+        Volunteer volunteer0 = insertVolunteer(bank1Id, "stefan@gmail.com");
+        Volunteer volunteer1 = insertVolunteer(bank2Id, "anika@bankofamerica.com");
+        Volunteer volunteer2 = insertVolunteer(bank2Id, "chip@bankofamerica.com");
+
+        List<Volunteer> volunteers0 = dynamoDBDatabase.getVolunteersByBank(bank0Id);
+        assertEquals(0, volunteers0.size());
+        List<Volunteer> volunteers1 = dynamoDBDatabase.getVolunteersByBank(bank1Id);
+        assertEquals(1, volunteers1.size());
+        assertEquals(volunteer0.getUserId(), volunteers1.get(0).getUserId());
+        List<Volunteer> volunteers2 = dynamoDBDatabase.getVolunteersByBank(bank2Id);
+        assertEquals(2, volunteers2.size());
     }
 }

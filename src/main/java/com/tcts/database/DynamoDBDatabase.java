@@ -470,17 +470,40 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
-        return delegate.getEventsByTeacher(teacherId);
+        // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
+        List<Event> result = new ArrayList<Event>();
+        for (Item item : tables.eventTable.scan()) {
+            if (teacherId.equals(item.getString(event_teacher_id.name()))) {
+                result.add(createEventFromDynamoDBItem(item));
+            }
+        }
+        return result;
     }
 
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
-        return delegate.getAllAvailableEvents();
+        // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
+        // FIXME: The requirements state that this must pre-populate the linkedTeacher and
+        //    those teachers' linkedSchool. But I haven't done that yet.
+        List<Event> result = new ArrayList<Event>();
+        for (Item item : tables.eventTable.scan()) {
+            if (item.getString(event_volunteer_id.name()) == null) {
+                result.add(createEventFromDynamoDBItem(item));
+            }
+        }
+        return result;
     }
 
     @Override
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
-        return delegate.getEventsByVolunteer(volunteerId);
+        // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
+        List<Event> result = new ArrayList<Event>();
+        for (Item item : tables.eventTable.scan()) {
+            if (volunteerId.equals(item.getString(event_volunteer_id.name()))) {
+                result.add(createEventFromDynamoDBItem(item));
+            }
+        }
+        return result;
     }
 
     @Override
@@ -511,7 +534,15 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
-        return delegate.getVolunteersByBank(bankId);
+        // FIXME: Needs a query criterion or index to speed it up.
+        List<Volunteer> result = new ArrayList<Volunteer>();
+        for (Item item : tables.userTable.scan()) {
+            if (UserType.VOLUNTEER.getDBValue().equals(item.getString(user_type.name()))
+                && bankId.equals(item.getString(user_organization_id.name()))) {
+                result.add((Volunteer) createUserFromDynamoDBItem(item));
+            }
+        }
+        return result;
     }
 
     @Override
