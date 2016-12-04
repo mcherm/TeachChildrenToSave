@@ -137,7 +137,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     static DynamoDBDatabase.Tables getTables(DynamoDB dynamoDB) {
-        dynamoDB.getTable("SiteSettings");
         Table siteSettingsTable = dynamoDB.getTable("SiteSettings");
         Table allowedDatesTable = dynamoDB.getTable("AllowedDates");
         Table allowedTimesTable = dynamoDB.getTable("AllowedTimes");
@@ -284,7 +283,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
         school.setCounty(getStringField(item, school_county));
         school.setSchoolDistrict(getStringField(item, school_district));
         school.setPhone(getStringField(item, school_phone));
-        school.setLmiEligible(getIntField(item, school_lmi_eligible));
+        if (item.isPresent(school_lmi_eligible.name())) {
+            school.setLmiEligible(getIntField(item, school_lmi_eligible));
+        }
         school.setSLC(getStringField(item, school_slc));
         return school;
     }
@@ -586,11 +587,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 break;
             }
         }
-        if (result == null) {
-            throw new InconsistentDatabaseException("No bank admin for bank with ID " + bankId);
-        } else {
-            return result;
-        }
+        return result;
     }
 
     @Override
