@@ -21,7 +21,6 @@ dubious about this one.
 
  ----- TESTING  -----
 
-
 -----------BUGS-------------
  * In the code, session.getVolunteer() should return the BankAdmin when there is a bank admin.
 

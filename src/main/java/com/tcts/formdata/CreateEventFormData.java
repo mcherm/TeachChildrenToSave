@@ -20,6 +20,9 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
 
     @Override
     public void validationRules(Errors errors) throws SQLException {
+        if ((teacherId == null) || (teacherId.isEmpty())){
+            errors.addError("You must select a teacher from the list.");
+        }
         if (!database.getAllowedDates().contains(eventDate)) {
             errors.addError("You must select a valid date.");
         }
