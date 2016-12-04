@@ -373,8 +373,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
     
     @Override
-    public List<Teacher> getTeacherWithSchoolData() throws SQLException {
-        return database.getTeacherWithSchoolData();
+    public List<Teacher> getTeachersWithSchoolData() throws SQLException {
+        return database.getTeachersWithSchoolData();
     }
 
     @Override

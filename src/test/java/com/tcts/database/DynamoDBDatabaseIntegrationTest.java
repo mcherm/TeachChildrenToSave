@@ -956,4 +956,88 @@ public class DynamoDBDatabaseIntegrationTest {
         List<Volunteer> volunteers2 = dynamoDBDatabase.getVolunteersByBank(bank2Id);
         assertEquals(2, volunteers2.size());
     }
+
+
+    @Test
+    public void testGetVolunteersWithBankDataWhenThereAreNone() throws Exception {
+        List<Volunteer> volunteers = dynamoDBDatabase.getVolunteersWithBankData();
+        assertEquals(0, volunteers.size());
+    }
+
+    @Test
+    public void testGetVolunteersWithBankData() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+
+        List<Volunteer> volunteers = dynamoDBDatabase.getVolunteersWithBankData();
+        assertEquals(1, volunteers.size());
+        Volunteer volunteerFetched = volunteers.get(0);
+        assertEquals(volunteer.getUserId(), volunteerFetched.getUserId());
+        assertEquals(bankId, volunteerFetched.getBankId());
+        assertEquals(bankId, volunteerFetched.getLinkedBank().getBankId());
+    }
+
+
+    @Test
+    public void testGetEventsByVolunteerWithTeacherAndSchool() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer1 = insertVolunteerAnika(bankId);
+        Volunteer volunteer2 = insertVolunteer(bankId, "chip@bankofamerica.com");
+        PrettyPrintingDate date = insertDateAndReturnIt();
+        String time = insertTimeAndReturnIt();
+
+        List<Event> events0 = dynamoDBDatabase.getEventsByVolunteerWithTeacherAndSchool(volunteer1.getUserId());
+        assertEquals(0, events0.size());
+        insertEvent(teacher.getUserId(), date, time);
+        insertEvent(teacher.getUserId(), date, time);
+        insertEvent(teacher.getUserId(), date, time);
+        List<Event> events1 = dynamoDBDatabase.getEventsByVolunteerWithTeacherAndSchool(volunteer1.getUserId());
+        assertEquals(0, events1.size());
+        List<Event> allEvents1 = dynamoDBDatabase.getAllEvents();
+        assertEquals(3, allEvents1.size());
+        String event0Id = allEvents1.get(0).getEventId();
+        String event1Id = allEvents1.get(1).getEventId();
+        String event2Id = allEvents1.get(2).getEventId();
+        dynamoDBDatabase.volunteerForEvent(event0Id, volunteer1.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event1Id, volunteer1.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event2Id, volunteer2.getUserId());
+        List<Event> events2 = dynamoDBDatabase.getEventsByVolunteerWithTeacherAndSchool(volunteer1.getUserId());
+        assertEquals(2, events2.size());
+        List<Event> events3 = dynamoDBDatabase.getEventsByVolunteerWithTeacherAndSchool(volunteer2.getUserId());
+        assertEquals(1, events3.size());
+        Event eventFetched = events3.get(0);
+        assertEquals(event2Id, eventFetched.getEventId());
+        assertEquals(teacher.getUserId(), eventFetched.getTeacherId());
+        assertEquals(teacher.getUserId(), eventFetched.getLinkedTeacher().getUserId());
+        assertEquals(teacher.getFirstName(), eventFetched.getLinkedTeacher().getFirstName());
+        assertEquals(schoolId, eventFetched.getLinkedTeacher().getSchoolId());
+        assertEquals(schoolId, eventFetched.getLinkedTeacher().getLinkedSchool().getSchoolId());
+    }
+
+    @Test
+    public void testGetTeachersWithSchoolData() throws Exception {
+        List<Teacher> teachers0 = dynamoDBDatabase.getTeachersWithSchoolData();
+        assertEquals(0, teachers0.size());
+
+        String schoolId1 = insertNewSchoolAndReturnTheId();
+        insertTeacherJane(schoolId1);
+
+        List<Teacher> teachers1 = dynamoDBDatabase.getTeachersWithSchoolData();
+        assertEquals(1, teachers1.size());
+        assertEquals(schoolId1, teachers1.get(0).getSchoolId());
+        assertEquals(schoolId1, teachers1.get(0).getLinkedSchool().getSchoolId());
+
+        insertTeacher(schoolId1, "sea328@matelem.edu.de.us");
+        List<Teacher> teachers2 = dynamoDBDatabase.getTeachersWithSchoolData();
+        assertEquals(2, teachers2.size());
+        assertEquals(schoolId1, teachers2.get(0).getSchoolId());
+        assertEquals(schoolId1, teachers2.get(0).getLinkedSchool().getSchoolId());
+        assertEquals(schoolId1, teachers2.get(1).getSchoolId());
+        assertEquals(schoolId1, teachers2.get(1).getLinkedSchool().getSchoolId());
+    }
+
+
+    // FIXME: Need test to verify that bank admins show up in the list of volunteers
 }

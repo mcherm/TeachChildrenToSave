@@ -30,7 +30,6 @@ import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.EditPersonalDataFormData;
-import com.tcts.controller.CancelWithdrawController;
 
 /**
  * This controller gives the Site Admin ability to manage the teachers, showing the teachers list and giving them the ability to modify or delete them.
@@ -56,7 +55,7 @@ public class TeacherController {
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-        List<Teacher> teachers = database.getTeacherWithSchoolData();
+        List<Teacher> teachers = database.getTeachersWithSchoolData();
         
         model.addAttribute("teachers", teachers);
         return "teachers";
@@ -77,7 +76,7 @@ public class TeacherController {
 
         deleteTeacherAndCancelEvents(teacherId,request);
 
-        model.addAttribute("teachers", database.getTeacherWithSchoolData());
+        model.addAttribute("teachers", database.getTeachersWithSchoolData());
        return "teachers";
     }
 
@@ -157,7 +156,7 @@ public class TeacherController {
             return showEditUserWithErrors(model, formData, new Errors("That email is already in use by another user."));
         }
         
-        List<Teacher> teachers = database.getTeacherWithSchoolData();
+        List<Teacher> teachers = database.getTeachersWithSchoolData();
         
         model.addAttribute("teachers", teachers);
         return "teachers";

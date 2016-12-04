@@ -304,7 +304,7 @@ public interface DatabaseFacade {
      * @return List<Teacher>
      * @throws SQLException
      */
-	public List<Teacher> getTeacherWithSchoolData() throws SQLException;
+	public List<Teacher> getTeachersWithSchoolData() throws SQLException;
 
     /**
      *  Get list of teachers from the specified school

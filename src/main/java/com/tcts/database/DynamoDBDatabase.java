@@ -58,6 +58,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.tcts.database.DatabaseField.*;
@@ -67,10 +69,23 @@ import static com.tcts.database.DatabaseField.*;
  * A facade that implements the database functionality using DynamoDB.
  */
 public class DynamoDBDatabase implements DatabaseFacade {
+    // FIXME: Need to add sorting in lots of places
+
+    // ========== Static Variables ==========
+
+    /**
+     * Since bank admins ARE volunteers, when searching for volunteers we must check two different user types;
+     * this set contains the database values to check against.
+     */
+    final static Set<String> volunteerUserTypes = new TreeSet<String>() {{
+        add(UserType.VOLUNTEER.getDBValue());
+        add(UserType.BANK_ADMIN.getDBValue());
+    }};
+
+
 
     // ========== Instance Variables and Constructor ==========
 
-    private final DatabaseFacade delegate; // FIXME: Only temporary. Delegate some calls here until fully implemented
     private final Tables tables;
 
 
@@ -82,9 +97,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
      *                 any calls to methods not yet implemented.
      */
     public DynamoDBDatabase(DatabaseFacade delegate) {
-        this.delegate = delegate;
         this.tables = getTables(connectToDB());
     }
+
 
     // ========== Static Methods Shared by DynamoDBSetup ==========
 
@@ -508,7 +523,26 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws SQLException {
-        return delegate.getEventsByVolunteerWithTeacherAndSchool(volunteerId);
+        Map<String,School> schoolsById = new HashMap<String,School>();
+        Map<String,Teacher> teachersById = new HashMap<String,Teacher>();
+        List<Event> events = getEventsByVolunteer(volunteerId);
+        for (Event event : events) {
+            String teacherId = event.getTeacherId();
+            Teacher teacher = teachersById.get(teacherId);
+            if (teacher == null) {
+                teacher = (Teacher) getUserById(teacherId);
+                teachersById.put(teacherId, teacher);
+            }
+            String schoolId = teacher.getSchoolId();
+            School school = schoolsById.get(schoolId);
+            if (school == null) {
+                school = getSchoolById(schoolId);
+                schoolsById.put(schoolId, school);
+            }
+            teacher.setLinkedSchool(school);
+            event.setLinkedTeacher(teacher);
+        }
+        return events;
     }
 
     @Override
@@ -537,7 +571,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // FIXME: Needs a query criterion or index to speed it up.
         List<Volunteer> result = new ArrayList<Volunteer>();
         for (Item item : tables.userTable.scan()) {
-            if (UserType.VOLUNTEER.getDBValue().equals(item.getString(user_type.name()))
+            if (volunteerUserTypes.contains(item.getString(user_type.name()))
                 && bankId.equals(item.getString(user_organization_id.name()))) {
                 result.add((Volunteer) createUserFromDynamoDBItem(item));
             }
@@ -898,12 +932,38 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public SiteStatistics getSiteStatistics() throws SQLException {
-        return delegate.getSiteStatistics();
+        // FIXME: This returns just dummy values for now.
+        SiteStatistics siteStatistics = new SiteStatistics();
+        siteStatistics.setNumEvents(0);
+        siteStatistics.setNumMatchedEvents(0);
+        siteStatistics.setNumUnmatchedEvents(0);
+        siteStatistics.setNum3rdGradeEvents(0);
+        siteStatistics.setNum4thGradeEvents(0);
+        siteStatistics.setNumVolunteers(0);
+        siteStatistics.setNumParticipatingTeachers(0);
+        siteStatistics.setNumParticipatingSchools(0);
+        return siteStatistics;
     }
 
     @Override
-    public List<Teacher> getTeacherWithSchoolData() throws SQLException {
-        return delegate.getTeacherWithSchoolData();
+    public List<Teacher> getTeachersWithSchoolData() throws SQLException {
+        // FIXME: An index or select might allow me to get just the teachers more effectively
+        Map<String,School> schoolsById = new HashMap<String,School>();
+        List<Teacher> teachers = new ArrayList<Teacher>();
+        for (Item item : tables.userTable.scan()) {
+            if (UserType.TEACHER.getDBValue().equals(getStringField(item, user_type))) {
+                Teacher teacher = (Teacher) createUserFromDynamoDBItem(item);
+                String schoolId = teacher.getSchoolId();
+                School school = schoolsById.get(schoolId);
+                if (school == null) {
+                    school = getSchoolById(schoolId);
+                    schoolsById.put(schoolId, school);
+                }
+                teacher.setLinkedSchool(school);
+                teachers.add(teacher);
+            }
+        }
+        return teachers;
     }
 
     @Override
@@ -923,27 +983,49 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersWithBankData() throws SQLException {
-        return delegate.getVolunteersWithBankData();
+        // FIXME: Should have a search criteria or index to make this faster
+        List<Volunteer> result = new ArrayList<Volunteer>();
+        Map<String,Bank> banksById = new HashMap<String,Bank>();
+
+        for (Item item : tables.userTable.scan()) {
+            if (volunteerUserTypes.contains(getStringField(item, user_type))) {
+                Volunteer volunteer = (Volunteer) createUserFromDynamoDBItem(item);
+                String bankId = volunteer.getBankId();
+                Bank bank = banksById.get(bankId);
+                if (bank == null) {
+                    bank = getBankById(bankId);
+                    banksById.put(bankId, bank);
+                }
+                // Note: makes all the volunteers from the same bank share the same Bank object. I think that's OK.
+                volunteer.setLinkedBank(bank);
+                result.add(volunteer);
+            }
+        }
+        return result;
     }
 
     @Override
     public List<Teacher> getMatchedTeachers() throws SQLException {
-        return delegate.getMatchedTeachers();
+        // FIXME: Needs to be written, but is only used for email announcements.
+        return Collections.EMPTY_LIST;
     }
 
     @Override
     public List<Teacher> getUnMatchedTeachers() throws SQLException {
-        return delegate.getUnMatchedTeachers();
+        // FIXME: Needs to be written, but is only used for email announcements.
+        return Collections.EMPTY_LIST;
     }
 
     @Override
     public List<Volunteer> getMatchedVolunteers() throws SQLException {
-        return delegate.getMatchedVolunteers();
+        // FIXME: Needs to be written, but is only used for email announcements.
+        return Collections.EMPTY_LIST;
     }
 
     @Override
     public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
-        return delegate.getUnMatchedVolunteers();
+        // FIXME: Needs to be written, but is only used for email announcements.
+        return Collections.EMPTY_LIST;
     }
 
     @Override

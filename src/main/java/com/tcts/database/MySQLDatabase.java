@@ -1660,7 +1660,7 @@ public class MySQLDatabase implements DatabaseFacade {
     }
     
     @Override
-    public List<Teacher> getTeacherWithSchoolData() throws SQLException {
+    public List<Teacher> getTeachersWithSchoolData() throws SQLException {
         Connection connection = null;
         List<Teacher> usersList = new ArrayList<Teacher>();
         PreparedStatement preparedStatement = null;
