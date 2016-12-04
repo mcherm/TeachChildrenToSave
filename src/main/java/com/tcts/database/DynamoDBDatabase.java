@@ -163,7 +163,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
      * birthday problem formula, we would need to issue about 430
      * million IDs to have a 1% chance of encountering a collision.
      */
-    private String createUniqueId() {
+    public static String createUniqueId() {
         long randomNonNegativeLong = ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
         return Long.toString(randomNonNegativeLong);
     }
@@ -778,15 +778,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
         String bankAdminId = createUniqueId();
         String bankId = createUniqueId();
-        tables.userTable.putItem(new Item()
-                .withPrimaryKey(new PrimaryKey(user_id.name(), bankAdminId))
-                .withString(user_type.name(), UserType.BANK_ADMIN.getDBValue())
-                .withString(user_email.name(), formData.getEmail())
-                .withString(user_first_name.name(), formData.getFirstName())
-                .withString(user_last_name.name(), formData.getLastName())
-                .withString(user_phone_number.name(), formData.getPhoneNumber())
-                .withString(user_organization_id.name(), bankId)
-                .withInt(user_approval_status.name(), ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue()));
         tables.bankTable.putItem(new Item()
                 .withPrimaryKey(bank_id.name(), bankId)
                 .withString(bank_name.name(), formData.getBankName()));
