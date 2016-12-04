@@ -91,12 +91,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     /**
      * Constructor.
-     *
-     * @param delegate the underlying database to delegate to -- this argument will go away
-     *                 once the class is fully functional. Pass null to get an exception for
-     *                 any calls to methods not yet implemented.
      */
-    public DynamoDBDatabase(DatabaseFacade delegate) {
+    public DynamoDBDatabase() {
         this.tables = getTables(connectToDB());
     }
 

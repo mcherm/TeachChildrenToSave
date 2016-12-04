@@ -1,7 +1,5 @@
 package com.tcts.datamodel;
 
-import com.tcts.database.MySQLDatabase;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

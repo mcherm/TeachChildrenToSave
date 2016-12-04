@@ -71,7 +71,7 @@ public class DynamoDBDatabaseIntegrationTest {
             // It's fine if the deletions failed.
         }
         DynamoDBSetup.createAllDatabaseTables(dynamoDB);
-        dynamoDBDatabase = new DynamoDBDatabase(null);
+        dynamoDBDatabase = new DynamoDBDatabase();
     }
 
 
