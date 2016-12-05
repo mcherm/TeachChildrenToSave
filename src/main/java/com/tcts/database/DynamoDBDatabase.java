@@ -12,6 +12,7 @@ import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.dynamodb.DynamoDBHelper;
+import com.tcts.database.dynamodb.ItemMaker;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
@@ -446,16 +447,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
         String newTeacherId = dynamoDBHelper.createUniqueId();
-        tables.userTable.putItem(new Item()
-                .withPrimaryKey(new PrimaryKey(user_id.name(), newTeacherId))
-                .withString(user_type.name(), UserType.TEACHER.getDBValue())
-                .withString(user_email.name(), formData.getEmail())
-                .withString(user_first_name.name(), formData.getFirstName())
-                .withString(user_last_name.name(), formData.getLastName())
-                .withString(user_phone_number.name(), formData.getPhoneNumber())
-                .withString(user_organization_id.name(), formData.getSchoolId())
-                .withString(user_hashed_password.name(), hashedPassword)
-                .withString(user_password_salt.name(), salt));
+        dynamoDBHelper.insertIntoTable(tables.userTable,
+                new ItemMaker(user_id, newTeacherId)
+                        .withString(user_type, UserType.TEACHER.getDBValue())
+                        .withString(user_email, formData.getEmail())
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_organization_id, formData.getSchoolId())
+                        .withString(user_hashed_password, hashedPassword)
+                        .withString(user_password_salt, salt));
         Teacher result = new Teacher();
         result.setUserId(newTeacherId);
         result.setUserType(UserType.TEACHER);
@@ -533,15 +534,14 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
-        String newEventId = dynamoDBHelper.createUniqueId();
-        tables.eventTable.putItem(new Item()
-                .withPrimaryKey(new PrimaryKey(event_id.name(), newEventId))
-                .withString(event_teacher_id.name(), teacherId)
-                .withString(event_date.name(), PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
-                .withString(event_time.name(), formData.getEventTime())
-                .withInt(event_grade.name(), Integer.parseInt(formData.getGrade()))
-                .withInt(event_number_students.name(), Integer.parseInt(formData.getNumberStudents()))
-                .withString(event_notes.name(), formData.getNotes()));
+        dynamoDBHelper.insertIntoTable(tables.eventTable,
+                new ItemMaker(event_id, dynamoDBHelper.createUniqueId())
+                        .withString(event_teacher_id, teacherId)
+                        .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
+                        .withString(event_time, formData.getEventTime())
+                        .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
+                        .withString(event_notes, formData.getNotes()));
     }
 
     @Override
@@ -584,18 +584,18 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // NOTE: I'm choosing NOT to verify that the bank ID is actually present in the database
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
         String newVolunteerId = dynamoDBHelper.createUniqueId();
-        tables.userTable.putItem(new Item()
-                .withPrimaryKey(new PrimaryKey(user_id.name(), newVolunteerId))
-                .withString(user_type.name(), UserType.VOLUNTEER.getDBValue())
-                .withString(user_email.name(), formData.getEmail())
-                .withString(user_first_name.name(), formData.getFirstName())
-                .withString(user_last_name.name(), formData.getLastName())
-                .withString(user_phone_number.name(), formData.getPhoneNumber())
-                .withString(user_organization_id.name(), formData.getBankId())
-                .withInt(user_approval_status.name(), ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue())
-                .withString(user_bank_specific_data.name(), formData.getBankSpecificData())
-                .withString(user_hashed_password.name(), hashedPassword)
-                .withString(user_password_salt.name(), salt));
+        dynamoDBHelper.insertIntoTable(tables.userTable,
+                new ItemMaker(user_id, newVolunteerId)
+                        .withString(user_type, UserType.VOLUNTEER.getDBValue())
+                        .withString(user_email, formData.getEmail())
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_organization_id, formData.getBankId())
+                        .withInt(user_approval_status, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue())
+                        .withString(user_bank_specific_data, formData.getBankSpecificData())
+                        .withString(user_hashed_password, hashedPassword)
+                        .withString(user_password_salt, salt));
         Volunteer result = new Volunteer();
         result.setUserId(newVolunteerId);
         result.setUserType(UserType.VOLUNTEER);
@@ -758,11 +758,23 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        // FIXME: I need to insert the user, which I don't do at the moment.
         String bankAdminId = dynamoDBHelper.createUniqueId();
+
         String bankId = dynamoDBHelper.createUniqueId();
-        tables.bankTable.putItem(new Item()
-                .withPrimaryKey(bank_id.name(), bankId)
-                .withString(bank_name.name(), formData.getBankName()));
+        dynamoDBHelper.insertIntoTable(tables.bankTable,
+                new ItemMaker(bank_id, bankId)
+                        .withString(bank_name, formData.getBankName()));
+        dynamoDBHelper.insertIntoTable(tables.userTable,
+                new ItemMaker(user_id, bankAdminId)
+                        .withString(user_type, UserType.BANK_ADMIN.getDBValue())
+                        .withString(user_email, formData.getEmail())
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_organization_id, bankId)
+                        .withInt(user_approval_status, ApprovalStatus.CHECKED.getDbValue()));
+        // FIXME: Should verify that it's OK not to set the user_hashed_password and user_password_salt.
     }
 
     @Override
@@ -796,25 +808,24 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
-        Item item = new Item()
-                .withPrimaryKey(school_id.name(), dynamoDBHelper.createUniqueId())
-                .withString(school_name.name(), school.getSchoolName())
-                .withString(school_addr1.name(), school.getSchoolAddress1())
-                .withString(school_city.name(), school.getCity())
-                .withString(school_state.name(), school.getState())
-                .withString(school_zip.name(), school.getZip())
-                .withString(school_county.name(), school.getCounty())
-                .withString(school_district.name(), school.getDistrict())
-                .withString(school_phone.name(), school.getPhone())
-                .withString(school_lmi_eligible.name(), school.getLmiEligible())
-                .withString(school_slc.name(), school.getSLC());
-        tables.schoolTable.putItem(item);
+        dynamoDBHelper.insertIntoTable(tables.schoolTable,
+                new ItemMaker(school_id, dynamoDBHelper.createUniqueId())
+                        .withString(school_name, school.getSchoolName())
+                        .withString(school_addr1, school.getSchoolAddress1())
+                        .withString(school_city, school.getCity())
+                        .withString(school_state, school.getState())
+                        .withString(school_zip, school.getZip())
+                        .withString(school_county, school.getCounty())
+                        .withString(school_district, school.getDistrict())
+                        .withString(school_phone, school.getPhone())
+                        .withString(school_lmi_eligible, school.getLmiEligible())
+                        .withString(school_slc, school.getSLC()));
     }
 
     @Override
     public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
-        tables.allowedDatesTable.putItem(new Item()
-                .withPrimaryKey(event_date_allowed.name(), formData.getParsableDateStr()));
+        dynamoDBHelper.insertIntoTable(tables.allowedDatesTable,
+                new ItemMaker(event_date_allowed, formData.getParsableDateStr()));
     }
 
     @Override
@@ -838,22 +849,22 @@ public class DynamoDBDatabase implements DatabaseFacade {
         for (String allowedTime : allowedTimes) {
             if (!formData.getTimeToInsertBefore().isEmpty() && formData.getTimeToInsertBefore().equals(allowedTime)) {
                 // - Now we insert the new one -
-                tables.allowedTimesTable.putItem(new Item()
-                        .withPrimaryKey(event_time_allowed.name(), formData.getAllowedTime())
-                        .withInt(event_time_sort_key.name(), sortKey));
+                dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
+                        new ItemMaker(event_time_allowed, formData.getAllowedTime())
+                                .withInt(event_time_sort_key, sortKey));
                 sortKey += 1;
             }
             // - Now we insert the one from the list -
-            tables.allowedTimesTable.putItem(new Item()
-                    .withPrimaryKey(event_time_allowed.name(), allowedTime)
-                    .with(event_time_sort_key.name(), sortKey));
+            dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
+                    new ItemMaker(event_time_allowed, allowedTime)
+                            .withInt(event_time_sort_key, sortKey));
             sortKey += 1;
         }
         if (formData.getTimeToInsertBefore().isEmpty()) {
             // - Add the new one at the end -
-            tables.allowedTimesTable.putItem(new Item()
-                    .withPrimaryKey(event_time_allowed.name(), formData.getAllowedTime())
-                    .with(event_time_sort_key.name(), sortKey));
+            dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
+                    new ItemMaker(event_time_allowed, formData.getAllowedTime())
+                            .withInt(event_time_sort_key, sortKey));
         }
     }
 
@@ -1027,8 +1038,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
-        tables.siteSettingsTable.putItem(new Item()
-                .withPrimaryKey(site_setting_name.name(), settingName)
-                .withString(site_setting_value.name(), settingValue));
+        dynamoDBHelper.insertIntoTable(tables.siteSettingsTable,
+                new ItemMaker(site_setting_name, settingName)
+                        .withString(site_setting_value, settingValue));
     }
 }
