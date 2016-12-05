@@ -2,8 +2,6 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Index;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateGlobalSecondaryIndexAction;
@@ -14,13 +12,11 @@ import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProjectionType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
-import com.tcts.datamodel.ApprovalStatus;
-import com.tcts.datamodel.UserType;
+import com.tcts.database.dynamodb.DynamoDBHelper;
+import com.tcts.database.dynamodb.ItemMaker;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static com.tcts.database.DatabaseField.*;
 import static com.tcts.database.DatabaseField.school_slc;
@@ -30,6 +26,8 @@ import static com.tcts.database.DatabaseField.school_slc;
  * Script to do the initial setup of a DynamoDB database.
  */
 public class DynamoDBSetup {
+
+    private static DynamoDBHelper dynamoDBHelper = new DynamoDBHelper();
 
     public static void createAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
         Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", DatabaseField.site_setting_name, ScalarAttributeType.S);
@@ -129,131 +127,63 @@ public class DynamoDBSetup {
             this.tables = tables;
         }
 
-        private static class ItemMaker {
-            static abstract class NonEmptyFields {
-                final DatabaseField field;
-                final NonEmptyFields restOfFields;
-                NonEmptyFields(DatabaseField field, NonEmptyFields restOfFields) {
-                    this.field = field;
-                    this.restOfFields = restOfFields;
-                }
-                abstract Item addFieldToItem(Item item);
-            }
-            static class NonEmptyStringFields extends NonEmptyFields {
-                final String value;
-                NonEmptyStringFields(DatabaseField field, String value, NonEmptyFields restOfFields) {
-                    super(field, restOfFields);
-                    this.value = value;
-                }
-                @Override
-                Item addFieldToItem(Item item) {
-                    return item.withString(field.name(), value);
-                }
-            }
-            static class NonEmptyIntFields extends NonEmptyFields {
-                final int value;
-                NonEmptyIntFields(DatabaseField field, int value, NonEmptyFields restOfFields) {
-                    super(field, restOfFields);
-                    this.value = value;
-                }
-                @Override
-                Item addFieldToItem(Item item) {
-                    return item.withInt(field.name(), value);
-                }
-            }
-
-            final DatabaseField primaryKeyField;
-            final String primaryKeyValue;
-            final NonEmptyFields nonEmptyFields;
-
-            ItemMaker(DatabaseField primaryKeyField, String primaryKeyValue) {
-                this.primaryKeyField = primaryKeyField;
-                this.primaryKeyValue = primaryKeyValue;
-                this.nonEmptyFields = null;
-            }
-            private ItemMaker(DatabaseField primaryKeyField, String primaryKeyValue, NonEmptyFields nonEmptyFields) {
-                this.primaryKeyField = primaryKeyField;
-                this.primaryKeyValue = primaryKeyValue;
-                this.nonEmptyFields = nonEmptyFields;
-            }
-            ItemMaker withString(DatabaseField field, String value) {
-                return new ItemMaker(this.primaryKeyField, this.primaryKeyValue,
-                        (value == null || value.isEmpty())
-                                ? this.nonEmptyFields
-                                : new NonEmptyStringFields(field, value, this.nonEmptyFields));
-            }
-            ItemMaker withInt(DatabaseField field, int value) {
-                return new ItemMaker(this.primaryKeyField, this.primaryKeyValue,
-                        new NonEmptyIntFields(field, value, this.nonEmptyFields));
-            }
-            Item getItem() {
-                Item item = new Item().withPrimaryKey(primaryKeyField.name(), primaryKeyValue);
-                NonEmptyFields fieldsLeft = nonEmptyFields;
-                while (fieldsLeft != null) {
-                    item = fieldsLeft.addFieldToItem(item);
-                    fieldsLeft = fieldsLeft.restOfFields;
-                }
-                return item;
-            }
-        }
-
         public void insertSiteSetting(String settingName, String settingValue) {
-            tables.siteSettingsTable.putItem(new ItemMaker(site_setting_name, settingName)
-                    .withString(site_setting_value, settingValue)
-                    .getItem());
+            dynamoDBHelper.insertIntoTable(tables.siteSettingsTable,
+                    new ItemMaker(site_setting_name, settingName)
+                            .withString(site_setting_value, settingValue));
         }
 
         public void insertAllowedDate(String date) {
-            tables.allowedDatesTable.putItem(new ItemMaker(event_date_allowed, date)
-                    .getItem());
+            dynamoDBHelper.insertIntoTable(tables.allowedDatesTable,
+                    new ItemMaker(event_date_allowed, date));
         }
 
         public void insertAllowedTime(String allowedTime, int sortKey) {
-            tables.allowedTimesTable.putItem(new ItemMaker(event_time_allowed, allowedTime)
-                    .withInt(event_time_sort_key, sortKey)
-                    .getItem());
+            dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
+                    new ItemMaker(event_time_allowed, allowedTime)
+                            .withInt(event_time_sort_key, sortKey));
         }
 
         public void insertSchool(String schoolCounty, String schoolDistrict, String schoolName, String schoolSlc,
                                  String schoolAddr1, String schoolCity, String schoolState, String schoolZip,
                                  String schoolPhone, String schoolLmiEligible) {
-            tables.schoolTable.putItem(new ItemMaker(school_id, DynamoDBDatabase.createUniqueId())
-                    .withString(school_name, schoolName)
-                    .withString(school_addr1, schoolAddr1)
-                    .withString(school_city, schoolCity)
-                    .withString(school_state, schoolState)
-                    .withString(school_zip, schoolZip)
-                    .withString(school_county, schoolCounty)
-                    .withString(school_district, schoolDistrict == null ? "" : schoolDistrict)
-                    .withString(school_phone, schoolPhone)
-                    .withString(school_lmi_eligible, schoolLmiEligible == null ? "" : schoolLmiEligible)
-                    .withString(school_slc, schoolSlc)
-                    .getItem());
+            dynamoDBHelper.insertIntoTable(tables.schoolTable,
+                    new ItemMaker(school_id, dynamoDBHelper.createUniqueId())
+                        .withString(school_name, schoolName)
+                        .withString(school_addr1, schoolAddr1)
+                        .withString(school_city, schoolCity)
+                        .withString(school_state, schoolState)
+                        .withString(school_zip, schoolZip)
+                        .withString(school_county, schoolCounty)
+                        .withString(school_district, schoolDistrict)
+                        .withString(school_phone, schoolPhone)
+                        .withString(school_lmi_eligible, schoolLmiEligible)
+                        .withString(school_slc, schoolSlc));
         }
 
         public void insertBank(String bankName, String bankAddr1, String bankAddr2, String bankCity,
                                String bankState, String bankZip, String bankSpecificDataLabel) {
-            tables.bankTable.putItem(new ItemMaker(bank_id, DynamoDBDatabase.createUniqueId())
-                    .withString(bank_name, bankName)
-                    .withString(bank_specific_data_label, bankSpecificDataLabel)
-                    .getItem());
+            dynamoDBHelper.insertIntoTable(tables.bankTable,
+                    new ItemMaker(bank_id, dynamoDBHelper.createUniqueId())
+                            .withString(bank_name, bankName)
+                            .withString(bank_specific_data_label, bankSpecificDataLabel));
             // Remaining fields intentionally ignored.
         }
 
         public void insertUser(String passwordSalt, String passwordHash, String email,
                                String firstName, String lastName, String accessType,
                                String organizationId, String phoneNumber, int userStatus) {
-            tables.userTable.putItem(new ItemMaker(user_id, DynamoDBDatabase.createUniqueId())
-                    .withString(user_type, accessType)
-                    .withString(user_password_salt, passwordSalt)
-                    .withString(user_hashed_password, passwordHash)
-                    .withString(user_email, email)
-                    .withString(user_first_name, firstName)
-                    .withString(user_last_name, lastName)
-                    .withString(user_phone_number, phoneNumber)
-                    .withString(user_organization_id, organizationId)
-                    .withInt(user_approval_status, userStatus)
-                    .getItem());
+            dynamoDBHelper.insertIntoTable(tables.userTable,
+                    new ItemMaker(user_id, dynamoDBHelper.createUniqueId())
+                            .withString(user_type, accessType)
+                            .withString(user_password_salt, passwordSalt)
+                            .withString(user_hashed_password, passwordHash)
+                            .withString(user_email, email)
+                            .withString(user_first_name, firstName)
+                            .withString(user_last_name, lastName)
+                            .withString(user_phone_number, phoneNumber)
+                            .withString(user_organization_id, organizationId)
+                            .withInt(user_approval_status, userStatus));
         }
 
         public abstract void run();

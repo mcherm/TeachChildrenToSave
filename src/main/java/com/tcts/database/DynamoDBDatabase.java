@@ -11,6 +11,7 @@ import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
@@ -60,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static com.tcts.database.DatabaseField.*;
 
@@ -86,6 +86,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     // ========== Instance Variables and Constructor ==========
 
+    private final DynamoDBHelper dynamoDBHelper;
     private final Tables tables;
 
 
@@ -93,6 +94,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
      * Constructor.
      */
     public DynamoDBDatabase() {
+        this.dynamoDBHelper = new DynamoDBHelper();
         this.tables = getTables(connectToDB());
     }
 
@@ -149,19 +151,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     // ========== Special Plumbing ==========
 
-    /**
-     * When this is called, it will create a single, unique ID.
-     * <p>
-     * We happen to be using the following approach: pick a random
-     * positive long. Count on luck for it to never collide. It's
-     * not the most perfect algorithm in the world, but using the
-     * birthday problem formula, we would need to issue about 430
-     * million IDs to have a 1% chance of encountering a collision.
-     */
-    public static String createUniqueId() {
-        long randomNonNegativeLong = ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
-        return Long.toString(randomNonNegativeLong);
-    }
 
     /** Static class used when getting allowed times in the proper sort order. */
     private static class TimeAndSortKey implements Comparable<TimeAndSortKey> {
@@ -456,7 +445,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
-        String newTeacherId = createUniqueId();
+        String newTeacherId = dynamoDBHelper.createUniqueId();
         tables.userTable.putItem(new Item()
                 .withPrimaryKey(new PrimaryKey(user_id.name(), newTeacherId))
                 .withString(user_type.name(), UserType.TEACHER.getDBValue())
@@ -544,7 +533,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
-        String newEventId = createUniqueId();
+        String newEventId = dynamoDBHelper.createUniqueId();
         tables.eventTable.putItem(new Item()
                 .withPrimaryKey(new PrimaryKey(event_id.name(), newEventId))
                 .withString(event_teacher_id.name(), teacherId)
@@ -594,7 +583,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
         // NOTE: I'm choosing NOT to verify that the bank ID is actually present in the database
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
-        String newVolunteerId = createUniqueId();
+        String newVolunteerId = dynamoDBHelper.createUniqueId();
         tables.userTable.putItem(new Item()
                 .withPrimaryKey(new PrimaryKey(user_id.name(), newVolunteerId))
                 .withString(user_type.name(), UserType.VOLUNTEER.getDBValue())
@@ -769,8 +758,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
-        String bankAdminId = createUniqueId();
-        String bankId = createUniqueId();
+        String bankAdminId = dynamoDBHelper.createUniqueId();
+        String bankId = dynamoDBHelper.createUniqueId();
         tables.bankTable.putItem(new Item()
                 .withPrimaryKey(bank_id.name(), bankId)
                 .withString(bank_name.name(), formData.getBankName()));
@@ -808,7 +797,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
         Item item = new Item()
-                .withPrimaryKey(school_id.name(), createUniqueId())
+                .withPrimaryKey(school_id.name(), dynamoDBHelper.createUniqueId())
                 .withString(school_name.name(), school.getSchoolName())
                 .withString(school_addr1.name(), school.getSchoolAddress1())
                 .withString(school_city.name(), school.getCity())
