@@ -25,6 +25,22 @@ Can we get that shifted to be underneath the contact info.?
 NOTE:  I am not sure I'm up to tackling making emails look pretty in different email viewers..  Of all of them I am most
 dubious about this one.
 
+ - - - - DynamoDB Tasks - - - -
+* Code review?
+* Need to test login of BankAdmin after creation
+* Prepopulate linked teacher in getAllAvailableEvents()
+* Verify that emails are unique when adding them
+* Verify that event is not signed-up-for when signing up a volunteer
+* Try running it on AWS
+* Delete of volunteer should verify not signed up for any classes
+* Delete of teacher should verify does not own any classes
+* Need to write queries that drive the emails. Maybe fix broken design also?
+* Search criteria and/or indexes to speed up frequently-called scans
+* Add sorting everywhere it is needed
+* Need to implement SiteStatistics
+* Delete of bank should cascade OR refuse to execute
+
+
  ----- TESTING  -----
 
 

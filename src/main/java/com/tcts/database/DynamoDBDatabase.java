@@ -761,7 +761,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
         // FIXME: I *must* verify that the email is unique, and I don't do that yet.
-        // FIXME: I need to insert the user, which I don't do at the moment.
         String bankAdminId = dynamoDBHelper.createUniqueId();
 
         String bankId = dynamoDBHelper.createUniqueId();
