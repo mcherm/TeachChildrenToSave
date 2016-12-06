@@ -1,6 +1,7 @@
 package com.tcts.database.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.document.Table;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * <p>
  * This is designed to be a stateless singleton.
  */
+@Component
 public class DynamoDBHelper {
 
     /**

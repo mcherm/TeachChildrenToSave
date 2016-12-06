@@ -39,6 +39,8 @@
     -->
     <!-- This gives us the DynamoDB Database: -->
     <bean id="database" class="com.tcts.database.DynamoDBDatabase">
+        <constructor-arg name="configuration" ref="configuration"/>
+        <constructor-arg name="dynamoDBHelper" ref="dynamoDBHelper"/>
     </bean>
 
     <!--

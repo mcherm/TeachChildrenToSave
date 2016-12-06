@@ -12,6 +12,7 @@ import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProjectionType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
+import com.tcts.common.Configuration;
 import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemMaker;
 
@@ -432,7 +433,8 @@ public class DynamoDBSetup {
      */
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Starting...");
-        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB();
+        Configuration configuration = new Configuration();
+        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration.getProperty("dynamoDB.connect"));
         reinitializeDatabase(dynamoDB);
 
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);

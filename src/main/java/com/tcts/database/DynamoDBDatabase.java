@@ -10,6 +10,7 @@ import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemMaker;
@@ -49,6 +50,7 @@ import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -94,17 +96,18 @@ public class DynamoDBDatabase implements DatabaseFacade {
     /**
      * Constructor.
      */
-    public DynamoDBDatabase() {
-        this.dynamoDBHelper = new DynamoDBHelper();
-        this.tables = getTables(connectToDB());
+    public DynamoDBDatabase(Configuration configuration, DynamoDBHelper dynamoDBHelper) {
+        this.dynamoDBHelper = dynamoDBHelper;
+        DynamoDB dynamoDB = connectToDB(configuration.getProperty("dynamoDB.connect"));
+        this.tables = getTables(dynamoDB);
     }
 
 
     // ========== Static Methods Shared by DynamoDBSetup ==========
 
-    static DynamoDB connectToDB() {
+    static DynamoDB connectToDB(String connectString) {
         AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient();
-        dynamoDBClient.withEndpoint("http://localhost:8000"); // FIXME: Make this a config property.
+        dynamoDBClient.withEndpoint(connectString);
         return new DynamoDB(dynamoDBClient);
     }
 

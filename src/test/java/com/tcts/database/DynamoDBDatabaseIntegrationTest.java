@@ -2,7 +2,9 @@ package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
+import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
@@ -67,14 +69,16 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @Before
     public void initialize() throws InterruptedException {
-        dynamoDB = DynamoDBDatabase.connectToDB();
+        Configuration configuration = new Configuration();
+        String dbConnectString = configuration.getProperty("dynamoDB.connect");
+        dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
         try {
             DynamoDBSetup.deleteAllDatabaseTables(dynamoDB);
         } catch(ResourceNotFoundException err) {
             // It's fine if the deletions failed.
         }
         DynamoDBSetup.createAllDatabaseTables(dynamoDB);
-        dynamoDBDatabase = new DynamoDBDatabase();
+        dynamoDBDatabase = new DynamoDBDatabase(configuration, new DynamoDBHelper());
     }
 
 
