@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.email.EmailSender;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -179,6 +180,8 @@ public class CancelWithdrawController {
             database.volunteerForEvent(event.getEventId(), null);
         } catch(NoSuchEventException err) {
             throw new RuntimeException("Shouldn't happen; we just checked if it was there.");
+        } catch(EventAlreadyHasAVolunteerException err) {
+            throw new RuntimeException("Shouldn't happen; we passed null for the volunteerId.");
         }
 
         // --- Send Emails ---

@@ -22,9 +22,7 @@ dubious about this one.
  - - - - DynamoDB Tasks - - - -
 * Code review?
 * Need to test login of BankAdmin after creation
-* Prepopulate linked teacher in getAllAvailableEvents()
 * Verify that emails are unique when adding them
-* Verify that event is not signed-up-for when signing up a volunteer
 * Try running it on AWS
 * Delete of volunteer should verify not signed up for any classes
 * Delete of teacher should verify does not own any classes

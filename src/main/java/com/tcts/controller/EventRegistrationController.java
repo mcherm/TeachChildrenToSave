@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.tcts.datamodel.*;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -123,7 +124,7 @@ public class EventRegistrationController {
     @RequestMapping(value="/eventRegistration", method=RequestMethod.POST)
     public String createEvent(HttpSession session, HttpServletRequest request,
                               @ModelAttribute("formData") EventRegistrationFormData formData)
-            throws SQLException, NoSuchEventException
+            throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException
     {
         SessionData sessionData = SessionData.fromSession(session);
         String volunteerId;

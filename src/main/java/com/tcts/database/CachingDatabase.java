@@ -22,6 +22,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
@@ -258,7 +259,7 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void volunteerForEvent(final String eventId, String volunteerId) throws SQLException, NoSuchEventException {
+    public void volunteerForEvent(final String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
         database.volunteerForEvent(eventId, volunteerId);
         if (volunteerId == null) {
             // Withdrew someone from an event so we need to reload the list

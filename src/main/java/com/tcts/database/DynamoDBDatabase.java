@@ -3,6 +3,7 @@ package com.tcts.database;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Index;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemCollection;
@@ -10,6 +11,7 @@ import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.dynamodb.DynamoDBHelper;
@@ -28,6 +30,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
@@ -57,6 +60,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -485,17 +489,42 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return result;
     }
 
+    /**
+     * Given a list of events, modifies the events by populating the linked teacher and also the linked
+     * schools in those teachers.
+     */
+    private void addLinkedTeachersAndSchools(List<Event> events) throws SQLException {
+        Map<String,School> schoolsById = new HashMap<String,School>();
+        Map<String,Teacher> teachersById = new HashMap<String,Teacher>();
+        for (Event event : events) {
+            String teacherId = event.getTeacherId();
+            Teacher teacher = teachersById.get(teacherId);
+            if (teacher == null) {
+                teacher = (Teacher) getUserById(teacherId);
+                teachersById.put(teacherId, teacher);
+            }
+            String schoolId = teacher.getSchoolId();
+            School school = schoolsById.get(schoolId);
+            if (school == null) {
+                school = getSchoolById(schoolId);
+                schoolsById.put(schoolId, school);
+            }
+            teacher.setLinkedSchool(school);
+            event.setLinkedTeacher(teacher);
+        }
+    }
+
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
         // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
-        // FIXME: The requirements state that this must pre-populate the linkedTeacher and
-        //    those teachers' linkedSchool. But I haven't done that yet.
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventTable.scan()) {
             if (item.getString(event_volunteer_id.name()) == null) {
-                result.add(createEventFromDynamoDBItem(item));
+                Event event = createEventFromDynamoDBItem(item);
+                result.add(event);
             }
         }
+        addLinkedTeachersAndSchools(result);
         return result;
     }
 
@@ -513,27 +542,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws SQLException {
-        Map<String,School> schoolsById = new HashMap<String,School>();
-        Map<String,Teacher> teachersById = new HashMap<String,Teacher>();
         List<Event> events = getEventsByVolunteer(volunteerId);
-        for (Event event : events) {
-            String teacherId = event.getTeacherId();
-            Teacher teacher = teachersById.get(teacherId);
-            if (teacher == null) {
-                teacher = (Teacher) getUserById(teacherId);
-                teachersById.put(teacherId, teacher);
-            }
-            String schoolId = teacher.getSchoolId();
-            School school = schoolsById.get(schoolId);
-            if (school == null) {
-                school = getSchoolById(schoolId);
-                schoolsById.put(schoolId, school);
-            }
-            teacher.setLinkedSchool(school);
-            event.setLinkedTeacher(teacher);
-        }
+        addLinkedTeachersAndSchools(events);
         return events;
     }
+
 
     @Override
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
@@ -548,11 +561,18 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException {
+    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
         // FIXME: Really should verify on this update that the volunteer is null before we update it!
-        tables.eventTable.updateItem(
-                new PrimaryKey(event_id.name(), eventId),
-                attributeUpdate(event_volunteer_id, volunteerId));
+        try {
+            Expected expected = new Expected(event_volunteer_id.name()).notExist();
+            Collection<Expected> expectations = Collections.singletonList(expected);
+            tables.eventTable.updateItem(
+                    new PrimaryKey(event_id.name(), eventId),
+                    expectations,
+                    attributeUpdate(event_volunteer_id, volunteerId));
+        } catch(ConditionalCheckFailedException err) {
+            throw new EventAlreadyHasAVolunteerException();
+        }
     }
 
     @Override

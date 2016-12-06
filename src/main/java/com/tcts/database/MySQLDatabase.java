@@ -16,6 +16,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.tcts.datamodel.ApprovalStatus;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -558,7 +559,8 @@ public class MySQLDatabase implements DatabaseFacade {
     }
     
     @Override
-    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException {
+    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
+        // FIXME: Does not correctly throw EventAlreadyHasAVolunteerException when it should.
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;

@@ -122,7 +122,7 @@ public class BankController {
             // --- First, unregister from any events ---
             List<Event> events = database.getEventsByVolunteer(volunteer.getUserId());
             for (Event event : events) {
-                cancelWithdrawController.withdrawFromAnEvent(event, request,null);
+                cancelWithdrawController.withdrawFromAnEvent(event, request, null);
             }
         }
         try {

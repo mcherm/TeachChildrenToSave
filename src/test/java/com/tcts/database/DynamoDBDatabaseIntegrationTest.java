@@ -17,6 +17,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchBankException;
@@ -866,6 +867,33 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(volunteer.getUserId(), eventFetched.getVolunteerId());
     }
 
+    @Test(expected = EventAlreadyHasAVolunteerException.class)
+    public void testVolunteerForAnEventThatSomeoneElseIsVolunteeringForAlso() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+        assertEquals(null, event.getVolunteerId());
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer1 = insertVolunteer(bankId, "firstVolunteer@bigcobank.com");
+        Volunteer volunteer2 = insertVolunteer(bankId, "secondVolunteer@bigcobank.com");
+
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer1.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer2.getUserId());
+    }
+
+    @Test
+    public void testWithdrawVolunteerFromAnEvent() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event1 = insertEventAndReturnIt(teacher.getUserId());
+        assertEquals(null, event1.getVolunteerId());
+        dynamoDBDatabase.volunteerForEvent(event1.getEventId(), null);
+        List<Event> events = dynamoDBDatabase.getAllEvents();
+        assertEquals(1, events.size());
+        assertEquals(null, events.get(0).getVolunteerId());
+    }
+
+
     @Test
     public void testGetEventsByTeacher() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
@@ -900,6 +928,9 @@ public class DynamoDBDatabaseIntegrationTest {
         insertEvent(teacher.getUserId(), date, time);
         List<Event> events1 = dynamoDBDatabase.getAllAvailableEvents();
         assertEquals(1, events1.size());
+        Event event1 = events1.get(0);
+        assertEquals(teacher.getUserId(), event1.getLinkedTeacher().getUserId());
+        assertEquals(schoolId, event1.getLinkedTeacher().getLinkedSchool().getSchoolId());
         insertEvent(teacher.getUserId(), date, time);
         List<Event> events2 = dynamoDBDatabase.getAllAvailableEvents();
         assertEquals(2, events2.size());

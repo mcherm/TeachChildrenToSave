@@ -19,6 +19,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
 import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
@@ -139,15 +140,22 @@ public interface DatabaseFacade {
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException;
     
     /**
-     * voluneer signup for an event
+     * Register the specified volunteer as volunteering for the specified event, or unregister the
+     * current volunteer if null is passed for volunteerId. If the event does not
+     * exist, a NoSuchEventException is thrown. Otherwise, if the volunteerId is not null but
+     * the event in question already has a volunteer then an EventAlreadyHasAVolunteerException
+     * is thrown.
      * 
-     * @param eventId
-     * @param volunteerId
+     * @param eventId the event to be modified
+     * @param volunteerId the volunteer to register for the event, or null to deregister the
+     *                    current volunteer (if any).
      * @throws SQLException
-     * @throws NoSuchEventException
+     * @throws NoSuchEventException if the eventId does not represent a valid event
+     * @throws EventAlreadyHasAVolunteerException if volunteerId is non-null but the event
+     *     already has a volunteer.
      */
     
-    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException;
+    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException;
 
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
