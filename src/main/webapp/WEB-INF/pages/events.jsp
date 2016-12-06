@@ -28,6 +28,7 @@
 
                 <ul class="noUl">
                     <li class="mb1">
+                        <button onclick="js.loadURL('createEventBySiteAdmin.htm')" class="editOrRegister cancel">Create New Class</button>
                         <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                     </li>
                     	

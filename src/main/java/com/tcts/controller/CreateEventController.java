@@ -4,9 +4,11 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.tcts.datamodel.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -39,25 +41,48 @@ public class CreateEventController {
         CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
         binder.registerCustomEditor(Date.class, dateEditor);
     }
+    @RequestMapping(value = "/createEventBySiteAdmin", method = RequestMethod.GET)
+    public String showPageCreateEventBySiteAdmin(
+            HttpSession session,
+            Model model
+    ) throws SQLException {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in as site admin.");
+        }
+        model.addAttribute("formData", new CreateEventFormData());
+        return showFormWithErrors(model, sessionData, null);
+    }
 
     @RequestMapping(value="/createEvent", method= RequestMethod.GET)
-    public String showCreateEventPage(HttpSession session, Model model) throws SQLException {
+    public String showPageCreateEventByTeacher(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getTeacher() == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
         }
         ensureEventCreationIsOpen();
         model.addAttribute("formData", new CreateEventFormData());
-        return showFormWithErrors(model, null);
+        return showFormWithErrors(model,sessionData, null);
     }
 
     /**
      * A subroutine used to set up and then show the register teacher form. It
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
-    private String showFormWithErrors(Model model, Errors errors) throws SQLException {
+    private String showFormWithErrors(Model model, SessionData sessionData, Errors errors) throws SQLException {
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
+        if (sessionData.getTeacher() != null)  {
+            model.addAttribute("calledBy", "teacher");
+        } else  if (sessionData.getSiteAdmin() != null) {
+            model.addAttribute("calledBy", "siteAdmin");
+            List<Teacher> teachers = database.getTeachersWithSchoolData();
+            model.addAttribute("teachers", teachers);
+        } else {
+            throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
+        }
+
         model.addAttribute("errors", errors);
         return "createEvent";
     }
@@ -72,25 +97,29 @@ public class CreateEventController {
     {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
-        if (teacher == null) {
-            throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
-        }
-        ensureEventCreationIsOpen();
+        String redirectTo;
 
-        // --- Validation Rules ---
+        if (teacher != null) {
+            ensureEventCreationIsOpen();
+            formData.setTeacherId(teacher.getUserId());
+            redirectTo = sessionData.getUser().getUserType().getHomepage();
+        } else  if (sessionData.getSiteAdmin() != null) {
+            redirectTo = "viewEditEvents.htm";
+        } else {
+            throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
+        }
+            // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
-            return showFormWithErrors(model, errors);
+            return showFormWithErrors(model, sessionData, errors);
         }
 
         // --- Create Event ---
-        database.insertEvent(teacher.getUserId(), formData);
+        database.insertEvent(formData.getTeacherId(), formData);
 
         // --- Navigate onward ---
-        return "redirect:" + sessionData.getUser().getUserType().getHomepage();
+        return "redirect:" + redirectTo;
     }
-
-
     /**
      * This method ensures that the volunteer registration is open, throwing an exception
      * it is not.

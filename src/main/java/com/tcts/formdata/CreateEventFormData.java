@@ -14,10 +14,15 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
     private String grade;
     private String numberStudents;
     private String notes;
+    private String teacherId;
+
 
 
     @Override
     public void validationRules(Errors errors) throws SQLException {
+        if ((teacherId == null) || (teacherId.isEmpty())){
+            errors.addError("You must select a teacher from the list.");
+        }
         if (!database.getAllowedDates().contains(eventDate)) {
             errors.addError("You must select a valid date.");
         }
@@ -85,4 +90,13 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public String getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(String teacherId) {
+        this.teacherId = teacherId;
+    }
+
 }

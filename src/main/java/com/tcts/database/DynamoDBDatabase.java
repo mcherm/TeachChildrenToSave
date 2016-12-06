@@ -993,25 +993,25 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public List<Teacher> getMatchedTeachers() throws SQLException {
         // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public List<Teacher> getUnMatchedTeachers() throws SQLException {
         // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public List<Volunteer> getMatchedVolunteers() throws SQLException {
         // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
         // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

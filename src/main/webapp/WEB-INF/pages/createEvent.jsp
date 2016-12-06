@@ -23,6 +23,23 @@
                 <%@include file="include/errors.jsp"%>
 
                 <form:form method="POST" action="createEvent.htm" modelAttribute="formData">
+                    <c:if test = "${calledBy == 'siteAdmin'}">
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        Teacher
+                                    </div>
+                                    <form:select path="teacherId">
+                                        <form:option value="" label="Select One..."/>
+                                        <c:forEach var="aTeacher" items="${teachers}">
+                                            <form:option value="${aTeacher.userId}" label="${aTeacher.lastName}, ${aTeacher.firstName} "/>
+                                        </c:forEach>
+                                    </form:select>
+                                </div>
+                            </label>
+                        </div>
+                    </c:if>
 
                     <div class="formElementCnt">
                         <label>
@@ -66,6 +83,7 @@
                             </div>
                         </label>
                     </div>
+
 
                     <div class="formElementCnt">
                         <label>
