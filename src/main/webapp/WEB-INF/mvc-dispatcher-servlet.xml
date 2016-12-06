@@ -45,7 +45,7 @@
     -->
 
     <bean id="database"
-          class="com.tcts.database.DynamoDBDatabase"
+          class="com.tcts.database.DatabaseFacade"
           factory-bean="databaseFactory"
           factory-method="getDatabaseImplementation"/>
 
