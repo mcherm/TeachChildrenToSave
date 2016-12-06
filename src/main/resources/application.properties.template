@@ -7,3 +7,4 @@ db.url=
 db.user=
 db.pass=
 dynamoDB.connect=
+databaseToUse=CachingMySQLDB

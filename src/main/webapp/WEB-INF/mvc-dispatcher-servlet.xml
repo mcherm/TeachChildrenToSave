@@ -37,11 +37,17 @@
         </constructor-arg>
     </bean>
     -->
-    <!-- This gives us the DynamoDB Database: -->
+    <!-- This gives us the DynamoDB Database:
     <bean id="database" class="com.tcts.database.DynamoDBDatabase">
         <constructor-arg name="configuration" ref="configuration"/>
         <constructor-arg name="dynamoDBHelper" ref="dynamoDBHelper"/>
     </bean>
+    -->
+
+    <bean id="database"
+          class="com.tcts.database.DynamoDBDatabase"
+          factory-bean="databaseFactory"
+          factory-method="getDatabaseImplementation"/>
 
     <!--
         The following is the proper way to stash a bean into a STATIC variable. We want
