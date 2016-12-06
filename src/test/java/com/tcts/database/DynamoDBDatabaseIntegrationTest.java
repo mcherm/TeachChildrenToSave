@@ -41,8 +41,11 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -941,6 +944,14 @@ public class DynamoDBDatabaseIntegrationTest {
         insertNewBank("cy.arnold@capitalone.com");
         List<Bank> banks = dynamoDBDatabase.getAllBanks();
         assertEquals(3, banks.size());
+        for (Bank bank : banks) {
+            final List<Volunteer> volunteersAtBank = dynamoDBDatabase.getVolunteersByBank(bank.getBankId());
+            assertEquals(1, volunteersAtBank.size());
+            assertEquals(bank.getBankId(), volunteersAtBank.get(0).getBankId());
+            assertEquals(UserType.BANK_ADMIN, volunteersAtBank.get(0).getUserType());
+            assertEquals(ApprovalStatus.CHECKED, volunteersAtBank.get(0).getApprovalStatus());
+        }
+
         String bank0Id = banks.get(0).getBankId();
         String bank1Id = banks.get(1).getBankId();
         String bank2Id = banks.get(2).getBankId();
@@ -948,13 +959,12 @@ public class DynamoDBDatabaseIntegrationTest {
         Volunteer volunteer1 = insertVolunteer(bank2Id, "anika@bankofamerica.com");
         Volunteer volunteer2 = insertVolunteer(bank2Id, "chip@bankofamerica.com");
 
-        List<Volunteer> volunteers0 = dynamoDBDatabase.getVolunteersByBank(bank0Id);
-        assertEquals(0, volunteers0.size());
-        List<Volunteer> volunteers1 = dynamoDBDatabase.getVolunteersByBank(bank1Id);
+        List<Volunteer> volunteers1 = dynamoDBDatabase.getVolunteersByBank(bank0Id);
         assertEquals(1, volunteers1.size());
-        assertEquals(volunteer0.getUserId(), volunteers1.get(0).getUserId());
-        List<Volunteer> volunteers2 = dynamoDBDatabase.getVolunteersByBank(bank2Id);
+        List<Volunteer> volunteers2 = dynamoDBDatabase.getVolunteersByBank(bank1Id);
         assertEquals(2, volunteers2.size());
+        List<Volunteer> volunteers3 = dynamoDBDatabase.getVolunteersByBank(bank2Id);
+        assertEquals(3, volunteers3.size());
     }
 
 
@@ -967,11 +977,20 @@ public class DynamoDBDatabaseIntegrationTest {
     @Test
     public void testGetVolunteersWithBankData() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
+        List<Volunteer> volunteers0 = dynamoDBDatabase.getVolunteersWithBankData();
+        assertEquals(1, volunteers0.size());
+        String bankAdminId = volunteers0.get(0).getUserId();
         Volunteer volunteer = insertVolunteerAnika(bankId);
 
-        List<Volunteer> volunteers = dynamoDBDatabase.getVolunteersWithBankData();
-        assertEquals(1, volunteers.size());
-        Volunteer volunteerFetched = volunteers.get(0);
+        List<Volunteer> volunteers1 = dynamoDBDatabase.getVolunteersWithBankData();
+        assertEquals(2, volunteers1.size());
+        Volunteer volunteerFetched = null;
+        for (Volunteer v : volunteers1) {
+            if (!v.getUserId().equals(bankAdminId)) {
+                assertNull(volunteerFetched); // effectively asserts that it's only in the list once
+                volunteerFetched = v;
+            }
+        }
         assertEquals(volunteer.getUserId(), volunteerFetched.getUserId());
         assertEquals(bankId, volunteerFetched.getBankId());
         assertEquals(bankId, volunteerFetched.getLinkedBank().getBankId());
