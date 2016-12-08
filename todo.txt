@@ -20,9 +20,7 @@ NOTE:  I am not sure I'm up to tackling making emails look pretty in different e
 dubious about this one.
 
  - - - - DynamoDB Tasks - - - -
-* Code review?
 * Need to test login of BankAdmin after creation
-* Verify that emails are unique when adding them
 * Try running it on AWS
 * Delete of volunteer should verify not signed up for any classes
 * Delete of teacher should verify does not own any classes

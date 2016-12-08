@@ -1,23 +1,22 @@
 package com.tcts.database;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Index;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.CreateGlobalSecondaryIndexAction;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProjectionType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.tcts.common.Configuration;
 import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemMaker;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.tcts.database.DatabaseField.*;
 import static com.tcts.database.DatabaseField.school_slc;
@@ -36,7 +35,8 @@ public class DynamoDBSetup {
         Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", DatabaseField.event_time_allowed, ScalarAttributeType.S);
         Table eventTable = createTable(dynamoDB, "Event", DatabaseField.event_id, ScalarAttributeType.S);
         Table bankTable = createTable(dynamoDB, "Bank", DatabaseField.bank_id, ScalarAttributeType.S);
-        Table userTable = createTable(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.S);
+        Table userTable = createTableWithIndex(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.S,
+                                                         "byEmail", DatabaseField.user_email, ScalarAttributeType.S);
         Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.S);
 
         siteSettingsTable.waitForActive();
@@ -46,6 +46,27 @@ public class DynamoDBSetup {
         bankTable.waitForActive();
         userTable.waitForActive();
         schoolTable.waitForActive();
+    }
+
+
+    /** Delete all entries from this table. */
+    private static void wipeTable(Table table) {
+        String primaryKeyName = table.describe().getKeySchema().get(0).getAttributeName();
+        for (Item item : table.scan()) {
+            table.deleteItem(new PrimaryKey(primaryKeyName, item.get(primaryKeyName)));
+        }
+    }
+
+    /** This deletes all rows from all database tables. */
+    public static void wipeAllDatabaseTables(DynamoDB dynamoDB) {
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+        wipeTable(tables.siteSettingsTable);
+        wipeTable(tables.allowedDatesTable);
+        wipeTable(tables.allowedTimesTable);
+        wipeTable(tables.eventTable);
+        wipeTable(tables.bankTable);
+        wipeTable(tables.userTable);
+        wipeTable(tables.schoolTable);
     }
 
     /**
@@ -71,55 +92,58 @@ public class DynamoDBSetup {
         tables.schoolTable.waitForDelete();
     }
 
-    /** Initializes the userByEmail index. */
-    public static void initializeUserByEmailIndex(DynamoDB dynamoDB) throws InterruptedException {
-        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
-        Index userByEmailIndex = createIndex(tables.userTable, "byEmail", DatabaseField.user_email, ScalarAttributeType.S);
-        userByEmailIndex.waitForActive();
-    }
 
     /**
      * When called, this wipes the entire DynamoDB database and then recreates it.
      */
     public static void reinitializeDatabase(DynamoDB dynamoDB) throws InterruptedException {
-        deleteAllDatabaseTables(dynamoDB);
+        try {
+            deleteAllDatabaseTables(dynamoDB);
+        } catch(ResourceNotFoundException err) {
+            // Ignore this, and assume it all got cleanly deleted
+        }
         createAllDatabaseTables(dynamoDB);
-        initializeUserByEmailIndex(dynamoDB);
     }
 
-    private static Table createTable(DynamoDB dynamoDB, String tableName, DatabaseField databaseField, ScalarAttributeType keyType)
-            throws InterruptedException {
-        ArrayList<AttributeDefinition> attributeDefinitions= new ArrayList<AttributeDefinition>();
-        attributeDefinitions.add(new AttributeDefinition()
-                .withAttributeName(databaseField.name()).withAttributeType(keyType));
-
-        CreateTableRequest createTableRequest = new CreateTableRequest()
+    /**
+     * Makes the CreateTableRequest object with basic table definitions, but no indexes.
+     */
+    private static CreateTableRequest makeCreateTableRequest(String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType) {
+        return new CreateTableRequest()
                 .withTableName(tableName)
-                .withKeySchema(Arrays.asList(new KeySchemaElement(databaseField.name(), KeyType.HASH)))
-                .withAttributeDefinitions(attributeDefinitions)
-                .withProvisionedThroughput(new ProvisionedThroughput()
-                        .withReadCapacityUnits(1L)
-                        .withWriteCapacityUnits(1L));
-
-
-        Table table = dynamoDB.createTable(createTableRequest);
-        return table;
+                .withKeySchema(new KeySchemaElement(primaryKeyField.name(), KeyType.HASH))
+                .withAttributeDefinitions(new AttributeDefinition(primaryKeyField.name(), primaryKeyType))
+                .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L));
     }
 
-    private static Index createIndex(Table table, String indexName, DatabaseField databaseField, ScalarAttributeType keyType) throws InterruptedException {
-        table.waitForActive();
-        return table.createGSI(
-                new CreateGlobalSecondaryIndexAction()
-                .withIndexName(indexName)
-                .withProvisionedThroughput(new ProvisionedThroughput()
-                        .withReadCapacityUnits(1L)
-                        .withWriteCapacityUnits(1L))
-                .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
-                .withKeySchema(new KeySchemaElement(databaseField.name(), KeyType.HASH)),
-                new AttributeDefinition().withAttributeName(databaseField.name()).withAttributeType(keyType)
-        );
 
+    /**
+     * Create a table with a simple string primary key and no indexes.
+     */
+    private static Table createTable(DynamoDB dynamoDB, String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType) {
+        CreateTableRequest createTableRequest = makeCreateTableRequest(tableName, primaryKeyField, primaryKeyType);
+        return dynamoDB.createTable(createTableRequest);
     }
+
+
+    /**
+     * Create a table with a simple string primary key and a simple string index.
+     */
+    private static Table createTableWithIndex(
+            DynamoDB dynamoDB,
+            String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType,
+            String indexName, DatabaseField indexField, ScalarAttributeType indexType) {
+        CreateTableRequest createTableRequest = makeCreateTableRequest(tableName, primaryKeyField, primaryKeyType);
+        CreateTableRequest createTableRequestWithIndex = createTableRequest
+                .withAttributeDefinitions(new AttributeDefinition(indexField.name(), indexType))
+                .withGlobalSecondaryIndexes(new GlobalSecondaryIndex()
+                        .withIndexName(indexName)
+                        .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))
+                        .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+                        .withKeySchema(new KeySchemaElement(indexField.name(), KeyType.HASH)));
+        return dynamoDB.createTable(createTableRequestWithIndex);
+    }
+
 
     public static abstract class DataInserter {
         final DynamoDBDatabase.Tables tables;

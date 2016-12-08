@@ -36,7 +36,7 @@ import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -44,11 +44,9 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -64,21 +62,26 @@ import static org.junit.Assert.assertNull;
  * fixed later; but if this comment is still here then run these at your own peril.
  */
 public class DynamoDBDatabaseIntegrationTest {
-    private DynamoDB dynamoDB;
     private DynamoDBDatabase dynamoDBDatabase;
 
-
-    @Before
-    public void initialize() throws InterruptedException {
-        Configuration configuration = new Configuration();
-        String dbConnectString = configuration.getProperty("dynamoDB.connect");
-        dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
+    @BeforeClass
+    public static void initializeClass() throws InterruptedException {
+        String dbConnectString = new Configuration().getProperty("dynamoDB.connect");
+        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
         try {
             DynamoDBSetup.deleteAllDatabaseTables(dynamoDB);
         } catch(ResourceNotFoundException err) {
             // It's fine if the deletions failed.
         }
         DynamoDBSetup.createAllDatabaseTables(dynamoDB);
+    }
+
+    @Before
+    public void initializeTest() throws InterruptedException {
+        Configuration configuration = new Configuration();
+        String dbConnectString = configuration.getProperty("dynamoDB.connect");
+        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
+        DynamoDBSetup.wipeAllDatabaseTables(dynamoDB);
         dynamoDBDatabase = new DynamoDBDatabase(configuration, new DynamoDBHelper());
     }
 
@@ -113,7 +116,7 @@ public class DynamoDBDatabaseIntegrationTest {
     public void testWriteOneDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
         insertDateAndReturnIt();
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
-        assertEquals(Arrays.asList(PrettyPrintingDate.fromParsableDate("2016-12-19")), allowedDates);
+        assertEquals(Collections.singletonList(PrettyPrintingDate.fromParsableDate("2016-12-19")), allowedDates);
     }
 
     @Test
@@ -146,7 +149,7 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData2);
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
         assertEquals(
-                Arrays.asList(PrettyPrintingDate.fromParsableDate("2016-12-19")),
+                Collections.singletonList(PrettyPrintingDate.fromParsableDate("2016-12-19")),
                 allowedDates);
     }
 
@@ -156,7 +159,7 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.deleteAllowedDate(PrettyPrintingDate.fromParsableDate("2016-12-19"));
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
         assertEquals(
-                Arrays.asList(),
+                Collections.emptyList(),
                 allowedDates);
     }
 
@@ -174,7 +177,7 @@ public class DynamoDBDatabaseIntegrationTest {
     public void testWriteOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
         String timeStr = insertTimeAndReturnIt();
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
-        assertEquals(Arrays.asList(timeStr), allowedTimes);
+        assertEquals(Collections.singletonList(timeStr), allowedTimes);
     }
 
     @Test
@@ -204,7 +207,7 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.deleteAllowedTime(time);
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
         assertEquals(
-                Arrays.asList(),
+                Collections.emptyList(),
                 allowedTimes);
     }
 
@@ -362,7 +365,7 @@ public class DynamoDBDatabaseIntegrationTest {
     private void insertNewBank(String bankAdminEmail) throws SQLException, EmailAlreadyInUseException {
         CreateBankFormData createBankFormData = new CreateBankFormData();
         createBankFormData.setBankName("Last Trust Bank");
-        createBankFormData.setEmail("weibosum@example.org");
+        createBankFormData.setEmail(bankAdminEmail);
         createBankFormData.setFirstName("Wei");
         createBankFormData.setLastName("Bo Sum");
         createBankFormData.setPhoneNumber("302-255-1234");
@@ -433,6 +436,10 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
+        editBankFormData.setFirstName("Jan");
+        editBankFormData.setLastName("Smith");
+        editBankFormData.setEmail("jsmith@firstib.com");
+        editBankFormData.setPhoneNumber("");
         editBankFormData.setMinLMIForCRA("34");
         dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
@@ -446,6 +453,10 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
+        editBankFormData.setFirstName("Jan");
+        editBankFormData.setLastName("Smith");
+        editBankFormData.setEmail("jsmith@firstib.com");
+        editBankFormData.setPhoneNumber("");
         editBankFormData.setMinLMIForCRA("");
         dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
@@ -534,7 +545,7 @@ public class DynamoDBDatabaseIntegrationTest {
         // -- Check that it is there --
         List<Teacher> teachers = dynamoDBDatabase.getTeachersBySchool(schoolId);
         assertEquals(1, teachers.size());
-        assertEquals("Jane", teachers.get(0).getFirstName());
+        assertEquals(teacher.getFirstName(), teachers.get(0).getFirstName());
     }
 
     @Test
@@ -564,19 +575,22 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    @Ignore // Skip this test because those using index give an error when run under maven
     public void testInsertTeacherThenSearchByEmail() throws Exception {
-        DynamoDBSetup.initializeUserByEmailIndex(dynamoDB);
         String schoolId = insertNewSchoolAndReturnTheId();
         Teacher teacher = insertTeacherJane(schoolId);
         User userFetched = dynamoDBDatabase.getUserByEmail(teacher.getEmail());
         assertEquals(teacher.getUserId(), userFetched.getUserId());
     }
 
+    @Test(expected = EmailAlreadyInUseException.class)
+    public void testInsertTeacherWithExistingEmail() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        insertTeacher(schoolId, "simple.email@sample.com");
+        insertTeacher(schoolId, "simple.email@sample.com");
+    }
+
     @Test
-    @Ignore // Skip this test because those using index give an error when run under maven
     public void testSearchByEmailButNotFound() throws Exception {
-        DynamoDBSetup.initializeUserByEmailIndex(dynamoDB);
         User user = dynamoDBDatabase.getUserByEmail("fake@place.com");
         assertNull(user);
     }
@@ -691,6 +705,22 @@ public class DynamoDBDatabaseIntegrationTest {
         assertNull(userFetched);
     }
 
+    @Test(expected = EmailAlreadyInUseException.class)
+    public void testCreateVolunteerWithExistingEmail() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        insertVolunteer(bankId, "simple.email@sample.com");
+        insertVolunteer(bankId, "simple.email@sample.com");
+    }
+
+    @Test(expected = EmailAlreadyInUseException.class)
+    public void testCreateVolunteerWithConflictingTeacherEmail() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        String bankId = insertNewBankAndReturnTheId();
+        insertTeacher(schoolId, "simple.email@sample.com");
+        insertVolunteer(bankId, "simple.email@sample.com");
+    }
+
+
     @Test
     public void testCreateVolunteerThenModifyVolunteerPersonalFields() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
@@ -737,6 +767,12 @@ public class DynamoDBDatabaseIntegrationTest {
         List<BankAdmin> bankAdmins = dynamoDBDatabase.getBankAdmins();
         assertEquals(1, bankAdmins.size());
         assertEquals("Wei", bankAdmins.get(0).getFirstName());
+    }
+
+    @Test(expected = EmailAlreadyInUseException.class)
+    public void createBankAdminWithConflictingEmailAddress() throws Exception {
+        insertNewBank("sample_email@example.org");
+        insertNewBank("sample_email@example.org");
     }
 
 

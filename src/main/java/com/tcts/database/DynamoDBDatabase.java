@@ -1,5 +1,6 @@
 package com.tcts.database;
 
+import com.amazonaws.services.devicefarm.model.Run;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -417,9 +418,25 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
     }
 
+
+    /**
+     * Called in the services that insert a user; throws an exception if the email is in use.
+     */
+    private void verifyEmailNotInUse(String email) throws SQLException, EmailAlreadyInUseException {
+        if (email == null || email.length() == 0) {
+            throw new RuntimeException("Not a valid email: '" + email + "'.");
+        }
+        User otherUserWithSameEmail = getUserByEmail(email);
+        if (otherUserWithSameEmail != null) {
+            throw new EmailAlreadyInUseException();
+        }
+    }
+
+
     @Override
     public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
         // This approach will CREATE the user if it doesn't exist. I THINK that behavior is fine.
+        verifyEmailNotInUse(formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), formData.getUserId()),
                 attributeUpdate(user_email, formData.getEmail()),
@@ -431,6 +448,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
         // This approach will CREATE the user if it doesn't exist. I THINK that behavior is fine.
+        verifyEmailNotInUse(formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), formData.getUserId()),
                 attributeUpdate(user_email, formData.getEmail()),
@@ -452,7 +470,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
-        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        verifyEmailNotInUse(formData.getEmail());
         String newTeacherId = dynamoDBHelper.createUniqueId();
         dynamoDBHelper.insertIntoTable(tables.userTable,
                 new ItemMaker(user_id, newTeacherId)
@@ -476,6 +494,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         result.setSalt(salt);
         return result;
     }
+
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
@@ -605,7 +624,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
         // NOTE: I'm choosing NOT to verify that the bank ID is actually present in the database
-        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        verifyEmailNotInUse(formData.getEmail());
         String newVolunteerId = dynamoDBHelper.createUniqueId();
         dynamoDBHelper.insertIntoTable(tables.userTable,
                 new ItemMaker(user_id, newVolunteerId)
@@ -780,7 +799,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
-        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        verifyEmailNotInUse(formData.getEmail());
         String bankAdminId = dynamoDBHelper.createUniqueId();
 
         String bankId = dynamoDBHelper.createUniqueId();
@@ -805,7 +824,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         BankAdmin bankAdmin = getBankAdminByBank(formData.getBankId());
 
         // -- Update the bank admin --
-        // FIXME: I *must* verify that the email is unique, and I don't do that yet.
+        verifyEmailNotInUse(formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), bankAdmin.getUserId()),
                 attributeUpdate(user_first_name, formData.getFirstName()),
