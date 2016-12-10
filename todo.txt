@@ -21,7 +21,6 @@ dubious about this one.
 
  - - - - DynamoDB Tasks - - - -
 * Need to test login of BankAdmin after creation
-* Try running it on AWS
 * Delete of volunteer should verify not signed up for any classes
 * Delete of teacher should verify does not own any classes
 * Need to write queries that drive the emails. Maybe fix broken design also?
@@ -29,6 +28,7 @@ dubious about this one.
 * Add sorting everywhere it is needed
 * Need to implement SiteStatistics
 * Delete of bank should cascade OR refuse to execute
+* Need a separate "environment key" in the DynamoDB database so I can have multiple environments.
 
 
  ----- TESTING  -----
