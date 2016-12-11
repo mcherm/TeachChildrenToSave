@@ -25,7 +25,6 @@ dubious about this one.
 * Search criteria and/or indexes to speed up frequently-called scans
 * Add sorting everywhere it is needed
 * Need to implement SiteStatistics
-* Delete of bank should cascade OR refuse to execute
 * Need a separate "environment key" in the DynamoDB database so I can have multiple environments.
 
 
