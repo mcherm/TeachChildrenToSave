@@ -21,6 +21,7 @@ import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
@@ -282,7 +283,7 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBank(String bankId) throws SQLException, NoSuchBankException {
+    public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
         database.deleteBank(bankId);
         allBanks.refreshNow();
         availableEvents.refreshNow();

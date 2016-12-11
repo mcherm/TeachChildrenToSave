@@ -1,6 +1,5 @@
 package com.tcts.database;
 
-import com.amazonaws.services.devicefarm.model.Run;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -30,6 +29,7 @@ import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
@@ -735,25 +735,42 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
         // Note: Does NOT verify whether the school exists and throw NoSuchSchoolException where appropriate
+        // Note: Does not verify whether the school is referenced anywhere.
         tables.schoolTable.deleteItem(new PrimaryKey(school_id.name(), schoolId));
     }
 
     @Override
-    public void deleteBank(String bankId) throws SQLException, NoSuchBankException {
+    public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
         // Does not verify that the bank exists and throw NoSuchBankException
-        // FIXME: Does not currently delete the bank admin and all volunteers
+        List<Volunteer> volunteers = getVolunteersByBank(bankId);
+        if (volunteers.size() > 1 || !(volunteers.get(0) instanceof BankAdmin)) {
+            throw new BankHasVolunteersException();
+        }
+        if (volunteers.size() == 1) {
+            try {
+                deleteVolunteer(volunteers.get(0).getUserId());
+            } catch (NoSuchUserException e) {
+                throw new RuntimeException("Bank Admin found but then cannot be deleted.");
+            }
+        }
         tables.bankTable.deleteItem(new PrimaryKey(bank_id.name(), bankId));
     }
 
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
-        // FIXME: Needs to validate that the volunteer has no events and raise an exception if it does.
+        List<Event> events = getEventsByVolunteer(volunteerId);
+        if (events.size() != 0) {
+            throw new VolunteerHasEventsException();
+        }
         tables.userTable.deleteItem(new PrimaryKey(user_id.name(), volunteerId));
     }
 
     @Override
     public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
-        // FIXME: Needs to validate that the teacher has no events and raise an exception if it does.
+        List<Event> events = getEventsByTeacher(teacherId);
+        if (events.size() != 0) {
+            throw new TeacherHasEventsException();
+        }
         tables.userTable.deleteItem(new PrimaryKey(user_id.name(), teacherId));
     }
 

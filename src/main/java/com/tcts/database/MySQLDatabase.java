@@ -16,6 +16,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.tcts.datamodel.ApprovalStatus;
+import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
@@ -958,7 +959,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public void deleteBank(String bankId) throws SQLException, NoSuchBankException {
+	public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {

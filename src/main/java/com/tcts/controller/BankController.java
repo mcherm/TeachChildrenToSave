@@ -10,10 +10,12 @@ import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
+import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NotLoggedInException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.Errors;
@@ -112,7 +114,7 @@ public class BankController {
             HttpSession session,
             Model model,
             HttpServletRequest request
-    ) throws SQLException {
+    ) throws SQLException, BankHasVolunteersException, VolunteerHasEventsException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -127,10 +129,10 @@ public class BankController {
         }
         try {
             // delete bank, bank admin and all volunteers associated with the bank
-             database.deleteBank(bankId);
-             } catch(NoSuchBankException err) {
-             throw new InvalidParameterFromGUIException();
-         }
+            database.deleteBank(bankId);
+        } catch(NoSuchBankException err) {
+            throw new InvalidParameterFromGUIException();
+        }
         return "redirect:viewEditBanks.htm";
     }
 

@@ -18,6 +18,7 @@ import com.tcts.datamodel.User;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
@@ -196,10 +197,14 @@ public interface DatabaseFacade {
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 
     /**
-     * This will delete a bank. It ALSO deletes the bank admin AND ALL Volunteers belonging
-     * to that bank.
+     * This will delete a bank. For historical reasons (in other words, we did it wrong at
+     * first) Databases can EITHER choose to ALSO delete the bank admin AND ALL Volunteers
+     * belonging to that bank, OR can choose to throw a BankHasVolunteersException if there
+     * are any volunteers other than the BankAdmin, and delete the BankAdmin (if any) along
+     * with the Bank. The second behavior is preferred as it is less surprising. If the bank
+     * admin is a volunteer for some events then VolunteerHasEventsException will be thrown.
      */
-    public void deleteBank(String bankId) throws SQLException, NoSuchBankException;
+    public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException;
     
     /**
      * Delete volunteer from database. If the volunteer has signed up for any events,

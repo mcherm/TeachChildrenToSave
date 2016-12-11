@@ -22,6 +22,8 @@ import com.tcts.exception.NoSuchAllowedDateException;
 import com.tcts.exception.NoSuchAllowedTimeException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
@@ -404,7 +406,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void testCreateTwoBanksDeleteOneThenGetThem() throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+    public void testCreateTwoBanksDeleteOneThenGetThem() throws Exception {
         CreateBankFormData createBankFormData = new CreateBankFormData();
         createBankFormData.setBankName("Last Trust Bank");
         createBankFormData.setEmail("weibosum@example.org");
@@ -574,6 +576,16 @@ public class DynamoDBDatabaseIntegrationTest {
         assertNull(userFetched);
     }
 
+
+    @Test(expected = TeacherHasEventsException.class)
+    public void testDeleteTeacherThatHasEvents() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        insertEventAndReturnIt(teacher.getUserId());
+        dynamoDBDatabase.deleteTeacher(teacher.getUserId());
+    }
+
+
     @Test
     public void testInsertTeacherThenSearchByEmail() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
@@ -703,6 +715,17 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.deleteVolunteer(volunteer.getUserId());
         User userFetched = dynamoDBDatabase.getUserById(volunteer.getUserId());
         assertNull(userFetched);
+    }
+
+    @Test(expected = VolunteerHasEventsException.class)
+    public void testDeleteVolunteerThatHasEvents() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+        dynamoDBDatabase.deleteVolunteer(volunteer.getUserId());
     }
 
     @Test(expected = EmailAlreadyInUseException.class)
