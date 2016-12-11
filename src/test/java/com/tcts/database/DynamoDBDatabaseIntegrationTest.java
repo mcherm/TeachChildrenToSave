@@ -1151,6 +1151,4 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(schoolId1, teachers2.get(1).getLinkedSchool().getSchoolId());
     }
 
-
-    // FIXME: Need test to verify that bank admins show up in the list of volunteers
 }

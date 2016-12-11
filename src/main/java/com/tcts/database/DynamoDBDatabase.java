@@ -581,7 +581,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
-        // FIXME: Really should verify on this update that the volunteer is null before we update it!
         try {
             Expected expected = new Expected(event_volunteer_id.name()).notExist();
             Collection<Expected> expectations = Collections.singletonList(expected);
