@@ -28,7 +28,7 @@ public class DynamoDBSetup {
 
     private static DynamoDBHelper dynamoDBHelper = new DynamoDBHelper();
 
-    public static void createAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
+    public static void createAllDatabaseTables(DynamoDB dynamoDB, Configuration configuration) throws InterruptedException {
         /*
         Design note:
            Tables with no index are all ones where the lookups are by ID. Tables that can get big (User
@@ -39,20 +39,21 @@ public class DynamoDBSetup {
            value "0" which is for all unassigned events. Same deal about how we'd need a different approach
            if we were really big, but we aren't so it'll be fine.
          */
+        String tablePrefix = DynamoDBDatabase.getTablePrefix(configuration);
 
-        Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", site_setting_name, ScalarAttributeType.S, 1L);
-        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", event_date_allowed, ScalarAttributeType.S, 1L);
-        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", event_time_allowed, ScalarAttributeType.S, 1L);
+        Table siteSettingsTable = createTable(dynamoDB, tablePrefix, "SiteSettings", site_setting_name, ScalarAttributeType.S, 1L);
+        Table allowedDatesTable = createTable(dynamoDB, tablePrefix, "AllowedDates", event_date_allowed, ScalarAttributeType.S, 1L);
+        Table allowedTimesTable = createTable(dynamoDB, tablePrefix, "AllowedTimes", event_time_allowed, ScalarAttributeType.S, 1L);
         Table eventTable = createTableWithIndexes(
-                dynamoDB, "Event", event_id, ScalarAttributeType.S, 2L,
+                dynamoDB, tablePrefix, "Event", event_id, ScalarAttributeType.S, 2L,
                 new IndexDetail("byTeacher", event_teacher_id, ScalarAttributeType.S),
                 new IndexDetail("byVolunteer", event_volunteer_id, ScalarAttributeType.S));
-        Table bankTable = createTable(dynamoDB, "Bank", bank_id, ScalarAttributeType.S, 1L);
+        Table bankTable = createTable(dynamoDB, tablePrefix, "Bank", bank_id, ScalarAttributeType.S, 1L);
         Table userTable = createTableWithIndexes(
-                dynamoDB, "User", user_id, ScalarAttributeType.S, 2L,
+                dynamoDB, tablePrefix, "User", user_id, ScalarAttributeType.S, 2L,
                 new IndexDetail("byEmail", user_email, ScalarAttributeType.S),
                 new IndexDetail("byUserType", user_type, ScalarAttributeType.S));
-        Table schoolTable = createTable(dynamoDB, "School", school_id, ScalarAttributeType.S, 1L);
+        Table schoolTable = createTable(dynamoDB, tablePrefix, "School", school_id, ScalarAttributeType.S, 1L);
 
         siteSettingsTable.waitForActive();
         allowedDatesTable.waitForActive();
@@ -63,7 +64,6 @@ public class DynamoDBSetup {
         schoolTable.waitForActive();
     }
 
-
     /** Delete all entries from this table. */
     private static void wipeTable(Table table) {
         String primaryKeyName = table.describe().getKeySchema().get(0).getAttributeName();
@@ -73,8 +73,8 @@ public class DynamoDBSetup {
     }
 
     /** This deletes all rows from all database tables. */
-    public static void wipeAllDatabaseTables(DynamoDB dynamoDB) {
-        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+    public static void wipeAllDatabaseTables(DynamoDB dynamoDB, Configuration configuration) {
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
         wipeTable(tables.siteSettingsTable);
         wipeTable(tables.allowedDatesTable);
         wipeTable(tables.allowedTimesTable);
@@ -88,8 +88,8 @@ public class DynamoDBSetup {
      * When called, this wipes the entire DynamoDB database and then recreates the
      * tables but none of the indexes.
      */
-    public static void deleteAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
-        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+    public static void deleteAllDatabaseTables(DynamoDB dynamoDB, Configuration configuration) throws InterruptedException {
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
         tables.siteSettingsTable.delete();
         tables.allowedDatesTable.delete();
         tables.allowedTimesTable.delete();
@@ -111,21 +111,21 @@ public class DynamoDBSetup {
     /**
      * When called, this wipes the entire DynamoDB database and then recreates it.
      */
-    public static void reinitializeDatabase(DynamoDB dynamoDB) throws InterruptedException {
+    public static void reinitializeDatabase(DynamoDB dynamoDB, Configuration configuration) throws InterruptedException {
         try {
-            deleteAllDatabaseTables(dynamoDB);
+            deleteAllDatabaseTables(dynamoDB, configuration);
         } catch(ResourceNotFoundException err) {
             // Ignore this, and assume it all got cleanly deleted
         }
-        createAllDatabaseTables(dynamoDB);
+        createAllDatabaseTables(dynamoDB, configuration);
     }
 
     /**
      * Makes the CreateTableRequest object with basic table definitions, but no indexes.
      */
-    private static CreateTableRequest makeCreateTableRequest(String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType, long provisionedThroughput) {
+    private static CreateTableRequest makeCreateTableRequest(String tablePrefix, String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType, long provisionedThroughput) {
         return new CreateTableRequest()
-                .withTableName(tableName)
+                .withTableName(tablePrefix + tableName)
                 .withKeySchema(new KeySchemaElement(primaryKeyField.name(), KeyType.HASH))
                 .withAttributeDefinitions(new AttributeDefinition(primaryKeyField.name(), primaryKeyType))
                 .withProvisionedThroughput(new ProvisionedThroughput(provisionedThroughput, provisionedThroughput));
@@ -135,8 +135,8 @@ public class DynamoDBSetup {
     /**
      * Create a table with a simple string primary key and no indexes.
      */
-    private static Table createTable(DynamoDB dynamoDB, String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType, long provisionedThroughput) {
-        CreateTableRequest createTableRequest = makeCreateTableRequest(tableName, primaryKeyField, primaryKeyType, provisionedThroughput);
+    private static Table createTable(DynamoDB dynamoDB, String tablePrefix, String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType, long provisionedThroughput) {
+        CreateTableRequest createTableRequest = makeCreateTableRequest(tablePrefix, tableName, primaryKeyField, primaryKeyType, provisionedThroughput);
         return dynamoDB.createTable(createTableRequest);
     }
 
@@ -163,12 +163,13 @@ public class DynamoDBSetup {
      */
     private static Table createTableWithIndexes(
             DynamoDB dynamoDB,
+            String tablePrefix,
             String tableName,
             DatabaseField primaryKeyField,
             ScalarAttributeType primaryKeyType,
             long provisionedThroughput,
             IndexDetail... indexDetails) {
-        CreateTableRequest createTableRequest = makeCreateTableRequest(tableName, primaryKeyField, primaryKeyType, provisionedThroughput);
+        CreateTableRequest createTableRequest = makeCreateTableRequest(tablePrefix, tableName, primaryKeyField, primaryKeyType, provisionedThroughput);
         for (IndexDetail indexDetail : indexDetails) {
             createTableRequest = createTableRequest
                     .withAttributeDefinitions(new AttributeDefinition(indexDetail.indexField.name(), indexDetail.indexType))
@@ -496,9 +497,9 @@ public class DynamoDBSetup {
         System.out.println("Starting...");
         Configuration configuration = new Configuration();
         DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration.getProperty("dynamoDB.connect"));
-        reinitializeDatabase(dynamoDB);
+        reinitializeDatabase(dynamoDB, configuration);
 
-        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB);
+        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
 
         new RealDataInserter(tables).run();
 

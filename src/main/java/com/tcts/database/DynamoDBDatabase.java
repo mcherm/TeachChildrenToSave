@@ -93,7 +93,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public DynamoDBDatabase(Configuration configuration, DynamoDBHelper dynamoDBHelper) {
         this.dynamoDBHelper = dynamoDBHelper;
         DynamoDB dynamoDB = connectToDB(configuration.getProperty("dynamoDB.connect"));
-        this.tables = getTables(dynamoDB);
+        this.tables = getTables(dynamoDB, configuration);
     }
 
 
@@ -144,14 +144,23 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
     }
 
-    static DynamoDBDatabase.Tables getTables(DynamoDB dynamoDB) {
-        Table siteSettingsTable = dynamoDB.getTable("SiteSettings");
-        Table allowedDatesTable = dynamoDB.getTable("AllowedDates");
-        Table allowedTimesTable = dynamoDB.getTable("AllowedTimes");
-        Table eventTable = dynamoDB.getTable("Event");
-        Table bankTable = dynamoDB.getTable("Bank");
-        Table userTable = dynamoDB.getTable("User");
-        Table schoolTable = dynamoDB.getTable("School");
+    /**
+     * Returns the common prefix to all DynamoDB tables which exists so we can support
+     * multiple environments without name collisions.
+     */
+    static String getTablePrefix(Configuration configuration) {
+        return "TCTS." + configuration.getProperty("dynamoDB.environment", "dev") + ".";
+    }
+
+    static DynamoDBDatabase.Tables getTables(DynamoDB dynamoDB, Configuration configuration) {
+        String tablePrefix = getTablePrefix(configuration);
+        Table siteSettingsTable = dynamoDB.getTable(tablePrefix + "SiteSettings");
+        Table allowedDatesTable = dynamoDB.getTable(tablePrefix + "AllowedDates");
+        Table allowedTimesTable = dynamoDB.getTable(tablePrefix + "AllowedTimes");
+        Table eventTable = dynamoDB.getTable(tablePrefix + "Event");
+        Table bankTable = dynamoDB.getTable(tablePrefix + "Bank");
+        Table userTable = dynamoDB.getTable(tablePrefix + "User");
+        Table schoolTable = dynamoDB.getTable(tablePrefix + "School");
         return new DynamoDBDatabase.Tables(siteSettingsTable, allowedDatesTable, allowedTimesTable, eventTable, bankTable, userTable, schoolTable);
     }
 

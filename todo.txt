@@ -22,8 +22,6 @@ dubious about this one.
  - - - - DynamoDB Tasks - - - -
 * Need to test login of BankAdmin after creation
 * Need to write queries that drive the emails. Maybe fix broken design also?
-* Need to implement SiteStatistics
-* Need a separate "environment key" in the DynamoDB database so I can have multiple environments.
 
 
  ----- TESTING  -----

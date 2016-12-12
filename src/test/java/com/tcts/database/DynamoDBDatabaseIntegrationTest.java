@@ -69,14 +69,15 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @BeforeClass
     public static void initializeClass() throws InterruptedException {
-        String dbConnectString = new Configuration().getProperty("dynamoDB.connect");
+        Configuration configuration = new Configuration();
+        String dbConnectString = configuration.getProperty("dynamoDB.connect");
         DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
         try {
-            DynamoDBSetup.deleteAllDatabaseTables(dynamoDB);
+            DynamoDBSetup.deleteAllDatabaseTables(dynamoDB, configuration);
         } catch(ResourceNotFoundException err) {
             // It's fine if the deletions failed.
         }
-        DynamoDBSetup.createAllDatabaseTables(dynamoDB);
+        DynamoDBSetup.createAllDatabaseTables(dynamoDB, configuration);
     }
 
     @Before
@@ -84,7 +85,7 @@ public class DynamoDBDatabaseIntegrationTest {
         Configuration configuration = new Configuration();
         String dbConnectString = configuration.getProperty("dynamoDB.connect");
         DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
-        DynamoDBSetup.wipeAllDatabaseTables(dynamoDB);
+        DynamoDBSetup.wipeAllDatabaseTables(dynamoDB, configuration);
         dynamoDBDatabase = new DynamoDBDatabase(configuration, new DynamoDBHelper());
     }
 
