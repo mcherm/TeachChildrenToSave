@@ -944,12 +944,20 @@ public class DynamoDBDatabaseIntegrationTest {
     public void testWithdrawVolunteerFromAnEvent() throws Exception {
         String schoolId = insertNewSchoolAndReturnTheId();
         Teacher teacher = insertTeacherJane(schoolId);
-        Event event1 = insertEventAndReturnIt(teacher.getUserId());
-        assertEquals(null, event1.getVolunteerId());
-        dynamoDBDatabase.volunteerForEvent(event1.getEventId(), null);
-        List<Event> events = dynamoDBDatabase.getAllEvents();
-        assertEquals(1, events.size());
-        assertEquals(null, events.get(0).getVolunteerId());
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+        assertEquals(null, event.getVolunteerId());
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+        List<Event> events1 = dynamoDBDatabase.getAllEvents();
+        assertEquals(1, events1.size());
+        assertEquals(volunteer.getUserId(), events1.get(0).getVolunteerId());
+
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), null);
+        List<Event> events2 = dynamoDBDatabase.getAllEvents();
+        assertEquals(1, events2.size());
+        assertEquals(null, events2.get(0).getVolunteerId());
     }
 
 

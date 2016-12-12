@@ -91,6 +91,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
 
 
+    // ========== Constants ==========
+
+    /** An indicator value for event_volunteer_id that means no volunteer; used in place of null. */
+    private final String NO_VOLUNTEER = "0";
+
     // ========== Instance Variables and Constructor ==========
 
     private final DynamoDBHelper dynamoDBHelper;
@@ -391,7 +396,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
         String volunteerString = getStringField(item, event_volunteer_id);
-        event.setVolunteerId(volunteerString.length() == 0 ? null : volunteerString);
+        event.setVolunteerId(volunteerString.equals(NO_VOLUNTEER) ? null : volunteerString);
         return event;
     }
 
@@ -549,7 +554,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // FIXME: Specifically, it will only work if we use a special value (0) instead of null for volunteerId
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventTable.scan()) {
-            if (item.getString(event_volunteer_id.name()) == null) {
+            if (item.getString(event_volunteer_id.name()).equals(NO_VOLUNTEER)) {
                 Event event = createEventFromDynamoDBItem(item);
                 result.add(event);
             }
@@ -560,6 +565,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
+        if (volunteerId == null) {
+            throw new RuntimeException("This method doesn't handle null for volunteerId.");
+        }
         Index eventsByVolunteer = tables.eventTable.getIndex("byVolunteer");
         ItemCollection<QueryOutcome> items = eventsByVolunteer.query(new KeyAttribute(event_volunteer_id.name(), volunteerId));
         List<Event> result = new ArrayList<Event>();
@@ -587,17 +595,23 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(event_time, formData.getEventTime())
                         .withInt(event_grade, Integer.parseInt(formData.getGrade()))
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
-                        .withString(event_notes, formData.getNotes()));
+                        .withString(event_notes, formData.getNotes())
+                        .withString(event_volunteer_id, NO_VOLUNTEER));
     }
 
     @Override
     public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
+        final Expected expected;
+        if (volunteerId == null) {
+            volunteerId = NO_VOLUNTEER;
+            expected = new Expected(event_volunteer_id.name()).ne(NO_VOLUNTEER);
+        } else {
+            expected = new Expected(event_volunteer_id.name()).eq(NO_VOLUNTEER);
+        }
         try {
-            Expected expected = new Expected(event_volunteer_id.name()).notExist();
-            Collection<Expected> expectations = Collections.singletonList(expected);
             tables.eventTable.updateItem(
                     new PrimaryKey(event_id.name(), eventId),
-                    expectations,
+                    Collections.singletonList(expected),
                     attributeUpdate(event_volunteer_id, volunteerId));
         } catch(ConditionalCheckFailedException err) {
             throw new EventAlreadyHasAVolunteerException();

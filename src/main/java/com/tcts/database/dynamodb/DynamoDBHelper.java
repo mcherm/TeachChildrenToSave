@@ -28,13 +28,14 @@ public class DynamoDBHelper {
      * @param itemMaker describes the item to be inserted
      */
     public void insertIntoTable(Table table, ItemMaker itemMaker) {
-        // FIXME: Should this be verifying that the PK does not already exist?
+        // FIXME: this should be verifying that the PK does not already exist?
         table.putItem(itemMaker.getItem());
     }
 
 
     /**
-     * When this is called, it will create a single, unique ID.
+     * When this is called, it will create a single, unique ID, guaranteed
+     * NOT to include "0" as a value.
      * <p>
      * We happen to be using the following approach: pick a random
      * positive long. Count on luck for it to never collide. It's
