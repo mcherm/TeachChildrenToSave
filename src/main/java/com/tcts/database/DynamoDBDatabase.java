@@ -115,6 +115,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         final Table bankTable;
         final Table userTable;
         final Index userByEmail;
+        final Index userByOrganization;
         final Index userByUserType;
         final Table schoolTable;
 
@@ -139,6 +140,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             this.bankTable = bankTable;
             this.userTable = userTable;
             this.userByEmail = userTable.getIndex("byEmail");
+            this.userByOrganization = userTable.getIndex("byOrganization");
             this.userByUserType = userTable.getIndex("byUserType");
             this.schoolTable = schoolTable;
         }
@@ -654,13 +656,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
-        // FIXME: Needs a query criterion or index to speed it up. - specifically userByOrganization
         List<Volunteer> result = new ArrayList<Volunteer>();
-        for (Item item : tables.userTable.scan()) {
-            if (volunteerUserTypes.contains(item.getString(user_type.name()))
-                && bankId.equals(item.getString(user_organization_id.name()))) {
-                result.add((Volunteer) createUserFromDynamoDBItem(item));
-            }
+        for (Item item : tables.userByOrganization.query(new KeyAttribute(user_organization_id.name(), bankId))) {
+            // user MUST be a volunteer or bank admin (kind of volunteer) to have that organization id.
+            // The cast double-checks this for us.
+            result.add((Volunteer) createUserFromDynamoDBItem(item));
         }
         Collections.sort(result, compareUsersByName);
         return result;
@@ -668,13 +668,15 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
-        // FIXME: This really needs to have an index to speed it up - specifically userByOrganization
+        List<Volunteer> volunteers = getVolunteersByBank(bankId);
         BankAdmin result = null;
-        List<BankAdmin> bankAdmins = getBankAdmins();
-        for (BankAdmin bankAdmin : bankAdmins) {
-            if (bankId.equals(bankAdmin.getBankId())) {
-                result = bankAdmin;
-                break;
+        for (Volunteer volunteer : volunteers) {
+            if (volunteer instanceof  BankAdmin) {
+                if (result == null) {
+                    result = (BankAdmin) volunteer;
+                } else {
+                    throw new RuntimeException("Database appears to have multiple BankAdmins for one bank.");
+                }
             }
         }
         return result;

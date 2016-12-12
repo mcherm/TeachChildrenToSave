@@ -52,6 +52,7 @@ public class DynamoDBSetup {
         Table userTable = createTableWithIndexes(
                 dynamoDB, tablePrefix, "User", user_id, ScalarAttributeType.S, 2L,
                 new IndexDetail("byEmail", user_email, ScalarAttributeType.S),
+                new IndexDetail("byOrganization", user_organization_id, ScalarAttributeType.S),
                 new IndexDetail("byUserType", user_type, ScalarAttributeType.S));
         Table schoolTable = createTable(dynamoDB, tablePrefix, "School", school_id, ScalarAttributeType.S, 1L);
 
