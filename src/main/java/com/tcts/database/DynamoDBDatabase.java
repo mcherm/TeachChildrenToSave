@@ -60,7 +60,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -162,7 +161,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return new DynamoDBDatabase.Tables(siteSettingsTable, allowedDatesTable, allowedTimesTable, eventTable, bankTable, userTable, schoolTable);
     }
 
-    // ========== Special Plumbing ==========
+
+    // ========== Sorting ==========
 
 
     /** Static class used when getting allowed times in the proper sort order. */
@@ -192,12 +192,42 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
 
     /** Comparator for sorting events. */
-    private final Comparator<Event> compareEventsByDate = new Comparator<Event>() {
+    private final Comparator<Event> compareEvents = new Comparator<Event>() {
         @Override
         public int compare(Event event1, Event event2) {
             return event1.getEventDate().compareTo(event2.getEventDate());
         }
     };
+
+    /** Comparator for sorting schools. */
+    private final Comparator<School> compareSchools = new Comparator<School>() {
+        @Override
+        public int compare(School school1, School school2) {
+            return school1.getName().compareTo(school2.getName());
+        }
+    };
+
+    /** Comparator for sorting banks. */
+    private final Comparator<Bank> compareBanks = new Comparator<Bank>() {
+        @Override
+        public int compare(Bank bank1, Bank bank2) {
+            return bank1.getBankName().compareTo(bank2.getBankName());
+        }
+    };
+
+    private final Comparator<User> compareUsersByName = new Comparator<User>() {
+        @Override
+        public int compare(User user1, User user2) {
+            int byLastName = user1.getLastName().compareTo(user2.getLastName());
+            if (byLastName != 0) {
+                return byLastName;
+            }
+            return user1.getFirstName().compareTo(user2.getFirstName());
+        }
+    };
+
+
+    // ========== Special Plumbing ==========
 
 
     /**
@@ -518,7 +548,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         for (Item item : items) {
             result.add(createEventFromDynamoDBItem(item));
         }
-        Collections.sort(result, compareEventsByDate);
+        Collections.sort(result, compareEvents);
         return result;
     }
 
@@ -560,6 +590,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             }
         }
         addLinkedTeachersAndSchools(result);
+        Collections.sort(result, compareEvents);
         return result;
     }
 
@@ -574,7 +605,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         for (Item item : items) {
             result.add(createEventFromDynamoDBItem(item));
         }
-        Collections.sort(result, compareEventsByDate);
+        Collections.sort(result, compareEvents);
         return result;
     }
 
@@ -628,6 +659,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 result.add((Volunteer) createUserFromDynamoDBItem(item));
             }
         }
+        Collections.sort(result, compareUsersByName);
         return result;
     }
 
@@ -696,12 +728,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             result.add(createSchoolFromDynamoDBItem(item));
         }
         // -- Sort by name --
-        Collections.sort(result, new Comparator<School>() {
-            @Override
-            public int compare(School school1, School school2) {
-                return school1.getName().compareTo(school2.getName());
-            }
-        });
+        Collections.sort(result, compareSchools);
         // -- Return the result --
         return result;
     }
@@ -714,12 +741,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             result.add(createBankFromDynamoDBItem(item));
         }
         // -- Sort by name --
-        Collections.sort(result, new Comparator<Bank>() {
-            @Override
-            public int compare(Bank bank1, Bank bank2) {
-                return bank1.getBankName().compareTo(bank2.getBankName());
-            }
-        });
+        Collections.sort(result, compareBanks);
         // -- Return the result --
         return result;
     }
@@ -809,7 +831,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         for (Item item : tables.eventTable.scan()) {
             result.add(createEventFromDynamoDBItem(item));
         }
-        Collections.sort(result, compareEventsByDate);
+        Collections.sort(result, compareEvents);
         return result;
     }
 
@@ -838,6 +860,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
+        // FIXME: It might be nice to enforce that the bank name is unique
         verifyEmailNotInUse(formData.getEmail());
         String bankAdminId = dynamoDBHelper.createUniqueId();
 
@@ -1027,6 +1050,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 teachers.add(teacher);
             }
         }
+        Collections.sort(teachers, compareUsersByName);
         return teachers;
     }
 
@@ -1042,6 +1066,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 result.add((Teacher) createUserFromDynamoDBItem(item));
             }
         }
+        Collections.sort(result, compareUsersByName);
         return result;
     }
 
@@ -1065,6 +1090,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 result.add(volunteer);
             }
         }
+        Collections.sort(result, compareUsersByName);
         return result;
     }
 
@@ -1102,6 +1128,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 result.add(bankAdmin);
             }
         }
+        Collections.sort(result, compareUsersByName);
         return result;
     }
 
