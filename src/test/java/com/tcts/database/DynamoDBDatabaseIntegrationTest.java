@@ -10,6 +10,7 @@ import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
+import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
@@ -1157,6 +1158,41 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(schoolId1, teachers2.get(0).getLinkedSchool().getSchoolId());
         assertEquals(schoolId1, teachers2.get(1).getSchoolId());
         assertEquals(schoolId1, teachers2.get(1).getLinkedSchool().getSchoolId());
+    }
+
+    /** Convenient way to do a bunch of asserts on one line. */
+    private void assertSiteStatisticsValues(int numEvents,
+                                            int numMatchedEvents,
+                                            int numUnmatchedEvents,
+                                            int num3rdGradeEvents,
+                                            int num4thGradeEvents,
+                                            int numVolunteers,
+                                            int numParticipatingTeachers,
+                                            int numParticipatingSchools) throws SQLException {
+        SiteStatistics siteStatistics = dynamoDBDatabase.getSiteStatistics();
+        assertEquals(numEvents, siteStatistics.getNumEvents());
+        assertEquals(numMatchedEvents, siteStatistics.getNumMatchedEvents());
+        assertEquals(numUnmatchedEvents, siteStatistics.getNumUnmatchedEvents());
+        assertEquals(num3rdGradeEvents, siteStatistics.getNum3rdGradeEvents());
+        assertEquals(num4thGradeEvents, siteStatistics.getNum4thGradeEvents());
+        assertEquals(numVolunteers, siteStatistics.getNumVolunteers());
+        assertEquals(numParticipatingTeachers, siteStatistics.getNumParticipatingTeachers());
+        assertEquals(numParticipatingSchools, siteStatistics.getNumParticipatingSchools());
+    }
+
+
+    @Test
+    public void testSiteStatistics() throws Exception {
+        assertSiteStatisticsValues(0, 0, 0, 0, 0, 0, 0, 0);
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        assertSiteStatisticsValues(0, 0, 0, 0, 0, 0, 0, 0);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+        assertSiteStatisticsValues(1, 0, 1, 1, 0, 0, 0, 0);
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+        assertSiteStatisticsValues(1, 1, 0, 1, 0, 1, 1, 1);
     }
 
 }

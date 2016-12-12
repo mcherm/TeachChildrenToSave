@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1012,16 +1013,50 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public SiteStatistics getSiteStatistics() throws SQLException {
-        // FIXME: This returns just dummy values for now.
+        int numEvents = 0;
+        int numMatchedEvents = 0;
+        int numUnmatchedEvents = 0;
+        int num3rdGradeEvents = 0;
+        int num4thGradeEvents = 0;
+        Set<String> volunteerIdsActuallySignedUp = new HashSet<String>();
+        Set<String> teacherIdsWithClassesThatHaveVolunteers = new HashSet<String>();
+        for (Item item : tables.eventTable.scan()) {
+            Event event = createEventFromDynamoDBItem(item);
+            numEvents += 1;
+            if (event.getVolunteerId() == null) {
+                numUnmatchedEvents += 1;
+            } else {
+                numMatchedEvents += 1;
+                volunteerIdsActuallySignedUp.add(event.getVolunteerId());
+                teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
+            }
+            if (event.getGrade().equals("3")) {
+                num3rdGradeEvents += 1;
+            } else if (event.getGrade().equals("4")) {
+                num4thGradeEvents += 1;
+            }
+        }
+        int numVolunteers = volunteerIdsActuallySignedUp.size();
+        int numParticipatingTeachers = teacherIdsWithClassesThatHaveVolunteers.size();
+        // Loop through the teachers separately to count schools (more efficient than querying each one separately)
+        Set<String> schoolIdsWithClassesThatHaveVolunteers = new HashSet<String>();
+        for (Item item : tables.userByUserType.query(new KeyAttribute(user_type.name(), UserType.TEACHER.getDBValue()))) {
+            Teacher teacher = (Teacher) createUserFromDynamoDBItem(item);
+            if (teacherIdsWithClassesThatHaveVolunteers.contains(teacher.getUserId())) {
+                schoolIdsWithClassesThatHaveVolunteers.add(teacher.getSchoolId());
+            }
+        }
+        int numParticipatingSchools = schoolIdsWithClassesThatHaveVolunteers.size();
+
         SiteStatistics siteStatistics = new SiteStatistics();
-        siteStatistics.setNumEvents(0);
-        siteStatistics.setNumMatchedEvents(0);
-        siteStatistics.setNumUnmatchedEvents(0);
-        siteStatistics.setNum3rdGradeEvents(0);
-        siteStatistics.setNum4thGradeEvents(0);
-        siteStatistics.setNumVolunteers(0);
-        siteStatistics.setNumParticipatingTeachers(0);
-        siteStatistics.setNumParticipatingSchools(0);
+        siteStatistics.setNumEvents(numEvents);
+        siteStatistics.setNumMatchedEvents(numMatchedEvents);
+        siteStatistics.setNumUnmatchedEvents(numUnmatchedEvents);
+        siteStatistics.setNum3rdGradeEvents(num3rdGradeEvents);
+        siteStatistics.setNum4thGradeEvents(num4thGradeEvents);
+        siteStatistics.setNumVolunteers(numVolunteers);
+        siteStatistics.setNumParticipatingTeachers(numParticipatingTeachers);
+        siteStatistics.setNumParticipatingSchools(numParticipatingSchools);
         return siteStatistics;
     }
 
