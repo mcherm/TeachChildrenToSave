@@ -22,16 +22,6 @@ dubious about this one.
  - - - - DynamoDB Tasks - - - -
 * Need to test login of BankAdmin after creation
 * Need to write queries that drive the emails. Maybe fix broken design also?
-* Search criteria and/or indexes to speed up frequently-called scans
-  * INDEXES NEEDED:
-    * Events byTeacherId [DONE]
-    * Events byVolunteerId [DONE]
-      * Need to use "0" as volunteerId in events to indicate "no volunteer". [DONE]
-    * User byOrganizationId
-  * Do JUST ONE of these:
-    * Use a filter in the places where we retrieve a certain type from the user table
-    * Use an index: User byUserType
-* Add sorting everywhere it is needed
 * Need to implement SiteStatistics
 * Need a separate "environment key" in the DynamoDB database so I can have multiple environments.
 

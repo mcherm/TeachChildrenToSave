@@ -29,6 +29,17 @@ public class DynamoDBSetup {
     private static DynamoDBHelper dynamoDBHelper = new DynamoDBHelper();
 
     public static void createAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
+        /*
+        Design note:
+           Tables with no index are all ones where the lookups are by ID. Tables that can get big (User
+           and Event) have indexes. All of the indexes are well-distributed EXCEPT for two cases. The
+           first is User.byUserType which has only a few values. Still, until we got to REALLY bad
+           scaling problems that would continue to work, and we need some way to do the lookups efficiently.
+           The second is Event.byVolunteer which is MOSTLY well-distributed, except for the special marker
+           value "0" which is for all unassigned events. Same deal about how we'd need a different approach
+           if we were really big, but we aren't so it'll be fine.
+         */
+
         Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", site_setting_name, ScalarAttributeType.S, 1L);
         Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", event_date_allowed, ScalarAttributeType.S, 1L);
         Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", event_time_allowed, ScalarAttributeType.S, 1L);
@@ -39,7 +50,8 @@ public class DynamoDBSetup {
         Table bankTable = createTable(dynamoDB, "Bank", bank_id, ScalarAttributeType.S, 1L);
         Table userTable = createTableWithIndexes(
                 dynamoDB, "User", user_id, ScalarAttributeType.S, 2L,
-                new IndexDetail("byEmail", user_email, ScalarAttributeType.S));
+                new IndexDetail("byEmail", user_email, ScalarAttributeType.S),
+                new IndexDetail("byUserType", user_type, ScalarAttributeType.S));
         Table schoolTable = createTable(dynamoDB, "School", school_id, ScalarAttributeType.S, 1L);
 
         siteSettingsTable.waitForActive();

@@ -6,10 +6,8 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Index;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
-import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.tcts.common.Configuration;
@@ -75,19 +73,6 @@ import static com.tcts.database.DatabaseField.*;
  * A facade that implements the database functionality using DynamoDB.
  */
 public class DynamoDBDatabase implements DatabaseFacade {
-    // FIXME: Need to add sorting in lots of places
-
-    // ========== Static Variables ==========
-
-    /**
-     * Since bank admins ARE volunteers, when searching for volunteers we must check two different user types;
-     * this set contains the database values to check against.
-     */
-    final static Set<String> volunteerUserTypes = new TreeSet<String>() {{
-        add(UserType.VOLUNTEER.getDBValue());
-        add(UserType.BANK_ADMIN.getDBValue());
-    }};
-
 
 
     // ========== Constants ==========
@@ -124,8 +109,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
         final Table allowedDatesTable;
         final Table allowedTimesTable;
         final Table eventTable;
+        final Index eventByTeacher;
+        final Index eventByVolunteer;
         final Table bankTable;
         final Table userTable;
+        final Index userByEmail;
+        final Index userByUserType;
         final Table schoolTable;
 
         /**
@@ -144,8 +133,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
             this.allowedDatesTable = allowedDatesTable;
             this.allowedTimesTable = allowedTimesTable;
             this.eventTable = eventTable;
+            this.eventByTeacher = eventTable.getIndex("byTeacher");
+            this.eventByVolunteer = eventTable.getIndex("byVolunteer");
             this.bankTable = bankTable;
             this.userTable = userTable;
+            this.userByEmail = userTable.getIndex("byEmail");
+            this.userByUserType = userTable.getIndex("byUserType");
             this.schoolTable = schoolTable;
         }
     }
@@ -228,6 +221,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
 
     // ========== Special Plumbing ==========
+
+
+    /**
+     * Since bank admins ARE volunteers, when searching for volunteers we must check two different user types;
+     * this set contains the database values to check against.
+     */
+    final static Set<String> volunteerUserTypes = new TreeSet<String>() {{
+        add(UserType.VOLUNTEER.getDBValue());
+        add(UserType.BANK_ADMIN.getDBValue());
+    }};
 
 
     /**
@@ -445,11 +448,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
-        Index userByEmail = tables.userTable.getIndex("byEmail");
-        ItemCollection<QueryOutcome> users = userByEmail.query(new KeyAttribute(user_email.name(), email));
         User user = null;
         int numItems = 0;
-        for (Item item : users) {
+        for (Item item : tables.userByEmail.query(new KeyAttribute(user_email.name(), email))) {
             user = createUserFromDynamoDBItem(item);
             numItems += 1;
         }
@@ -542,10 +543,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
-        Index eventsByTeacher = tables.eventTable.getIndex("byTeacher");
-        ItemCollection<QueryOutcome> items = eventsByTeacher.query(new KeyAttribute(event_teacher_id.name(), teacherId));
         List<Event> result = new ArrayList<Event>();
-        for (Item item : items) {
+        for (Item item : tables.eventByTeacher.query(new KeyAttribute(event_teacher_id.name(), teacherId))) {
             result.add(createEventFromDynamoDBItem(item));
         }
         Collections.sort(result, compareEvents);
@@ -580,14 +579,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
-        // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
-        // FIXME: Specifically, it will only work if we use a special value (0) instead of null for volunteerId
         List<Event> result = new ArrayList<Event>();
-        for (Item item : tables.eventTable.scan()) {
-            if (item.getString(event_volunteer_id.name()).equals(NO_VOLUNTEER)) {
-                Event event = createEventFromDynamoDBItem(item);
-                result.add(event);
-            }
+        for (Item item : tables.eventByVolunteer.query(new KeyAttribute(event_volunteer_id.name(), NO_VOLUNTEER))) {
+            result.add(createEventFromDynamoDBItem(item));
         }
         addLinkedTeachersAndSchools(result);
         Collections.sort(result, compareEvents);
@@ -598,11 +592,10 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
         if (volunteerId == null) {
             throw new RuntimeException("This method doesn't handle null for volunteerId.");
+            // NOTE: It *could* handle that if we wanted it to, but for now that's just basically an assert
         }
-        Index eventsByVolunteer = tables.eventTable.getIndex("byVolunteer");
-        ItemCollection<QueryOutcome> items = eventsByVolunteer.query(new KeyAttribute(event_volunteer_id.name(), volunteerId));
         List<Event> result = new ArrayList<Event>();
-        for (Item item : items) {
+        for (Item item : tables.eventByVolunteer.query(new KeyAttribute(event_volunteer_id.name(), volunteerId))) {
             result.add(createEventFromDynamoDBItem(item));
         }
         Collections.sort(result, compareEvents);
@@ -651,7 +644,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
-        // FIXME: Needs a query criterion or index to speed it up.
+        // FIXME: Needs a query criterion or index to speed it up. - specifically userByOrganization
         List<Volunteer> result = new ArrayList<Volunteer>();
         for (Item item : tables.userTable.scan()) {
             if (volunteerUserTypes.contains(item.getString(user_type.name()))
@@ -665,7 +658,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
-        // FIXME: This really needs to have an index to speed it up
+        // FIXME: This really needs to have an index to speed it up - specifically userByOrganization
         BankAdmin result = null;
         List<BankAdmin> bankAdmins = getBankAdmins();
         for (BankAdmin bankAdmin : bankAdmins) {
@@ -1034,21 +1027,19 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Teacher> getTeachersWithSchoolData() throws SQLException {
-        // FIXME: An index or select might allow me to get just the teachers more effectively
         Map<String,School> schoolsById = new HashMap<String,School>();
         List<Teacher> teachers = new ArrayList<Teacher>();
-        for (Item item : tables.userTable.scan()) {
-            if (UserType.TEACHER.getDBValue().equals(getStringField(item, user_type))) {
-                Teacher teacher = (Teacher) createUserFromDynamoDBItem(item);
-                String schoolId = teacher.getSchoolId();
-                School school = schoolsById.get(schoolId);
-                if (school == null) {
-                    school = getSchoolById(schoolId);
-                    schoolsById.put(schoolId, school);
-                }
-                teacher.setLinkedSchool(school);
-                teachers.add(teacher);
+        for (Item item : tables.userByUserType.query(
+                new KeyAttribute(user_type.name(), UserType.TEACHER.getDBValue()))) {
+            Teacher teacher = (Teacher) createUserFromDynamoDBItem(item);
+            String schoolId = teacher.getSchoolId();
+            School school = schoolsById.get(schoolId);
+            if (school == null) {
+                school = getSchoolById(schoolId);
+                schoolsById.put(schoolId, school);
             }
+            teacher.setLinkedSchool(school);
+            teachers.add(teacher);
         }
         Collections.sort(teachers, compareUsersByName);
         return teachers;
@@ -1072,12 +1063,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersWithBankData() throws SQLException {
-        // FIXME: Should have a search criteria or index to make this faster
-        List<Volunteer> result = new ArrayList<Volunteer>();
         Map<String,Bank> banksById = new HashMap<String,Bank>();
-
-        for (Item item : tables.userTable.scan()) {
-            if (volunteerUserTypes.contains(getStringField(item, user_type))) {
+        List<Volunteer> result = new ArrayList<Volunteer>();
+        // Multiple user types are "volunteers" so we loop through those
+        for (String userType : volunteerUserTypes) {
+            for (Item item : tables.userByUserType.query(new KeyAttribute(user_type.name(), userType))) {
                 Volunteer volunteer = (Volunteer) createUserFromDynamoDBItem(item);
                 String bankId = volunteer.getBankId();
                 Bank bank = banksById.get(bankId);
@@ -1121,12 +1111,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
         List<BankAdmin> result = new ArrayList<BankAdmin>();
-        // FIXME: Could be much more efficient if the scan expression excluded all but admins
-        for (Item item : tables.userTable.scan()) {
-            if (UserType.fromDBValue(item.getString(user_type.name())) == UserType.BANK_ADMIN) {
-                BankAdmin bankAdmin = (BankAdmin) createUserFromDynamoDBItem(item);
-                result.add(bankAdmin);
-            }
+        for (Item item : tables.userByUserType.query(new KeyAttribute(user_type.name(), UserType.BANK_ADMIN.getDBValue()))) {
+            BankAdmin bankAdmin = (BankAdmin) createUserFromDynamoDBItem(item);
+            result.add(bankAdmin);
         }
         Collections.sort(result, compareUsersByName);
         return result;
