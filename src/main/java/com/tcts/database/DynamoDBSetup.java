@@ -19,7 +19,6 @@ import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemMaker;
 
 import static com.tcts.database.DatabaseField.*;
-import static com.tcts.database.DatabaseField.school_slc;
 
 
 /**
@@ -30,14 +29,18 @@ public class DynamoDBSetup {
     private static DynamoDBHelper dynamoDBHelper = new DynamoDBHelper();
 
     public static void createAllDatabaseTables(DynamoDB dynamoDB) throws InterruptedException {
-        Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", DatabaseField.site_setting_name, ScalarAttributeType.S, 1L);
-        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", DatabaseField.event_date_allowed, ScalarAttributeType.S, 1L);
-        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", DatabaseField.event_time_allowed, ScalarAttributeType.S, 1L);
-        Table eventTable = createTable(dynamoDB, "Event", DatabaseField.event_id, ScalarAttributeType.S, 2L);
-        Table bankTable = createTable(dynamoDB, "Bank", DatabaseField.bank_id, ScalarAttributeType.S, 1L);
-        Table userTable = createTableWithIndex(dynamoDB, "User", DatabaseField.user_id, ScalarAttributeType.S,
-                                                         "byEmail", DatabaseField.user_email, ScalarAttributeType.S, 2L);
-        Table schoolTable = createTable(dynamoDB, "School", DatabaseField.school_id, ScalarAttributeType.S, 1L);
+        Table siteSettingsTable = createTable(dynamoDB, "SiteSettings", site_setting_name, ScalarAttributeType.S, 1L);
+        Table allowedDatesTable = createTable(dynamoDB, "AllowedDates", event_date_allowed, ScalarAttributeType.S, 1L);
+        Table allowedTimesTable = createTable(dynamoDB, "AllowedTimes", event_time_allowed, ScalarAttributeType.S, 1L);
+        Table eventTable = createTableWithIndexes(
+                dynamoDB, "Event", event_id, ScalarAttributeType.S, 2L,
+                new IndexDetail("byTeacher", event_teacher_id, ScalarAttributeType.S),
+                new IndexDetail("byVolunteer", event_volunteer_id, ScalarAttributeType.S));
+        Table bankTable = createTable(dynamoDB, "Bank", bank_id, ScalarAttributeType.S, 1L);
+        Table userTable = createTableWithIndexes(
+                dynamoDB, "User", user_id, ScalarAttributeType.S, 2L,
+                new IndexDetail("byEmail", user_email, ScalarAttributeType.S));
+        Table schoolTable = createTable(dynamoDB, "School", school_id, ScalarAttributeType.S, 1L);
 
         siteSettingsTable.waitForActive();
         allowedDatesTable.waitForActive();
@@ -125,24 +128,45 @@ public class DynamoDBSetup {
         return dynamoDB.createTable(createTableRequest);
     }
 
+    /**
+     * The fields needed to specify an index. This class exists just because Java has
+     * no easy way to pass a collection of objects without creating a class.
+     */
+    private static class IndexDetail {
+        final String indexName;
+        final DatabaseField indexField;
+        final ScalarAttributeType indexType;
+
+        /** Constructor. */
+        public IndexDetail(String indexName, DatabaseField indexField, ScalarAttributeType indexType) {
+            this.indexName = indexName;
+            this.indexField = indexField;
+            this.indexType = indexType;
+        }
+    }
+
 
     /**
      * Create a table with a simple string primary key and a simple string index.
      */
-    private static Table createTableWithIndex(
+    private static Table createTableWithIndexes(
             DynamoDB dynamoDB,
-            String tableName, DatabaseField primaryKeyField, ScalarAttributeType primaryKeyType,
-            String indexName, DatabaseField indexField, ScalarAttributeType indexType,
-            long provisionedThroughput) {
+            String tableName,
+            DatabaseField primaryKeyField,
+            ScalarAttributeType primaryKeyType,
+            long provisionedThroughput,
+            IndexDetail... indexDetails) {
         CreateTableRequest createTableRequest = makeCreateTableRequest(tableName, primaryKeyField, primaryKeyType, provisionedThroughput);
-        CreateTableRequest createTableRequestWithIndex = createTableRequest
-                .withAttributeDefinitions(new AttributeDefinition(indexField.name(), indexType))
-                .withGlobalSecondaryIndexes(new GlobalSecondaryIndex()
-                        .withIndexName(indexName)
-                        .withProvisionedThroughput(new ProvisionedThroughput(provisionedThroughput, provisionedThroughput))
-                        .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
-                        .withKeySchema(new KeySchemaElement(indexField.name(), KeyType.HASH)));
-        return dynamoDB.createTable(createTableRequestWithIndex);
+        for (IndexDetail indexDetail : indexDetails) {
+            createTableRequest = createTableRequest
+                    .withAttributeDefinitions(new AttributeDefinition(indexDetail.indexField.name(), indexDetail.indexType))
+                    .withGlobalSecondaryIndexes(new GlobalSecondaryIndex()
+                            .withIndexName(indexDetail.indexName)
+                            .withProvisionedThroughput(new ProvisionedThroughput(provisionedThroughput, provisionedThroughput))
+                            .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+                            .withKeySchema(new KeySchemaElement(indexDetail.indexField.name(), KeyType.HASH)));
+        }
+        return dynamoDB.createTable(createTableRequest);
     }
 
 

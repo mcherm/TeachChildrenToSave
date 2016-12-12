@@ -54,7 +54,6 @@ import com.tcts.formdata.EventRegistrationFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -185,6 +184,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
                     '}';
         }
     }
+
+
+    /** Comparator for sorting events. */
+    private final Comparator<Event> compareEventsByDate = new Comparator<Event>() {
+        @Override
+        public int compare(Event event1, Event event2) {
+            return event1.getEventDate().compareTo(event2.getEventDate());
+        }
+    };
+
 
     /**
      * Helper that creates an AttributeUpdate for setting a particular field to a
@@ -498,15 +507,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
-        // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
+        Index eventsByTeacher = tables.eventTable.getIndex("byTeacher");
+        ItemCollection<QueryOutcome> items = eventsByTeacher.query(new KeyAttribute(event_teacher_id.name(), teacherId));
         List<Event> result = new ArrayList<Event>();
-        for (Item item : tables.eventTable.scan()) {
-            if (teacherId.equals(item.getString(event_teacher_id.name()))) {
-                result.add(createEventFromDynamoDBItem(item));
-            }
+        for (Item item : items) {
+            result.add(createEventFromDynamoDBItem(item));
         }
+        Collections.sort(result, compareEventsByDate);
         return result;
     }
+
 
     /**
      * Given a list of events, modifies the events by populating the linked teacher and also the linked
@@ -536,6 +546,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
         // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
+        // FIXME: Specifically, it will only work if we use a special value (0) instead of null for volunteerId
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventTable.scan()) {
             if (item.getString(event_volunteer_id.name()) == null) {
@@ -549,13 +560,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
-        // FIXME: This needs a search criteria, and perhaps even an index to make it faster.
+        Index eventsByVolunteer = tables.eventTable.getIndex("byVolunteer");
+        ItemCollection<QueryOutcome> items = eventsByVolunteer.query(new KeyAttribute(event_volunteer_id.name(), volunteerId));
         List<Event> result = new ArrayList<Event>();
-        for (Item item : tables.eventTable.scan()) {
-            if (volunteerId.equals(item.getString(event_volunteer_id.name()))) {
-                result.add(createEventFromDynamoDBItem(item));
-            }
+        for (Item item : items) {
+            result.add(createEventFromDynamoDBItem(item));
         }
+        Collections.sort(result, compareEventsByDate);
         return result;
     }
 
@@ -781,12 +792,10 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
         List<Event> result = new ArrayList<Event>();
-        // -- Get the events --
         for (Item item : tables.eventTable.scan()) {
             result.add(createEventFromDynamoDBItem(item));
         }
-        // FIXME: Do these need to be sorted?
-        // -- Return the result --
+        Collections.sort(result, compareEventsByDate);
         return result;
     }
 
