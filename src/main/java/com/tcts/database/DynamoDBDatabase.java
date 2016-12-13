@@ -239,7 +239,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
      * Since bank admins ARE volunteers, when searching for volunteers we must check two different user types;
      * this set contains the database values to check against.
      */
-    final static Set<String> volunteerUserTypes = new TreeSet<String>() {{
+    private final static Set<String> volunteerUserTypes = new TreeSet<String>() {{
         add(UserType.VOLUNTEER.getDBValue());
         add(UserType.BANK_ADMIN.getDBValue());
     }};
@@ -882,7 +882,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(user_phone_number, formData.getPhoneNumber())
                         .withString(user_organization_id, bankId)
                         .withInt(user_approval_status, ApprovalStatus.CHECKED.getDbValue()));
-        // FIXME: Should verify that it's OK not to set the user_hashed_password and user_password_salt.
     }
 
     @Override
