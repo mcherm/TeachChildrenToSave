@@ -38,6 +38,10 @@ dubious about this one.
 
 [5]  In the code, session.getVolunteer() should return the BankAdmin when there is a bank admin.
 
+[6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
+     it will show again. The first time the table is laid out to fit the screen, the second time
+     it is not.
+
 -------- DONE --------
 *Give site admin ability to create new classes for a registered teacher.  (This ability should be active regardless of the coursecreation
      site setting.)
