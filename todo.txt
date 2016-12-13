@@ -18,9 +18,6 @@ dubious about this one.
  ----- TESTING  -----
 
 -----------BUGS-------------
-[1]  As bank admin, try to edit a bank without changing your email. Will get an error saying "That
-     email is already in use; please choose another." Should get no error if it's the email address
-     you already are using.
 
 [2]  A new volunteer starts out as "suspended" and gets the corresponding error message. Nope,
      actually it looks like they might start out as "new" but get a message saying "can't sign
@@ -43,6 +40,12 @@ dubious about this one.
      it is not.
 
 -------- DONE --------
+*     As bank admin, try to edit a bank without changing your email. Will get an error saying "That
+      email is already in use; please choose another." Should get no error if it's the email address
+
+      If any user edits their personal data without changing their email address
+      they get an error saying that email is already in use.
+
 *Give site admin ability to create new classes for a registered teacher.  (This ability should be active regardless of the coursecreation
      site setting.)
 *On the emails that are sent to the volunteer and the teacher is their anyway that we can have the teacher and

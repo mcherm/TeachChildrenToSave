@@ -478,13 +478,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     /**
      * Called in the services that insert a user; throws an exception if the email is in use.
+     *
+     * @param userId the userId of the user who is allowed to be using this email or NULL if no one should be using it
+     * @param email email to check if already in use
      */
-    private void verifyEmailNotInUse(String email) throws SQLException, EmailAlreadyInUseException {
+    private void verifyEmailNotInUseByAnyoneElse(String userId, String email) throws SQLException, EmailAlreadyInUseException {
         if (email == null || email.length() == 0) {
             throw new RuntimeException("Not a valid email: '" + email + "'.");
         }
         User otherUserWithSameEmail = getUserByEmail(email);
-        if (otherUserWithSameEmail != null) {
+        if (otherUserWithSameEmail != null && !otherUserWithSameEmail.getUserId().equals(userId)) {
             throw new EmailAlreadyInUseException();
         }
     }
@@ -493,7 +496,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
         // This approach will CREATE the user if it doesn't exist. I THINK that behavior is fine.
-        verifyEmailNotInUse(formData.getEmail());
+        verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), formData.getUserId()),
                 attributeUpdate(user_email, formData.getEmail()),
@@ -505,7 +508,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
         // This approach will CREATE the user if it doesn't exist. I THINK that behavior is fine.
-        verifyEmailNotInUse(formData.getEmail());
+        verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), formData.getUserId()),
                 attributeUpdate(user_email, formData.getEmail()),
@@ -527,7 +530,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
-        verifyEmailNotInUse(formData.getEmail());
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
         String newTeacherId = dynamoDBHelper.createUniqueId();
         dynamoDBHelper.insertIntoTable(tables.userTable,
                 new ItemMaker(user_id, newTeacherId)
@@ -685,7 +688,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
         // NOTE: I'm choosing NOT to verify that the bank ID is actually present in the database
-        verifyEmailNotInUse(formData.getEmail());
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
         String newVolunteerId = dynamoDBHelper.createUniqueId();
         dynamoDBHelper.insertIntoTable(tables.userTable,
                 new ItemMaker(user_id, newVolunteerId)
@@ -866,7 +869,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
         // FIXME: It might be nice to enforce that the bank name is unique
-        verifyEmailNotInUse(formData.getEmail());
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
         String bankAdminId = dynamoDBHelper.createUniqueId();
 
         String bankId = dynamoDBHelper.createUniqueId();
@@ -890,7 +893,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         BankAdmin bankAdmin = getBankAdminByBank(formData.getBankId());
 
         // -- Update the bank admin --
-        verifyEmailNotInUse(formData.getEmail());
+        verifyEmailNotInUseByAnyoneElse(bankAdmin.getUserId(), formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), bankAdmin.getUserId()),
                 attributeUpdate(user_first_name, formData.getFirstName()),

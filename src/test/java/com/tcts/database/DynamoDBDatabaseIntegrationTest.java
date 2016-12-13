@@ -654,6 +654,20 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
+    public void testUpdateUserDataWithoutChangingEmail() throws Exception {
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+
+        EditPersonalDataFormData editPersonalDataFormData = new EditPersonalDataFormData();
+        editPersonalDataFormData.setUserId(teacher.getUserId());
+        editPersonalDataFormData.setEmail("jane@sample.com");
+        editPersonalDataFormData.setFirstName("Arnold");
+        editPersonalDataFormData.setLastName("Smith");
+        editPersonalDataFormData.setPhoneNumber("610-842-1102");
+        dynamoDBDatabase.modifyUserPersonalFields(editPersonalDataFormData);
+    }
+
+    @Test
     public void testCreateTeacherThenModifyTeacherSchool() throws Exception {
         String schoolId1 = insertNewSchoolAndReturnTheId();
         Teacher teacher = insertTeacherJane(schoolId1);
