@@ -713,6 +713,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         result.setBankSpecificData(formData.getBankSpecificData());
         result.setHashedPassword(hashedPassword);
         result.setSalt(salt);
+        result.setApprovalStatus(ApprovalStatus.INITIAL_APPROVAL_STATUS);
         return result;
     }
 

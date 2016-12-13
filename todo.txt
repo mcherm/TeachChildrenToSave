@@ -19,9 +19,6 @@ dubious about this one.
 
 -----------BUGS-------------
 
-[2]  A new volunteer starts out as "suspended" and gets the corresponding error message. Nope,
-     actually it looks like they might start out as "new" but get a message saying "can't sign
-     up for anything yet".
 
 [3]  Go in as volunteer to sign up for courses when there is at least one course. Click the
      "details" button. Expect to see the details of the class, but instead get an error
@@ -39,7 +36,13 @@ dubious about this one.
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
 
+[7] Site admin trying to set a new bank admin fails with a null pointer exception.
+
 -------- DONE --------
+*  A new volunteer starts out as "suspended" and gets the corresponding error message. Nope,
+      actually it looks like they might start out as "new" but get a message saying "can't sign
+      up for anything yet".
+
 *     As bank admin, try to edit a bank without changing your email. Will get an error saying "That
       email is already in use; please choose another." Should get no error if it's the email address
 
