@@ -29,6 +29,7 @@ Need more Info/Not Do
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
 
+8.  If you login with an empty string as email you get unnice error.
 
 -------- DONE --------
 * Site admin trying to set a new bank admin fails with a null pointer exception.
