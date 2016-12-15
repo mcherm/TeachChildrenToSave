@@ -6,16 +6,11 @@ Need more Info/Not Do
   ** NOTE:  This can be changed by site admin in the Site Settings page.
 
 
-
-
-NOTE:  I am not sure I'm up to tackling making emails look pretty in different email viewers..  Of all of them I am most
-dubious about this one.
-
  - - - - DynamoDB Tasks - - - -
-* Need to write queries that drive the emails. Maybe fix broken design also?
+[8]  Need to write queries that drive the emails. Maybe fix broken design also? The methods
+     in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
+     getMatchedVolunteers(), and getUnMatchedVolunteers().
 
-
- ----- TESTING  -----
 
 -----------BUGS-------------
 
@@ -29,8 +24,6 @@ dubious about this one.
      "Sign Up" button. Expect to sign up for the coure but instead get an error message, the
      excpetion for which is "EventAlreadyHasAVolunteerException" from "at
      com.tcts.database.DynamoDBDatabase.volunteerForEvent(DynamoDBDatabase.java:653)".
-
-[5]  In the code, session.getVolunteer() should return the BankAdmin when there is a bank admin.
 
 [6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
      it will show again. The first time the table is laid out to fit the screen, the second time

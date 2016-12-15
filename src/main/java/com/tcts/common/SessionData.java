@@ -10,7 +10,6 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.ActiveSessionException;
 import com.tcts.exception.NotLoggedInException;
 
-import com.tcts.email.EmailUtil;
 
 /**
  * An instance of this class will be stored in the session. It contains all
@@ -111,6 +110,7 @@ public class SessionData {
             } break;
             case BANK_ADMIN: {
                 bankAdmin = (BankAdmin) user;
+                volunteer = (Volunteer) user;
             } break;
             case SITE_ADMIN: {
                 siteAdmin = (SiteAdmin) user;
