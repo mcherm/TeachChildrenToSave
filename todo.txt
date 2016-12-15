@@ -6,16 +6,11 @@ Need more Info/Not Do
   ** NOTE:  This can be changed by site admin in the Site Settings page.
 
 
-
-
-NOTE:  I am not sure I'm up to tackling making emails look pretty in different email viewers..  Of all of them I am most
-dubious about this one.
-
  - - - - DynamoDB Tasks - - - -
-* Need to write queries that drive the emails. Maybe fix broken design also?
+[8]  Need to write queries that drive the emails. Maybe fix broken design also? The methods
+     in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
+     getMatchedVolunteers(), and getUnMatchedVolunteers().
 
-
- ----- TESTING  -----
 
 -----------BUGS-------------
 
@@ -30,15 +25,14 @@ dubious about this one.
      excpetion for which is "EventAlreadyHasAVolunteerException" from "at
      com.tcts.database.DynamoDBDatabase.volunteerForEvent(DynamoDBDatabase.java:653)".
 
-[5]  In the code, session.getVolunteer() should return the BankAdmin when there is a bank admin.
-
 [6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
 
-[7] Site admin trying to set a new bank admin fails with a null pointer exception.
-8.  If you login with an empty string as email you get unnice error.
+
 -------- DONE --------
+* Site admin trying to set a new bank admin fails with a null pointer exception.
+
 *  A new volunteer starts out as "suspended" and gets the corresponding error message. Nope,
       actually it looks like they might start out as "new" but get a message saying "can't sign
       up for anything yet".

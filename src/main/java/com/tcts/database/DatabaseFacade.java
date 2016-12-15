@@ -249,8 +249,11 @@ public interface DatabaseFacade {
 	void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException;
 
     /**
-     * Modifies fields of an existing bank. Either modifies the existing bank admin
-     * (if there is one) or creates a new Bank Admin (if there wasn't one).
+     * Modifies fields of an existing bank. If person fields like email are present, it
+     * modifies the existing bank admin (if there is one) or creates a new Bank Admin (if
+     * there wasn't one). If person fields like email are NOT present, nothing happens with
+     * the Bank Admin if there wasn't one, or if there WAS a bank admin then that person
+     * is transformed into a Volunteer.
      */
     public void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;

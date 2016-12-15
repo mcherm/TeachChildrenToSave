@@ -494,15 +494,19 @@ public class DynamoDBSetup {
     /**
      * Main method that sets up the DynamoDB database.
      */
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         System.out.println("Starting...");
-        Configuration configuration = new Configuration();
-        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration.getProperty("dynamoDB.connect"));
-        reinitializeDatabase(dynamoDB, configuration);
+        try {
+            Configuration configuration = new Configuration();
+            DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration.getProperty("dynamoDB.connect"));
+            reinitializeDatabase(dynamoDB, configuration);
 
-        DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
+            DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
 
-        new RealDataInserter(tables).run();
+            new RealDataInserter(tables).run();
+        } catch(Exception err) {
+            err.printStackTrace();
+        }
 
         System.out.println("Done.");
     }
