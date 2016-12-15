@@ -384,6 +384,7 @@ public class DynamoDBDatabaseIntegrationTest {
         return banks.get(0).getBankId();
     }
 
+
     @Test
     public void testCreateACoupleOfBanksThenGetThemAll() throws SQLException, EmailAlreadyInUseException {
         // Note: This doesn't set minLMIForCRA or bankSpecificDataLabel because those aren't available on this form
@@ -405,6 +406,19 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("First National Bank", banks.get(0).getBankName());
         assertEquals("Halfway Federal Trust", banks.get(1).getBankName());
         assertEquals("Last Trust Bank", banks.get(2).getBankName());
+    }
+
+    private void insertBankWithoutAdmin() throws SQLException, EmailAlreadyInUseException {
+        CreateBankFormData createBankFormData = new CreateBankFormData();
+        createBankFormData.setBankName("Last Trust Bank");
+        dynamoDBDatabase.insertNewBankAndAdmin(createBankFormData);
+    }
+
+    @Test
+    public void testCreateBankWithoutAdmin() throws Exception {
+        insertBankWithoutAdmin();
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, banks.size());
     }
 
     @Test
@@ -435,7 +449,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void testModifyBankWithNumericLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void testModifyBankWithNumericLMI() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
@@ -452,7 +466,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void testModifyBankWithBlankLMI() throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void testModifyBankWithBlankLMI() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
@@ -483,6 +497,57 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("Edwards", bankAdmin.getLastName());
         assertEquals("bob.edwards@gmail.com", bankAdmin.getEmail());
         assertEquals("555-1234", bankAdmin.getPhoneNumber());
+    }
+
+    @Test
+    public void testCreateBankAdminWithModifyBankAndBankAdmin() throws Exception {
+        insertBankWithoutAdmin();
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, banks.size());
+        String bankId = banks.get(0).getBankId();
+        EditBankFormData editBankFormData = new EditBankFormData();
+        editBankFormData.setBankId(bankId);
+        editBankFormData.setFirstName("Bob");
+        editBankFormData.setLastName("Edwards");
+        editBankFormData.setEmail("bob.edwards@gmail.com");
+        editBankFormData.setPhoneNumber("555-1234");
+        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        BankAdmin bankAdmin = dynamoDBDatabase.getBankAdminByBank(bankId);
+        assertNotNull(bankAdmin);
+        assertEquals("bob.edwards@gmail.com", bankAdmin.getEmail());
+    }
+
+    @Test
+    public void testModifyBankAdminDeletingBankAdmin() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        List<Volunteer> volunteersAndBankAdmins1 = dynamoDBDatabase.getVolunteersByBank(bankId);
+        assertEquals(1, volunteersAndBankAdmins1.size());
+        EditBankFormData editBankFormData = new EditBankFormData();
+        editBankFormData.setBankId(bankId);
+        editBankFormData.setBankName("Neighbors Bank");
+        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        List<Bank> banks = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, banks.size());
+        List<Volunteer> volunteersAndBankAdmins2 = dynamoDBDatabase.getVolunteersByBank(banks.get(0).getBankId());
+        assertEquals(1, volunteersAndBankAdmins2.size());
+        assertEquals(volunteersAndBankAdmins1.get(0).getUserId(), volunteersAndBankAdmins2.get(0).getUserId());
+        assertEquals(UserType.VOLUNTEER, volunteersAndBankAdmins2.get(0).getUserType());
+    }
+
+    @Test
+    public void testModifyBankWhenThereIsNoBankAdmin() throws Exception {
+        insertBankWithoutAdmin();
+        List<Bank> banks1 = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, banks1.size());
+        String bankId = banks1.get(0).getBankId();
+        EditBankFormData editBankFormData = new EditBankFormData();
+        editBankFormData.setBankId(bankId);
+        editBankFormData.setBankName("Neighbors Bank");
+        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        List<Bank> banks2 = dynamoDBDatabase.getAllBanks();
+        assertEquals(1, banks2.size());
+        Bank bank2 = banks2.get(0);
+        assertEquals("Neighbors Bank", bank2.getBankName());
     }
 
     @Test
