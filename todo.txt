@@ -37,7 +37,7 @@ dubious about this one.
      it is not.
 
 [7] Site admin trying to set a new bank admin fails with a null pointer exception.
-
+8.  If you login with an empty string as email you get unnice error.
 -------- DONE --------
 *  A new volunteer starts out as "suspended" and gets the corresponding error message. Nope,
       actually it looks like they might start out as "new" but get a message saying "can't sign
