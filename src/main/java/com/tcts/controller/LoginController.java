@@ -42,33 +42,34 @@ public class LoginController {
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
             HttpSession session
-        ) throws SQLException, InconsistentDatabaseException
-    {
-    	SessionData.ensureNoActiveSession(session);
-        
-        User potentialUser = database.getUserByEmail(formData.getEmail());
+        ) throws SQLException, InconsistentDatabaseException {
+        SessionData.ensureNoActiveSession(session);
 
-        if (potentialUser != null) {
-            // verify the password
-            if (potentialUser.getSalt() != null && potentialUser.getHashedPassword() != null) {
-                String hashedPassword = SecurityUtil.getHashedPassword(
-                        formData.getPassword().trim(), potentialUser.getSalt());
-                if (hashedPassword.equals(potentialUser.getHashedPassword())) {
-                    // --- Successful login ---
-                    SessionData sessionData = SessionData.beginNewSession(session);
-                    sessionData.setAuthenticated(true);
-                    sessionData.setUser(potentialUser);
-                    return "redirect:" + potentialUser.getUserType().getHomepage();
+        if (formData.getEmail() != null && !formData.getEmail().isEmpty()) {
+            User potentialUser = database.getUserByEmail(formData.getEmail());
+
+            if (potentialUser != null) {
+                // verify the password
+                if (potentialUser.getSalt() != null && potentialUser.getHashedPassword() != null) {
+                    String hashedPassword = SecurityUtil.getHashedPassword(
+                            formData.getPassword().trim(), potentialUser.getSalt());
+                    if (hashedPassword.equals(potentialUser.getHashedPassword())) {
+                        // --- Successful login ---
+                        SessionData sessionData = SessionData.beginNewSession(session);
+                        sessionData.setAuthenticated(true);
+                        sessionData.setUser(potentialUser);
+                        return "redirect:" + potentialUser.getUserType().getHomepage();
+                    }
                 }
             }
         }
-
         // --- Failed login ---
         model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "Invalid user id or password.");
         return "login";
+
     }
-    
+
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     public String homePage(
             ModelMap model,

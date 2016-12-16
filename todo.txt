@@ -29,9 +29,12 @@ Need more Info/Not Do
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
 
-8.  If you login with an empty string as email you get unnice error.
+9.  This is probably not a bug but I thought I should note some surprising behaviour in the sql I executed on dbvisualizer.  If I execute an insert
+with an existing key, (event_id in the case of events table) it replaces the row with the new insert.
 
 -------- DONE --------
+*  If you login with an empty string as email you get unnice error.
+
 * Site admin trying to set a new bank admin fails with a null pointer exception.
 
 *  A new volunteer starts out as "suspended" and gets the corresponding error message. Nope,
