@@ -11,6 +11,9 @@ Need more Info/Not Do
      in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
      getMatchedVolunteers(), and getUnMatchedVolunteers().
 
+[10] For the DynamoDB database, find a way to speed up getting the list of available classes
+     along with class details.
+
 
 -----------BUGS-------------
 
