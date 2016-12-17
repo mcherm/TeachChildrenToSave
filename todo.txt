@@ -15,16 +15,6 @@ Need more Info/Not Do
 -----------BUGS-------------
 
 
-[3]  Go in as volunteer to sign up for courses when there is at least one course. Click the
-     "details" button. Expect to see the details of the class, but instead get an error
-     message, the exception for which is "InvalidParameterFromGUIException" from "at
-     com.tcts.controller.EventDetailsController.showEventDetail(EventDetailsController.java:62)".
-
-[4]  Go in as volunteer to sign up for courses when there is at least one course. Click the
-     "Sign Up" button. Expect to sign up for the coure but instead get an error message, the
-     excpetion for which is "EventAlreadyHasAVolunteerException" from "at
-     com.tcts.database.DynamoDBDatabase.volunteerForEvent(DynamoDBDatabase.java:653)".
-
 [6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
@@ -33,6 +23,16 @@ Need more Info/Not Do
 with an existing key, (event_id in the case of events table) it replaces the row with the new insert.
 
 -------- DONE --------
+[4]  Go in as volunteer to sign up for courses when there is at least one course. Click the
+     "Sign Up" button. Expect to sign up for the coure but instead get an error message, the
+     excpetion for which is "EventAlreadyHasAVolunteerException" from "at
+     com.tcts.database.DynamoDBDatabase.volunteerForEvent(DynamoDBDatabase.java:653)".
+
+[3]  Go in as volunteer to sign up for courses when there is at least one course. Click the
+     "details" button. Expect to see the details of the class, but instead get an error
+     message, the exception for which is "InvalidParameterFromGUIException" from "at
+     com.tcts.controller.EventDetailsController.showEventDetail(EventDetailsController.java:62)".
+
 *  If you login with an empty string as email you get unnice error.
 
 * Site admin trying to set a new bank admin fails with a null pointer exception.

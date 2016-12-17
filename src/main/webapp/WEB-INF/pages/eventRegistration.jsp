@@ -13,7 +13,7 @@
             availableEvents = [
                 <c:forEach items="${events}" var="event" varStatus="eventStatus">
                     {
-                        'eventId': <c:out value="${event.eventId}"/>,
+                        'eventId': '<c:out value="${event.eventId}"/>',
                         'eventDate': '<c:out value="${event.eventDate.pretty}"/>',
                         'eventTime': '<c:out value="${event.eventTime}"/>',
                         'grade': '<c:out value="${event.grade}"/>',
