@@ -9,10 +9,10 @@ Need more Info/Not Do
  - - - - DynamoDB Tasks - - - -
 [8]  Need to write queries that drive the emails. Maybe fix broken design also? The methods
      in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
-     getMatchedVolunteers(), and getUnMatchedVolunteers().
+     getMatchedVolunteers(), and getUnMatchedVolunteers(). [Rachel]
 
 [10] For the DynamoDB database, find a way to speed up getting the list of available classes
-     along with class details.
+     along with class details. [Michael]
 
 
 -----------BUGS-------------
@@ -21,9 +21,6 @@ Need more Info/Not Do
 [6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
-
-9.  This is probably not a bug but I thought I should note some surprising behaviour in the sql I executed on dbvisualizer.  If I execute an insert
-with an existing key, (event_id in the case of events table) it replaces the row with the new insert.
 
 -------- DONE --------
 [4]  Go in as volunteer to sign up for courses when there is at least one course. Click the
