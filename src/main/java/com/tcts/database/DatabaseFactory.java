@@ -42,6 +42,8 @@ public class DatabaseFactory implements ApplicationContextAware {
             return new CachingDatabase(mySQLDatabase);
         } else if ("DynamoDB".equals(databaseToUse)) {
             return new DynamoDBDatabase(configuration, new DynamoDBHelper());
+        } else if ("PrefetchedDynamoDB".equals(databaseToUse)) {
+            return new PrefetchAvailableEventsDatabase(new DynamoDBDatabase(configuration, new DynamoDBHelper()));
         } else {
             throw new RuntimeException("Value '" + databaseToUse + "' for property 'databaseToUse' is not recognized.");
         }

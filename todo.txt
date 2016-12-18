@@ -11,8 +11,6 @@ Need more Info/Not Do
      in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
      getMatchedVolunteers(), and getUnMatchedVolunteers(). [Rachel]
 
-[10] For the DynamoDB database, find a way to speed up getting the list of available classes
-     along with class details. [Michael]
 
 
 -----------BUGS-------------
@@ -23,6 +21,9 @@ Need more Info/Not Do
      it is not.
 
 -------- DONE --------
+[10] For the DynamoDB database, find a way to speed up getting the list of available classes
+     along with class details. [Michael]
+
 [4]  Go in as volunteer to sign up for courses when there is at least one course. Click the
      "Sign Up" button. Expect to sign up for the coure but instead get an error message, the
      excpetion for which is "EventAlreadyHasAVolunteerException" from "at
