@@ -1,6 +1,9 @@
 package com.tcts.database.dynamodb;
 
+import com.amazonaws.services.dynamodbv2.document.Expected;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+import com.tcts.exception.PrimaryKeyAlreadyExistsException;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,9 +30,13 @@ public class DynamoDBHelper {
      * @param table the table into which it should be inserted
      * @param itemMaker describes the item to be inserted
      */
-    public void insertIntoTable(Table table, ItemMaker itemMaker) {
-        // FIXME: this should be verifying that the PK does not already exist?
-        table.putItem(itemMaker.getItem());
+    public void insertIntoTable(Table table, ItemMaker itemMaker) throws PrimaryKeyAlreadyExistsException {
+        try {
+            table.putItem(itemMaker.getItem(),
+                    new Expected(itemMaker.getPrimaryKeyField().name()).notExist());
+        } catch(ConditionalCheckFailedException err) {
+            throw new PrimaryKeyAlreadyExistsException();
+        }
     }
 
 
