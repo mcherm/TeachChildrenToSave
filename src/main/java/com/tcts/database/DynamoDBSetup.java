@@ -262,16 +262,15 @@ public class DynamoDBSetup {
 
         @Override
         public void run() {
-            insertSiteSetting("CurrentYear", "2016");
-            insertSiteSetting("EventDatesOnHomepage", "April 25-29");
+            insertSiteSetting("CurrentYear", "2017");
+            insertSiteSetting("EventDatesOnHomepage", "April 24-28");
             insertSiteSetting("CourseCreationOpen", "yes");
             insertSiteSetting("ShowDocuments", "yes");
 
-            insertAllowedDate("2016-04-25");
-            insertAllowedDate("2016-04-26");
-            insertAllowedDate("2016-04-27");
-            insertAllowedDate("2016-04-28");
-            insertAllowedDate("2016-04-29");
+            insertAllowedDate("2017-04-24");
+            insertAllowedDate("2017-04-26");
+            insertAllowedDate("2017-04-27");
+            insertAllowedDate("2017-04-28");
 
             insertAllowedTime("9:00 to 9:45 AM", 0);
             insertAllowedTime("9:30 to 10:15 AM", 1);

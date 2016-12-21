@@ -54,32 +54,53 @@ import java.util.concurrent.ThreadFactory;
 
 /**
  * This is a database implementation which simply wraps another implementation
- * but makes sure to prefetch the list of available events and keep it ready
- * in memory so it will always be available as quickly as possible.
+ * but makes sure to prefetch two different pieces of data so they will be
+ * available as quickly as possible. The two pieces of data are the site settings
+ * (very frequently accessed and very rarely modified), and the list of available events
+ * (frequently accessed and very slow to retrieve).
  */
-public class PrefetchAvailableEventsDatabase implements DatabaseFacade {
+public class PrefetchingDatabase implements DatabaseFacade {
 
     private final DatabaseFacade database;
     private final ExecutorService threadPool;
+    private final Object siteSettingsLock; // always hold this lock when reading/writing prefetchedSiteSettings.
+    private Future<Map<String,String>> prefetchedSiteSettings;
     private final Object eventListLock; // always hold this lock when reading/writing prefetchedEventList.
     private Future<List<Event>> prefetchedEventList;
 
 
     /** Constructor requires you to provide an actual database. */
-    public PrefetchAvailableEventsDatabase(DatabaseFacade database) {
+    public PrefetchingDatabase(DatabaseFacade database) {
         this.database = database;
         ThreadFactory threadFactory = new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                Thread result = new Thread(r, "PrefetchEventsThread");
+                Thread result = new Thread(r, "PrefetchThread");
                 result.setDaemon(true); // allow app to exit without this thread exiting
                 return result;
             }
         };
         this.threadPool = Executors.newFixedThreadPool(1, threadFactory);
+        this.siteSettingsLock = new Object();
         this.eventListLock = new Object();
+        refreshSiteSettings();
         refreshEventList();
     }
+
+    /**
+     * Call this to invalidate the current event list and fetch a new one on a background thread.
+     */
+    private void refreshSiteSettings() {
+        synchronized (siteSettingsLock) {
+            prefetchedSiteSettings = threadPool.submit(new Callable<Map<String,String>>() {
+                @Override
+                public Map<String,String> call() throws Exception {
+                    return database.getSiteSettings();
+                }
+            });
+        }
+    }
+
 
     /**
      * Call this to invalidate the current event list and fetch a new one on a background thread.
@@ -381,12 +402,28 @@ public class PrefetchAvailableEventsDatabase implements DatabaseFacade {
 
     @Override
     public Map<String, String> getSiteSettings() throws SQLException {
-        return database.getSiteSettings();
+        synchronized (siteSettingsLock) {
+            try {
+                return prefetchedSiteSettings.get();
+            } catch(InterruptedException err) {
+                throw new RuntimeException(err);
+            } catch(ExecutionException err) {
+                Throwable cause = err.getCause();
+                if (cause instanceof SQLException) {
+                    throw (SQLException) cause;
+                } else if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                } else {
+                    throw new RuntimeException(cause);
+                }
+            }
+        }
     }
 
     @Override
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
         database.modifySiteSetting(settingName, settingValue);
+        refreshSiteSettings();
     }
 
 }
