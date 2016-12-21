@@ -143,7 +143,7 @@ public class DynamoDBDatabaseIntegrationTest {
                 allowedDates);
     }
 
-    @Test
+    @Test(expected = AllowedDateAlreadyInUseException.class)
     public void testWriteSameDateTwiceAndReadIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
         AddAllowedDateFormData addAllowedDateFormData1 = new AddAllowedDateFormData();
         addAllowedDateFormData1.setParsableDateStr("2016-12-19");
@@ -151,10 +151,6 @@ public class DynamoDBDatabaseIntegrationTest {
         AddAllowedDateFormData addAllowedDateFormData2 = new AddAllowedDateFormData();
         addAllowedDateFormData2.setParsableDateStr("2016-12-19");
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData2);
-        List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
-        assertEquals(
-                Collections.singletonList(PrettyPrintingDate.fromParsableDate("2016-12-19")),
-                allowedDates);
     }
 
     @Test

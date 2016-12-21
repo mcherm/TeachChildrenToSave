@@ -91,6 +91,10 @@ public class ItemMaker {
                 new NonEmptyIntFields(field, value, this.nonEmptyFields));
     }
 
+    public DatabaseField getPrimaryKeyField() {
+        return primaryKeyField;
+    }
+
     public Item getItem() {
         Item item = new Item().withPrimaryKey(primaryKeyField.name(), primaryKeyValue);
         NonEmptyFields fieldsLeft = nonEmptyFields;

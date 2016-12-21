@@ -37,6 +37,7 @@ import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.PrimaryKeyAlreadyExistsException;
 import com.tcts.exception.TeacherHasEventsException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
@@ -975,8 +976,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
-        dynamoDBHelper.insertIntoTable(tables.allowedDatesTable,
-                new ItemMaker(event_date_allowed, formData.getParsableDateStr()));
+        try {
+            dynamoDBHelper.insertIntoTable(tables.allowedDatesTable,
+                    new ItemMaker(event_date_allowed, formData.getParsableDateStr()));
+        } catch(PrimaryKeyAlreadyExistsException err) {
+            throw new AllowedDateAlreadyInUseException();
+        }
     }
 
     @Override
@@ -1000,9 +1005,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
         for (String allowedTime : allowedTimes) {
             if (!formData.getTimeToInsertBefore().isEmpty() && formData.getTimeToInsertBefore().equals(allowedTime)) {
                 // - Now we insert the new one -
-                dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
-                        new ItemMaker(event_time_allowed, formData.getAllowedTime())
-                                .withInt(event_time_sort_key, sortKey));
+                try {
+                    dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
+                            new ItemMaker(event_time_allowed, formData.getAllowedTime())
+                                    .withInt(event_time_sort_key, sortKey));
+                } catch(PrimaryKeyAlreadyExistsException err) {
+                    throw new AllowedTimeAlreadyInUseException();
+                }
                 sortKey += 1;
             }
             // - Now we insert the one from the list -
@@ -1221,8 +1230,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
-        dynamoDBHelper.insertIntoTable(tables.siteSettingsTable,
-                new ItemMaker(site_setting_name, settingName)
-                        .withString(site_setting_value, settingValue));
+        tables.siteSettingsTable.updateItem(new PrimaryKey(site_setting_name.name(), settingName),
+                new AttributeUpdate(site_setting_value.name()).put(settingValue));
     }
 }

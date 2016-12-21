@@ -8,4 +8,4 @@ db.user=
 db.pass=
 dynamoDB.connect=
 dynamoDB.environment=dev
-databaseToUse=CachingMySQLDB
+databaseToUse=PrefetchedDynamoDB
