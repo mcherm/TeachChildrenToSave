@@ -268,6 +268,7 @@ public class DynamoDBSetup {
             insertSiteSetting("ShowDocuments", "yes");
 
             insertAllowedDate("2017-04-24");
+            insertAllowedDate("2017-04-25");
             insertAllowedDate("2017-04-26");
             insertAllowedDate("2017-04-27");
             insertAllowedDate("2017-04-28");
