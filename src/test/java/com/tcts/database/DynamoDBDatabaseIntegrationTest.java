@@ -68,10 +68,32 @@ import static org.junit.Assert.assertNull;
  */
 public class DynamoDBDatabaseIntegrationTest {
     private DynamoDBDatabase dynamoDBDatabase;
+    private Configuration configuration;
+
+    /**
+     * Returns a configuration based on application.properties EXCEPT
+     * that dynamoDB.environment has been set to "test".
+     * @return
+     */
+    public static Configuration getTestConfiguration() {
+        final Configuration rawConfiguration = new Configuration();
+        return new Configuration() {
+            @Override
+            public String getProperty(String key) {
+                if ("dynamoDB.environment".equals(key)) {
+                    return "test";
+                } else {
+                    return rawConfiguration.getProperty(key);
+                }
+            }
+        };
+    }
 
     @BeforeClass
     public static void initializeClass() throws InterruptedException {
-        Configuration configuration = new Configuration();
+        // --- Create a configuration() that overrides dynamoDB.environment to be "test" ---
+        Configuration configuration = getTestConfiguration();
+        // ---
         String dbConnectString = configuration.getProperty("dynamoDB.connect");
         DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
         try {
@@ -84,7 +106,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @Before
     public void initializeTest() throws InterruptedException {
-        Configuration configuration = new Configuration();
+        Configuration configuration = getTestConfiguration();
         String dbConnectString = configuration.getProperty("dynamoDB.connect");
         DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
         DynamoDBSetup.wipeAllDatabaseTables(dynamoDB, configuration);
