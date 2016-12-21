@@ -50,6 +50,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -911,6 +913,8 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(25, eventFetched.getNumberStudents());
         assertEquals("The class is quite unruly.", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
+        assertNotNull(eventFetched.getLinkedTeacher());
+        assertNotNull(eventFetched.getLinkedTeacher().getLinkedSchool());
         assertNull(eventFetched.getVolunteerId());
     }
 
@@ -985,6 +989,8 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(16, eventFetched.getNumberStudents());
         assertEquals("", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
+        assertNotNull(eventFetched.getLinkedTeacher());
+        assertNotNull(eventFetched.getLinkedTeacher().getLinkedSchool());
         assertNull(eventFetched.getVolunteerId());
     }
 
@@ -1270,5 +1276,102 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
         assertSiteStatisticsValues(1, 1, 0, 1, 0, 1, 1, 1);
     }
+
+
+    @Test
+    public void testGetUnMatchedVolunteers() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+
+        List<Volunteer> unMatchedVolunteers = dynamoDBDatabase.getUnMatchedVolunteers();
+        assertEquals(2,unMatchedVolunteers.size());
+        //Verify contents
+        Set<String> actualEmails = new HashSet<String>();
+        Set<String> expectedEmails = new HashSet<String>();
+
+        expectedEmails.add("weibosum@example.org");
+        expectedEmails.add (volunteer.getEmail());
+
+        actualEmails.add(unMatchedVolunteers.get(0).getEmail());
+        actualEmails.add(unMatchedVolunteers.get(1).getEmail());
+
+        assertEquals(expectedEmails,actualEmails);
+    }
+
+
+    @Test
+    public void testGetMatchedVolunteers() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+
+        List<Volunteer> matchedVolunteers = dynamoDBDatabase.getMatchedVolunteers();
+        assertEquals(0,matchedVolunteers.size());
+        //Verify contents
+
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+
+        matchedVolunteers = dynamoDBDatabase.getMatchedVolunteers();
+        assertEquals(1,matchedVolunteers.size());
+
+        Set<String> actualEmails = new HashSet<String>();
+        Set<String> expectedEmails = new HashSet<String>();
+
+        expectedEmails.add (volunteer.getEmail());
+
+        actualEmails.add(matchedVolunteers.get(0).getEmail());
+
+        assertEquals(expectedEmails,actualEmails);
+    }
+
+
+    /* Tests to see if getUnMatchedTeachers returns the list of teachers that have at least one event that has not
+    been volunteered for*/
+    @Test
+    public void testGetUnMatchedTeachers() throws Exception {
+
+        List<Teacher> unMatchedTeachers = dynamoDBDatabase.getUnMatchedTeachers();
+        assertEquals(0,unMatchedTeachers.size());
+        //Verify contents
+
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+
+        unMatchedTeachers = dynamoDBDatabase.getUnMatchedTeachers();
+        assertEquals(1,unMatchedTeachers.size());
+        assertEquals(teacher.getEmail(), unMatchedTeachers.get(0).getEmail());
+        //Volunteer a volunteer for the event and make sure the teacher does not get returned
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+        unMatchedTeachers = dynamoDBDatabase.getUnMatchedTeachers();
+        assertEquals(0,unMatchedTeachers.size());
+    }
+
+
+    @Test
+    public void testGetMatchedTeachers() throws Exception{
+        List<Teacher> matchedTeachers = dynamoDBDatabase.getMatchedTeachers();
+        assertEquals(0,matchedTeachers.size());
+        //Verify contents
+
+        String schoolId = insertNewSchoolAndReturnTheId();
+        Teacher teacher = insertTeacherJane(schoolId);
+        Event event = insertEventAndReturnIt(teacher.getUserId());
+
+        matchedTeachers = dynamoDBDatabase.getMatchedTeachers();
+        assertEquals(0,matchedTeachers.size());
+        //Volunteer a volunteer for the event and make sure the teacher does not get returned
+        String bankId = insertNewBankAndReturnTheId();
+        Volunteer volunteer = insertVolunteerAnika(bankId);
+        dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
+        matchedTeachers = dynamoDBDatabase.getMatchedTeachers();
+        assertEquals(1,matchedTeachers.size());
+        assertEquals(teacher.getEmail(), matchedTeachers.get(0).getEmail());
+    }
+
 
 }

@@ -839,7 +839,18 @@ public class DynamoDBDatabase implements DatabaseFacade {
     public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventTable.scan()) {
-            result.add(createEventFromDynamoDBItem(item));
+            Event event = createEventFromDynamoDBItem(item);
+            Teacher teacher = (Teacher) getUserById(event.getTeacherId());
+            School school = getSchoolById(teacher.getSchoolId());
+            teacher.setLinkedSchool(school);
+            event.setLinkedTeacher(teacher);
+            if (event.getVolunteerId() != null) {
+                Volunteer volunteer = (Volunteer) getUserById(event.getVolunteerId());
+                Bank bank = getBankById(volunteer.getBankId());
+                volunteer.setLinkedBank(bank);
+                event.setLinkedVolunteer(volunteer);
+            }
+            result.add(event);
         }
         Collections.sort(result, compareEvents);
         return result;
@@ -1184,27 +1195,61 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Teacher> getMatchedTeachers() throws SQLException {
-        // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.emptyList();
+        List<Teacher> matchedTeachers = new ArrayList<Teacher>();
+        List<Event> events = getAllEvents();
+        for (Event event : events){
+            if (event.getLinkedVolunteer() != null) {
+                Teacher teacher = event.getLinkedTeacher();
+                matchedTeachers.add(teacher);
+            }
+        }
+        return matchedTeachers;
     }
 
     @Override
     public List<Teacher> getUnMatchedTeachers() throws SQLException {
-        // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.emptyList();
+        List<Teacher> unMatchedTeachers = new ArrayList<Teacher>();
+        List<Event> events = getAllAvailableEvents();
+        for (Event event : events){
+            Teacher teacher = event.getLinkedTeacher();
+            unMatchedTeachers.add(teacher);
+        }
+        return unMatchedTeachers;
     }
 
     @Override
     public List<Volunteer> getMatchedVolunteers() throws SQLException {
-        // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.emptyList();
+       List<Volunteer> matchedVolunteers = new ArrayList<Volunteer>();
+        List<Event> events = getAllEvents();
+
+        for (Event event : events) {
+            if (event.getVolunteerId() != null) {
+                Volunteer volunteer = event.getLinkedVolunteer();
+                matchedVolunteers.add(volunteer);
+            }
+        }
+        return matchedVolunteers;
     }
 
     @Override
     public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
-        // FIXME: Needs to be written, but is only used for email announcements.
-        return Collections.emptyList();
+        List<Volunteer> unMatchedVolunteers = new ArrayList<Volunteer>();
+        Set<String> matchedVolunteerIds = new HashSet<String>();
+        for (Volunteer volunteer : getMatchedVolunteers()) {
+            matchedVolunteerIds.add(volunteer.getUserId());
+        }
+
+        for (String userType : volunteerUserTypes) {
+            for (Item item : tables.userByUserType.query(new KeyAttribute(user_type.name(), userType))) {
+                Volunteer volunteer = (Volunteer) createUserFromDynamoDBItem(item);
+                if (!matchedVolunteerIds.contains(volunteer.getUserId())) {
+                    unMatchedVolunteers.add(volunteer);
+                }
+            }
+        }
+        return unMatchedVolunteers;
     }
+
 
     @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
