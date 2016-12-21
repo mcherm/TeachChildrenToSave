@@ -201,7 +201,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
     private final Comparator<Event> compareEvents = new Comparator<Event>() {
         @Override
         public int compare(Event event1, Event event2) {
-            return event1.getEventDate().compareTo(event2.getEventDate());
+            int result = event1.getEventDate().compareTo(event2.getEventDate());
+            if (result == 0) {
+                result = event1.getEventId().compareTo(event2.getEventId());
+            }
+            return result;
         }
     };
 
@@ -837,16 +841,27 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
+        Map<String,School> schools = new HashMap<String,School>();
+        Map<String,Bank> banks = new HashMap<String,Bank>();
+
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventTable.scan()) {
             Event event = createEventFromDynamoDBItem(item);
             Teacher teacher = (Teacher) getUserById(event.getTeacherId());
-            School school = getSchoolById(teacher.getSchoolId());
+            School school = schools.get(teacher.getSchoolId());
+            if (school == null) {
+                school = getSchoolById(teacher.getSchoolId());
+                schools.put(school.getSchoolId(), school);
+            }
             teacher.setLinkedSchool(school);
             event.setLinkedTeacher(teacher);
             if (event.getVolunteerId() != null) {
                 Volunteer volunteer = (Volunteer) getUserById(event.getVolunteerId());
-                Bank bank = getBankById(volunteer.getBankId());
+                Bank bank = banks.get(volunteer.getBankId());
+                if (bank == null) {
+                    bank = getBankById(volunteer.getBankId());
+                    banks.put(bank.getBankId(), bank);
+                }
                 volunteer.setLinkedBank(bank);
                 event.setLinkedVolunteer(volunteer);
             }
