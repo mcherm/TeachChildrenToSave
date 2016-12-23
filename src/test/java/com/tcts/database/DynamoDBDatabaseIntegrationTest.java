@@ -94,8 +94,7 @@ public class DynamoDBDatabaseIntegrationTest {
         // --- Create a configuration() that overrides dynamoDB.environment to be "test" ---
         Configuration configuration = getTestConfiguration();
         // ---
-        String dbConnectString = configuration.getProperty("dynamoDB.connect");
-        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
+        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration);
         try {
             DynamoDBSetup.deleteAllDatabaseTables(dynamoDB, configuration);
         } catch(ResourceNotFoundException err) {
@@ -107,8 +106,7 @@ public class DynamoDBDatabaseIntegrationTest {
     @Before
     public void initializeTest() throws InterruptedException {
         Configuration configuration = getTestConfiguration();
-        String dbConnectString = configuration.getProperty("dynamoDB.connect");
-        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(dbConnectString);
+        DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration);
         DynamoDBSetup.wipeAllDatabaseTables(dynamoDB, configuration);
         dynamoDBDatabase = new DynamoDBDatabase(configuration, new DynamoDBHelper());
     }

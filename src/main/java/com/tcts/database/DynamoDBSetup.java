@@ -498,7 +498,7 @@ public class DynamoDBSetup {
         System.out.println("Starting...");
         try {
             Configuration configuration = new Configuration();
-            DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration.getProperty("dynamoDB.connect"));
+            DynamoDB dynamoDB = DynamoDBDatabase.connectToDB(configuration);
             reinitializeDatabase(dynamoDB, configuration);
 
             DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);

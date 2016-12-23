@@ -1,5 +1,7 @@
 package com.tcts.database;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -93,15 +95,19 @@ public class DynamoDBDatabase implements DatabaseFacade {
      */
     public DynamoDBDatabase(Configuration configuration, DynamoDBHelper dynamoDBHelper) {
         this.dynamoDBHelper = dynamoDBHelper;
-        DynamoDB dynamoDB = connectToDB(configuration.getProperty("dynamoDB.connect"));
+        DynamoDB dynamoDB = connectToDB(configuration);
         this.tables = getTables(dynamoDB, configuration);
     }
 
 
     // ========== Static Methods Shared by DynamoDBSetup ==========
 
-    static DynamoDB connectToDB(String connectString) {
-        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient();
+    static DynamoDB connectToDB(Configuration configuration) {
+        String connectString = configuration.getProperty("dynamoDB.connect");
+        AWSCredentials credentials = new BasicAWSCredentials(
+                configuration.getProperty("aws.access_key"),
+                configuration.getProperty("aws.secret_access_key"));
+        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentials);
         dynamoDBClient.withEndpoint(connectString);
         return new DynamoDB(dynamoDBClient);
     }
@@ -572,39 +578,33 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
 
-    /**
-     * Given a list of events, modifies the events by populating the linked teacher and also the linked
-     * schools in those teachers.
-     */
-    private void addLinkedTeachersAndSchools(List<Event> events) throws SQLException {
-        Map<String,School> schoolsById = new HashMap<String,School>();
-        Map<String,Teacher> teachersById = new HashMap<String,Teacher>();
-        for (Event event : events) {
-            String teacherId = event.getTeacherId();
-            Teacher teacher = teachersById.get(teacherId);
-            if (teacher == null) {
-                teacher = (Teacher) getUserById(teacherId);
-                teachersById.put(teacherId, teacher);
-            }
-            String schoolId = teacher.getSchoolId();
-            School school = schoolsById.get(schoolId);
-            if (school == null) {
-                school = getSchoolById(schoolId);
-                schoolsById.put(schoolId, school);
-            }
-            teacher.setLinkedSchool(school);
-            event.setLinkedTeacher(teacher);
-        }
-    }
-
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
+        // --- get the schools ---
+        Map<String,School> schools = new HashMap<String,School>();
+        for (Item item1 : tables.schoolTable.scan()) {
+            School school1 = createSchoolFromDynamoDBItem(item1);
+            schools.put(school1.getSchoolId(), school1);
+        }
+        // --- get the teachers ---
+        Map<String,Teacher> teachers = new HashMap<String,Teacher>();
+        for (Item item : tables.userByUserType.query(new KeyAttribute(user_type.name(), UserType.TEACHER.getDBValue()))) {
+            Teacher teacher = (Teacher) createUserFromDynamoDBItem(item);
+            teachers.put(teacher.getUserId(), teacher);
+        }
+        // --- get the events and populate linked data ---
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventByVolunteer.query(new KeyAttribute(event_volunteer_id.name(), NO_VOLUNTEER))) {
-            result.add(createEventFromDynamoDBItem(item));
+            Event event = createEventFromDynamoDBItem(item);
+            Teacher teacher = teachers.get(event.getTeacherId());
+            School school = schools.get(teacher.getSchoolId());
+            teacher.setLinkedSchool(school);
+            event.setLinkedTeacher(teacher);
+            result.add(event);
         }
-        addLinkedTeachersAndSchools(result);
+        // --- sort it ---
         Collections.sort(result, compareEvents);
+        // --- all done ---
         return result;
     }
 
@@ -624,8 +624,25 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws SQLException {
+        Map<String,School> schoolsById = new HashMap<String,School>();
+        Map<String,Teacher> teachersById = new HashMap<String,Teacher>();
         List<Event> events = getEventsByVolunteer(volunteerId);
-        addLinkedTeachersAndSchools(events);
+        for (Event event : events) {
+            String teacherId = event.getTeacherId();
+            Teacher teacher = teachersById.get(teacherId);
+            if (teacher == null) {
+                teacher = (Teacher) getUserById(teacherId);
+                teachersById.put(teacherId, teacher);
+            }
+            String schoolId = teacher.getSchoolId();
+            School school = schoolsById.get(schoolId);
+            if (school == null) {
+                school = getSchoolById(schoolId);
+                schoolsById.put(schoolId, school);
+            }
+            teacher.setLinkedSchool(school);
+            event.setLinkedTeacher(teacher);
+        }
         return events;
     }
 
@@ -841,33 +858,53 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
+        // --- get the schools ---
         Map<String,School> schools = new HashMap<String,School>();
+        for (Item item1 : tables.schoolTable.scan()) {
+            School school = createSchoolFromDynamoDBItem(item1);
+            schools.put(school.getSchoolId(), school);
+        }
+        // --- get the banks ---
         Map<String,Bank> banks = new HashMap<String,Bank>();
-
+        for (Item item1 : tables.bankTable.scan()) {
+            Bank bank = createBankFromDynamoDBItem(item1);
+            banks.put(bank.getBankId(), bank);
+        }
+        // --- get the volunteers and teachers ---
+        Map<String,Volunteer> volunteers = new HashMap<String,Volunteer>();
+        Map<String,Teacher> teachers = new HashMap<String,Teacher>();
+        for (Item userItem: tables.userTable.scan()){
+            User user = createUserFromDynamoDBItem(userItem);
+            if (user.getUserType() == UserType.VOLUNTEER || user.getUserType() == UserType.BANK_ADMIN){
+                volunteers.put(user.getUserId(),(Volunteer) user);
+            } else if (user.getUserType() == UserType.TEACHER){
+                teachers.put(user.getUserId(), (Teacher) user);
+            }
+        }
+        // --- get the events and populate data in them ---
         List<Event> result = new ArrayList<Event>();
         for (Item item : tables.eventTable.scan()) {
             Event event = createEventFromDynamoDBItem(item);
-            Teacher teacher = (Teacher) getUserById(event.getTeacherId());
-            School school = schools.get(teacher.getSchoolId());
-            if (school == null) {
-                school = getSchoolById(teacher.getSchoolId());
-                schools.put(school.getSchoolId(), school);
+            //Link in teacher
+            Teacher teacher = teachers.get(event.getTeacherId());
+            //If LinkedSchool is not already set for the teacher set it
+            if (teacher.getLinkedSchool() == null) {
+                teacher.setLinkedSchool(schools.get(teacher.getSchoolId()));
             }
-            teacher.setLinkedSchool(school);
             event.setLinkedTeacher(teacher);
+
             if (event.getVolunteerId() != null) {
-                Volunteer volunteer = (Volunteer) getUserById(event.getVolunteerId());
-                Bank bank = banks.get(volunteer.getBankId());
-                if (bank == null) {
-                    bank = getBankById(volunteer.getBankId());
-                    banks.put(bank.getBankId(), bank);
+                Volunteer volunteer = volunteers.get(event.getVolunteerId());
+                if (volunteer.getLinkedBank() == null) {
+                    volunteer.setLinkedBank(banks.get(volunteer.getBankId()));
                 }
-                volunteer.setLinkedBank(bank);
                 event.setLinkedVolunteer(volunteer);
             }
             result.add(event);
         }
+        // --- sort it ---
         Collections.sort(result, compareEvents);
+        // --- all done ---
         return result;
     }
 

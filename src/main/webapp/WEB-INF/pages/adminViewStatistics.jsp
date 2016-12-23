@@ -52,12 +52,12 @@
                     </p>
 
                     <p>
-                        <span>Number of Volunteers: </span>
+                        <span>Number of Volunteers Signed Up For a Class: </span>
                         <span><c:out value="${siteStatistics.numVolunteers}"/></span>
                     </p>
 
                     <p>
-                        <span>Number of Participating Teachers: </span>
+                        <span>Number of Teachers With a Volunteer in Their Class: </span>
                         <span><c:out value="${siteStatistics.numParticipatingTeachers}"/></span>
                     </p>
 
