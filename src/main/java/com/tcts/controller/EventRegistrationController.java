@@ -180,7 +180,7 @@ public class EventRegistrationController {
                        "<td style=\"background-color:#66CCFF\">Teacher</td>" +
                        "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
                        "<td style=\"background-color:#66CCFF\">Grade</td>" +
-                       "<td style=\"background-color:#66CCFF\">Number of student</td>" +
+                       "<td style=\"background-color:#66CCFF\">Number of students</td>" +
                        "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
                 String htmlTableDataValue = "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +    
                             "<td>" + event.getEventTime()  + "</td>" +
@@ -240,7 +240,7 @@ public class EventRegistrationController {
                            "<td style=\"background-color:#66CCFF\">Teacher</td>" +
                            "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
                            "<td style=\"background-color:#66CCFF\">Grade</td>" +
-                           "<td style=\"background-color:#66CCFF\">Number of student</td>" +
+                           "<td style=\"background-color:#66CCFF\">Number of students</td>" +
                            "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
                     String htmlTableDataValue = "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +    
                                 "<td>" + event.getEventTime()  + "</td>" +
