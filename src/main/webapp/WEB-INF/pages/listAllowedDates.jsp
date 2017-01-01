@@ -37,9 +37,9 @@
                     </ul>
                 </div>
 
-				<a download="allowedDaes.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedDates');">Export to Excel</a>
+				<a download="allowedDates.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'listAllowedDatesTable', 'allowedDates');">Export to Excel</a>
 
-                <table id="listAllowedTimesTable" class="responsive">
+                <table id="listAllowedDatesTable" class="responsive">
                     <thead>
                         <tr>
                             <th scope="col" class="time">Date</th>
