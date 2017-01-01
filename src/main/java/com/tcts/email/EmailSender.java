@@ -42,7 +42,7 @@ public class EmailSender {
         emailModel.put("logoImage", logoImage);
         emailModel.put("to", teacherEmail);
         emailModel.put("subject", "Your volunteer for " + new PrettyPrintingDate(new java.sql.Date(new Date().getTime()))  +" cancelled");
-        String htmlTableDataHeader = "<table><tr> " +
+        String htmlTableDataHeader = "<table cellpadding='1'><tr> " +
                 "<td style=\"background-color:#66CCFF\">Class Date</td>" +
                 "<td style=\"background-color:#66CCFF\">Class Time</td>" +
                 "<td style=\"background-color:#66CCFF\">Teacher</td>" +
@@ -74,7 +74,7 @@ public class EmailSender {
             emailModel.put("logoImage", logoImage);
             emailModel.put("to", volunteer.getEmail());
             emailModel.put("subject", "Your volunteer event has been canceled.");
-            String htmlTableDataHeader = "<table><tr> " +
+            String htmlTableDataHeader = "<table cellpadding='1'><tr> " +
                     "<td style=\"background-color:#66CCFF\">Class Date</td>" +
                     "<td style=\"background-color:#66CCFF\">Class Time</td>" +
                     "<td style=\"background-color:#66CCFF\">Teacher</td>" +
