@@ -38,7 +38,7 @@
 		            
 		            <ul class="noUl">
 		                <li class="mb1">
-		                	<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
+		                	<button onclick="js.loadURL('editVolunteerPersonalData.htm');" class="editOrRegister">
 			                	Edit my Account
 		                	</button>
 	                	</li>

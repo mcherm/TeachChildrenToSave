@@ -33,7 +33,7 @@ public class EditPersonalDataController {
     private DatabaseFacade database;
 
     /**
-     * Render the page for editing personal data (except for volunteers who have a separate page)
+     * Render the page for editing personal data of teachers and site admins.
      * @throws SQLException 
      */
     @RequestMapping(value="/editPersonalData", method=RequestMethod.GET)
@@ -55,7 +55,8 @@ public class EditPersonalDataController {
     }
 
     /**
-     * Render the page for editing personal data (except for volunteers who have a separate page)
+     * Render the page for editing personal data of volunteers and bank admins (the difference being
+     * that they may have a bankSpecificData field to fill in).
      * @throws SQLException
      */
     @RequestMapping(value="/editVolunteerPersonalData", method=RequestMethod.GET)

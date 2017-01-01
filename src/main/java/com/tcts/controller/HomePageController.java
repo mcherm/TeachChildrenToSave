@@ -121,6 +121,7 @@ public class HomePageController {
 
         // --- Load the bank ---
         Bank bank = database.getBankById(bankAdmin.getBankId());
+        bankAdmin.setLinkedBank(bank);
 
         // --- Obtain and sort the volunteers ---
         List<Volunteer> volunteers = database.getVolunteersByBank(bankAdmin.getBankId());
