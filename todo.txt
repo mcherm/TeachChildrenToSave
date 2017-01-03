@@ -11,6 +11,12 @@ Need more Info/Not Do
      in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
      getMatchedVolunteers(), and getUnMatchedVolunteers(). [Rachel]
 
+--------Open "Manage Documents" Tasks
+1.  Delete the site setting showDocuments
+2.  Change permissions on file to public when a file is updated
+3.  Add delete and upload functionality
+4.  Possibly change the way the form works to make it update after you enter them rather then individual commits for each line
+5.  Change volunteer, bankadmin, and teacher titles on table on documents.jsp page to something longer
 
 
 -----------BUGS-------------
