@@ -42,13 +42,13 @@ public class EmailSender {
         emailModel.put("logoImage", logoImage);
         emailModel.put("to", teacherEmail);
         emailModel.put("subject", "Your volunteer for " + new PrettyPrintingDate(new java.sql.Date(new Date().getTime()))  +" cancelled");
-        String htmlTableDataHeader = "<table><tr> " +
+        String htmlTableDataHeader = "<table cellpadding='1'><tr> " +
                 "<td style=\"background-color:#66CCFF\">Class Date</td>" +
                 "<td style=\"background-color:#66CCFF\">Class Time</td>" +
                 "<td style=\"background-color:#66CCFF\">Teacher</td>" +
                 "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
                 "<td style=\"background-color:#66CCFF\">Grade</td>" +
-                "<td style=\"background-color:#66CCFF\">Number of student</td>" +
+                "<td style=\"background-color:#66CCFF\">Number of students</td>" +
                 "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
         String htmlTableDataValue =
                 "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +
@@ -74,13 +74,13 @@ public class EmailSender {
             emailModel.put("logoImage", logoImage);
             emailModel.put("to", volunteer.getEmail());
             emailModel.put("subject", "Your volunteer event has been canceled.");
-            String htmlTableDataHeader = "<table><tr> " +
+            String htmlTableDataHeader = "<table cellpadding='1'><tr> " +
                     "<td style=\"background-color:#66CCFF\">Class Date</td>" +
                     "<td style=\"background-color:#66CCFF\">Class Time</td>" +
                     "<td style=\"background-color:#66CCFF\">Teacher</td>" +
                     "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
                     "<td style=\"background-color:#66CCFF\">Grade</td>" +
-                    "<td style=\"background-color:#66CCFF\">Number of student</td>" +
+                    "<td style=\"background-color:#66CCFF\">Number of students</td>" +
                     "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
             String htmlTableDataValue =
                     "<td>" + new PrettyPrintingDate(event.getEventDate())  + "</td>" +

@@ -33,7 +33,7 @@
 	            <div class="formElementCnt">
 	                <label>
 	                    <div class="inputCnt">
-	                        <div class="info">Password reset link has been sent to your registered email id.Kindly click on that link and reset your password
+	                        <div class="info">Password reset link has been sent to your registered email id. Kindly click on that link and reset your password
 	                    </div>
 	                </label>
 	            </div>
