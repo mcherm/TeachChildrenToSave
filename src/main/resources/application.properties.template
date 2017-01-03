@@ -9,3 +9,4 @@ db.pass=
 dynamoDB.connect=
 dynamoDB.environment=dev
 databaseToUse=PrefetchedDynamoDB
+bucketName=teachchildrentosavede-documents
