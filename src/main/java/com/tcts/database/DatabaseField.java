@@ -6,6 +6,8 @@ package com.tcts.database;
 public enum DatabaseField {
     // SiteSettings
     site_setting_name, site_setting_value,
+    // Documents
+    document_name, document_show_to_teacher, document_show_to_volunteer, document_show_to_bank_admin,
     // AllowedDates
     event_date_allowed,
     // AllowedTimes

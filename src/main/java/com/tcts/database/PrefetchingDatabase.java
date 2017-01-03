@@ -5,6 +5,7 @@ import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.Document;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
@@ -44,6 +45,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -424,6 +426,21 @@ public class PrefetchingDatabase implements DatabaseFacade {
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
         database.modifySiteSetting(settingName, settingValue);
         refreshSiteSettings();
+    }
+
+    @Override
+    public SortedSet<Document> getDocuments() throws SQLException{
+        return database.getDocuments();
+    }
+
+    @Override
+    public void createOrModifyDocument(Document document) throws SQLException{
+        database.createOrModifyDocument(document);
+    }
+
+    @Override
+    public void deleteDocument(String documentName) throws SQLException{
+        database.deleteDocument(documentName);
     }
 
 }

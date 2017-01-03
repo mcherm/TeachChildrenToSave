@@ -3,11 +3,14 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.tcts.S3Bucket.S3Util;
 import com.tcts.datamodel.ApprovalStatus;
+import com.tcts.datamodel.Document;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +39,9 @@ public class HomePageController {
 
     @Autowired
     private DatabaseFacade database;
+
+    @Autowired
+    private S3Util s3Util;
 
     /**
      * This renders the default home page for someone who is not logged in.
@@ -70,10 +76,26 @@ public class HomePageController {
         // --- Get list of events ---
         List<Event> events = database.getEventsByVolunteerWithTeacherAndSchool(volunteer.getUserId());
 
+        // -- Get list of important documents --
+        SortedSet<Document> documents = database.getDocuments();
+        List<String> volunteerDocs = new ArrayList<String>();
+        for (Document document : documents) {
+            if (document.getShowToVolunteer()){
+                volunteerDocs.add(document.getName());
+            }
+        }
+
+
         // --- Display the page ---
         model.addAttribute("bank", bank);
         model.addAttribute("events", events);
-        model.addAttribute("showDocuments", getShowDocuments());
+        if (volunteerDocs.size() == 0){
+            model.addAttribute("showDocuments", false);
+        } else {
+            model.addAttribute("showDocuments", getShowDocuments());
+        }
+        model.addAttribute("s3Util",s3Util);
+        model.addAttribute("volunteerDocs", volunteerDocs);
         return "volunteerHome";
     }
 
@@ -100,10 +122,28 @@ public class HomePageController {
                 volunteer.setLinkedBank(bank);
             }
         }
+
+        //Get list of important documents
+        // -- Get list of important documents --
+        SortedSet<Document> documents = database.getDocuments();
+        List<String> teacherDocs = new ArrayList<String>();
+        for (Document document : documents) {
+            if (document.getShowToTeacher()){
+                teacherDocs.add(document.getName());
+            }
+        }
+
         boolean eventCreationOpen = CreateEventController.isEventCreationOpen(database);
         model.addAttribute("events", events);
         model.addAttribute("eventCreationOpen", eventCreationOpen);
-        model.addAttribute("showDocuments", getShowDocuments());
+        if (teacherDocs.size() == 0){
+            model.addAttribute("showDocuments", false);
+        } else {
+            model.addAttribute("showDocuments", getShowDocuments());
+        }
+        model.addAttribute("s3Util",s3Util);
+        model.addAttribute("teacherDocs", teacherDocs);
+
         return "teacherHome";
     }
 
@@ -142,6 +182,18 @@ public class HomePageController {
         formData.setBankId(bank.getBankId());
         formData.setBankSpecificFieldLabel(bank.getBankSpecificDataLabel());
 
+        //Load the list of important documents shown to volunteer and bank admin
+        SortedSet<Document> documents = database.getDocuments();
+        List<String> volunteerDocs = new ArrayList<String>();
+        List<String> bankAdminDocs = new ArrayList<String>();
+        for (Document document : documents) {
+            if (document.getShowToVolunteer()) {
+                volunteerDocs.add(document.getName());
+            } else if (document.getShowToBankAdmin()) {
+                bankAdminDocs.add(document.getName());
+            }
+        }
+
         // --- Show homepage ---
         model.addAttribute("bank", bank);
         model.addAttribute("normalVolunteers", normalVolunteers);
@@ -149,6 +201,8 @@ public class HomePageController {
         model.addAttribute("newVolunteers", newVolunteers);
         model.addAttribute("formData", formData);
         model.addAttribute("showDocuments", getShowDocuments());
+        model.addAttribute("volunteerDocs",volunteerDocs);
+        model.addAttribute("bankAdminDocs", bankAdminDocs);
         return "bankAdminHome";
     }
 

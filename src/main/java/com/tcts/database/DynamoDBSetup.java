@@ -42,6 +42,7 @@ public class DynamoDBSetup {
         String tablePrefix = DynamoDBDatabase.getTablePrefix(configuration);
 
         Table siteSettingsTable = createTable(dynamoDB, tablePrefix, "SiteSettings", site_setting_name, ScalarAttributeType.S, 1L);
+        Table documentsTable = createTable(dynamoDB, tablePrefix, "Documents", document_name, ScalarAttributeType.S, 1L);
         Table allowedDatesTable = createTable(dynamoDB, tablePrefix, "AllowedDates", event_date_allowed, ScalarAttributeType.S, 1L);
         Table allowedTimesTable = createTable(dynamoDB, tablePrefix, "AllowedTimes", event_time_allowed, ScalarAttributeType.S, 1L);
         Table eventTable = createTableWithIndexes(
@@ -57,6 +58,7 @@ public class DynamoDBSetup {
         Table schoolTable = createTable(dynamoDB, tablePrefix, "School", school_id, ScalarAttributeType.S, 1L);
 
         siteSettingsTable.waitForActive();
+        documentsTable.waitForActive();
         allowedDatesTable.waitForActive();
         allowedTimesTable.waitForActive();
         eventTable.waitForActive();
@@ -77,6 +79,7 @@ public class DynamoDBSetup {
     public static void wipeAllDatabaseTables(DynamoDB dynamoDB, Configuration configuration) {
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
         wipeTable(tables.siteSettingsTable);
+        wipeTable(tables.documentsTable);
         wipeTable(tables.allowedDatesTable);
         wipeTable(tables.allowedTimesTable);
         wipeTable(tables.eventTable);
@@ -91,21 +94,39 @@ public class DynamoDBSetup {
      */
     public static void deleteAllDatabaseTables(DynamoDB dynamoDB, Configuration configuration) throws InterruptedException {
         DynamoDBDatabase.Tables tables = DynamoDBDatabase.getTables(dynamoDB, configuration);
-        tables.siteSettingsTable.delete();
-        tables.allowedDatesTable.delete();
-        tables.allowedTimesTable.delete();
-        tables.eventTable.delete();
-        tables.bankTable.delete();
-        tables.userTable.delete();
-        tables.schoolTable.delete();
+        deleteTable(tables.siteSettingsTable);
+        deleteTable(tables.documentsTable);
+        deleteTable(tables.allowedDatesTable);
+        deleteTable(tables.allowedTimesTable);
+        deleteTable(tables.eventTable);
+        deleteTable(tables.bankTable);
+        deleteTable(tables.userTable);
+        deleteTable(tables.schoolTable);
 
-        tables.siteSettingsTable.waitForDelete();
-        tables.allowedDatesTable.waitForDelete();
-        tables.allowedTimesTable.waitForDelete();
-        tables.eventTable.waitForDelete();
-        tables.bankTable.waitForDelete();
-        tables.userTable.waitForDelete();
-        tables.schoolTable.waitForDelete();
+        waitForDelete(tables.siteSettingsTable);
+        waitForDelete(tables.documentsTable);
+        waitForDelete(tables.allowedDatesTable);
+        waitForDelete(tables.allowedTimesTable);
+        waitForDelete(tables.eventTable);
+        waitForDelete(tables.bankTable);
+        waitForDelete(tables.userTable);
+        waitForDelete(tables.schoolTable);
+    }
+
+    private static void deleteTable(Table table) {
+        try {
+            table.delete();
+        } catch(ResourceNotFoundException err) {
+            // Ignore this since the table isn't there to be deleted
+        }
+    }
+
+    private static void waitForDelete(Table table) throws InterruptedException {
+        try {
+            table.waitForDelete();
+        } catch(ResourceNotFoundException err) {
+            // Ignore this since the table isn't there to be deleted
+        }
     }
 
 
@@ -113,11 +134,7 @@ public class DynamoDBSetup {
      * When called, this wipes the entire DynamoDB database and then recreates it.
      */
     public static void reinitializeDatabase(DynamoDB dynamoDB, Configuration configuration) throws InterruptedException {
-        try {
-            deleteAllDatabaseTables(dynamoDB, configuration);
-        } catch(ResourceNotFoundException err) {
-            // Ignore this, and assume it all got cleanly deleted
-        }
+        deleteAllDatabaseTables(dynamoDB, configuration);
         createAllDatabaseTables(dynamoDB, configuration);
     }
 

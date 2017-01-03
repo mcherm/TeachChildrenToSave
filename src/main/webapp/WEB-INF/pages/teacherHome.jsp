@@ -47,22 +47,11 @@
 					<c:if test="${showDocuments}">
 						<div class="documents">
 							<strong>Important documents</strong>
-							<%
-								String helpfulHints = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Helpful%20Hints.pdf";
-								String letterToTeacher = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/Letter%20to%20teachers.pdf";
-								String volunteerGuideline = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/Volunteer%20Guidelines.pdf";
-								String logoContest = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/teacher/Logo_Slogan%20Contest%20Flyer.pdf";
-								String lessonPlans = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/2016%20Lesson%20Plans.pdf";
-								String faq = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/volunteer/TCTSD%20FAQs.pdf";
-							%>
 
 							<ul>
-								<li><a href="<%=helpfulHints%>" target="_blank">Helpful Hints</a></li>
-								<li><a href="<%=letterToTeacher%>" target="_blank">Letters to Teachers</a></li>
-								<li><a href="<%=volunteerGuideline%>" target="_blank">Volunteers Guidelines</a></li>
-								<li><a href="<%=logoContest%>" target="_blank">Logo &amp Slogan Contest Flyer</a></li>
-								<li><a href="<%=lessonPlans%>" target="_blank">Lesson Plans</a></li>
-								<li><a href="<%=faq%>" target="_blank">FAQs</a></li>
+								<c:forEach var="docName" items="${teacherDocs}">
+									<li><a href="${s3Util.makeS3URL(docName)}" target="_blank">${docName}</a></li>
+								</c:forEach>
 							</ul>
 						</div>
 					</c:if>

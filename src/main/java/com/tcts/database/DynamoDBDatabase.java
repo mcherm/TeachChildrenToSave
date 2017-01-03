@@ -19,6 +19,7 @@ import com.tcts.database.dynamodb.ItemMaker;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.Document;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteAdmin;
@@ -60,15 +61,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static com.tcts.database.DatabaseField.*;
 
@@ -114,6 +107,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     static class Tables {
         final Table siteSettingsTable;
+        final Table documentsTable;
         final Table allowedDatesTable;
         final Table allowedTimesTable;
         final Table eventTable;
@@ -131,6 +125,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
          */
         public Tables(
                 final Table siteSettingsTable,
+                final Table documentsTable,
                 final Table allowedDatesTable,
                 final Table allowedTimesTable,
                 final Table eventTable,
@@ -139,6 +134,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 final Table schoolTable
         ) {
             this.siteSettingsTable = siteSettingsTable;
+            this.documentsTable = documentsTable;
             this.allowedDatesTable = allowedDatesTable;
             this.allowedTimesTable = allowedTimesTable;
             this.eventTable = eventTable;
@@ -164,13 +160,14 @@ public class DynamoDBDatabase implements DatabaseFacade {
     static DynamoDBDatabase.Tables getTables(DynamoDB dynamoDB, Configuration configuration) {
         String tablePrefix = getTablePrefix(configuration);
         Table siteSettingsTable = dynamoDB.getTable(tablePrefix + "SiteSettings");
+        Table documentsTable = dynamoDB.getTable(tablePrefix + "Documents");
         Table allowedDatesTable = dynamoDB.getTable(tablePrefix + "AllowedDates");
         Table allowedTimesTable = dynamoDB.getTable(tablePrefix + "AllowedTimes");
         Table eventTable = dynamoDB.getTable(tablePrefix + "Event");
         Table bankTable = dynamoDB.getTable(tablePrefix + "Bank");
         Table userTable = dynamoDB.getTable(tablePrefix + "User");
         Table schoolTable = dynamoDB.getTable(tablePrefix + "School");
-        return new DynamoDBDatabase.Tables(siteSettingsTable, allowedDatesTable, allowedTimesTable, eventTable, bankTable, userTable, schoolTable);
+        return new DynamoDBDatabase.Tables(siteSettingsTable, documentsTable, allowedDatesTable, allowedTimesTable, eventTable, bankTable, userTable, schoolTable);
     }
 
 
@@ -1323,6 +1320,34 @@ public class DynamoDBDatabase implements DatabaseFacade {
                     scanOutcome.getString(site_setting_value.name()));
         }
         return result;
+    }
+
+    @Override
+    public SortedSet<Document> getDocuments() throws SQLException{
+        SortedSet<Document> result = new TreeSet<Document>();
+        for (Item scanOutcome : tables.documentsTable.scan()) {
+            String name = scanOutcome.getString(document_name.name());
+            boolean showToTeacher = scanOutcome.getBoolean(document_show_to_teacher.name());
+            boolean showToVolunteer = scanOutcome.getBoolean(document_show_to_volunteer.name());
+            boolean showToBankAdmin = scanOutcome.getBoolean(document_show_to_bank_admin.name());
+            Document document = new Document(name, showToTeacher, showToVolunteer, showToBankAdmin);
+            result.add(document);
+        }
+        return result;
+    }
+
+    @Override
+    public void createOrModifyDocument(Document document) throws SQLException{
+        tables.documentsTable.updateItem(new PrimaryKey(document_name.name(), document.getName()),
+                new AttributeUpdate(document_show_to_teacher.name()).put(document.getShowToTeacher()),
+                new AttributeUpdate(document_show_to_volunteer.name()).put(document.getShowToVolunteer()),
+                new AttributeUpdate(document_show_to_bank_admin.name()).put(document.getShowToBankAdmin())
+                );
+    }
+
+    @Override
+    public void deleteDocument(String documentName) throws SQLException {
+        tables.documentsTable.deleteItem(new PrimaryKey(document_name.name(), documentName));
     }
 
     @Override

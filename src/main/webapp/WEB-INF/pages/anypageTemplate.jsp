@@ -17,7 +17,7 @@
 
         <div class="mainCnt">
 
-        <%@include file="include/navigation.jsp" %>
+            <%@include file="include/navigation.jsp" %>
 
             <main id="main">    
     

@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.exception.BankHasVolunteersException;
@@ -42,6 +44,7 @@ import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteAdmin;
 import com.tcts.datamodel.SiteStatistics;
+import com.tcts.datamodel.Document;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
@@ -246,6 +249,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getNumParticipatingSchoolsSQL = "select count(distinct organization_id) from Event join User on teacher_id = user_id";
     private final static String getSiteSettingsSQL = "select * from SiteSettings";
     private final static String insertOrModifySiteSettingSQL = "insert into SiteSettings (setting_name, setting_value) VALUES(?, ?) on duplicate key update setting_value = ?";
+    private final static String insertOrModifyDocumentsSQL = "insert into Documents (name, show_to_teacher, show_to_volunteer, show_to_bank_admin) VALUES (?,?,?,?) on duplicate key update name = ?";
 
 
     /**
@@ -1898,4 +1902,27 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, null);
         }
     }
+
+    //Writing dummy functions because I don't have a mySQL database to test this against
+    // FIXME: Need to write (and test) the real function
+    @Override
+    public SortedSet<Document> getDocuments() throws SQLException{
+        SortedSet<Document> documents = new TreeSet<Document>();
+        return documents;
+    }
+
+    //Writing dummy functions because I don't have a mySQL database to test this against
+    // FIXME: Need to write (and test) the real function
+    @Override
+    public void createOrModifyDocument (Document document) throws SQLException{
+        //DOES NOTHING
+    }
+
+    //Writing dummy functions because I don't have a mySQL database to test this against
+    // FIXME: Need to write (and test) the real function
+    @Override
+    public void deleteDocument(String documentName) throws SQLException{
+        //DOES NOTHING FIXME
+    }
+
 }

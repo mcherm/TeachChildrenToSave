@@ -5,11 +5,13 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
+import com.tcts.datamodel.Document;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
@@ -401,4 +403,27 @@ public interface DatabaseFacade {
      */
     void modifySiteSetting(String settingName, String settingValue) throws SQLException;
 
+    /**
+     * Retrieves a Set of the documents in the database
+     * @return A Sorted Set of the documents in the database
+     * @throws SQLException
+     */
+    public SortedSet<Document> getDocuments() throws SQLException;
+
+    /**
+     * This creates or modifies the passed in document.
+     * @param document - document to created or modified.
+     * @throws SQLException
+     */
+    public void createOrModifyDocument (Document document) throws SQLException;
+
+    /**
+     * Deletes the passed in document, the document name is the unique key.
+     *
+     * @param documentName name of document to delete
+     * @throws SQLException
+     */
+    public void deleteDocument(String documentName) throws SQLException;
 }
+
+

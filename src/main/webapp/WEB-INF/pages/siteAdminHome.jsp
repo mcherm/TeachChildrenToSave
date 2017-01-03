@@ -74,7 +74,13 @@
 						</button>
 					</li>
 
-                    <li class="mb1">
+					<li class="mb1">
+						<button onclick="js.loadURL('documents.htm');" class="editOrRegister">
+							Manage Available Documents
+						</button>
+					</li>
+
+					<li class="mb1">
                         <button onclick="js.loadURL('adminViewStatistics.htm');" class="editOrRegister">
                             View Program Statistics
                         </button>
@@ -91,6 +97,7 @@
 	                		Edit my Account
 	                	</button>
 	                </li>
+
 	            </ul>
 
 		
