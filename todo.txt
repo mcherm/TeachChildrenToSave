@@ -13,15 +13,10 @@ Need more Info/Not Do
 
 --------Open "Manage Documents" Tasks
 1.  Delete the site setting showDocuments
-2.  Change permissions on file to public when a file is updated
-3.  Add delete and upload functionality
-4.  Possibly change the way the form works to make it update after you enter them rather then individual commits for each line
-5.  Change volunteer, bankadmin, and teacher titles on table on documents.jsp page to something longer
-
-
+6.  Possibly prefetch list of documents
 -----------BUGS-------------
 
-
+[13] Lowercase the email address before storing it in the database or comparing it at login.
 [6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
