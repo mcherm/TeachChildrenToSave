@@ -24,7 +24,6 @@ public abstract class UserRegistrationFormData extends ValidatedFormData<Runtime
                 errors.addError("Emails do not match.");
             }
         }
-
         if (firstName == null || firstName.trim().length()==0) {
             errors.addError("You must provide a first name.");
         }

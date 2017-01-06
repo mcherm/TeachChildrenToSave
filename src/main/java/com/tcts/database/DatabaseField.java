@@ -17,7 +17,7 @@ public enum DatabaseField {
     // Bank
     bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label,
     // User
-    user_id, user_type, user_approval_status, user_email, user_first_name, user_last_name, user_phone_number, user_bank_specific_data,
+    user_id, user_type, user_approval_status, user_email, user_original_email, user_first_name, user_last_name, user_phone_number, user_bank_specific_data,
     user_organization_id, user_hashed_password, user_password_salt, user_reset_password_token,
     // School
     school_id, school_name, school_addr1, school_city, school_zip, school_county,

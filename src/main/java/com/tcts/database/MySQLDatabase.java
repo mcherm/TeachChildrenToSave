@@ -317,7 +317,6 @@ public class MySQLDatabase implements DatabaseFacade {
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
         return getUserByIdOrEmail(email, getUserByEmailSQL);
     }
-
     private User getUserByIdOrEmail(String key, String sql) throws SQLException, InconsistentDatabaseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;

@@ -64,7 +64,11 @@ public interface DatabaseFacade {
      */
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException;
 
-    /** Return the user with this email, or null if there is none. */
+    /** Return the user with this email, or null if there is none. Whether the emails are treated as case
+     * insensitive or not is determined by the database implementation .  The Dynamo Db implementation
+     * only allows one user per email regardless of case, and will ignore case of the email when
+     * doing the user lookup
+     * */
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException;
 
     /**

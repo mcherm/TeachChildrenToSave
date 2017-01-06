@@ -311,6 +311,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         put(event_notes, 1000);
         put(bank_name, 45);
         put(user_email, 50);
+        put(user_original_email, 50);
         put(user_first_name, 50);
         put(user_last_name, 50);
         put(user_phone_number, 45);
@@ -420,7 +421,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             }
         }
         user.setUserId(getStringField(item, user_id));
-        user.setEmail(getStringField(item, user_email));
+        user.setEmail(getStringField(item, user_original_email));  //gets the email with case preserved as the user originally typed it
         user.setHashedPassword(getStringField(item, user_hashed_password));
         user.setSalt(getStringField(item, user_password_salt));
         user.setFirstName(getStringField(item, user_first_name));
@@ -467,10 +468,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
+    /** This function converts the passed in email to lower case for purposes of comparison in the database **/
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
         User user = null;
         int numItems = 0;
-        for (Item item : tables.userByEmail.query(new KeyAttribute(user_email.name(), email))) {
+        //all emails are stored in lower case to avoid the problem of having user@gmail.com and
+        // USER@gmail.com be assigned to two different users
+        for (Item item : tables.userByEmail.query(new KeyAttribute(user_email.name(), email.toLowerCase()))) {
             user = createUserFromDynamoDBItem(item);
             numItems += 1;
         }
@@ -486,6 +490,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     /**
      * Called in the services that insert a user; throws an exception if the email is in use.
+     * Email comparison ignores case (so it doesn't matter what case the passed in email has)
      *
      * @param userId the userId of the user who is allowed to be using this email or NULL if no one should be using it
      * @param email email to check if already in use
@@ -507,7 +512,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
         verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), formData.getUserId()),
-                attributeUpdate(user_email, formData.getEmail()),
+                //because emails are commonly case insensitive, emails are always stored in lower case in database to keep the unique to a user
+                attributeUpdate(user_email, formData.getEmail().toLowerCase()),
+                //original_email preserves the original email case as typed in by the user for purposes of sending the user email.  The
+                //email standard does not require the user portion of an email to be case insensitive although in practiice
+                //most email providers use case insensitive emails.  original_email is the value that will be returned for email
+                //on a user lookup
+                attributeUpdate(user_original_email, formData.getEmail()),
                 attributeUpdate(user_first_name, formData.getFirstName()),
                 attributeUpdate(user_last_name, formData.getLastName()),
                 attributeUpdate(user_phone_number, formData.getPhoneNumber()));
@@ -519,7 +530,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
         verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), formData.getUserId()),
-                attributeUpdate(user_email, formData.getEmail()),
+                attributeUpdate(user_email, formData.getEmail().toLowerCase()),
+                //original_email preserves the original email case as typed in by the user for purposes of sending the user email.  The
+                //email standard does not require the user portion of an email to be case insensitive although in practiice
+                //most email providers use case insensitive emails.  original_email is the value that will be returned for email
+                //on a user lookup
+                attributeUpdate(user_original_email, formData.getEmail()),
                 attributeUpdate(user_first_name, formData.getFirstName()),
                 attributeUpdate(user_last_name, formData.getLastName()),
                 attributeUpdate(user_phone_number, formData.getPhoneNumber()),
@@ -543,7 +559,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         dynamoDBHelper.insertIntoTable(tables.userTable,
                 new ItemMaker(user_id, newTeacherId)
                         .withString(user_type, UserType.TEACHER.getDBValue())
-                        .withString(user_email, formData.getEmail())
+                        .withString(user_email, formData.getEmail().toLowerCase())
+                        .withString(user_original_email, formData.getEmail())
                         .withString(user_first_name, formData.getFirstName())
                         .withString(user_last_name, formData.getLastName())
                         .withString(user_phone_number, formData.getPhoneNumber())
@@ -712,7 +729,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         dynamoDBHelper.insertIntoTable(tables.userTable,
                 new ItemMaker(user_id, newVolunteerId)
                         .withString(user_type, UserType.VOLUNTEER.getDBValue())
-                        .withString(user_email, formData.getEmail())
+                        .withString(user_email, formData.getEmail().toLowerCase())
+                        .withString(user_original_email, formData.getEmail())
                         .withString(user_first_name, formData.getFirstName())
                         .withString(user_last_name, formData.getLastName())
                         .withString(user_phone_number, formData.getPhoneNumber())
@@ -949,7 +967,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
             dynamoDBHelper.insertIntoTable(tables.userTable,
                     new ItemMaker(user_id, bankAdminId)
                             .withString(user_type, UserType.BANK_ADMIN.getDBValue())
-                            .withString(user_email, formData.getEmail())
+                            .withString(user_email, formData.getEmail().toLowerCase())   //for purposes of user lookup only allow one user per email regardless of case
+                            .withString(user_original_email,formData.getEmail())  //preserves case for purposes of sending email
                             .withString(user_first_name, formData.getFirstName())
                             .withString(user_last_name, formData.getLastName())
                             .withString(user_phone_number, formData.getPhoneNumber())
@@ -976,7 +995,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         new PrimaryKey(user_id.name(), currentBankAdminUserId),
                         attributeUpdate(user_first_name, formData.getFirstName()),
                         attributeUpdate(user_last_name, formData.getLastName()),
-                        attributeUpdate(user_email, formData.getEmail()),
+                        attributeUpdate(user_email, formData.getEmail().toLowerCase()),  //for purposes of user lookup - email is case insensitive
+                        attributeUpdate(user_original_email, formData.getEmail()),  //for purposes of user lookup - email is case insensitive
                         attributeUpdate(user_phone_number, formData.getPhoneNumber()));
             } else {
                 // -- Create new bank admin --
@@ -984,7 +1004,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 dynamoDBHelper.insertIntoTable(tables.userTable,
                         new ItemMaker(user_id, newBankAdminId)
                                 .withString(user_type, UserType.BANK_ADMIN.getDBValue())
-                                .withString(user_email, formData.getEmail())
+                                .withString(user_email, formData.getEmail().toLowerCase())
+                                .withString(user_original_email,formData.getEmail())  //preserves case for purposes of sending email
                                 .withString(user_first_name, formData.getFirstName())
                                 .withString(user_last_name, formData.getLastName())
                                 .withString(user_phone_number, formData.getPhoneNumber())
