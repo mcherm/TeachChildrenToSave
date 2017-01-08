@@ -1,27 +1,26 @@
 
 -------- OPEN TASKS --------
-Need more Info/Not Do
-1. Add 2017’s date to the home page in between Teach Children to Save Day and the Sign up verbiage
-  (month should also be changed for signup to  January 2017):  April 24 – 28, 2017
-  ** NOTE:  This can be changed by site admin in the Site Settings page.
 
 
  - - - - DynamoDB Tasks - - - -
 [8]  Need to write queries that drive the emails. Maybe fix broken design also? The methods
      in  question are DynamoDBDatabase.getMatchedTeachers(), getUnMatchedTeachers(),
-     getMatchedVolunteers(), and getUnMatchedVolunteers(). [Rachel]
+     getMatchedVolunteers(), and getUnMatchedVolunteers(). [Rachel]  - done for dynamo db.. has not been implemented
+     for mySQL implementation
 
 --------Open "Manage Documents" Tasks
 1.  Delete the site setting showDocuments
-6.  Possibly prefetch list of documents
+
 -----------BUGS-------------
 
-[13] Lowercase the email address before storing it in the database or comparing it at login.
 [6]  In Firefox, view the list of classes as a system admin. Then hit "modify" on one class and
      it will show again. The first time the table is laid out to fit the screen, the second time
      it is not.
 
 -------- DONE --------
+6.  prefetch list of documents
+[13] Lowercase the email address before storing it in the database or comparing it at login. -- done for dynamodb implementation
+
 [10] For the DynamoDB database, find a way to speed up getting the list of available classes
      along with class details. [Michael]
 

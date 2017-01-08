@@ -69,6 +69,8 @@ public class PrefetchingDatabase implements DatabaseFacade {
     private Future<Map<String,String>> prefetchedSiteSettings;
     private final Object eventListLock; // always hold this lock when reading/writing prefetchedEventList.
     private Future<List<Event>> prefetchedEventList;
+    private final Object documentsLock;  //always hold this lock when reading/writing prefected Documents
+    private Future<SortedSet<Document>> prefetchedDocuments;
 
 
     /** Constructor requires you to provide an actual database. */
@@ -85,12 +87,15 @@ public class PrefetchingDatabase implements DatabaseFacade {
         this.threadPool = Executors.newFixedThreadPool(1, threadFactory);
         this.siteSettingsLock = new Object();
         this.eventListLock = new Object();
+        this.documentsLock = new Object();
+
         refreshSiteSettings();
         refreshEventList();
+        refreshDocuments();
     }
 
     /**
-     * Call this to invalidate the current event list and fetch a new one on a background thread.
+     * Call this to invalidate the current site settings and fetch a new one on a background thread.
      */
     private void refreshSiteSettings() {
         synchronized (siteSettingsLock) {
@@ -103,6 +108,19 @@ public class PrefetchingDatabase implements DatabaseFacade {
         }
     }
 
+    /**
+     * Call this to invalidate the current documents and fetch a new one on a background thread.
+     */
+    private void refreshDocuments() {
+        synchronized (documentsLock) {
+            prefetchedDocuments = threadPool.submit(new Callable<SortedSet<Document>>() {
+                @Override
+                public SortedSet<Document> call() throws Exception {
+                    return database.getDocuments();
+                }
+            });
+        }
+    }
 
     /**
      * Call this to invalidate the current event list and fetch a new one on a background thread.
@@ -428,19 +446,38 @@ public class PrefetchingDatabase implements DatabaseFacade {
         refreshSiteSettings();
     }
 
+
+    //Overrides the getDocuments function to get it from the prefetched List of documents
     @Override
     public SortedSet<Document> getDocuments() throws SQLException{
-        return database.getDocuments();
+        synchronized (documentsLock) {
+            try {
+                return prefetchedDocuments.get();
+            } catch(InterruptedException err) {
+                throw new RuntimeException(err);
+            } catch(ExecutionException err) {
+                Throwable cause = err.getCause();
+                if (cause instanceof SQLException) {
+                    throw (SQLException) cause;
+                } else if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                } else {
+                    throw new RuntimeException(cause);
+                }
+            }
+        }
     }
 
     @Override
     public void createOrModifyDocument(Document document) throws SQLException{
         database.createOrModifyDocument(document);
+        refreshDocuments();
     }
 
     @Override
     public void deleteDocument(String documentName) throws SQLException{
         database.deleteDocument(documentName);
+        refreshDocuments();
     }
 
 }
