@@ -18,6 +18,19 @@
                 element.style.visibility = "hidden";
             }
 
+            function updateMootness(docNumToUpdate) {
+                var volChkbxElem = document.getElementById("showVolunteerChkbx" + docNumToUpdate);
+                var baChkbxElem = document.getElementById("showBankAdminChkbx" + docNumToUpdate);
+                var mootElem = document.getElementById("showBankAdminIsMoot" + docNumToUpdate);
+                if (volChkbxElem.checked) {
+                    baChkbxElem.style.display = "none";
+                    mootElem.style.display = "inline";
+                } else {
+                    baChkbxElem.style.display = "inline";
+                    mootElem.style.display = "none";
+                }
+            }
+
             function disableAllCheckboxesExceptForOneDocument(docNumToLeaveAlone) {
                 var numDocuments = <c:out value="${documents.size()}"/>;
                 for (var i = 0; i < numDocuments; i++) {
@@ -107,8 +120,13 @@
                                                         <input type="hidden" name="name" value="${aDocument.name}">
                                                         <input type="checkbox" name="showToTeacher" id="showTeacherChkbx<%=docNum%>" <c:if test="${aDocument.showToTeacher}">checked</c:if> onclick="makeButtonVisible('updateButton<%=docNum%>');disableAllCheckboxesExceptForOneDocument(<%=docNum%>)">
                                                     </td>
-                                                    <td><input type="checkbox" name="showToVolunteer"  id="showVolunteerChkbx<%=docNum%>" <c:if test="${aDocument.showToVolunteer}">checked</c:if> onclick="makeButtonVisible('updateButton<%=docNum%>');disableAllCheckboxesExceptForOneDocument(<%=docNum%>)"></td>
-                                                    <td><input type="checkbox" name="showToBankAdmin"  id="showBankAdminChkbx<%=docNum%>" <c:if test="${aDocument.showToBankAdmin}">checked</c:if> onclick="makeButtonVisible('updateButton<%=docNum%>');disableAllCheckboxesExceptForOneDocument(<%=docNum%>)"></td>
+                                                    <td>
+                                                        <input type="checkbox" name="showToVolunteer"  id="showVolunteerChkbx<%=docNum%>" <c:if test="${aDocument.showToVolunteer}">checked</c:if> onclick="makeButtonVisible('updateButton<%=docNum%>');updateMootness(<%=docNum%>);disableAllCheckboxesExceptForOneDocument(<%=docNum%>)">
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" name="showToBankAdmin"  id="showBankAdminChkbx<%=docNum%>" <c:if test="${aDocument.showToBankAdmin}">checked</c:if> onclick="makeButtonVisible('updateButton<%=docNum%>');disableAllCheckboxesExceptForOneDocument(<%=docNum%>)" <c:if test="${aDocument.showToVolunteer}">style="display: none"</c:if>>
+                                                        <input type="checkbox" id="showBankAdminIsMoot<%=docNum%>" checked disabled <c:if test="${not aDocument.showToVolunteer}">style="display: none"</c:if>>
+                                                    </td>
                                                     <td class="action">
                                                         <button id="updateButton<%=docNum%>" disabled style="visibility: hidden" type="submit" class="editOrRegister">Update</button>
                                                     </td>
