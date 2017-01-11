@@ -203,14 +203,10 @@ public interface DatabaseFacade {
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 
     /**
-     * This will delete a bank. For historical reasons (in other words, we did it wrong at
-     * first) Databases can EITHER choose to ALSO delete the bank admin AND ALL Volunteers
-     * belonging to that bank, OR can choose to throw a BankHasVolunteersException if there
-     * are any volunteers other than the BankAdmin, and delete the BankAdmin (if any) along
-     * with the Bank. The second behavior is preferred as it is less surprising. If the bank
-     * admin is a volunteer for some events then VolunteerHasEventsException will be thrown.
+     * This will delete a bank, the bank admin AND ALL Volunteers
+     * belonging to that bank.
      */
-    public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException;
+    public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException;
     
     /**
      * Delete volunteer from database. If the volunteer has signed up for any events,

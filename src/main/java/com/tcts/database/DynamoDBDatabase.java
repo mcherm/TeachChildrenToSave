@@ -832,11 +832,19 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+    //This deletes the bank and any bank admin and volunteers assigned to this bank
+    public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
         // Does not verify that the bank exists and throw NoSuchBankException
         List<Volunteer> volunteers = getVolunteersByBank(bankId);
-        if (volunteers.size() > 1 || !(volunteers.get(0) instanceof BankAdmin)) {
-            throw new BankHasVolunteersException();
+        if (volunteers.size() > 0) {
+            for (Volunteer volunteer: volunteers){
+                try {
+                    deleteVolunteer(volunteer.getUserId());
+                } catch (NoSuchUserException e) {
+                    throw new RuntimeException ("Volunteer found but then could not be deleted.");
+                }
+
+            };
         }
         if (volunteers.size() == 1) {
             try {

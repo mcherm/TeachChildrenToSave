@@ -306,8 +306,8 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBank(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
-        database.deleteBank(bankId);
+    public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+        database.deleteBankandBankVolunteers(bankId);
         refreshEventList();
     }
 

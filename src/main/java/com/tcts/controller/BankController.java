@@ -129,7 +129,7 @@ public class BankController {
         }
         try {
             // delete bank, bank admin and all volunteers associated with the bank
-            database.deleteBank(bankId);
+            database.deleteBankandBankVolunteers(bankId);
         } catch(NoSuchBankException err) {
             throw new InvalidParameterFromGUIException();
         }

@@ -454,7 +454,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
         List<Bank> firstListOfBanks = dynamoDBDatabase.getAllBanks();
         assertEquals(2, firstListOfBanks.size());
-        dynamoDBDatabase.deleteBank(firstListOfBanks.get(0).getBankId());
+        dynamoDBDatabase.deleteBankandBankVolunteers(firstListOfBanks.get(0).getBankId());
         List<Bank> secondListOfBanks = dynamoDBDatabase.getAllBanks();
         assertEquals(1, secondListOfBanks.size());
     }
