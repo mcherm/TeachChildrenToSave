@@ -1,5 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://teachchildrentosavedayde.org/tctstaglib" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en-US">
     <head>
@@ -18,18 +19,18 @@
                         'eventTime': '<c:out value="${event.eventTime}"/>',
                         'grade': '<c:out value="${event.grade}"/>',
                         'numberStudents': '<c:out value="${event.numberStudents}"/>',
-                        'notes': '<c:out value="${event.notes}"/>',
-                        'email': '<c:out value="${event.linkedTeacher.email}"/>',
-                        'firstName': '<c:out value="${event.linkedTeacher.firstName}"/>',
-                        'lastName': '<c:out value="${event.linkedTeacher.lastName}"/>',
+                        'notes': '<c:out value="${fn:forJavascriptString(event.notes)}"/>',
+                        'email': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.email)}"/>',
+                        'firstName': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.firstName)}"/>',
+                        'lastName': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.lastName)}"/>',
                         'phoneNumber': '<c:out value="${event.linkedTeacher.phoneNumber}"/>',
-                        'schoolName': '<c:out value="${event.linkedTeacher.linkedSchool.name}"/>',
-                        'addressLine1': '<c:out value="${event.linkedTeacher.linkedSchool.addressLine1}"/>',
-                        'city': '<c:out value="${event.linkedTeacher.linkedSchool.city}"/>',
-                        'state': '<c:out value="${event.linkedTeacher.linkedSchool.state}"/>',
+                        'schoolName': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.linkedSchool.name)}"/>',
+                        'addressLine1': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.linkedSchool.addressLine1)}"/>',
+                        'city': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.linkedSchool.city)}"/>',
+                        'state': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.linkedSchool.state)}"/>',
                         'zip': '<c:out value="${event.linkedTeacher.linkedSchool.zip}"/>',
-                        'county': '<c:out value="${event.linkedTeacher.linkedSchool.county}"/>',
-                        'schoolDistrict': '<c:out value="${event.linkedTeacher.linkedSchool.schoolDistrict}"/>',
+                        'county': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.linkedSchool.county)}"/>',
+                        'schoolDistrict': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.linkedSchool.schoolDistrict)}"/>',
                         'lmiEligible': '<c:out value="${event.linkedTeacher.linkedSchool.lmiEligible}"/>'
                         <c:if test="${bank.minLMIForCRA != null}">
                             ,'craEligible': '<c:choose><c:when test="${event.linkedTeacher.linkedSchool.lmiEligible >= bank.minLMIForCRA}">CRA eligible</c:when><c:otherwise>Not eligible</c:otherwise></c:choose>'
