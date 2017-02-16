@@ -204,6 +204,7 @@ public class HomePageController {
         model.addAttribute("showDocuments", getShowDocuments());
         model.addAttribute("volunteerDocs",volunteerDocs);
         model.addAttribute("bankAdminDocs", bankAdminDocs);
+        model.addAttribute("s3Util",s3Util);
         return "bankAdminHome";
     }
 
