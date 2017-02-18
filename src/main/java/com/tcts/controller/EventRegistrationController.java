@@ -68,10 +68,10 @@ public class EventRegistrationController {
         Volunteer volunteer;
         SessionData sessionData = SessionData.fromSession(session);
 
-        if (sessionData.getVolunteer() != null){
-            volunteer = sessionData.getVolunteer();
-        } else if (sessionData.getBankAdmin() != null){
+        if (sessionData.getBankAdmin() != null){
             volunteer = (Volunteer) sessionData.getBankAdmin();
+        } else if (sessionData.getVolunteer() != null){
+            volunteer = sessionData.getVolunteer();
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in.");
         }
@@ -96,11 +96,11 @@ public class EventRegistrationController {
         model.addAttribute("events", database.getAllAvailableEvents());
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        if (sessionData.getVolunteer() != null)  {
-            model.addAttribute("calledBy", "volunteer");
-            model.addAttribute("calledByURL", "eventRegistration.htm");
-        } else if (sessionData.getBankAdmin() != null){
+        if (sessionData.getBankAdmin() != null)  {
             model.addAttribute("calledBy", "bankAdmin");
+            model.addAttribute("calledByURL", "eventRegistration.htm");
+        } else if (sessionData.getVolunteer() != null){
+            model.addAttribute("calledBy", "volunteer");
             model.addAttribute("calledByURL", "eventRegistration.htm");
         } else  if (sessionData.getSiteAdmin() != null) {
             model.addAttribute("calledBy", "siteAdmin");
