@@ -78,7 +78,7 @@ public class BankAdminActionsController {
     }
 
     /**
-     * Sets the given volunteer to "suspended", which will REMOVE them from
+     * Sets the given volunteer to CHECKED, which will REMOVE them from
      * all events they had volunteered for.
      */
     @RequestMapping(value = "approveVolunteer", method = RequestMethod.POST)
@@ -104,7 +104,7 @@ public class BankAdminActionsController {
             throw new InvalidParameterFromGUIException();
         }
 
-        // --- Actually suspend the person ---
+        // --- Actually approve the person ---
         database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
 
         // --- And navigate to home page ---
@@ -134,8 +134,8 @@ public class BankAdminActionsController {
             throw new InvalidParameterFromGUIException();
         }
 
-        // --- Actually suspend the person ---
-        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
+        // --- We think this method is supposed Undo the Approval Status ie, put the user back in an UNCHECKED State ---
+        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.UNCHECKED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();
@@ -175,7 +175,7 @@ public class BankAdminActionsController {
         }
 
         // --- Actually suspend the person ---
-        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.CHECKED);
+        database.updateApprovalStatusById(volunteer.getUserId(), ApprovalStatus.SUSPENDED);
 
         // --- And navigate to home page ---
         return "redirect:" + bankAdmin.getUserType().getHomepage();

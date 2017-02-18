@@ -102,7 +102,7 @@
                                         <tr>
                                             <th>Date</th>
                                             <th>Time</th>
-                                            <th>Teacher</th>
+                                            <th>School</th>
                                             <th>Grade</th>
                                             <th>Students</th>
                                             <c:if test="${bank.minLMIForCRA != null}">
