@@ -10,3 +10,15 @@ Instructions on how to deploy this:
    There's an alias hosted zone id of Z3AQBSTGFYJSTF. The routing policy is "simple".
 
    There's some other stuff too, but I'm guessing it's not important to this. I'm not sure.
+  * When putting it back, you probably want something like this:
+    - teachchildrentosavedayde.org
+      - A : ALIAS prod-tcts-env.us-east-1.elasticbeanstalk.com
+      - NS : ns-1205.awsdns-22.org
+             ns-978.awsdns-58.net
+             ns-281.awsdns-35.com
+             ns-1645.awsdns-13.co.uk
+      - SOA : ns-1205.awsdns-22.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400
+    - _amazonses .teachchildrentosavedayde.org
+      - TXT : "IQjgGB8EIaTYb/RcyrUDjnuUpn755v90H7GufUVFhVA="
+    -  www.teachchildrentosavedayde.org
+      - A : prod-tcts-env.us-east-1.elasticbeanstalk.com.
