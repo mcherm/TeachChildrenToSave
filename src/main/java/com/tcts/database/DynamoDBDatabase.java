@@ -314,6 +314,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
         put(user_original_email, 50);
         put(user_first_name, 50);
         put(user_last_name, 50);
+        put(user_street_address, 60);
+        put(user_suite_or_floor_number, 20);
+        put(user_mail_code, 20);
+        put(user_city, 45);
+        put(user_zip, 10);
+        put(user_state, 2);
         put(user_phone_number, 45);
         put(user_bank_specific_data, 500);
         put(school_name, 80);
@@ -403,6 +409,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 volunteer.setBankId(getStringField(item, user_organization_id));
                 volunteer.setApprovalStatus(ApprovalStatus.fromDBValue(getIntField(item,user_approval_status)));
                 volunteer.setBankSpecificData(getStringField(item, user_bank_specific_data));
+                volunteer.setStreetAddress(getStringField(item, user_street_address));
+                volunteer.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
+                volunteer.setMailCode(getStringField(item, user_mail_code));
+                volunteer.setCity(getStringField(item, user_city));
+                volunteer.setState(getStringField(item,user_state));
+                volunteer.setZip(getStringField(item, user_zip));
                 user = volunteer;
             } break;
             case BANK_ADMIN: {
@@ -410,6 +422,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 bankAdmin.setBankId(getStringField(item, user_organization_id));
                 bankAdmin.setApprovalStatus(ApprovalStatus.fromDBValue(getIntField(item,user_approval_status)));
                 bankAdmin.setBankSpecificData(getStringField(item, user_bank_specific_data));
+                bankAdmin.setStreetAddress(getStringField(item, user_street_address));
+                bankAdmin.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
+                bankAdmin.setMailCode(getStringField(item, user_mail_code));
+                bankAdmin.setCity(getStringField(item, user_city));
+                bankAdmin.setState(getStringField(item,user_state));
+                bankAdmin.setZip(getStringField(item, user_zip));
+
                 user = bankAdmin;
             } break;
             case SITE_ADMIN: {
@@ -539,7 +558,15 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 attributeUpdate(user_first_name, formData.getFirstName()),
                 attributeUpdate(user_last_name, formData.getLastName()),
                 attributeUpdate(user_phone_number, formData.getPhoneNumber()),
-                attributeUpdate(user_bank_specific_data, formData.getBankSpecificData()));
+                attributeUpdate(user_bank_specific_data, formData.getBankSpecificData()),
+                attributeUpdate(user_street_address, formData.getStreetAddress()),
+                attributeUpdate(user_suite_or_floor_number, formData.getSuiteOrFloorNumber()),
+                attributeUpdate(user_mail_code, formData.getMailCode()),
+                attributeUpdate(user_city, formData.getCity()),
+                attributeUpdate(user_state, formData.getState()),
+                attributeUpdate(user_zip, formData.getZip())
+        );
+
     }
 
     @Override
@@ -733,6 +760,12 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(user_original_email, formData.getEmail())
                         .withString(user_first_name, formData.getFirstName())
                         .withString(user_last_name, formData.getLastName())
+                        .withString(user_street_address, formData.getStreetAddress())
+                        .withString(user_suite_or_floor_number,formData.getSuiteOrFloorNumber())
+                        .withString(user_mail_code,formData.getMailCode())
+                        .withString(user_city, formData.getCity())
+                        .withString(user_state,formData.getState())
+                        .withString(user_zip,formData.getZip())
                         .withString(user_phone_number, formData.getPhoneNumber())
                         .withString(user_organization_id, formData.getBankId())
                         .withInt(user_approval_status, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue())
@@ -745,6 +778,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
         result.setEmail(formData.getEmail());
         result.setFirstName(formData.getFirstName());
         result.setLastName(formData.getLastName());
+        result.setStreetAddress(formData.getStreetAddress());
+        result.setSuiteOrFloorNumber(formData.getSuiteOrFloorNumber());
+        result.setCity(formData.getCity());
+        result.setState(formData.getState());
+        result.setZip(formData.getZip());
         result.setPhoneNumber(formData.getPhoneNumber());
         result.setBankId(formData.getBankId());
         result.setBankSpecificData(formData.getBankSpecificData());
@@ -858,6 +896,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
+
         List<Event> events = getEventsByVolunteer(volunteerId);
         if (events.size() != 0) {
             throw new VolunteerHasEventsException();

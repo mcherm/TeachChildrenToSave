@@ -66,6 +66,72 @@
                         <label>
                             <div class="inputCnt">
                                 <div class="info">
+                                    Street Address
+                                </div>
+                                <form:input path="streetAddress"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Suite/Floor Number
+                                </div>
+                                <form:input path="suiteOrFloorNumber"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Mail Code
+                                </div>
+                                <form:input path="mailCode"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    City
+                                </div>
+                                <form:input path="city"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    State
+                                </div>
+                                <form:input path="State"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Zip Code
+                                </div>
+                                <form:input path="zip"/>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
                                     Phone Number
                                 </div>
                                 <form:input path="phoneNumber"/>

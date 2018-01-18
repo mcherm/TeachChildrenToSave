@@ -12,7 +12,7 @@ public class EditPersonalDataFormData extends ValidatedFormData<RuntimeException
     private String phoneNumber;
     private String userId;
 
-    private boolean isEmpty(String s) {
+    boolean isEmpty(String s) {
         return s == null || s.isEmpty();
     }
 

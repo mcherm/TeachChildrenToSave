@@ -11,6 +11,13 @@ public class Volunteer extends User {
     private String bankId;
     private ApprovalStatus approvalStatus;  /*denotes whether a volunteer has been approved by the bank admin*/
     private String bankSpecificData; /* An optional field that may contain extra information for a specific bank. */
+    /*Volunteers Address*/
+    private String streetAddress;
+    private String suiteOrFloorNumber;
+    private String mailCode;  //Internal address used by some banks
+    private String city;
+    private String state;
+    private String zip;
 
 
     // --- Linked data - loaded only when needed ---
@@ -65,4 +72,54 @@ public class Volunteer extends User {
     public void setBankSpecificData(String bankSpecificData) {
         this.bankSpecificData = bankSpecificData;
     }
+
+
+    public String getStreetAddress() {
+        return streetAddress;
+    }
+
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
+    }
+
+    public String getSuiteOrFloorNumber() {
+        return suiteOrFloorNumber;
+    }
+
+    public void setSuiteOrFloorNumber(String suiteOrFloorNumber) {
+        this.suiteOrFloorNumber = suiteOrFloorNumber;
+    }
+
+    public String getMailCode() {
+        return mailCode;
+    }
+
+    public void setMailCode(String mailCode) {
+        this.mailCode = mailCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
 }

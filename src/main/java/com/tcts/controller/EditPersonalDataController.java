@@ -70,6 +70,12 @@ public class EditPersonalDataController {
         formData.setPhoneNumber(volunteer.getPhoneNumber());
         formData.setUserId(volunteer.getUserId());
         formData.setBankSpecificData(volunteer.getBankSpecificData());
+        formData.setStreetAddress(volunteer.getStreetAddress());
+        formData.setSuiteOrFloorNumber(volunteer.getSuiteOrFloorNumber());
+        formData.setMailCode(volunteer.getMailCode());
+        formData.setCity(volunteer.getCity());
+        formData.setState(volunteer.getState());
+        formData.setZip(volunteer.getZip());
         model.addAttribute("formData", formData);
 
         return showVolunteerFormWithErrors(model, sessionData, null);
