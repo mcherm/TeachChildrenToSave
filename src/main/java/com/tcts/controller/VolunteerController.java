@@ -18,6 +18,7 @@ import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.EditPersonalDataFormData;
 
+import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.Errors;
 import com.tcts.email.EmailUtil;
 import com.tcts.util.TemplateUtil;
@@ -116,13 +117,14 @@ public class VolunteerController extends AuthenticationController{
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
+
         }
 
         // --- Load existing data ---
         User user = database.getUserById(userId);
-        
+        Volunteer volunteer = (Volunteer) database.getUserById(userId);
         // --- Show the edit page ---
-        return showEditUserWithErrors(model, transformUserData(user), null);
+        return showEditUserWithErrors(model, transformVolunteerData(volunteer), null);
     }
 
     /**
@@ -132,7 +134,7 @@ public class VolunteerController extends AuthenticationController{
     public String editVolunteerData(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") EditPersonalDataFormData formData
+            @ModelAttribute("formData") EditVolunteerPersonalDataFormData formData
         ) throws SQLException
     {
         SessionData sessionData = SessionData.fromSession(session);
@@ -151,7 +153,7 @@ public class VolunteerController extends AuthenticationController{
         }
 
         try {
-           database.modifyUserPersonalFields(formData);
+            database.modifyVolunteerPersonalFields(formData);
         } catch(EmailAlreadyInUseException err) {
             return showEditUserWithErrors(model, formData, new Errors("That email is already in use by another user."));
         }
@@ -163,7 +165,7 @@ public class VolunteerController extends AuthenticationController{
      * A subroutine used to set up and then show the add user form. It
      * returns the string, so you can invoke it as "return showEditSchoolWithErrors(...)".
      */
-    public String showEditUserWithErrors(Model model, EditPersonalDataFormData formData, Errors errors)
+    public String showEditUserWithErrors(Model model, EditVolunteerPersonalDataFormData formData, Errors errors)
             throws SQLException
     {
         model.addAttribute("formData", formData);
@@ -174,13 +176,19 @@ public class VolunteerController extends AuthenticationController{
     /**
      * Transform user modal data
      */
-    private EditPersonalDataFormData transformUserData(User user) {
-    	EditPersonalDataFormData formData = new EditPersonalDataFormData();
-        formData.setEmail(user.getEmail());
-        formData.setFirstName(user.getFirstName());
-        formData.setLastName(user.getLastName());
-        formData.setPhoneNumber(user.getPhoneNumber());
-        formData.setUserId(user.getUserId());
+    private EditVolunteerPersonalDataFormData transformVolunteerData(Volunteer volunteer) {
+    	EditVolunteerPersonalDataFormData formData = new EditVolunteerPersonalDataFormData();
+        formData.setEmail(volunteer.getEmail());
+        formData.setFirstName(volunteer.getFirstName());
+        formData.setLastName(volunteer.getLastName());
+        formData.setPhoneNumber(volunteer.getPhoneNumber());
+        formData.setUserId(volunteer.getUserId());
+        formData.setStreetAddress(volunteer.getStreetAddress());
+        formData.setSuiteOrFloorNumber(volunteer.getSuiteOrFloorNumber());
+        formData.setMailCode(volunteer.getMailCode());
+        formData.setCity(volunteer.getCity());
+        formData.setState(volunteer.getState());
+        formData.setZip(volunteer.getZip());
         return formData;
     }
 

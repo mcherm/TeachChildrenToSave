@@ -16,9 +16,7 @@ public class EditVolunteerPersonalDataFormData extends EditPersonalDataFormData 
     private String zip;
 
 
-    @Override
-    public void validationRules(Errors errors) throws RuntimeException {
-        super.validationRules(errors);
+    public void validateAddressFilledIn(Errors errors){
         if (isEmpty(streetAddress)) {
             errors.addError("You must provide a street address.");
         }
@@ -36,13 +34,27 @@ public class EditVolunteerPersonalDataFormData extends EditPersonalDataFormData 
             }
         }
 
-        validateLength(streetAddress, DatabaseField.user_street_address,errors);
-        validateLength(suiteOrFloorNumber, DatabaseField.user_suite_or_floor_number,errors);
-        validateLength(mailCode, DatabaseField.user_mail_code,errors);
-        validateLength(city, DatabaseField.user_city,errors);
-        validateLength(state, DatabaseField.user_state,errors);
-        validateLength(zip, DatabaseField.user_zip,errors);
+    }
 
+    /* Validates lengths don't exceed db lengths specified for fields */
+    private void validateAddressLengths(Errors errors) {
+
+        validateLength(streetAddress, DatabaseField.user_street_address, errors);
+        validateLength(suiteOrFloorNumber, DatabaseField.user_suite_or_floor_number, errors);
+        validateLength(mailCode, DatabaseField.user_mail_code, errors);
+        validateLength(city, DatabaseField.user_city, errors);
+        validateLength(state, DatabaseField.user_state, errors);
+        validateLength(zip, DatabaseField.user_zip, errors);
+    }
+
+    @Override
+    // validationRules validate that the address lengths are not too long but do not
+    // require that the address is filled in.  In order to require that the address is filled the validateAddressFilledIn
+    // method must be called in addition to validationRules
+    public void validationRules(Errors errors) throws RuntimeException {
+
+        super.validationRules(errors);
+        validateAddressLengths(errors);
         validateLength(bankSpecificData, DatabaseField.user_bank_specific_data, errors);
     }
 

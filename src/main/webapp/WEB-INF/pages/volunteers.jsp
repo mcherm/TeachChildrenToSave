@@ -47,6 +47,13 @@
                         <th scope="col">Phone Number</th>
                         <th scope="col">Bank Name</th>
                         <th scope="col">Bank Specific Data</th>
+                        <th scope="col">Street Address</th>
+                        <th scope="col">Suite/Floor Number</th>
+                        <th scope="col">Mail Code</th>
+                        <th scope="col">City</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Zip Code</th>
+
                         <th scope="col">
                             <span class="ada-read">Column of Modify buttons</span>
                         </th>
@@ -69,6 +76,13 @@
                         <td data-title="Phone Number"><c:out value="${volunteer.phoneNumber}"/></td>
                         <td class="center" data-title="Bank Name"><c:out value="${volunteer.linkedBank.bankName}"/></td>
                         <td data-title="Bank Specific Data"><c:out value="${volunteer.bankSpecificData}"/></td>
+                        <td data-title="Street Address"><c:out value="${volunteer.streetAddress}"/></td>
+                        <td data-title="Suite or Floor Nuber"><c:out value="${volunteer.suiteOrFloorNumber}"/></td>
+                        <td data-title="Mail Code"><c:out value="${volunteer.mailCode}"/></td>
+                        <td data-title="City"><c:out value="${volunteer.city}"/></td>
+                        <td data-title="State"><c:out value="${volunteer.state}"/></td>
+                        <td data-title="Zip"><c:out value="${volunteer.zip}"/></td>
+
                         <td class="action">
                             <button onclick="js.loadURL('editVolunteerData.htm?userId=<c:out value="${volunteer.userId}"/>');" class="editOrRegister">
                                 Modify

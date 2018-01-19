@@ -165,6 +165,8 @@ public class EditPersonalDataController {
 
         // --- Validation Rules ---
         Errors errors = formData.validate();
+        formData.validateAddressFilledIn(errors);
+
         if (errors.hasErrors()) {
             return showVolunteerFormWithErrors(model, sessionData, errors);
         }
