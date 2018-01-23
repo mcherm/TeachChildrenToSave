@@ -316,7 +316,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
         put(user_last_name, 50);
         put(user_street_address, 60);
         put(user_suite_or_floor_number, 20);
-        put(user_mail_code, 20);
         put(user_city, 45);
         put(user_zip, 10);
         put(user_state, 2);
@@ -411,7 +410,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 volunteer.setBankSpecificData(getStringField(item, user_bank_specific_data));
                 volunteer.setStreetAddress(getStringField(item, user_street_address));
                 volunteer.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
-                volunteer.setMailCode(getStringField(item, user_mail_code));
                 volunteer.setCity(getStringField(item, user_city));
                 volunteer.setState(getStringField(item,user_state));
                 volunteer.setZip(getStringField(item, user_zip));
@@ -424,7 +422,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 bankAdmin.setBankSpecificData(getStringField(item, user_bank_specific_data));
                 bankAdmin.setStreetAddress(getStringField(item, user_street_address));
                 bankAdmin.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
-                bankAdmin.setMailCode(getStringField(item, user_mail_code));
                 bankAdmin.setCity(getStringField(item, user_city));
                 bankAdmin.setState(getStringField(item,user_state));
                 bankAdmin.setZip(getStringField(item, user_zip));
@@ -561,7 +558,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 attributeUpdate(user_bank_specific_data, formData.getBankSpecificData()),
                 attributeUpdate(user_street_address, formData.getStreetAddress()),
                 attributeUpdate(user_suite_or_floor_number, formData.getSuiteOrFloorNumber()),
-                attributeUpdate(user_mail_code, formData.getMailCode()),
                 attributeUpdate(user_city, formData.getCity()),
                 attributeUpdate(user_state, formData.getState()),
                 attributeUpdate(user_zip, formData.getZip())
@@ -762,7 +758,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(user_last_name, formData.getLastName())
                         .withString(user_street_address, formData.getStreetAddress())
                         .withString(user_suite_or_floor_number,formData.getSuiteOrFloorNumber())
-                        .withString(user_mail_code,formData.getMailCode())
                         .withString(user_city, formData.getCity())
                         .withString(user_state,formData.getState())
                         .withString(user_zip,formData.getZip())

@@ -20,7 +20,7 @@ public enum DatabaseField {
     user_id, user_type, user_approval_status, user_email, user_original_email, user_first_name, user_last_name, user_phone_number, user_bank_specific_data,
     user_organization_id, user_hashed_password, user_password_salt, user_reset_password_token,
     //User address (currently only volunteers have addresses)
-    user_street_address, user_suite_or_floor_number, user_mail_code, user_city, user_state, user_zip,
+    user_street_address, user_suite_or_floor_number, user_city, user_state, user_zip,
     // School
     school_id, school_name, school_addr1, school_city, school_zip, school_county,
     school_district, school_state, school_phone, school_lmi_eligible, school_slc;

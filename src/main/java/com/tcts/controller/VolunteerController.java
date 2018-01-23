@@ -185,7 +185,6 @@ public class VolunteerController extends AuthenticationController{
         formData.setUserId(volunteer.getUserId());
         formData.setStreetAddress(volunteer.getStreetAddress());
         formData.setSuiteOrFloorNumber(volunteer.getSuiteOrFloorNumber());
-        formData.setMailCode(volunteer.getMailCode());
         formData.setCity(volunteer.getCity());
         formData.setState(volunteer.getState());
         formData.setZip(volunteer.getZip());

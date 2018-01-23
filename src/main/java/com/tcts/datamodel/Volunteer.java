@@ -14,7 +14,6 @@ public class Volunteer extends User {
     /*Volunteers Address*/
     private String streetAddress;
     private String suiteOrFloorNumber;
-    private String mailCode;  //Internal address used by some banks
     private String city;
     private String state;
     private String zip;
@@ -88,14 +87,6 @@ public class Volunteer extends User {
 
     public void setSuiteOrFloorNumber(String suiteOrFloorNumber) {
         this.suiteOrFloorNumber = suiteOrFloorNumber;
-    }
-
-    public String getMailCode() {
-        return mailCode;
-    }
-
-    public void setMailCode(String mailCode) {
-        this.mailCode = mailCode;
     }
 
     public String getCity() {

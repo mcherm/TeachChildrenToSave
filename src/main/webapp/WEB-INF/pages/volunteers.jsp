@@ -49,7 +49,6 @@
                         <th scope="col">Bank Specific Data</th>
                         <th scope="col">Street Address</th>
                         <th scope="col">Suite/Floor Number</th>
-                        <th scope="col">Mail Code</th>
                         <th scope="col">City</th>
                         <th scope="col">State</th>
                         <th scope="col">Zip Code</th>
@@ -78,7 +77,6 @@
                         <td data-title="Bank Specific Data"><c:out value="${volunteer.bankSpecificData}"/></td>
                         <td data-title="Street Address"><c:out value="${volunteer.streetAddress}"/></td>
                         <td data-title="Suite or Floor Nuber"><c:out value="${volunteer.suiteOrFloorNumber}"/></td>
-                        <td data-title="Mail Code"><c:out value="${volunteer.mailCode}"/></td>
                         <td data-title="City"><c:out value="${volunteer.city}"/></td>
                         <td data-title="State"><c:out value="${volunteer.state}"/></td>
                         <td data-title="Zip"><c:out value="${volunteer.zip}"/></td>

@@ -10,7 +10,6 @@ public class EditVolunteerPersonalDataFormData extends EditPersonalDataFormData 
     /*Volunteers Address*/
     private String streetAddress;
     private String suiteOrFloorNumber;
-    private String mailCode;  //Internal address used by some banks
     private String city;
     private String state;
     private String zip;
@@ -36,17 +35,6 @@ public class EditVolunteerPersonalDataFormData extends EditPersonalDataFormData 
 
     }
 
-    /* Validates lengths don't exceed db lengths specified for fields */
-    private void validateAddressLengths(Errors errors) {
-
-        validateLength(streetAddress, DatabaseField.user_street_address, errors);
-        validateLength(suiteOrFloorNumber, DatabaseField.user_suite_or_floor_number, errors);
-        validateLength(mailCode, DatabaseField.user_mail_code, errors);
-        validateLength(city, DatabaseField.user_city, errors);
-        validateLength(state, DatabaseField.user_state, errors);
-        validateLength(zip, DatabaseField.user_zip, errors);
-    }
-
     @Override
     // validationRules validate that the address lengths are not too long but do not
     // require that the address is filled in.  In order to require that the address is filled the validateAddressFilledIn
@@ -54,7 +42,12 @@ public class EditVolunteerPersonalDataFormData extends EditPersonalDataFormData 
     public void validationRules(Errors errors) throws RuntimeException {
 
         super.validationRules(errors);
-        validateAddressLengths(errors);
+
+        validateLength(streetAddress, DatabaseField.user_street_address, errors);
+        validateLength(suiteOrFloorNumber, DatabaseField.user_suite_or_floor_number, errors);
+        validateLength(city, DatabaseField.user_city, errors);
+        validateLength(state, DatabaseField.user_state, errors);
+        validateLength(zip, DatabaseField.user_zip, errors);
         validateLength(bankSpecificData, DatabaseField.user_bank_specific_data, errors);
     }
 
@@ -81,14 +74,6 @@ public class EditVolunteerPersonalDataFormData extends EditPersonalDataFormData 
 
     public void setSuiteOrFloorNumber(String suiteOrFloorNumber) {
         this.suiteOrFloorNumber = suiteOrFloorNumber;
-    }
-
-    public String getMailCode() {
-        return mailCode;
-    }
-
-    public void setMailCode(String mailCode) {
-        this.mailCode = mailCode;
     }
 
     public String getCity() {

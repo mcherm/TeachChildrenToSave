@@ -131,17 +131,6 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Street Address (*)
-                            </div>
-                            <form:input path="streetAddress"/>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="formElementCnt">
-                    <label>
-                        <div class="inputCnt">
-                            <div class="info">
                                 Suite / Floor Number
                             </div>
                             <form:input path="suiteOrFloorNumber"/>
@@ -153,14 +142,14 @@
                     <label>
                         <div class="inputCnt">
                             <div class="info">
-                                Mail Code
+                                Street Address (*)
                             </div>
-                            <form:input path="mailCode"/>
+                            <form:input path="streetAddress"/>
                         </div>
                     </label>
                 </div>
 
-                <div class="formElementCnt">
+             <div class="formElementCnt">
                     <label>
                         <div class="inputCnt">
                             <div class="info">

@@ -11,7 +11,6 @@ public class VolunteerRegistrationFormData extends UserRegistrationFormData {
     /*Volunteers Address*/
     private String streetAddress;
     private String suiteOrFloorNumber;
-    private String mailCode;  //Internal address used by some banks
     private String city;
     private String state;
     private String zip;
@@ -46,7 +45,6 @@ public class VolunteerRegistrationFormData extends UserRegistrationFormData {
 
         validateLength(streetAddress, DatabaseField.user_street_address,errors);
         validateLength(suiteOrFloorNumber, DatabaseField.user_suite_or_floor_number,errors);
-        validateLength(mailCode, DatabaseField.user_mail_code,errors);
         validateLength(city, DatabaseField.user_city,errors);
         validateLength(state, DatabaseField.user_state,errors);
         validateLength(zip, DatabaseField.user_zip,errors);
@@ -85,14 +83,6 @@ public class VolunteerRegistrationFormData extends UserRegistrationFormData {
 
     public void setSuiteOrFloorNumber(String suiteOrFloorNumber) {
         this.suiteOrFloorNumber = suiteOrFloorNumber;
-    }
-
-    public String getMailCode() {
-        return mailCode;
-    }
-
-    public void setMailCode(String mailCode) {
-        this.mailCode = mailCode;
     }
 
     public String getCity() {
