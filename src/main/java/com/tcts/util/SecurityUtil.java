@@ -7,8 +7,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import com.tcts.exception.InvalidBase64DataException;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 
 public class SecurityUtil {
@@ -79,12 +82,8 @@ public class SecurityUtil {
      * @throws IOException
      */
     private static byte[] base64ToByte(String data) throws InvalidBase64DataException {
-        try {
-            BASE64Decoder decoder = new BASE64Decoder();
-            return decoder.decodeBuffer(data);
-        } catch(IOException err) {
-            throw new InvalidBase64DataException();
-        }
+        Decoder decoder = Base64.getDecoder();
+        return decoder.decode(data);
     }
 
     /**
@@ -94,7 +93,7 @@ public class SecurityUtil {
      * @throws IOException
      */
     private static String byteToBase64(byte[] data){
-        BASE64Encoder endecoder = new BASE64Encoder();
-        return endecoder.encode(data);
+        Encoder endecoder = Base64.getEncoder();
+        return endecoder.encodeToString(data);
     }
 }
