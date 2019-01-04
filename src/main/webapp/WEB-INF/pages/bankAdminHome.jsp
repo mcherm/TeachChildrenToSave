@@ -147,7 +147,7 @@
                 </c:if>
 
                     <h2>Approved Volunteers</h2>
-                    <a download="bankvolunteers.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'normalVolunteersTable', 'bankAdminHome');">Export to Excel</a>
+                    <a download="bankvolunteers.xls" href="excel/bankVolunteers.htm" class="downloadExcel">Export to Excel</a>
 
 
                     <table id="normalVolunteersTable" class="responsive">
@@ -165,7 +165,7 @@
                                         <tr>
                                             <th>Date</th>
                                             <th>Time</th>
-                                            <th>Teacher</th>
+                                            <th>School</th>
                                             <th>Grade</th>
                                             <th>Students</th>
                                             <c:if test="${bank.minLMIForCRA != null}">

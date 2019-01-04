@@ -46,7 +46,7 @@
                 </div>
 
                 <h2> ${bank.bankName} Volunteers to be Deleted</h2>
-                <a download="volunteers.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'deletedBankVolunteersTable', 'volunteers');">Export to Excel</a>
+                <a download="volunteers.xls" href="excel/deletedBankVolunteers/<c:out value="${bank.bankId}"/>.htm" class="downloadExcel">Export to Excel</a>
 
                 <table id="volunteersToBeDeletedTable" class="responsive">
                     <thead>

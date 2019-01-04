@@ -31,7 +31,7 @@
 
                     <h2> For each teacher listed below belonging to ${school.name} you must choose to delete them or reassign them to a new school.  When you delete the school the teachers will be deleted or reassigned as indicated in the table.</h2>
                     <br>
-                    <a download="volunteers.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'deletedTeachersTable', 'teachers');">Export to Excel</a>
+                    <a download="teachers.xls" href="excel/deletedSchoolTeachers/<c:out value="${school.schoolId}"/>.htm" class="downloadExcel">Export to Excel</a>
                 </c:if>
                 <form:form method="POST" action="deleteSchool.htm" modelAttribute="deleteSchoolFormData">
                     <form:hidden path="schoolIdToBeDeleted"></form:hidden>

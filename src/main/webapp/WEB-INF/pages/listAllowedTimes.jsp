@@ -37,7 +37,7 @@
                     </ul>
                 </div>
 
-			    <a download="allowedTimes.xls" href="#" class="downloadExcel" onclick="return ExcellentExport.excel(this, 'listAllowedTimesTable', 'allowedTimes');">Export to Excel</a>
+			    <a download="allowedTimes.xls" href="excel/allowedTimes.htm" class="downloadExcel">Export to Excel</a>
 
                 <table id="listAllowedTimesTable" class="responsive">
                     <thead>
