@@ -214,7 +214,7 @@ public class SchoolController {
         }
 
         model.addAttribute("deleteSchoolFormData", new DeleteSchoolFormData(schoolId,teachers));
-
+        model.addAttribute("teachers", teachers);
         model.addAttribute("errors",errors);
         return "deleteSchool";
     }

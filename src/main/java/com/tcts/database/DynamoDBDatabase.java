@@ -1,8 +1,13 @@
 package com.tcts.database;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
@@ -96,12 +101,17 @@ public class DynamoDBDatabase implements DatabaseFacade {
     // ========== Static Methods Shared by DynamoDBSetup ==========
 
     static DynamoDB connectToDB(Configuration configuration) {
-        String connectString = configuration.getProperty("dynamoDB.connect");
-        AWSCredentials credentials = new BasicAWSCredentials(
-                configuration.getProperty("aws.access_key"),
-                configuration.getProperty("aws.secret_access_key"));
-        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentials);
-        dynamoDBClient.withEndpoint(connectString);
+        String connectURL = configuration.getProperty("dynamoDB.connect");
+        String signingRegion = configuration.getProperty("dynamoDB.signingRegion");
+        String accessKey = configuration.getProperty("aws.access_key");
+        String accessSecret = configuration.getProperty("aws.secret_access_key");
+        String proxyHost = configuration.getProperty("dynamodb.proxyhost");
+        int proxyPort = Integer.parseInt(configuration.getProperty("dynamodb.proxyport", "0"));
+        AmazonDynamoDB dynamoDBClient = AmazonDynamoDBClientBuilder.standard()
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(connectURL, signingRegion))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, accessSecret)))
+                .withClientConfiguration((new ClientConfiguration()).withProxyHost(proxyHost).withProxyPort(proxyPort))
+                .build();
         return new DynamoDB(dynamoDBClient);
     }
 

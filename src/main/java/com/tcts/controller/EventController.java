@@ -95,7 +95,7 @@ public class EventController {
      * Render the event edit page.
      */
     @RequestMapping(value = "viewEditEvents", method = RequestMethod.GET)
-    public String enterDataToEditEvet(HttpSession session, Model model) throws SQLException {
+    public String enterDataToEditEvent(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();

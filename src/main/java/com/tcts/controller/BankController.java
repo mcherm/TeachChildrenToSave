@@ -19,8 +19,6 @@ import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.EditBankFormData;
 import com.tcts.formdata.Errors;
-import com.tcts.email.EmailUtil;
-import com.tcts.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,13 +41,9 @@ public class BankController {
 
     @Autowired
     private DatabaseFacade database;
-    @Autowired
-    private TemplateUtil templateUtil;
 
     @Autowired
-    private EmailUtil emailUtil;
-
-    @Autowired CancelWithdrawController cancelWithdrawController;
+    CancelWithdrawController cancelWithdrawController;
 
 
     /**
@@ -112,7 +106,6 @@ public class BankController {
     public String deleteBank(
             @RequestParam String bankId,
             HttpSession session,
-            Model model,
             HttpServletRequest request
     ) throws SQLException, BankHasVolunteersException, VolunteerHasEventsException {
         SessionData sessionData = SessionData.fromSession(session);
