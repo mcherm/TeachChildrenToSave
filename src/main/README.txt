@@ -15,7 +15,7 @@ For now, I'm just keeping notes on what I did to create it. From the GUI, I sele
 configuration named "prod-config".
 
 I imported the newly build .war file. I kept the scaling to single instance. I am
-not sure whatthe environment name should be. I'm going to try "teachkidstosavedayde"
+not sure what the environment name should be. I'm going to try "teachkidstosavedayde"
 ('kids' because 'children' is too long).
 
 I am not creating an RDS DB instance with it (that's separately created). I am
@@ -31,3 +31,12 @@ the A record pointing to an S3 bucket which is configured to forward requests to
 the www domain. Oh, and after setting it up, wait at least 5 minutes for the
 changes to propogate (perhaps as much as 24 hours).
 
+[NOTES:]
+
+Before deleting the teachchildrentosavedayde.org hosted zone in Route 53, I
+wanted to note that it had an odd record created:
+  NAME: _amazonses.teachchildrentosavedayde.org
+  TYPE: TXT
+  VALUE: "IQjgGB8EIaTYb/RcyrUDjnuUpn755v90H7GufUVFhVA="
+     (the quotes were part of it)
+  TTL: 1800 seconds
