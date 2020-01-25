@@ -5,7 +5,7 @@
         version="2.1">
 
     <tlib-version>1.0</tlib-version>
-    <uri>http://teachchildrentosavedayde.org/tctstaglib</uri>
+    <uri>http://teachchildrentosaveday.org/tctstaglib</uri>
 
     <function>
         <name>forJavascriptString</name>

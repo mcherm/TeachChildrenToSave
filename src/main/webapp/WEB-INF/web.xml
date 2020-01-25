@@ -7,7 +7,7 @@
 
     <jsp-config>
         <taglib>
-            <taglib-uri>http://teachchildrentosavedayde.org/tctstaglib</taglib-uri>
+            <taglib-uri>http://teachchildrentosaveday.org/tctstaglib</taglib-uri>
             <taglib-location>/WEB-INF/tags/tctstaglib.tld</taglib-location>
         </taglib>
     </jsp-config>

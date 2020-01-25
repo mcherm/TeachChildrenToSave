@@ -23,7 +23,7 @@ Steps to Deploy the Application on AWS:
    (f) For Deployment Limits, select "Fixed" with "1" instance at a time.
    (g) Click "Next".
    (h) Provide an environment name (anything you like) and environment
-       URL (we traditionally use teachchildrentosavedayde[.elasticbeanstalk.com]).
+       URL (we traditionally use teachchildrentosaveday[.elasticbeanstalk.com]).
        The URL used here will be needed in Route 52.
    (i) Click "Next" 5 times.
    (j) Click "Launch".
