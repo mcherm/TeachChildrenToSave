@@ -549,7 +549,7 @@ public class ExcelDownloadController implements InitializingBean {
                     "events",
                     "events",
                     eventController::showAllEvents,
-                    "Teachers",
+                    "Classes",
                     new ColSpec<Event>("Date", x -> x.getEventDate().getPretty()),
                     new ColSpec<Event>("Time", x -> x.getEventTime()),
                     new ColSpec<Event>("Grade", x -> x.getGrade()),
