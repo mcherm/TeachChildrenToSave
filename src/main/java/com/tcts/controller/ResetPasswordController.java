@@ -130,7 +130,13 @@ public class ResetPasswordController {
         User potentialUser = database.getUserByEmail(formData.getEmail());
 
         if (potentialUser != null) {
-        		String randomToken = SecurityUtil.getHashedPassword(RandomStringUtils.randomAlphanumeric(20),  UUID.randomUUID().toString());
+                String uuid;
+                String uuid_without_dashes;
+
+                uuid = UUID.randomUUID().toString();
+                uuid_without_dashes = uuid.substring(0,8)+ uuid.substring(9,13) + uuid.substring(14,18)+uuid.substring(19,23)+uuid.substring(24,36);
+
+        		String randomToken = SecurityUtil.getHashedPassword(RandomStringUtils.randomAlphanumeric(20),  uuid_without_dashes);
                 database.updateResetPasswordToken(potentialUser.getUserId(), randomToken);
                 String url =  request.getRequestURL() + "?token=" + URLEncoder.encode(randomToken, "UTF-8").replace("+", "%20");
                 
