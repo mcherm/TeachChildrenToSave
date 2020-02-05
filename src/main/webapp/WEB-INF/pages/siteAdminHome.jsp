@@ -52,19 +52,19 @@
 
                     <li class="mb1">
                         <button onclick="js.loadURL('viewEditEvents.htm');" class="editOrRegister">
-                            List/Create Classes
+                            List/Create/Edit Classes
                         </button>
                     </li>
 
                     <li class="mb1">
                         <button onclick="js.loadURL('listAllowedDates.htm');" class="editOrRegister">
-                            Add/Remove Event Dates
+                            Add/Remove Class Dates
                         </button>
                     </li>
 
                     <li class="mb1">
                         <button onclick="js.loadURL('listAllowedTimes.htm');" class="editOrRegister">
-                            Add/Remove Event Times
+                            Add/Remove Class Times
                         </button>
                     </li>
 

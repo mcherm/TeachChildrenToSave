@@ -48,24 +48,6 @@ public class EventController {
         CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
         binder.registerCustomEditor(Date.class, dateEditor);
     }
-    
-    /**
-     * Render the event edit page .
-     */
-
-    @RequestMapping(value = "events", method = RequestMethod.GET)
-    public String showAllEvents(HttpSession session, Model model) throws SQLException {
-        SessionData sessionData = SessionData.fromSession(session);
-        
-        if (sessionData.getSiteAdmin() == null) {
-            throw new NotLoggedInException();
-        }
-        List<Event> events = database.getAllAvailableEvents();
-        
-        model.addAttribute("events", events);
-        return "events";
-    }
-
         
     /**
      * Deletes an event and all users associated with it.
@@ -95,7 +77,7 @@ public class EventController {
      * Render the event edit page.
      */
     @RequestMapping(value = "viewEditEvents", method = RequestMethod.GET)
-    public String enterDataToEditEvent(HttpSession session, Model model) throws SQLException {
+    public String showAllEvents(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -200,7 +182,7 @@ public class EventController {
     	}
         else {
         	// --- Successful; show the master event edit again ---
-            model.addAttribute("events", database.getAllAvailableEvents());
+            model.addAttribute("events", database.getAllEvents());
         }
         
         return "events";
