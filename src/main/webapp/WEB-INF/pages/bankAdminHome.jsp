@@ -1,4 +1,4 @@
-<%-- Home page for Volunteers --%>
+<%-- Home page for  Bank Admin --%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -168,6 +168,7 @@
                                             <th>School</th>
                                             <th>Grade</th>
                                             <th>Students</th>
+                                            <th>Teacher</th>
                                             <c:if test="${bank.minLMIForCRA != null}">
                                                 <th scope="col">CRA</th>
                                             </c:if>
