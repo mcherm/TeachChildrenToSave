@@ -524,13 +524,13 @@ main ul span {
     color: #333;
 }
 
-a, a:visited {
+/*a, a:visited {
     color: #0c345a;
-}
+}*/
 
-a:hover {
+/*a:hover {
     text-decoration: none;
-}
+}*/
 
 .successText {
     color: #31873f;
@@ -1318,5 +1318,15 @@ fieldset legend {
 }
 span.major_announcement {
     font-size: 1.25em;
+}
+.eye_catching {
+    font-size: larger;
+    margin-left: 20px;
+    margin-right:  20px;
+    margin-top: 20px;
+}
+.centered_and_bold {
+    font-weight: bold;
+    text-align: center;
 }
 /* --- End of layout for the event detail page --- */
