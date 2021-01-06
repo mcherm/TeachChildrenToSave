@@ -1,14 +1,10 @@
 <html>
     <body>
-
         <img src="${logoImage}" alt="Teach Children To Save Program">
-
         <p>
-
-        <h3>MESSAGE FROM TEACH CHILDREN TO SAVE PROGRAM.</h3></p>
+            <h3>MESSAGE FROM TEACH CHILDREN TO SAVE PROGRAM.</h3>
+        </p>
         <p>${message}</p>
-
         Thanks
     </body>
-    <p>(c) Copyright 2016 Teach Children to Save, Delaware.</p>
 </html>
