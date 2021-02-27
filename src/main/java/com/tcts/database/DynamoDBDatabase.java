@@ -66,6 +66,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.tcts.database.DatabaseField.*;
@@ -312,6 +313,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
         return item.getInt(field.name());
     }
 
+    /**
+     * This retrieves a field which is a BigDecimal from an Item.
+     *
+     * @throws NumberFormatException if the field is not an integer
+     */
+    private BigDecimal getDecimalField(Item item, DatabaseField field) {
+        String strValue = item.getString(field.name());
+        return strValue == null ? null : new BigDecimal(strValue);
+    }
+
     /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
     private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap<DatabaseField,Integer>() {{
         put(site_setting_name, 30);
@@ -365,7 +376,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         school.setSchoolDistrict(getStringField(item, school_district));
         school.setPhone(getStringField(item, school_phone));
         if (item.isPresent(school_lmi_eligible.name())) {
-            school.setLmiEligible(getIntField(item, school_lmi_eligible));
+            school.setLmiEligible(getDecimalField(item, school_lmi_eligible));
         }
         school.setSLC(getStringField(item, school_slc));
         return school;
@@ -383,11 +394,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         Bank bank = new Bank();
         bank.setBankId(getStringField(item, bank_id));
         bank.setBankName(getStringField(item, bank_name));
-        if (item.get(min_lmi_for_cra.name()) == null) {
-            bank.setMinLMIForCRA(null); // An int field that nevertheless can store null
-        } else {
-            bank.setMinLMIForCRA(getIntField(item, min_lmi_for_cra));
-        }
+        bank.setMinLMIForCRA(getDecimalField(item, min_lmi_for_cra));
         if (getStringField(item, bank_specific_data_label) == null) {
             bank.setBankSpecificDataLabel(""); // Use "" when there is a null in the DB
         } else {

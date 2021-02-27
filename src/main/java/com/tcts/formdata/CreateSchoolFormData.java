@@ -1,5 +1,7 @@
 package com.tcts.formdata;
 
+import java.math.BigDecimal;
+
 import com.tcts.database.DatabaseField;
 
 /**
@@ -16,6 +18,8 @@ public class CreateSchoolFormData extends ValidatedFormData<RuntimeException> {
     private String phone;
     private String lmiEligible;
     private String SLC;
+
+    private final static BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     /** Just a utility to quickly test a string. */
     private boolean isEmpty(String s) {
@@ -55,6 +59,16 @@ public class CreateSchoolFormData extends ValidatedFormData<RuntimeException> {
 		validateLength(state, DatabaseField.school_state, errors);
 		validateLength(phone, DatabaseField.school_phone, errors);
 		validateLength(SLC, DatabaseField.school_slc, errors);
+		if (lmiEligible.length() > 0) {
+			try {
+				BigDecimal lmiEligibleDecimal = new BigDecimal(lmiEligible);
+				if (lmiEligibleDecimal.compareTo(BigDecimal.ZERO) < 0 || lmiEligibleDecimal.compareTo(ONE_HUNDRED) > 0) {
+					errors.addError("LMI Eligible must be a number in the range from 0 to 100 (or be blank).");
+				}
+			} catch(NumberFormatException err) {
+				errors.addError("LMI Eligible must be a number (or be blank).");
+			}
+		}
     }
 
     public String getSchoolName() {

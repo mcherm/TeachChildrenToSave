@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
+import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -467,7 +468,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void testModifyBankWithNumericLMI() throws Exception {
+    public void testModifyBankWithIntegerLMI() throws Exception {
         String bankId = insertNewBankAndReturnTheId();
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
@@ -480,7 +481,24 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("First Savings", bank.getBankName());
-        assertEquals(Integer.valueOf(34), bank.getMinLMIForCRA());
+        assertEquals(new BigDecimal(34), bank.getMinLMIForCRA());
+    }
+
+    @Test
+    public void testModifyBankWithDecimalLMI() throws Exception {
+        String bankId = insertNewBankAndReturnTheId();
+        EditBankFormData editBankFormData = new EditBankFormData();
+        editBankFormData.setBankId(bankId);
+        editBankFormData.setBankName("First Savings");
+        editBankFormData.setFirstName("Jan");
+        editBankFormData.setLastName("Smith");
+        editBankFormData.setEmail("jsmith@firstib.com");
+        editBankFormData.setPhoneNumber("");
+        editBankFormData.setMinLMIForCRA("12.6");
+        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        Bank bank = dynamoDBDatabase.getBankById(bankId);
+        assertEquals("First Savings", bank.getBankName());
+        assertEquals(new BigDecimal("12.6"), bank.getMinLMIForCRA());
     }
 
     @Test

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -346,7 +347,7 @@ public class SchoolController {
         formData.setSchoolName(school.getName());
         formData.setState(school.getState());
         formData.setZip(school.getZip());
-        formData.setLmiEligible(Integer.toString(school.getLmiEligible()));
+        formData.setLmiEligible(school.getLmiEligible() == null ? "" : school.getLmiEligible().toString());
         formData.setSLC(school.getSLC());
         
         return formData;

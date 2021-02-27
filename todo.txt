@@ -1,10 +1,6 @@
 
 -------- OPEN TASKS --------
-1)  When adding a new school error check that the LMI field is an integer.  Right now its not error
-checked on entry, is added to the database, but then causes an
-error when retrieved from the database so the admin can't see
-the list of schools.
-2)  List of States to Choose from?
+1)  List of States to Choose from?
 
  - - - - DynamoDB Tasks - - - -
 [8]  Need to write queries that drive the emails. Maybe fix broken design also? The methods

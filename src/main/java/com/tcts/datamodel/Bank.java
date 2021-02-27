@@ -2,6 +2,7 @@ package com.tcts.datamodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.math.BigDecimal;
 
 /**
  * Represents a single bank. Contains data from one row of the Bank table.
@@ -9,7 +10,7 @@ import java.sql.SQLException;
 public class Bank {
     private String bankId;
     private String bankName;
-    private Integer minLMIForCRA;
+    private BigDecimal minLMIForCRA;
     private String bankSpecificDataLabel;
 
     // --- Linked data - loaded only when needed ---
@@ -22,11 +23,7 @@ public class Bank {
     public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
         setBankId(resultSet.getString("bank_id"));
         setBankName(resultSet.getString("bank_name"));
-        Integer minLMIForCRA = resultSet.getInt("min_lmi_for_cra");
-        if (resultSet.wasNull()) {
-            minLMIForCRA = null;
-        }
-        setMinLMIForCRA(minLMIForCRA);
+        setMinLMIForCRA(resultSet.getBigDecimal("min_lmi_for_cra"));
         setBankSpecificDataLabel(resultSet.getString("bank_specific_data_label"));
     }
 
@@ -54,11 +51,11 @@ public class Bank {
         this.linkedBankAdmin = linkedBankAdmin;
     }
 
-    public Integer getMinLMIForCRA() {
+    public BigDecimal getMinLMIForCRA() {
         return minLMIForCRA;
     }
 
-    public void setMinLMIForCRA(Integer minLMIForCRA) {
+    public void setMinLMIForCRA(BigDecimal minLMIForCRA) {
         this.minLMIForCRA = minLMIForCRA;
     }
 

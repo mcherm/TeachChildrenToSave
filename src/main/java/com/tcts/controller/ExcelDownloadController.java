@@ -1,14 +1,6 @@
 package com.tcts.controller;
 
 import com.tcts.common.PrettyPrintingDate;
-import com.tcts.controller.AdminEditController;
-import com.tcts.controller.BankAdminActionsController;
-import com.tcts.controller.BankController;
-import com.tcts.controller.EventController;
-import com.tcts.controller.HomePageController;
-import com.tcts.controller.SchoolController;
-import com.tcts.controller.TeacherController;
-import com.tcts.controller.VolunteerController;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -264,14 +257,19 @@ public class ExcelDownloadController implements InitializingBean {
             } catch (NullPointerException var5) {
                 return;
             }
+            if (value == null) {
+                return;
+            }
             if(value instanceof String) {
                 cell.setCellValue((String)value);
-            } else {
-                if(!(value instanceof Number)) {
-                   throw new RuntimeException("Return type " + value.getClass().getName() + " is not supported for extractors.");
-                }
+            } else if (value instanceof Number) {
                 cell.setCellType(0);
-                cell.setCellValue(((Number)value).doubleValue());
+                cell.setCellValue(((Number) value).doubleValue());
+            } else if (value instanceof BigDecimal) {
+                cell.setCellType(0);
+                cell.setCellValue(((BigDecimal) value).doubleValue());
+            } else {
+                throw new RuntimeException("Return type " + value.getClass().getName() + " is not supported for extractors.");
             }
         }
 

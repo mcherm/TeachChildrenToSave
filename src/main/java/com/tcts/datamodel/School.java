@@ -2,6 +2,7 @@ package com.tcts.datamodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.math.BigDecimal;
 
 /**
  * Represents a single school. Contains data from one row of the School table.
@@ -17,7 +18,7 @@ public class School {
     private String county;
     private String schoolDistrict;
     private String phone;
-    private int lmiEligible;
+    private BigDecimal lmiEligible;
     private String slc;
 
     /**
@@ -33,7 +34,7 @@ public class School {
         setCounty(resultSet.getString("school_county"));
         setSchoolDistrict(resultSet.getString("school_district"));
         setPhone(resultSet.getString("school_phone"));
-        setLmiEligible(resultSet.getInt("school_lmi_eligible"));
+        setLmiEligible(resultSet.getBigDecimal("school_lmi_eligible"));
         setSLC(resultSet.getString("school_SLC"));
     }
 
@@ -109,11 +110,11 @@ public class School {
         this.phone = phone;
     }
 
-    public int getLmiEligible() {
+    public BigDecimal getLmiEligible() {
         return lmiEligible;
     }
 
-    public void setLmiEligible(int lmiEligible) {
+    public void setLmiEligible(BigDecimal lmiEligible) {
         this.lmiEligible = lmiEligible;
     }
 
