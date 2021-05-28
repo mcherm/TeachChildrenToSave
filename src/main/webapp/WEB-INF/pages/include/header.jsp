@@ -3,7 +3,7 @@
 
 <header role="banner">
 	<div class="delc">
-			<a href="http://www.lerner.udel.edu/CEEE" target="_blank"><img src="tcts/img/logo-del-council.png" alt="Delaware Council on Economic Education logo"></a>
+			<a href="http://www.lerner.udel.edu/CEEE" target="_blank"><img src="tcts/img/Lerner-CEEEE-wide.png" alt="Delaware Council on Economic Education logo"></a>
 	</div>
 	
 	<div class="dba" >

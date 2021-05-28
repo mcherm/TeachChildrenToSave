@@ -185,11 +185,11 @@ header .delc {
 header .delc a, header .delc a:visited {
     height: 100%;
     width: 100%;
-    max-width: 251px;
+    max-width: 570px;
     display: block;
 }
 header .delc img {
-    max-width: 251px;
+    max-width: 570px;
 }
 header .dba {
     width: 49.65035%;
