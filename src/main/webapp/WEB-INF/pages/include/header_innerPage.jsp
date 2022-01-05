@@ -5,6 +5,6 @@
 	</div>
 	
 	<div class="dba" >
-		<img src="../tcts/img/logo-dba.png" alt="Delaware Bankers Association logo">
+		<img src="../tcts/img/DBA_Logo_2021.jpg" alt="Delaware Bankers Association logo">
 	</div>
 </header>

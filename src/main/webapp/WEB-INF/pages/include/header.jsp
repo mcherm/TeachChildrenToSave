@@ -7,6 +7,6 @@
 	</div>
 	
 	<div class="dba" >
-		    <a href="http://www.debankers.com/" target="_blank"><img src="tcts/img/logo-dba.png" alt="Delaware Bankers Association logo"></a>
+		    <a href="http://www.debankers.com/" target="_blank"><img src="tcts/img/DBA_Logo_2021.jpg" alt="Delaware Bankers Association logo"></a>
 	</div>
 </header>
