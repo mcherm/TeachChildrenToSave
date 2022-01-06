@@ -11,6 +11,7 @@
                 <td><c:out value="${event.eventTime}"/></td>
                 <td><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
                 <td class="center"><c:out value="${event.grade}"/></td>
+                <td class="center"><c:out value="${event.presenceString}"/></td>
                 <td class="center"><c:out value="${event.numberStudents}"/></td>
                 <td class="center"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
                 <c:if test="${bank.minLMIForCRA != null}">
