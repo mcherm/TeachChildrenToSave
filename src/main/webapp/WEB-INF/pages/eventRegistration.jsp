@@ -89,7 +89,7 @@
                     "    <th data-title='Sort list by:' scope='col' class='sortable date' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\")'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
                     "    <th scope='col' class='sortable time' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\")'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
                     "    <th scope='col' class='sortable grade' id='col_for_grade'><button onclick='sortBy(\"grade\")'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
-                    "    <th scope='col' class='sortable presenceString' id='col_for_presence'><button onclick='sortBy(\"presenceString\")'><span class='ada-read'>Sort by&nbsp;</span>Presence</button></th>" +
+                    "    <th scope='col' class='sortable presenceString' id='col_for_presenceString'><button onclick='sortBy(\"presenceString\")'><span class='ada-read'>Sort by&nbsp;</span>Presence</button></th>" +
                     "    <th scope='col' class='sortable students' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\")'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
                     "    <th scope='col' class='sortable teacher' id='col_for_firstName'><button onclick='sortBy(\"firstName\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
                     "    <th scope='col' class='sortable school' id='col_for_schoolName''><button onclick='sortBy(\"schoolName\")'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
@@ -461,7 +461,7 @@
                         <div id="eventTime_checkboxes"><%-- populated by javascript --%></div>
                         <div id="county_checkboxes"><%-- populated by javascript --%></div>
                         <div id="grade_checkboxes"><%-- populated by javascript --%></div>
-                        <div id="presence_checkboxes"><%-- populated by javascript --%></div>
+                        <div id="presenceString_checkboxes"><%-- populated by javascript --%></div>
                         <div id="lmiEligible_checkboxes"><%-- populated by javascript --%></div>
                     </div>
 
@@ -470,7 +470,7 @@
                         <div id="eventTime_select"><%-- populated by javascript --%></div>
                         <div id="county_select"><%-- populated by javascript --%></div>
                         <div id="grade_select"><%-- populated by javascript --%></div>
-                        <div id="presence_select"><%-- populated by javascript --%></div>
+                        <div id="presenceString_select"><%-- populated by javascript --%></div>
                         <div id="lmiEligible_select"><%-- populated by javascript --%></div>
                     </div>
 
