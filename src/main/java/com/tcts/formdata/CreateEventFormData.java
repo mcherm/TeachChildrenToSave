@@ -12,6 +12,7 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
     private Date eventDate;
     private String eventTime;
     private String grade;
+    private String presence;
     private String numberStudents;
     private String notes;
     private String teacherId;
@@ -34,6 +35,13 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
         } else {
             if (!(grade.equals("3") || grade.equals("4"))) {
                 errors.addError("That is not a valid grade.");
+            }
+        }
+        if (presence == null || presence.length() == 0) {
+            errors.addError("You must specify the presence.");
+        } else {
+            if (!(presence.equals("P") || presence.equals("V"))) {
+                errors.addError("That is not a valid presence.");
             }
         }
         if (numberStudents == null || numberStudents.length() == 0) {
@@ -73,6 +81,14 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
 
     public void setGrade(String grade) {
         this.grade = grade;
+    }
+
+    public String getPresence() {
+        return presence;
+    }
+
+    public void setPresence(String presence) {
+        this.presence = presence;
     }
 
     public String getNumberStudents() {

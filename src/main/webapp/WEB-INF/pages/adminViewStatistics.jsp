@@ -52,6 +52,16 @@
                     </p>
 
                     <p>
+                        <span>Number of In-Person Classes: </span>
+                        <span><c:out value="${siteStatistics.numInPersonEvents}"/></span>
+                    </p>
+
+                    <p>
+                        <span>Number of Virtual Classes: </span>
+                        <span><c:out value="${siteStatistics.numVirtualEvents}"/></span>
+                    </p>
+
+                    <p>
                         <span>Number of Volunteers Signed Up For a Class: </span>
                         <span><c:out value="${siteStatistics.numVolunteers}"/></span>
                     </p>

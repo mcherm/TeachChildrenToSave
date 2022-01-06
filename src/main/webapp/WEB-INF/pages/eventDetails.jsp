@@ -48,6 +48,10 @@
                                 <label>Grade:</label>
                                 <span class="value"><c:out value="${event.grade}"/></span>
                             </div>
+                            <div id="presenceField">
+                                <label>Presence:</label>
+                                <span class="value"><c:out value="${event.presenceString}"/></span>
+                            </div>
                             <div id="numberStudentsField">
                                 <label>Students:</label>
                                 <span class="value"><c:out value="${event.numberStudents}"/></span>

@@ -166,7 +166,13 @@ public class EventController {
             return showEditEventWithErrorMessage(model, formData, "You must specify the grade.");
         }
         if (!(formData.getGrade().equals("3") || formData.getGrade().equals("4"))) {
-            throw new InvalidParameterFromGUIException("GUI should only let you chose valid grades.");
+            throw new InvalidParameterFromGUIException("GUI should only let you choose valid grades.");
+        }
+        if (formData.getPresence() == null || formData.getPresence().length() == 0 ) {
+            return showEditEventWithErrorMessage(model, formData, "You must specify in-person or virtual.");
+        }
+        if (!(formData.getPresence().equals("P") || formData.getPresence().equals("V"))) {
+            throw new InvalidParameterFromGUIException(("GUI should only let you choose valid values for presence."));
         }
 
         // --- Update the event ---
@@ -199,6 +205,7 @@ public class EventController {
         formData.setEventDate(event.getEventDate());
         formData.setEventTime(event.getEventTime());
         formData.setGrade(event.getGrade());
+        formData.setPresence(event.getPresence());
         formData.setNotes(event.getNotes());
         formData.setEventId(event.getEventId());
         formData.setNumberStudents(new Integer(event.getNumberStudents()==0?0:event.getNumberStudents()).toString());

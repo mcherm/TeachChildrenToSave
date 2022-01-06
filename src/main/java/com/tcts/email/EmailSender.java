@@ -48,6 +48,7 @@ public class EmailSender {
                 "<td style=\"background-color:#66CCFF\">Teacher</td>" +
                 "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
                 "<td style=\"background-color:#66CCFF\">Grade</td>" +
+                "<td style=\"background-color:#66CCFF\">Presence</td>" +
                 "<td style=\"background-color:#66CCFF\">Number of students</td>" +
                 "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
         String htmlTableDataValue =
@@ -56,6 +57,7 @@ public class EmailSender {
                 "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                 "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                 "<td>" + event.getGrade()  + "</td>" +
+                "<td>" + event.getPresenceString()  + "</td>" +
                 "<td>" + event.getNumberStudents()  + "</td>" +
                 "<td>" + event.getNotes()  + "</td></tr></table>";
         emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
@@ -80,6 +82,7 @@ public class EmailSender {
                     "<td style=\"background-color:#66CCFF\">Teacher</td>" +
                     "<td style=\"background-color:#66CCFF\">Volunteer</td>" +
                     "<td style=\"background-color:#66CCFF\">Grade</td>" +
+                    "<td style=\"background-color:#66CCFF\">Presence</td>" +
                     "<td style=\"background-color:#66CCFF\">Number of students</td>" +
                     "<td style=\"background-color:#66CCFF\">Class Notes<td/></tr><tr>";
             String htmlTableDataValue =
@@ -88,6 +91,7 @@ public class EmailSender {
                     "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                     "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                     "<td>" + event.getGrade()  + "</td>" +
+                    "<td>" + event.getPresenceString()  + "</td>" +
                     "<td>" + event.getNumberStudents()  + "</td>" +
                     "<td>" + event.getNotes()  + "</td></tr></table>";
 

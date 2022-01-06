@@ -81,7 +81,8 @@
 		                        <tr>
 		                            <td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>
 		                            <td data-title="Time"><c:out value="${event.eventTime}"/></td>
-		                            <td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
+									<td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
+									<td data-title="Presence"><c:out value="${event.presenceString}"/></td>
 		                            <td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>
 		                            <td data-title="Volunteer">
 		                                <c:out value="${event.linkedVolunteer.firstName}" default="no volunteer"/>

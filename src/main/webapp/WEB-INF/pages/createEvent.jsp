@@ -84,6 +84,21 @@
                         </label>
                     </div>
 
+                    <div class="formElementCnt">
+                        <label>
+                            <div class="inputCnt">
+                                <div class="info">
+                                    Presence
+                                </div>
+                                <form:select path="presence">
+                                    <form:option value="" label="Select One..."/>
+                                    <form:option value="P" label="In-Person"/>
+                                    <form:option value="V" label="Virtual"/>
+                                </form:select>
+                            </div>
+                        </label>
+                    </div>
+
 
                     <div class="formElementCnt">
                         <label>

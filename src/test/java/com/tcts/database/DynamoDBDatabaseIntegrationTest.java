@@ -921,6 +921,7 @@ public class DynamoDBDatabaseIntegrationTest {
         createEventFormData.setEventDate(date);
         createEventFormData.setEventTime(time);
         createEventFormData.setGrade("3");
+        createEventFormData.setPresence("P");
         createEventFormData.setNumberStudents("25");
         createEventFormData.setNotes("The class is quite unruly.");
         dynamoDBDatabase.insertEvent(teacherId, createEventFormData);
@@ -948,6 +949,7 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
         assertEquals("2:00", eventFetched.getEventTime());
         assertEquals("3", eventFetched.getGrade());
+        assertEquals("P", eventFetched.getPresence());
         assertEquals(25, eventFetched.getNumberStudents());
         assertEquals("The class is quite unruly.", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
@@ -975,6 +977,7 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
         assertEquals("2:00", eventFetched.getEventTime());
         assertEquals("3", eventFetched.getGrade());
+        assertEquals("P", eventFetched.getPresence());
         assertEquals(25, eventFetched.getNumberStudents());
         assertEquals("The class is quite unruly.", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
@@ -1013,6 +1016,7 @@ public class DynamoDBDatabaseIntegrationTest {
         eventRegistrationFormData.setEventDate(secondDate);
         eventRegistrationFormData.setEventTime(secondTime);
         eventRegistrationFormData.setGrade("4");
+        eventRegistrationFormData.setPresence("P");
         eventRegistrationFormData.setNumberStudents("16");
         eventRegistrationFormData.setNotes("");
         dynamoDBDatabase.modifyEvent(eventRegistrationFormData);
@@ -1024,6 +1028,7 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("2017-03-12", eventFetched.getEventDate().getParseable());
         assertEquals(secondTime, eventFetched.getEventTime());
         assertEquals("4", eventFetched.getGrade());
+        assertEquals("P", eventFetched.getPresence());
         assertEquals(16, eventFetched.getNumberStudents());
         assertEquals("", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
@@ -1286,6 +1291,8 @@ public class DynamoDBDatabaseIntegrationTest {
                                             int numUnmatchedEvents,
                                             int num3rdGradeEvents,
                                             int num4thGradeEvents,
+                                            int numInPersonEvents,
+                                            int numVirtualEvents,
                                             int numVolunteers,
                                             int numParticipatingTeachers,
                                             int numParticipatingSchools) throws SQLException {
@@ -1295,6 +1302,8 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals(numUnmatchedEvents, siteStatistics.getNumUnmatchedEvents());
         assertEquals(num3rdGradeEvents, siteStatistics.getNum3rdGradeEvents());
         assertEquals(num4thGradeEvents, siteStatistics.getNum4thGradeEvents());
+        assertEquals(numInPersonEvents, siteStatistics.getNumInPersonEvents());
+        assertEquals(numVirtualEvents, siteStatistics.getNumVirtualEvents());
         assertEquals(numVolunteers, siteStatistics.getNumVolunteers());
         assertEquals(numParticipatingTeachers, siteStatistics.getNumParticipatingTeachers());
         assertEquals(numParticipatingSchools, siteStatistics.getNumParticipatingSchools());
@@ -1303,16 +1312,16 @@ public class DynamoDBDatabaseIntegrationTest {
 
     @Test
     public void testSiteStatistics() throws Exception {
-        assertSiteStatisticsValues(0, 0, 0, 0, 0, 0, 0, 0);
+        assertSiteStatisticsValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         String bankId = insertNewBankAndReturnTheId();
         Volunteer volunteer = insertVolunteerAnika(bankId);
         String schoolId = insertNewSchoolAndReturnTheId();
         Teacher teacher = insertTeacherJane(schoolId);
-        assertSiteStatisticsValues(0, 0, 0, 0, 0, 0, 0, 0);
+        assertSiteStatisticsValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         Event event = insertEventAndReturnIt(teacher.getUserId());
-        assertSiteStatisticsValues(1, 0, 1, 1, 0, 0, 0, 0);
+        assertSiteStatisticsValues(1, 0, 1, 1, 0, 1, 0, 0, 0, 0);
         dynamoDBDatabase.volunteerForEvent(event.getEventId(), volunteer.getUserId());
-        assertSiteStatisticsValues(1, 1, 0, 1, 0, 1, 1, 1);
+        assertSiteStatisticsValues(1, 1, 0, 1, 0, 1, 0, 1, 1, 1);
     }
 
 

@@ -14,6 +14,8 @@ public class SiteStatistics {
     private int numUnmatchedEvents;
     private int num3rdGradeEvents;
     private int num4thGradeEvents;
+    private int numInPersonEvents;
+    private int numVirtualEvents;
     private int numVolunteers;
     private int numParticipatingTeachers;
     private int numParticipatingSchools;
@@ -57,6 +59,22 @@ public class SiteStatistics {
 
     public void setNum4thGradeEvents(int num4thGradeEvents) {
         this.num4thGradeEvents = num4thGradeEvents;
+    }
+
+    public int getNumInPersonEvents() {
+        return numInPersonEvents;
+    }
+
+    public void setNumInPersonEvents(int numInPersonEvents) {
+        this.numInPersonEvents = numInPersonEvents;
+    }
+
+    public int getNumVirtualEvents() {
+        return numVirtualEvents;
+    }
+
+    public void setNumVirtualEvents(int numVirtualEvents) {
+        this.numVirtualEvents = numVirtualEvents;
     }
 
     public int getNumVolunteers() {

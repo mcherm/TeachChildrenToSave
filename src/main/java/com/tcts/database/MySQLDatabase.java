@@ -70,7 +70,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
             "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status, reset_password_token, bank_specific_data";
     private final static String eventFields =
-            "event_id, teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id";
+            "event_id, teacher_id, event_date, event_time, grade, presence, number_students, notes, volunteer_id";
     private final static String bankFields =
             "bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label";
     private final static String schoolFields =
@@ -139,7 +139,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String insertUserSQL =
             "insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
-            "insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?)";
+            "insert into Event (teacher_id, event_date, event_time, grade, presence, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String volunteerForEventSQL =
             "update Event set volunteer_id = ? where event_id = ?";
     
@@ -553,9 +553,10 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setDate(2, new java.sql.Date(formData.getEventDate().getTime()));
             preparedStatement.setString(3, formData.getEventTime());
             preparedStatement.setString(4, formData.getGrade());
-            preparedStatement.setInt(5, Integer.parseInt(formData.getNumberStudents()));
-            preparedStatement.setString(6, stringToHTMLString(formData.getNotes()));
-            preparedStatement.setString(7, null); // volunteerId
+            preparedStatement.setString(5, formData.getPresence());
+            preparedStatement.setInt(6, Integer.parseInt(formData.getNumberStudents()));
+            preparedStatement.setString(7, stringToHTMLString(formData.getNotes()));
+            preparedStatement.setString(8, null); // volunteerId
             preparedStatement.executeUpdate();
         } finally {
             closeSafely(connection, preparedStatement, resultSet);
@@ -1168,6 +1169,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 event.setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
                 event.setEventTime(resultSet.getString("event_time"));
                 event.setGrade(resultSet.getString("grade"));
+                event.setPresence(resultSet.getString("presence"));
                 event.setNumberStudents(resultSet.getInt("number_students"));
                 event.setNotes(resultSet.getString("notes"));
                 event.setVolunteerId(resultSet.getString("volunteer_id"));

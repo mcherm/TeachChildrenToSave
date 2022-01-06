@@ -16,6 +16,7 @@ public class Event {
     private PrettyPrintingDate eventDate;
     private String eventTime;
     private String grade;
+    private String presence;
     private int numberStudents;
     private String notes;
     private String volunteerId;
@@ -34,6 +35,7 @@ public class Event {
         setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
         setEventTime(resultSet.getString("event_time"));
         setGrade(resultSet.getString("grade"));
+        setPresence(resultSet.getString("presence"));
         setNumberStudents(resultSet.getInt("number_students"));
         setNotes(resultSet.getString("notes"));
         setVolunteerId(resultSet.getString("volunteer_id"));
@@ -87,6 +89,24 @@ public class Event {
 
     public void setGrade(String grade) {
         this.grade = grade;
+    }
+
+    public String getPresence() {
+        return presence;
+    }
+
+    public String getPresenceString() {
+        if (presence.equals("P")) {
+            return "In person";
+        } else if (presence.equals("V")) {
+            return "Virtual";
+        } else {
+            return ""; // This should never happen!
+        }
+    }
+
+    public void setPresence(String presence) {
+        this.presence = presence;
     }
 
     public int getNumberStudents() {

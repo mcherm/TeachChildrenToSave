@@ -480,6 +480,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
         event.setEventTime(getStringField(item, event_time));
         event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        event.setPresence(getStringField(item, event_presence));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
         String volunteerString = getStringField(item, event_volunteer_id);
@@ -709,6 +710,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
                         .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withString(event_presence, formData.getPresence())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
                         .withString(event_volunteer_id, NO_VOLUNTEER));
@@ -1221,6 +1223,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         int numUnmatchedEvents = 0;
         int num3rdGradeEvents = 0;
         int num4thGradeEvents = 0;
+        int numInPersonEvents = 0;
+        int numVirtualEvents = 0;
         Set<String> volunteerIdsActuallySignedUp = new HashSet<String>();
         Set<String> teacherIdsWithClassesThatHaveVolunteers = new HashSet<String>();
         for (Item item : tables.eventTable.scan()) {
@@ -1237,6 +1241,11 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 num3rdGradeEvents += 1;
             } else if (event.getGrade().equals("4")) {
                 num4thGradeEvents += 1;
+            }
+            if (event.getPresence().equals("P")) {
+                numInPersonEvents += 1;
+            } else if (event.getPresence().equals("V")) {
+                numVirtualEvents += 1;
             }
         }
         int numVolunteers = volunteerIdsActuallySignedUp.size();
@@ -1257,6 +1266,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         siteStatistics.setNumUnmatchedEvents(numUnmatchedEvents);
         siteStatistics.setNum3rdGradeEvents(num3rdGradeEvents);
         siteStatistics.setNum4thGradeEvents(num4thGradeEvents);
+        siteStatistics.setNumInPersonEvents(numInPersonEvents);
+        siteStatistics.setNumVirtualEvents(numVirtualEvents);
         siteStatistics.setNumVolunteers(numVolunteers);
         siteStatistics.setNumParticipatingTeachers(numParticipatingTeachers);
         siteStatistics.setNumParticipatingSchools(numParticipatingSchools);
