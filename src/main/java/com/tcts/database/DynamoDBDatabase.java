@@ -1,12 +1,10 @@
 package com.tcts.database;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -329,6 +327,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         put(site_setting_value, 100);
         put(event_time, 30);
         put(event_grade, 8);
+        put(event_presence, 1);
         put(event_notes, 1000);
         put(bank_name, 45);
         put(user_email, 50);
@@ -1177,6 +1176,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
                 attributeUpdate(event_time, formData.getEventTime()),
                 intAttributeUpdate(event_grade, Integer.parseInt(formData.getGrade())),
+                attributeUpdate(event_presence, formData.getPresence()),
                 intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
                 attributeUpdate(event_notes, formData.getNotes()));
     }

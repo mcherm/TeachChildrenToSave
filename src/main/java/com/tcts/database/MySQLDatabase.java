@@ -168,7 +168,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"delete from Event where event_id=? ";
 
     private final static String updateEventByIdSQL =
-    		"UPDATE Event SET event_date = ?,event_time = ?,grade = ?,number_students = ?,notes = ? WHERE event_id = ?";
+    		"UPDATE Event SET event_date = ?,event_time = ?,grade = ?,presence = ?,number_students = ?,notes = ? WHERE event_id = ?";
     
     private final static String updateSchoolByIdSQL =
     		"UPDATE School SET " +
@@ -1075,9 +1075,10 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setDate(1,  new java.sql.Date(formData.getEventDate().getTime()));
             preparedStatement.setString(2, formData.getEventTime());
             preparedStatement.setString(3, formData.getGrade());
-            preparedStatement.setInt(4, Integer.parseInt(formData.getNumberStudents().equalsIgnoreCase("")?"0":formData.getNumberStudents()));
-            preparedStatement.setString(5, stringToHTMLString(formData.getNotes()));
-            preparedStatement.setString(6, formData.getEventId());
+            preparedStatement.setString(4, formData.getPresence());
+            preparedStatement.setInt(5, Integer.parseInt(formData.getNumberStudents().equalsIgnoreCase("")?"0":formData.getNumberStudents()));
+            preparedStatement.setString(6, stringToHTMLString(formData.getNotes()));
+            preparedStatement.setString(7, formData.getEventId());
             preparedStatement.executeUpdate();
         } 
         finally {
