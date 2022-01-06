@@ -65,6 +65,7 @@
 		                        <th scope="col">Date</th>
 		                        <th scope="col">Time</th>
 		                        <th scope="col" class="center">Grade</th>
+								<th scope="col">Presence</th>
 		                        <th scope="col" class="center">Students</th>
 		                        <th scope="col">Volunteer</th>
 		                        <th scope="col">Bank</th>
