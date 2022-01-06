@@ -327,7 +327,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         put(site_setting_value, 100);
         put(event_time, 30);
         put(event_grade, 8);
-        put(event_presence, 1);
+        put(event_delivery_method, 1);
         put(event_notes, 1000);
         put(bank_name, 45);
         put(user_email, 50);
@@ -1176,7 +1176,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
                 attributeUpdate(event_time, formData.getEventTime()),
                 intAttributeUpdate(event_grade, Integer.parseInt(formData.getGrade())),
-                attributeUpdate(event_presence, formData.getPresence()),
+                attributeUpdate(event_delivery_method, formData.getDeliveryMethod()),
                 intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
                 attributeUpdate(event_notes, formData.getNotes()));
     }
