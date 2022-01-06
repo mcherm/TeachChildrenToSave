@@ -71,6 +71,7 @@
 		                        <th scope="col">School</th>
 		                        <th scope="col">Teacher</th>
 		                        <th scope="col" class="center">Grade</th>
+								<th scope="col">Presence</th>
 		                        <th scope="col" class="center">Students</th>
                                 <c:if test="${bank.minLMIForCRA != null}">
                                     <th scope="col">CRA</th>
