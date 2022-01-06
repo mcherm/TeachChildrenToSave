@@ -4,7 +4,6 @@ import com.tcts.common.PrettyPrintingDate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
 /**
  * An object that corresponds to the "Event" table in the database.
@@ -16,7 +15,7 @@ public class Event {
     private PrettyPrintingDate eventDate;
     private String eventTime;
     private String grade;
-    private String presence;
+    private String deliveryMethod;
     private int numberStudents;
     private String notes;
     private String volunteerId;
@@ -35,7 +34,7 @@ public class Event {
         setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
         setEventTime(resultSet.getString("event_time"));
         setGrade(resultSet.getString("grade"));
-        setPresence(resultSet.getString("presence"));
+        setDeliveryMethod(resultSet.getString("delivery_method"));
         setNumberStudents(resultSet.getInt("number_students"));
         setNotes(resultSet.getString("notes"));
         setVolunteerId(resultSet.getString("volunteer_id"));
@@ -91,22 +90,22 @@ public class Event {
         this.grade = grade;
     }
 
-    public String getPresence() {
-        return presence;
+    public String getDeliveryMethod() {
+        return deliveryMethod;
     }
 
-    public String getPresenceString() {
-        if (presence.equals("P")) {
+    public String getDeliveryMethodString() {
+        if (deliveryMethod.equals("P")) {
             return "In person";
-        } else if (presence.equals("V")) {
+        } else if (deliveryMethod.equals("V")) {
             return "Virtual";
         } else {
             return ""; // This should never happen!
         }
     }
 
-    public void setPresence(String presence) {
-        this.presence = presence;
+    public void setDeliveryMethod(String deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
     }
 
     public int getNumberStudents() {

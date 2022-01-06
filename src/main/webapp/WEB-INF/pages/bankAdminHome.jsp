@@ -104,7 +104,7 @@
                                             <th>Time</th>
                                             <th>School</th>
                                             <th>Grade</th>
-                                            <th>Presence</th>
+                                            <th>Delivery Method</th>
                                             <th>Students</th>
                                             <c:if test="${bank.minLMIForCRA != null}">
                                                 <th scope="col">CRA</th>
@@ -168,7 +168,7 @@
                                             <th>Time</th>
                                             <th>School</th>
                                             <th>Grade</th>
-                                            <th>Presence</th>
+                                            <th>Delivery Method</th>
                                             <th>Students</th>
                                             <th>Teacher</th>
                                             <c:if test="${bank.minLMIForCRA != null}">

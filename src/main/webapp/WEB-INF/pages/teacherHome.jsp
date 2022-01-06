@@ -65,7 +65,7 @@
 		                        <th scope="col">Date</th>
 		                        <th scope="col">Time</th>
 		                        <th scope="col" class="center">Grade</th>
-								<th scope="col">Presence</th>
+								<th scope="col">Delivery Method</th>
 		                        <th scope="col" class="center">Students</th>
 		                        <th scope="col">Volunteer</th>
 		                        <th scope="col">Bank</th>
@@ -83,7 +83,7 @@
 		                            <td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>
 		                            <td data-title="Time"><c:out value="${event.eventTime}"/></td>
 									<td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
-									<td data-title="Presence"><c:out value="${event.presenceString}"/></td>
+									<td data-title="Delivery Method"><c:out value="${event.deliveryMethodString}"/></td>
 		                            <td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>
 		                            <td data-title="Volunteer">
 		                                <c:out value="${event.linkedVolunteer.firstName}" default="no volunteer"/>

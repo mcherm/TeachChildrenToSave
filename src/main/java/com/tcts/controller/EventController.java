@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -168,11 +167,11 @@ public class EventController {
         if (!(formData.getGrade().equals("3") || formData.getGrade().equals("4"))) {
             throw new InvalidParameterFromGUIException("GUI should only let you choose valid grades.");
         }
-        if (formData.getPresence() == null || formData.getPresence().length() == 0 ) {
+        if (formData.getDeliveryMethod() == null || formData.getDeliveryMethod().length() == 0 ) {
             return showEditEventWithErrorMessage(model, formData, "You must specify in-person or virtual.");
         }
-        if (!(formData.getPresence().equals("P") || formData.getPresence().equals("V"))) {
-            throw new InvalidParameterFromGUIException(("GUI should only let you choose valid values for presence."));
+        if (!(formData.getDeliveryMethod().equals("P") || formData.getDeliveryMethod().equals("V"))) {
+            throw new InvalidParameterFromGUIException(("GUI should only let you choose valid values for delivery method."));
         }
 
         // --- Update the event ---
@@ -205,7 +204,7 @@ public class EventController {
         formData.setEventDate(event.getEventDate());
         formData.setEventTime(event.getEventTime());
         formData.setGrade(event.getGrade());
-        formData.setPresence(event.getPresence());
+        formData.setDeliveryMethod(event.getDeliveryMethod());
         formData.setNotes(event.getNotes());
         formData.setEventId(event.getEventId());
         formData.setNumberStudents(new Integer(event.getNumberStudents()==0?0:event.getNumberStudents()).toString());

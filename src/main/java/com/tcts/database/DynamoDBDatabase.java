@@ -1,12 +1,10 @@
 package com.tcts.database;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.AttributeUpdate;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -480,7 +478,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
         event.setEventTime(getStringField(item, event_time));
         event.setGrade(Integer.toString(getIntField(item, event_grade)));
-        event.setPresence(getStringField(item, event_presence));
+        event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
         String volunteerString = getStringField(item, event_volunteer_id);
@@ -710,7 +708,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
                         .withInt(event_grade, Integer.parseInt(formData.getGrade()))
-                        .withString(event_presence, formData.getPresence())
+                        .withString(event_delivery_method, formData.getDeliveryMethod())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
                         .withString(event_volunteer_id, NO_VOLUNTEER));
@@ -1242,9 +1240,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
             } else if (event.getGrade().equals("4")) {
                 num4thGradeEvents += 1;
             }
-            if (event.getPresence().equals("P")) {
+            if (event.getDeliveryMethod().equals("P")) {
                 numInPersonEvents += 1;
-            } else if (event.getPresence().equals("V")) {
+            } else if (event.getDeliveryMethod().equals("V")) {
                 numVirtualEvents += 1;
             }
         }
