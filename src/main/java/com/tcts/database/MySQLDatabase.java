@@ -69,7 +69,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String userFields =
             "user_id, password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status, reset_password_token, bank_specific_data";
     private final static String eventFields =
-            "event_id, teacher_id, event_date, event_time, grade, presence, number_students, notes, volunteer_id";
+            "event_id, teacher_id, event_date, event_time, grade, delivery_method, number_students, notes, volunteer_id";
     private final static String bankFields =
             "bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label";
     private final static String schoolFields =
@@ -138,7 +138,7 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String insertUserSQL =
             "insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String insertEventSQL =
-            "insert into Event (teacher_id, event_date, event_time, grade, presence, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?, ?)";
+            "insert into Event (teacher_id, event_date, event_time, grade, delivery_method, number_students, notes, volunteer_id) values (?, ?, ?, ?, ?, ?, ?, ?)";
     private final static String volunteerForEventSQL =
             "update Event set volunteer_id = ? where event_id = ?";
     
@@ -167,7 +167,7 @@ public class MySQLDatabase implements DatabaseFacade {
     		"delete from Event where event_id=? ";
 
     private final static String updateEventByIdSQL =
-    		"UPDATE Event SET event_date = ?,event_time = ?,grade = ?,presence = ?,number_students = ?,notes = ? WHERE event_id = ?";
+    		"UPDATE Event SET event_date = ?,event_time = ?,grade = ?,delivery_method = ?,number_students = ?,notes = ? WHERE event_id = ?";
     
     private final static String updateSchoolByIdSQL =
     		"UPDATE School SET " +
@@ -552,7 +552,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setDate(2, new java.sql.Date(formData.getEventDate().getTime()));
             preparedStatement.setString(3, formData.getEventTime());
             preparedStatement.setString(4, formData.getGrade());
-            preparedStatement.setString(5, formData.getPresence());
+            preparedStatement.setString(5, formData.getDeliveryMethod());
             preparedStatement.setInt(6, Integer.parseInt(formData.getNumberStudents()));
             preparedStatement.setString(7, stringToHTMLString(formData.getNotes()));
             preparedStatement.setString(8, null); // volunteerId
@@ -1071,10 +1071,10 @@ public class MySQLDatabase implements DatabaseFacade {
         	
         	connection = connectionFactory.getConnection();
             preparedStatement = connection.prepareStatement(updateEventByIdSQL);
-            preparedStatement.setDate(1,  new java.sql.Date(formData.getEventDate().getTime()));
+            preparedStatement.setDate(1,  new Date(formData.getEventDate().getTime()));
             preparedStatement.setString(2, formData.getEventTime());
             preparedStatement.setString(3, formData.getGrade());
-            preparedStatement.setString(4, formData.getPresence());
+            preparedStatement.setString(4, formData.getDeliveryMethod());
             preparedStatement.setInt(5, Integer.parseInt(formData.getNumberStudents().equalsIgnoreCase("")?"0":formData.getNumberStudents()));
             preparedStatement.setString(6, stringToHTMLString(formData.getNotes()));
             preparedStatement.setString(7, formData.getEventId());
@@ -1169,7 +1169,7 @@ public class MySQLDatabase implements DatabaseFacade {
                 event.setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
                 event.setEventTime(resultSet.getString("event_time"));
                 event.setGrade(resultSet.getString("grade"));
-                event.setPresence(resultSet.getString("presence"));
+                event.setDeliveryMethod(resultSet.getString("delivery_method"));
                 event.setNumberStudents(resultSet.getInt("number_students"));
                 event.setNotes(resultSet.getString("notes"));
                 event.setVolunteerId(resultSet.getString("volunteer_id"));

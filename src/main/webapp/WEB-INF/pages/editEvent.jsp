@@ -75,9 +75,9 @@
                         <label>
                             <div class="inputCnt">
                                 <div class="info">
-                                    Presence
+                                    Delivery Method
                                 </div>
-                                <form:select path="presence">
+                                <form:select path="deliveryMethod">
                                     <form:option value="" label="Select One..."/>
                                     <form:option value="P" label="In-Person"/>
                                     <form:option value="V" label="Virtual"/>

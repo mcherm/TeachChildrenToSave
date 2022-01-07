@@ -71,7 +71,7 @@
 		                        <th scope="col">School</th>
 		                        <th scope="col">Teacher</th>
 		                        <th scope="col" class="center">Grade</th>
-								<th scope="col">Presence</th>
+								<th scope="col">Delivery Method</th>
 		                        <th scope="col" class="center">Students</th>
                                 <c:if test="${bank.minLMIForCRA != null}">
                                     <th scope="col">CRA</th>
@@ -92,7 +92,7 @@
 		                            <td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
 		                            <td data-title="Teacher"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
 		                            <td data-title="Grade" class="center"><c:out value="${event.grade}"/></td>
-									<td data-title="Presence"><c:out value="${event.presenceString}"/></td>
+									<td data-title="Delivery Method"><c:out value="${event.deliveryMethodString}"/></td>
 		                            <td data-title="Students" class="center"><c:out value="${event.numberStudents}"/></td>
                                     <c:if test="${bank.minLMIForCRA != null}">
                                         <td data-title="CRA">

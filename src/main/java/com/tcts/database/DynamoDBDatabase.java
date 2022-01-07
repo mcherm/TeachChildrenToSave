@@ -327,7 +327,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         put(site_setting_value, 100);
         put(event_time, 30);
         put(event_grade, 8);
-        put(event_presence, 1);
+        put(event_delivery_method, 1);
         put(event_notes, 1000);
         put(bank_name, 45);
         put(user_email, 50);
@@ -479,7 +479,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
         event.setEventTime(getStringField(item, event_time));
         event.setGrade(Integer.toString(getIntField(item, event_grade)));
-        event.setPresence(getStringField(item, event_presence));
+        event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
         String volunteerString = getStringField(item, event_volunteer_id);
@@ -709,7 +709,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
                         .withInt(event_grade, Integer.parseInt(formData.getGrade()))
-                        .withString(event_presence, formData.getPresence())
+                        .withString(event_delivery_method, formData.getDeliveryMethod())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
                         .withString(event_volunteer_id, NO_VOLUNTEER));
@@ -1176,7 +1176,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
                 attributeUpdate(event_time, formData.getEventTime()),
                 intAttributeUpdate(event_grade, Integer.parseInt(formData.getGrade())),
-                attributeUpdate(event_presence, formData.getPresence()),
+                attributeUpdate(event_delivery_method, formData.getDeliveryMethod()),
                 intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
                 attributeUpdate(event_notes, formData.getNotes()));
     }
@@ -1242,9 +1242,9 @@ public class DynamoDBDatabase implements DatabaseFacade {
             } else if (event.getGrade().equals("4")) {
                 num4thGradeEvents += 1;
             }
-            if (event.getPresence().equals("P")) {
+            if (event.getDeliveryMethod().equals("P")) {
                 numInPersonEvents += 1;
-            } else if (event.getPresence().equals("V")) {
+            } else if (event.getDeliveryMethod().equals("V")) {
                 numVirtualEvents += 1;
             }
         }

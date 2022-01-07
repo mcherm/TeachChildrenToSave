@@ -12,7 +12,7 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
     private Date eventDate;
     private String eventTime;
     private String grade;
-    private String presence;
+    private String deliveryMethod;
     private String numberStudents;
     private String notes;
     private String teacherId;
@@ -37,11 +37,11 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
                 errors.addError("That is not a valid grade.");
             }
         }
-        if (presence == null || presence.length() == 0) {
-            errors.addError("You must specify the presence.");
+        if (deliveryMethod == null || deliveryMethod.length() == 0) {
+            errors.addError("You must specify the delivery method.");
         } else {
-            if (!(presence.equals("P") || presence.equals("V"))) {
-                errors.addError("That is not a valid presence.");
+            if (!(deliveryMethod.equals("P") || deliveryMethod.equals("V"))) {
+                errors.addError("That is not a valid delivery method.");
             }
         }
         if (numberStudents == null || numberStudents.length() == 0) {
@@ -83,12 +83,12 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
         this.grade = grade;
     }
 
-    public String getPresence() {
-        return presence;
+    public String getDeliveryMethod() {
+        return deliveryMethod;
     }
 
-    public void setPresence(String presence) {
-        this.presence = presence;
+    public void setDeliveryMethod(String deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
     }
 
     public String getNumberStudents() {
