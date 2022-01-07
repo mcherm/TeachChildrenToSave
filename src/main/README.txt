@@ -40,3 +40,39 @@ wanted to note that it had an odd record created:
   VALUE: "IQjgGB8EIaTYb/RcyrUDjnuUpn755v90H7GufUVFhVA="
      (the quotes were part of it)
   TTL: 1800 seconds
+------------
+2022-01-07: Today I earned something about setting up a CloudFront
+  distribution. Here are my notes:
+
+
+    Creating a distribution:
+
+    * Delete the old distributions that are using the names
+      www.teachchildrentosaveday.org and teachchildrentosaveday.org.
+    * Within the CloudFront console, "Create a Distribution".
+    * For "Origin Domain", go to the EC2 console and look at load balancers.
+      Find the one whose tag shows that it's associated with the elastic
+      beanstalk enviroment you want. The Elastic Beanstalk environment MUST
+      have a load balancer; it won't work if it's a single instance. Copy
+      the load balancer name from here and put it in "Origin Domain".
+    * For Protocol (in the section on Origin) it should say "HTTP only".
+    * In the section on Default cache behavior, set the Viewer protocol
+      policy to "Redirect HTTP to HTTPS".
+    * Set "Allowed HTTP Methods" to the one that includes PUT, POST, PATCH,
+      and DELETE.
+    * In the section for Settings, set the Price class to "Use only North
+      America and Europe".
+    * Under Alternate domain name (CNAME) click "Add item" twice.
+    * Populate those fields with "teachchildrentosaveday.org" and
+      "www.teachchildrentosaveday.org".
+    * Under Custom SSL certificate, select the certificate for
+      www.teachchildrentosaveday.org.
+    * At the bottom, click "Create Distribution".
+    * WAIT for it to finish deploying.
+    * Then go to the control panel for Route53.
+    * Edit the A records for "teachchildrentosaveday.org" and
+      "www.teachchildrentosaveday.org" to refer to the new CloudFront
+      distribution.
+    * WAIT for it to propogate. (At LEAST 60 seconds... I'd suggest waiting
+      > 4 minutes.)
+    * Then test it.
