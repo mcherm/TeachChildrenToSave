@@ -36,7 +36,6 @@ import com.tcts.formdata.VolunteerRegistrationFormData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
@@ -386,7 +385,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(5, formData.getUserId());
             try {
                 preparedStatement.executeUpdate();
-            } catch(MySQLIntegrityConstraintViolationException err) {
+            } catch(SQLException err) {
                 if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
                     throw new EmailAlreadyInUseException();
                 } else {
@@ -415,7 +414,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setString(6, formData.getUserId());
             try {
                 preparedStatement.executeUpdate();
-            } catch(MySQLIntegrityConstraintViolationException err) {
+            } catch(SQLException err) {
                 if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
                     throw new EmailAlreadyInUseException();
                 } else {
@@ -806,7 +805,7 @@ public class MySQLDatabase implements DatabaseFacade {
 			preparedStatement.setInt(9, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue());
 			try {
 				preparedStatement.executeUpdate();
-			} catch (MySQLIntegrityConstraintViolationException err) {
+			} catch (SQLException err) {
 				// FIXME: Check if it matches
 				// "Duplicate entry '.*' for key 'ix_email'"
 				throw new EmailAlreadyInUseException();
@@ -1327,7 +1326,7 @@ public class MySQLDatabase implements DatabaseFacade {
                     preparedStatement.setString(5, bankAdminId);
                     try {
                         preparedStatement.executeUpdate();
-                    } catch (MySQLIntegrityConstraintViolationException err) {
+                    } catch (SQLException err) {
                         if (err.getMessage().contains("Duplicate entry") && err.getMessage().contains("for key 'ix_email'")) {
                             throw new EmailAlreadyInUseException();
                         } else {
@@ -1494,7 +1493,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setDate(1, formData.getDate());
             try {
                 preparedStatement.executeUpdate();
-            } catch(MySQLIntegrityConstraintViolationException err) {
+            } catch(SQLException err) {
                 throw new AllowedDateAlreadyInUseException();
             }
         }
@@ -1561,7 +1560,7 @@ public class MySQLDatabase implements DatabaseFacade {
             preparedStatement.setInt(2, newItemSortOrder);
             try {
                 preparedStatement.executeUpdate();
-            } catch(MySQLIntegrityConstraintViolationException err) {
+            } catch(SQLException err) {
                 throw new AllowedTimeAlreadyInUseException();
             }
 

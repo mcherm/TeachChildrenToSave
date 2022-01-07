@@ -2,11 +2,12 @@ package com.tcts.util;
 
 import java.io.IOException;
 import java.util.Map;
+import java.io.StringWriter;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.tcts.exception.AppConfigurationException;
 
@@ -22,7 +23,12 @@ public class TemplateUtil {
             throw new AppConfigurationException(
                     "Cannot send any emails because the velocity engine is not properly configured.");
         }
-        String text = 	VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "template/"+ templateType + ".vm","UTF-8", model);
+
+        VelocityContext velocityContext = new VelocityContext(model);
+        String templateName = "template/"+ templateType + ".vm";
+        StringWriter stringWriter = new StringWriter();
+        velocityEngine.mergeTemplate(templateName, "UTF-8", velocityContext, stringWriter);
+        String text = stringWriter.toString();
         return text;
         
     }

@@ -126,7 +126,7 @@ public class ExcelDownloadController implements InitializingBean {
     private int makeLabels(ExcelDownloadController.WorkbookSpec workbookSpec, HSSFWorkbook workbook, HSSFSheet sheet) {
         byte rowNum = 0;
         HSSFFont labelFont = workbook.createFont();
-        labelFont.setBoldweight((short)700);
+        labelFont.setBold(true);
         HSSFCellStyle labelStyle = workbook.createCellStyle();
         labelStyle.setFont(labelFont);
         boolean needsSubLabels = false;
@@ -263,10 +263,8 @@ public class ExcelDownloadController implements InitializingBean {
             if(value instanceof String) {
                 cell.setCellValue((String)value);
             } else if (value instanceof Number) {
-                cell.setCellType(0);
                 cell.setCellValue(((Number) value).doubleValue());
             } else if (value instanceof BigDecimal) {
-                cell.setCellType(0);
                 cell.setCellValue(((BigDecimal) value).doubleValue());
             } else {
                 throw new RuntimeException("Return type " + value.getClass().getName() + " is not supported for extractors.");
