@@ -23,6 +23,16 @@
         <url-pattern>*.htm</url-pattern>
         <url-pattern></url-pattern>
     </servlet-mapping>
+    
+    <filter>
+        <filter-name>NoCacheFilter</filter-name>
+        <filter-class>com.tcts.util.NoCacheFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>NoCacheFilter</filter-name>
+        <servlet-name>mvc-dispatcher</servlet-name>
+    </filter-mapping>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
