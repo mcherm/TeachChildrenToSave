@@ -60,6 +60,12 @@ wanted to note that it had an odd record created:
       policy to "Redirect HTTP to HTTPS".
     * Set "Allowed HTTP Methods" to the one that includes PUT, POST, PATCH,
       and DELETE.
+    * In "Cache key and origin requests" select "Cache policy and origin
+      request policy".
+    * Under that, set the Cache policy to "Cache-Using-JSESSIONID" which is
+      a custom policy I have created that includes the cookie JSESSIONID as
+      part of the cache key.
+    * Leave "Origin request policy" blank.
     * In the section for Settings, set the Price class to "Use only North
       America and Europe".
     * Under Alternate domain name (CNAME) click "Add item" twice.
