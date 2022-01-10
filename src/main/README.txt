@@ -62,15 +62,13 @@ wanted to note that it had an odd record created:
       and DELETE.
     * In "Cache key and origin requests" select "Cache policy and origin
       request policy".
-    * Under that, set the Cache policy to "Cache-Using-JSESSIONID" which is
-      a custom policy I have created that includes the cookie JSESSIONID as
-      part of the cache key.
-    * Leave "Origin request policy" blank.
+    * Under that, set the Cache policy to "CachingDisabled".
+    * Below that, set "Origin request policy" to "AllViewer".
     * In the section for Settings, set the Price class to "Use only North
       America and Europe".
     * Under Alternate domain name (CNAME) click "Add item" twice.
-    * Populate those fields with "teachchildrentosaveday.org" and
-      "www.teachchildrentosaveday.org".
+    * Populate those fields with "www.teachchildrentosaveday.org" and
+      "teachchildrentosaveday.org".
     * Under Custom SSL certificate, select the certificate for
       www.teachchildrentosaveday.org.
     * At the bottom, click "Create Distribution".
