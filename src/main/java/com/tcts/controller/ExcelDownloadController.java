@@ -207,7 +207,9 @@ public class ExcelDownloadController implements InitializingBean {
                     int var21 = var18.getNumColumns();
 
                     for(int i = 0; i < var21; ++i) {
-                        mergeCells(sheet, rowNum + var20 - 1, colNum, var16 - var20 + 1, 1);
+                        if (var16 > var20) {
+                            mergeCells(sheet, rowNum + var20 - 1, colNum, var16 - var20 + 1, 1);
+                        }
                         ++colNum;
                     }
                 }
