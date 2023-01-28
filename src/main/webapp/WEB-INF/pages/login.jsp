@@ -66,7 +66,6 @@
 
 			<aside>
 				<img src="tcts/img/iStock_000019109215Small-happy-kids.jpg" alt="" aria-hidden="true">
-				<%--<img src="tcts/img/logo-tcts.png" alt="" aria-hidden="true">--%>
 			</aside>
 
         </div><%-- mainCnt --%>

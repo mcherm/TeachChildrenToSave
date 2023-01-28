@@ -41,7 +41,7 @@ wanted to note that it had an odd record created:
      (the quotes were part of it)
   TTL: 1800 seconds
 ------------
-2022-01-07: Today I earned something about setting up a CloudFront
+2022-01-07: Today I learned something about setting up a CloudFront
   distribution. Here are my notes:
 
 
