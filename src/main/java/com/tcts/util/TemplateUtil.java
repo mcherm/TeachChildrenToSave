@@ -27,10 +27,13 @@ public class TemplateUtil {
         VelocityContext velocityContext = new VelocityContext(model);
         String templateName = "template/"+ templateType + ".vm";
         StringWriter stringWriter = new StringWriter();
-        velocityEngine.mergeTemplate(templateName, "UTF-8", velocityContext, stringWriter);
+        try {
+            velocityEngine.mergeTemplate(templateName, "UTF-8", velocityContext, stringWriter);
+        } catch(Exception err) {
+            throw new IOException("Unable to merge template.", err);
+        }
         String text = stringWriter.toString();
         return text;
-        
     }
 
 }

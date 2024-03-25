@@ -66,7 +66,7 @@
             </main>
 
             <aside>
-                <img src="tcts/img/TCTSD_25_Years.jpg" alt="" aria-hidden="true">
+                <img src="tcts/img/TCTSD_Logo_2024.png" alt="" aria-hidden="true">
                 <%--<img src="tcts/img/iStock_000019109215Small-happy-kids.jpg" alt="" aria-hidden="true">--%>
             </aside>
 

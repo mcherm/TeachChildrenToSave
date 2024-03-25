@@ -52,6 +52,8 @@ public class S3Util {
         bucketName = configuration.getProperty("bucketName");
     }
 
+
+
     /**
      * Retrieves the complete set of names of all documents that
      * are stored in the bucket.

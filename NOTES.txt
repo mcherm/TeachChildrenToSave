@@ -1,0 +1,53 @@
+Notes
+
+====================
+Notes on yearly cleanup.
+
+(1) I log onto console.amazon.com using the account root user.
+
+(2) I look at the environments in Elastic Beanstalk. If we shut things
+   down properly, they won't be running.
+
+(3) I look at the tables in DynamoDB. There should be tables with names
+   that have "TCTS.prod" in them, and also ones with "TCTS.dev" and
+   "TCTS.test". These are just so we can have totally separate versions
+   running. The "prod" data is the real one, but the others can be
+   used for testing things without breaking production. When I deploy
+   code it gets modified to work with dev, test, or prod.
+
+(4) As part of a yearly process, we should probably first make sure it
+   is working properly, then upgrade all the libraries and servers and
+   such.
+
+(5) I can build the code (as is at first!) by launching a command line
+   in the checked-out code, where Maven and Java are installed and running
+   "mvn clean" followed by "mvn install". BEFORE BUILDING, check the file
+   src/main/java/resources/application.properties. This is the one that
+   specifies whether the environment is prod, test, or dev.
+
+(6) After building, upload the compiled code. The compiled code goes in
+   a file target/TeachChildrenToSave.war. Upload this on AWS by going to
+   Elastic Beanstalk. There is an "Upload And Deploy" button. (If you
+   want a second environment, create a clone of the Elastic Beanstalk
+   configuration first.) In that dialog, select the .war file. Then give
+   it a version label. I've been using version names like
+   "PROD-2023-11-19-01", which start with "PROD"/"TEST"/"DEV", followed
+   by the date yyyy-mm-dd, followed by a number (in case I upload
+   multiple versions in a day, which I often do). I use the deployment
+   policy "All at once", which incurs a brief (minute or so) outage but
+   is far simpler.
+
+(7) After deploying, wait for it to finish deploying, then test it by
+   going to <https://www.teachchildrentosaveday.org/>.
+
+(8) We change the image every year. Images are found in
+   src/main/webapp/tcts. Try to rename files to avoid spaces in the
+   filenames -- it's possible but not worth the trouble.
+
+[THEN I tried updating my build environment. And things went badly.]
+
+(9) Clearing the data: I want to delete all the Event entries and all the
+   User entries except the ones that are xxx
+
+   [I did backups first.]
+   [Have to wait a while.]
