@@ -26,7 +26,7 @@ public class SetBankSpecificFieldLabelController {
     private DatabaseFacade database;
 
 
-    @RequestMapping(value="setBankSpecificFieldLabel", method=RequestMethod.POST)
+    @RequestMapping(value="setBankSpecificFieldLabel.htm", method=RequestMethod.POST)
     public String setBankSpecificFieldLabel(
             HttpSession session,
             @ModelAttribute("formData") SetBankSpecificFieldLabelFormData formData

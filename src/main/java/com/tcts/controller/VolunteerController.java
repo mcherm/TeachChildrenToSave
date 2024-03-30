@@ -55,7 +55,7 @@ public class VolunteerController extends AuthenticationController{
     /**
      * Render the list of users .
      */
-    @RequestMapping(value = "volunteers", method = RequestMethod.GET)
+    @RequestMapping(value = "volunteers.htm", method = RequestMethod.GET)
     public String showVolunteersList(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -75,7 +75,7 @@ public class VolunteerController extends AuthenticationController{
     }
 
 
-    @RequestMapping(value = "volunteerDelete", method = RequestMethod.POST)
+    @RequestMapping(value = "volunteerDelete.htm", method = RequestMethod.POST)
     public String deleteVolunteer(
             @RequestParam String volunteerId,
             HttpSession session,
@@ -107,7 +107,7 @@ public class VolunteerController extends AuthenticationController{
         return showVolunteers(model);
     }
     
-    @RequestMapping(value = "editVolunteerData", method = RequestMethod.GET)
+    @RequestMapping(value = "editVolunteerData.htm", method = RequestMethod.GET)
     public String enterDataToEditVolunteer(
             HttpSession session,
             Model model,
@@ -130,7 +130,7 @@ public class VolunteerController extends AuthenticationController{
     /**
      * Actually change the values that were entered.
      */
-    @RequestMapping(value="/editVolunteerData", method=RequestMethod.POST)
+    @RequestMapping(value="/editVolunteerData.htm", method=RequestMethod.POST)
     public String editVolunteerData(
             HttpSession session,
             Model model,

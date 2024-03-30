@@ -73,3 +73,37 @@
   ----
   Wow... that worked!! I was able to bring up the home page in Tomcat 10!
 
+
+(2) Deploying on AWS.
+  I can get the home page! If I click on the "Log In" link then I get an error:
+
+    org.springframework.web.servlet.NoHandlerFoundException: No endpoint GET /login.htm.
+      at org.springframework.web.servlet.DispatcherServlet.noHandlerFound(DispatcherServlet.java:1304)
+
+  ----
+  (2.1) Try removing the blank "url-pattern" in the "servlet-mapping" in web.xml.
+
+  Didn't hurt. Didn't help. Should be removed, I'm doing that.
+
+  (2.2) Try changing the RequestMapping for AboutController from
+
+    @RequestMapping(value = "/about", method = RequestMethod.GET)
+
+  to
+
+    @RequestMapping(value = "/about.htm", method = RequestMethod.GET)
+
+  ----
+  This made that one page work.
+
+  So I have two options -- I could remove all the .htm mappings everywhere (and have cleaner URLs)
+  OR I could remove the "<url-pattern>*.htm</url-pattern>" line in web.xml.
+
+  I'd rather remove the .htm mappings, but I don't know HOW to do so!! So instead I'm going to try
+  changing all the @RequestMapping 's.
+
+  ----
+  ( WARNING: I'm _especially_ unsure of the changes made to display of excel documents. )
+  ----
+  It worked! I can now visit most (maybe all) of the pages that don't require login. My next
+  problem will be that the login doesn't work.

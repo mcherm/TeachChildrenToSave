@@ -48,7 +48,7 @@ public class TeacherController {
      * Render the list of users .
      */
 
-    @RequestMapping(value = "/teachers", method = RequestMethod.GET)
+    @RequestMapping(value = "/teachers.htm", method = RequestMethod.GET)
     public String showTeachersList(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -61,7 +61,7 @@ public class TeacherController {
         return "teachers";
     }
 
-    @RequestMapping(value = "teacherDelete", method = RequestMethod.POST)
+    @RequestMapping(value = "teacherDelete.htm", method = RequestMethod.POST)
     public String deleteTeacher(
             @RequestParam String teacherId,
             HttpSession session,
@@ -106,7 +106,7 @@ public class TeacherController {
 		}
     }
 
-    @RequestMapping(value = "editTeacherData", method = RequestMethod.GET)
+    @RequestMapping(value = "editTeacherData.htm", method = RequestMethod.GET)
     public String enterDataToEditTeacher(
             HttpSession session,
             Model model,
@@ -128,7 +128,7 @@ public class TeacherController {
     /**
      * Actually change the values that were entered.
      */
-    @RequestMapping(value="/editTeacherData", method=RequestMethod.POST)
+    @RequestMapping(value="/editTeacherData.htm", method=RequestMethod.POST)
     public String editTeacherData(
             HttpSession session,
             Model model,

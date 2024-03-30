@@ -49,7 +49,7 @@ public class BankController {
     /**
      * Render the bank edit page.
      */
-    @RequestMapping(value = "viewEditBanks", method = RequestMethod.GET)
+    @RequestMapping(value = "viewEditBanks.htm", method = RequestMethod.GET)
     public String showBanks(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -79,7 +79,7 @@ public class BankController {
     /**
      * Displays the Delete Bank Confirmation Page
      */
-    @RequestMapping(value = "deleteBank", method = RequestMethod.GET)
+    @RequestMapping(value = "deleteBank.htm", method = RequestMethod.GET)
     public String deleteBankConfirm(
             @RequestParam String bankId,
             HttpSession session,
@@ -102,7 +102,7 @@ public class BankController {
      * Deletes a bank and all its bank admin and all of its volunteers and withdraws the volunteers from
      * any classes they were signed up for
      */
-    @RequestMapping(value = "deleteBank", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteBank.htm", method = RequestMethod.POST)
     public String deleteBank(
             @RequestParam String bankId,
             HttpSession session,
@@ -130,7 +130,7 @@ public class BankController {
     }
 
 
-    @RequestMapping(value = "editBank", method = RequestMethod.GET)
+    @RequestMapping(value = "editBank.htm", method = RequestMethod.GET)
     public String enterDataToEditBank(
             HttpSession session,
             Model model,
@@ -187,7 +187,7 @@ public class BankController {
     }
 
 
-    @RequestMapping(value = "editBank", method = RequestMethod.POST)
+    @RequestMapping(value = "editBank.htm", method = RequestMethod.POST)
     public String getUpdatedBank(
             HttpSession session,
             Model model,
@@ -230,7 +230,7 @@ public class BankController {
     /**
      * Show the page for creating a new bank and bank admin.
      */
-    @RequestMapping(value = "addBank", method = RequestMethod.GET)
+    @RequestMapping(value = "addBank.htm", method = RequestMethod.GET)
     public String enterDataToAddBank(
             HttpSession session,
             Model model,
@@ -245,7 +245,7 @@ public class BankController {
         return showAddBankWithErrors(model, null);
     }
 
-    @RequestMapping(value = "addBank", method = RequestMethod.POST)
+    @RequestMapping(value = "addBank.htm", method = RequestMethod.POST)
     public String doAddBank(
             HttpSession session,
             Model model,

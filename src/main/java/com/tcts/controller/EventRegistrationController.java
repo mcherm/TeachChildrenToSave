@@ -45,7 +45,7 @@ public class EventRegistrationController {
     @Autowired
     EmailUtil emailUtil;
 
-    @RequestMapping(value = "/eventRegistrationBySiteAdmin", method = RequestMethod.GET)
+    @RequestMapping(value = "/eventRegistrationBySiteAdmin.htm", method = RequestMethod.GET)
     public String eventRegistrationBySiteAdmin(
             HttpSession session,
             Model model,
@@ -63,7 +63,7 @@ public class EventRegistrationController {
         return showForm (model, volunteer, sessionData );
     }
 
-    @RequestMapping(value = "/eventRegistration", method = RequestMethod.GET)
+    @RequestMapping(value = "/eventRegistration.htm", method = RequestMethod.GET)
     public String showEventRegistrationPage(HttpSession session, Model model) throws SQLException {
         Volunteer volunteer;
         SessionData sessionData = SessionData.fromSession(session);
@@ -121,7 +121,7 @@ public class EventRegistrationController {
         return "eventRegistration";
     }
 
-    @RequestMapping(value="/eventRegistration", method=RequestMethod.POST)
+    @RequestMapping(value="/eventRegistration.htm", method=RequestMethod.POST)
     public String createEvent(HttpSession session, HttpServletRequest request,
                               @ModelAttribute("formData") EventRegistrationFormData formData)
             throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException

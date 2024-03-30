@@ -43,7 +43,7 @@ public class InitializeTheDatabaseController {
     /**
      * Method that initializes the database.
      */
-    @RequestMapping(value = "/initializeTheDatabase", method = RequestMethod.GET)
+    @RequestMapping(value = "/initializeTheDatabase.htm", method = RequestMethod.GET)
     public String initializeTheDatabase(@RequestParam String password) {
         checkThePassword(password);
         runInSeparateThreadAndWaitForItToFinish(new Runnable() {
@@ -58,7 +58,7 @@ public class InitializeTheDatabaseController {
     /**
      * Method that initializes the database.
      */
-    @RequestMapping(value = "/insertRandomData", method = RequestMethod.GET)
+    @RequestMapping(value = "/insertRandomData.htm", method = RequestMethod.GET)
     public String insertRandomData(@RequestParam String password) throws Exception {
         checkThePassword(password);
         runInSeparateThreadAndWaitForItToFinish(new Runnable() {

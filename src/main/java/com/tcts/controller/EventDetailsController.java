@@ -42,7 +42,7 @@ public class EventDetailsController {
     /**
      * Render the page.
      */
-    @RequestMapping(value = "eventDetails", method = RequestMethod.POST)
+    @RequestMapping(value = "eventDetails.htm", method = RequestMethod.POST)
     public String showEventDetail(
             HttpSession session,
             Model model,

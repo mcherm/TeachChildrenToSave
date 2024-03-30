@@ -34,7 +34,7 @@ public class TeacherRegistrationController {
     private DatabaseFacade database;
     
 
-    @RequestMapping(value="/registerTeacher", method=RequestMethod.GET)
+    @RequestMapping(value="/registerTeacher.htm", method=RequestMethod.GET)
     public String showRegisterTeacherPage(HttpSession session, Model model) throws SQLException {
         SessionData.ensureNoActiveSession(session);
         model.addAttribute("formData", new TeacherRegistrationFormData());
@@ -52,7 +52,7 @@ public class TeacherRegistrationController {
         return "registerTeacher";
     }
 
-    @RequestMapping(value="/registerTeacher", method=RequestMethod.POST)
+    @RequestMapping(value="/registerTeacher.htm", method=RequestMethod.POST)
     public String createNewTeacher(
             HttpSession session,
             Model model,

@@ -38,14 +38,14 @@ public class ContactController {
     @Autowired
     TemplateUtil templateUtil;
 
-    @RequestMapping(value = "/contact", method = RequestMethod.GET)
+    @RequestMapping(value = "/contact.htm", method = RequestMethod.GET)
     public String aboutPage(Model model) {
         model.addAttribute("email", configuration.getProperty("email.from"));
         model.addAttribute("formData", new ContactUsFormData());
         return "contact";
     }
     
-    @RequestMapping(value = "/contactConfirm", method = RequestMethod.GET)
+    @RequestMapping(value = "/contactConfirm.htm", method = RequestMethod.GET)
     public String doContactUsConfirm(Model model) {
         model.addAttribute("email", configuration.getProperty("email.from"));
         model.addAttribute("confirmationMessage", "Your message has been sent to site administrator successfully.");
@@ -53,7 +53,7 @@ public class ContactController {
         return "contact";
     }
     
-    @RequestMapping(value = "/contact", method = RequestMethod.POST)
+    @RequestMapping(value = "/contact.htm", method = RequestMethod.POST)
     public String doContactUs(
             HttpServletRequest request,
             @ModelAttribute("formData") ContactUsFormData formData

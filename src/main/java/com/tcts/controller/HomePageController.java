@@ -62,7 +62,7 @@ public class HomePageController {
     /**
      * Render the home page for a volunteer.
      */
-    @RequestMapping(value = "volunteerHome", method = RequestMethod.GET)
+    @RequestMapping(value = "volunteerHome.htm", method = RequestMethod.GET)
     public String showVolunteerHomePage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         Volunteer volunteer = sessionData.getVolunteer();
@@ -102,7 +102,7 @@ public class HomePageController {
     /**
      * Render the home page for a teacher.
      */
-    @RequestMapping(value = "teacherHome", method = RequestMethod.GET)
+    @RequestMapping(value = "teacherHome.htm", method = RequestMethod.GET)
     public String showTeacherHomePage(HttpSession session, Model model) throws SQLException, InconsistentDatabaseException {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
@@ -150,7 +150,7 @@ public class HomePageController {
     /**
      * Render the home page for a volunteer.
      */
-    @RequestMapping(value = "bankAdminHome", method = RequestMethod.GET)
+    @RequestMapping(value = "bankAdminHome.htm", method = RequestMethod.GET)
     public String showBankAdminHomePage(HttpSession session, Model model) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
@@ -212,7 +212,7 @@ public class HomePageController {
     /**
      * Render the home page for a teacher.
      */
-    @RequestMapping(value = "siteAdminHome", method = RequestMethod.GET)
+    @RequestMapping(value = "siteAdminHome.htm", method = RequestMethod.GET)
     public String showSiteAdminHomePage(HttpSession session) {
         SessionData sessionData = SessionData.fromSession(session);
         SiteAdmin siteAdmin = sessionData.getSiteAdmin();

@@ -49,7 +49,7 @@ public class BankAdminActionsController {
      * This generates, not a page, but a detail which is loaded dynamically. The detail
      * contains the particular classes that a volunteer is signed up for.
      */
-    @RequestMapping(value = "bankAdminHomeDetail", method = RequestMethod.POST)
+    @RequestMapping(value = "bankAdminHomeDetail.htm", method = RequestMethod.POST)
     public String detailCoursesForAVolunteer(
             HttpSession session,
             Model model,
@@ -81,7 +81,7 @@ public class BankAdminActionsController {
      * Sets the given volunteer to CHECKED, which will REMOVE them from
      * all events they had volunteered for.
      */
-    @RequestMapping(value = "approveVolunteer", method = RequestMethod.POST)
+    @RequestMapping(value = "approveVolunteer.htm", method = RequestMethod.POST)
     public String approveVolunteer(
             HttpSession session,
             HttpServletRequest request,
@@ -111,7 +111,7 @@ public class BankAdminActionsController {
         return "redirect:" + bankAdmin.getUserType().getHomepage();
     }
 
-    @RequestMapping(value = "unApproveVolunteer", method = RequestMethod.POST)
+    @RequestMapping(value = "unApproveVolunteer.htm", method = RequestMethod.POST)
     public String unApproveVolunteer(
             HttpSession session,
             HttpServletRequest request,
@@ -145,7 +145,7 @@ public class BankAdminActionsController {
      * Sets the given volunteer to "suspended", which will REMOVE them from
      * all events they had volunteered for.
      */
-    @RequestMapping(value = "suspendVolunteer", method = RequestMethod.POST)
+    @RequestMapping(value = "suspendVolunteer.htm", method = RequestMethod.POST)
     public String suspendVolunteer(
             HttpSession session,
             HttpServletRequest request,
@@ -186,7 +186,7 @@ public class BankAdminActionsController {
      * Sets the given volunteer to "suspended", which will REMOVE them from
      * all events they had volunteered for.
      */
-    @RequestMapping(value = "reinstateVolunteer", method = RequestMethod.POST)
+    @RequestMapping(value = "reinstateVolunteer.htm", method = RequestMethod.POST)
     public String reinstateVolunteer(
             HttpSession session,
             @RequestParam("volunteerId") String volunteerId

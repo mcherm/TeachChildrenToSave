@@ -36,7 +36,7 @@ public class EditPersonalDataController {
      * Render the page for editing personal data of teachers and site admins.
      * @throws SQLException 
      */
-    @RequestMapping(value="/editPersonalData", method=RequestMethod.GET)
+    @RequestMapping(value="/editPersonalData.htm", method=RequestMethod.GET)
     public String showEditPersonalDataPage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getVolunteer() != null) {
@@ -59,7 +59,7 @@ public class EditPersonalDataController {
      * that they may have a bankSpecificData field to fill in).
      * @throws SQLException
      */
-    @RequestMapping(value="/editVolunteerPersonalData", method=RequestMethod.GET)
+    @RequestMapping(value="/editVolunteerPersonalData.htm", method=RequestMethod.GET)
     public String showEditVolunteerPersonalDataPage(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         Volunteer volunteer = sessionData.getVolunteer();
@@ -109,7 +109,7 @@ public class EditPersonalDataController {
     /**
      * Actually change the values that were entered.
      */
-    @RequestMapping(value="/editPersonalData", method=RequestMethod.POST)
+    @RequestMapping(value="/editPersonalData.htm", method=RequestMethod.POST)
     public String editPersonalData(
             HttpSession session,
             Model model,
@@ -146,7 +146,7 @@ public class EditPersonalDataController {
     /*
      * Actually change the values that were entered, for volunteers.
      */
-    @RequestMapping(value="/editVolunteerPersonalData", method=RequestMethod.POST)
+    @RequestMapping(value="/editVolunteerPersonalData.htm", method=RequestMethod.POST)
     public String editVolunteerPersonalData(
             HttpSession session,
             Model model,

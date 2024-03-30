@@ -51,7 +51,7 @@ public class EventController {
     /**
      * Deletes an event and all users associated with it.
      */
-    @RequestMapping(value = "deleteEvent", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteEvent.htm", method = RequestMethod.POST)
     public String deleteEvent(
             @RequestParam String eventId,
             HttpSession session,
@@ -75,7 +75,7 @@ public class EventController {
     /**
      * Render the event edit page.
      */
-    @RequestMapping(value = "viewEditEvents", method = RequestMethod.GET)
+    @RequestMapping(value = "viewEditEvents.htm", method = RequestMethod.GET)
     public String showAllEvents(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -86,7 +86,7 @@ public class EventController {
         return "events";
     }
     
-    @RequestMapping(value = "editEvent", method = RequestMethod.GET)
+    @RequestMapping(value = "editEvent.htm", method = RequestMethod.GET)
     public String enterDataToEditEvent(
             HttpSession session,
             Model model,
@@ -128,7 +128,7 @@ public class EventController {
     }
 
 
-    @RequestMapping(value = "editEvent", method = RequestMethod.POST)
+    @RequestMapping(value = "editEvent.htm", method = RequestMethod.POST)
     public String doEditEvent(
             HttpSession session,
             Model model,

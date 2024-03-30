@@ -21,7 +21,8 @@
     <servlet-mapping>
         <servlet-name>mvc-dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
-        <url-pattern></url-pattern>
+<!-- 2024-03-30 mcherm Removing this... it does not actually work to bind things. -->
+<!--        <url-pattern></url-pattern>-->
     </servlet-mapping>
     
     <filter>

@@ -50,7 +50,7 @@ public class SchoolController {
     /**
      * Render the bank edit page .
      */
-    @RequestMapping(value = "schools", method = RequestMethod.GET)
+    @RequestMapping(value = "schools.htm", method = RequestMethod.GET)
     public String viewSchools(
             HttpSession session,
             Model model
@@ -68,7 +68,7 @@ public class SchoolController {
     /**
      * Show the page for creating a new school.
      */
-    @RequestMapping(value = "addSchool", method = RequestMethod.GET)
+    @RequestMapping(value = "addSchool.htm", method = RequestMethod.GET)
     public String viewAddSchool(
             HttpSession session,
             Model model,
@@ -84,7 +84,7 @@ public class SchoolController {
     }
 
 
-    @RequestMapping(value = "editSchool", method = RequestMethod.GET)
+    @RequestMapping(value = "editSchool.htm", method = RequestMethod.GET)
     public String viewEditSchool(
             HttpSession session,
             Model model,
@@ -104,7 +104,7 @@ public class SchoolController {
     }
 
 
-    @RequestMapping(value = "addSchool", method = RequestMethod.POST)
+    @RequestMapping(value = "addSchool.htm", method = RequestMethod.POST)
     public String doAddSchool(
             HttpSession session,
             Model model,
@@ -135,7 +135,7 @@ public class SchoolController {
     }
 
 
-    @RequestMapping(value = "editSchool", method = RequestMethod.POST)
+    @RequestMapping(value = "editSchool.htm", method = RequestMethod.POST)
     public String doEditSchool(
             HttpSession session,
             Model model,
@@ -165,7 +165,7 @@ public class SchoolController {
     }
 
 
-    @RequestMapping(value = "deleteSchool", method = RequestMethod.GET)
+    @RequestMapping(value = "deleteSchool.htm", method = RequestMethod.GET)
     public String deleteSchoolConfirm(
             @RequestParam String schoolId,
             HttpSession session,
@@ -224,7 +224,7 @@ public class SchoolController {
     /**
      * Deletes a bank and all users associated with it.
      */
-    @RequestMapping(value = "deleteSchool", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteSchool.htm", method = RequestMethod.POST)
     public String deleteSchool(
             @ModelAttribute("deleteSchoolFormData") DeleteSchoolFormData deleteSchoolFormData,
             HttpSession session,

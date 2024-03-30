@@ -47,7 +47,7 @@ public class ResetPasswordController {
     @Autowired
     TemplateUtil templateUtil;
     
-    @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
+    @RequestMapping(value = "/forgotPassword.htm", method = RequestMethod.GET)
     public String forGotPasswordPage(Model model) {
     	model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "");
@@ -55,7 +55,7 @@ public class ResetPasswordController {
     }
 
        
-    @RequestMapping(value = "/sendPasswordResetEmail", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendPasswordResetEmail.htm", method = RequestMethod.GET)
     public String showResetPassword(
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
@@ -70,7 +70,7 @@ public class ResetPasswordController {
         return "resetPassword";
     }
     
-    @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/resetPassword.htm", method = RequestMethod.POST)
     public String doResetPassword(
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
@@ -117,7 +117,7 @@ public class ResetPasswordController {
     }
     
     
-    @RequestMapping(value = "/sendPasswordResetEmail", method = RequestMethod.POST)
+    @RequestMapping(value = "/sendPasswordResetEmail.htm", method = RequestMethod.POST)
     public String doSendPasswordResetEmail(
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,

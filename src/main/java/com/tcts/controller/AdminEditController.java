@@ -41,7 +41,7 @@ public class AdminEditController {
     private DatabaseFacade database;
 
 
-    @RequestMapping(value = "listAllowedDates", method = RequestMethod.GET)
+    @RequestMapping(value = "listAllowedDates.htm", method = RequestMethod.GET)
     public String listAllowedDates(
             HttpSession session,
             Model model
@@ -52,7 +52,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "listAllowedTimes", method = RequestMethod.GET)
+    @RequestMapping(value = "listAllowedTimes.htm", method = RequestMethod.GET)
     public String listAllowedTimes(
             HttpSession session,
             Model model
@@ -66,7 +66,7 @@ public class AdminEditController {
     /**
      * A site admin views the current settings
      */
-    @RequestMapping(value = "viewSiteSettings", method = RequestMethod.GET)
+    @RequestMapping(value = "viewSiteSettings.htm", method = RequestMethod.GET)
     public String viewSiteSettings(
             HttpSession session,
             Model model
@@ -77,7 +77,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "addAllowedDate", method = RequestMethod.GET)
+    @RequestMapping(value = "addAllowedDate.htm", method = RequestMethod.GET)
     public String showAddAllowedDate(
             HttpSession session,
             Model model
@@ -89,7 +89,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "addAllowedTime", method = RequestMethod.GET)
+    @RequestMapping(value = "addAllowedTime.htm", method = RequestMethod.GET)
     public String showAddAllowedTime(
             HttpSession session,
             Model model
@@ -101,7 +101,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "addAllowedDate", method = RequestMethod.POST)
+    @RequestMapping(value = "addAllowedDate.htm", method = RequestMethod.POST)
     public String doAddAllowedDate(
             HttpSession session,
             Model model,
@@ -129,7 +129,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "addAllowedTime", method = RequestMethod.POST)
+    @RequestMapping(value = "addAllowedTime.htm", method = RequestMethod.POST)
     public String doAddAllowedTime(
             HttpSession session,
             Model model,
@@ -160,7 +160,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "deleteAllowedDate", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteAllowedDate.htm", method = RequestMethod.POST)
     public String deleteAllowedDate(
             @RequestParam String parseableDateStr,
             HttpSession session
@@ -184,7 +184,7 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "deleteAllowedTime", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteAllowedTime.htm", method = RequestMethod.POST)
     public String deleteAllowedTime(
             @RequestParam String allowedTime,
             HttpSession session
@@ -201,7 +201,7 @@ public class AdminEditController {
         return "redirect:listAllowedTimes.htm";
     }
 
-    @RequestMapping(value = "showEditSiteSetting", method = RequestMethod.GET)
+    @RequestMapping(value = "showEditSiteSetting.htm", method = RequestMethod.GET)
     public String showEditSiteSetting(
             @RequestParam String settingToEdit,
             HttpSession session,
@@ -212,7 +212,7 @@ public class AdminEditController {
         return showEditSiteSettingPage(model, settingToEdit);
     }
 
-    @RequestMapping(value = "editSiteSetting", method = RequestMethod.POST)
+    @RequestMapping(value = "editSiteSetting.htm", method = RequestMethod.POST)
     public String editSiteSetting(
             @ModelAttribute("formData") EditSiteSettingFormData formData,
             HttpSession session

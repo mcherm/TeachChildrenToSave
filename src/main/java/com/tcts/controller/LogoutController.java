@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class LogoutController {
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/logout.htm", method = RequestMethod.GET)
     public String logout(HttpSession session) {
         SessionData.logout(session);
         return "redirect:/";

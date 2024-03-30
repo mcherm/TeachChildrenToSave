@@ -40,7 +40,7 @@ public class CreateEventController {
         CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
         binder.registerCustomEditor(Date.class, dateEditor);
     }
-    @RequestMapping(value = "/createEventBySiteAdmin", method = RequestMethod.GET)
+    @RequestMapping(value = "/createEventBySiteAdmin.htm", method = RequestMethod.GET)
     public String showPageCreateEventBySiteAdmin(
             HttpSession session,
             Model model
@@ -54,7 +54,7 @@ public class CreateEventController {
         return showFormWithErrors(model, sessionData, null);
     }
 
-    @RequestMapping(value="/createEvent", method= RequestMethod.GET)
+    @RequestMapping(value="/createEvent.htm", method= RequestMethod.GET)
     public String showPageCreateEventByTeacher(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getTeacher() == null) {
@@ -87,7 +87,7 @@ public class CreateEventController {
     }
 
 
-    @RequestMapping(value="/createEvent", method=RequestMethod.POST)
+    @RequestMapping(value="/createEvent.htm", method=RequestMethod.POST)
     public String createEvent(
             HttpSession session,
             Model model,

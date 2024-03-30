@@ -41,7 +41,7 @@ public class DocumentController {
      * will be displayed on the teacher, volunteer, or bank admin home page.  Because bank admins can also volunteer as volunteers
      * any documents made available to volunteers will automatically also be displayed on the bank admin page.
      */
-    @RequestMapping(value = "documents", method = RequestMethod.GET)
+    @RequestMapping(value = "documents.htm", method = RequestMethod.GET)
     public String showDocuments(HttpSession session, Model model) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -80,7 +80,7 @@ public class DocumentController {
         return "documents";
     }
 
-    @RequestMapping(value = "editDocument", method = RequestMethod.POST)
+    @RequestMapping(value = "editDocument.htm", method = RequestMethod.POST)
     public String editDocument(
             @ModelAttribute("editDocumentFormData") EditDocumentFormData formData,
             HttpSession session) throws SQLException {
@@ -94,7 +94,7 @@ public class DocumentController {
         return "redirect:documents.htm";
     }
 
-    @RequestMapping(value = "uploadDocument", method = RequestMethod.POST)
+    @RequestMapping(value = "uploadDocument.htm", method = RequestMethod.POST)
     public String uploadDocument(
             @RequestParam("dataFile") MultipartFile file,
             HttpSession session) throws Exception {
@@ -113,7 +113,7 @@ public class DocumentController {
      * @return
      * @throws SQLException
      */
-    @RequestMapping(value = "deleteDocument", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteDocument.htm", method = RequestMethod.POST)
     public String deleteDocument(
             @RequestParam String documentName,
             HttpSession session

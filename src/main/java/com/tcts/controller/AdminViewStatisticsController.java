@@ -28,7 +28,7 @@ public class AdminViewStatisticsController {
      * This generates, not a page, but a detail which is loaded dynamically. The detail
      * contains the particular classes that a volunteer is signed up for.
      */
-    @RequestMapping(value = "adminViewStatistics", method = RequestMethod.GET)
+    @RequestMapping(value = "adminViewStatistics.htm", method = RequestMethod.GET)
     public String detailCoursesForAVolunteer(
             HttpSession session,
             Model model

@@ -52,7 +52,7 @@ public class EmailAnnouncementController {
 
 
 
-    @RequestMapping(value = "/emailAnnouncement", method = RequestMethod.GET)
+    @RequestMapping(value = "/emailAnnouncement.htm", method = RequestMethod.GET)
     public String emailAnnouncement(HttpSession session, Model model) throws SQLException {
 		SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -71,7 +71,7 @@ public class EmailAnnouncementController {
     	return "emailAnnouncement";
     }
 
-    @RequestMapping(value="/emailAnnouncement", method=RequestMethod.POST)
+    @RequestMapping(value="/emailAnnouncement.htm", method=RequestMethod.POST)
     public String doEmailAnnouncement(HttpSession session, Model model, HttpServletRequest request,
                               @ModelAttribute("formData") EmailAnnouncementFormData formData)
             throws SQLException, InconsistentDatabaseException

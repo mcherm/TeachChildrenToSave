@@ -30,14 +30,14 @@ public class LoginController {
     
     
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login.htm", method = RequestMethod.GET)
     public String newLoginPage(Model model) {
     	model.addAttribute("formData", new LoginFormData());
         model.addAttribute("errorMessage", "");
         return "login";
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login.htm", method = RequestMethod.POST)
     public String isUserAuthenticated(
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
@@ -70,7 +70,7 @@ public class LoginController {
 
     }
 
-    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    @RequestMapping(value = "/home.htm", method = RequestMethod.GET)
     public String homePage(
             ModelMap model,
             HttpSession session

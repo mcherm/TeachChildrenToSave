@@ -72,7 +72,7 @@ public class ExcelDownloadController implements InitializingBean {
 
 
 
-    @RequestMapping(value="/excel/{locationSpecName}", method=RequestMethod.GET)
+    @RequestMapping(value="/excel/{locationSpecName}.htm", method=RequestMethod.GET)
     public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName) throws SQLException, IOException {
         try {
             this.threadLocalSession.set(session);
@@ -89,7 +89,7 @@ public class ExcelDownloadController implements InitializingBean {
 
     }
 
-   @RequestMapping(value="/excel/{locationSpecName}/{parameter}", method=RequestMethod.GET)
+   @RequestMapping(value="/excel/{locationSpecName}/{parameter}.htm", method=RequestMethod.GET)
    public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName, @PathVariable("parameter") String parameter) throws SQLException, IOException {
       WorkbookSpec workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
       ExtendedModelMap mockModel = new ExtendedModelMap();

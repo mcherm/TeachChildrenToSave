@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class FormsController {
 
-    @RequestMapping(value = "/forms", method = RequestMethod.GET)
+    @RequestMapping(value = "/forms.htm", method = RequestMethod.GET)
     public String aboutPage() {
         return "forms"; // which .jsp to display
     }

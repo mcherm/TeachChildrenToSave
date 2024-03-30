@@ -58,7 +58,7 @@ public class CancelWithdrawController {
      *   This method can be called by a volunteer or bankadmin to withdraw themselves from a class
      *   they signed up for or by a siteadmin in which case they are withdrawing the current volunteer from the class
      */
-    @RequestMapping(value = "volunteerWithdraw", method = RequestMethod.GET)
+    @RequestMapping(value = "volunteerWithdraw.htm", method = RequestMethod.GET)
     public String showVolunteerWithdraw(
             HttpSession session,
             Model model,
@@ -105,7 +105,7 @@ public class CancelWithdrawController {
      * A volunteer withdraws themselves from a class they had previously
      * volunteered for.
      */
-    @RequestMapping(value = "volunteerWithdraw", method = RequestMethod.POST)
+    @RequestMapping(value = "volunteerWithdraw.htm", method = RequestMethod.POST)
     public String doVolunteerWithdraw(
             HttpSession session,
             HttpServletRequest request,
@@ -201,7 +201,7 @@ public class CancelWithdrawController {
     /**
      * Display a confirmation page to allow a teacher to cancel a class.
      */
-    @RequestMapping(value = "teacherCancel", method = RequestMethod.GET)
+    @RequestMapping(value = "teacherCancel.htm", method = RequestMethod.GET)
     public String showTeacherCancel(
             HttpSession session,
             Model model,
@@ -241,7 +241,7 @@ public class CancelWithdrawController {
     /**
      * Cancel a teacher's class and sends the volunteer an email saying the class is cancelled.
      */
-    @RequestMapping(value = "teacherCancel", method = RequestMethod.POST)
+    @RequestMapping(value = "teacherCancel.htm", method = RequestMethod.POST)
     public String doTeacherCancel(
             HttpSession session,
             HttpServletRequest request,

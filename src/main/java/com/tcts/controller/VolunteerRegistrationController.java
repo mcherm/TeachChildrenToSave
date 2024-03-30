@@ -30,7 +30,7 @@ public class VolunteerRegistrationController {
     @Autowired
     private DatabaseFacade database;
 
-    @RequestMapping(value="/registerVolunteer", method=RequestMethod.GET)
+    @RequestMapping(value="/registerVolunteer.htm", method=RequestMethod.GET)
     public String showRegisterVolunteerPage(HttpSession session, Model model) throws SQLException {
         SessionData.ensureNoActiveSession(session);
         model.addAttribute("formData", new VolunteerRegistrationFormData());
@@ -49,7 +49,7 @@ public class VolunteerRegistrationController {
     }
 
 
-    @RequestMapping(value="/registerVolunteer", method=RequestMethod.POST)
+    @RequestMapping(value="/registerVolunteer.htm", method=RequestMethod.POST)
     public String createNewVolunteer(
             HttpSession session,
             Model model,
