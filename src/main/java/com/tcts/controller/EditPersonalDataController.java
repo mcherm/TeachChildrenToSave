@@ -2,7 +2,7 @@ package com.tcts.controller;
 
 import java.sql.SQLException;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.tcts.exception.EmailAlreadyInUseException;
 

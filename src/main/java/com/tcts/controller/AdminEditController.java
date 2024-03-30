@@ -3,7 +3,7 @@ package com.tcts.controller;
 import java.sql.Date;
 import java.sql.SQLException;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.exception.AllowedDateAlreadyInUseException;

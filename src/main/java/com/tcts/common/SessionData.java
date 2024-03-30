@@ -1,6 +1,6 @@
 package com.tcts.common;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.SiteAdmin;

@@ -1,0 +1,75 @@
+===== DEBUG NOTES =====
+
+(1) Running on Tomcat 10, I get this error:
+    29-Mar-2024 20:49:08.069 SEVERE [main] org.apache.catalina.core.StandardContext.filterStart Exception starting filter [NoCacheFilter]
+        java.lang.ClassCastException: class com.tcts.util.NoCacheFilter cannot be cast to class jakarta.servlet.Filter (com.tcts.util.NoCacheFilter is in unnamed module of loader org.apache.catalina.loader.ParallelWebappClassLoader @2cf92cc7; jakarta.servlet.Filter is in unnamed module of loader java.net.URLClassLoader @728938a9)
+
+  According to https://stackoverflow.com/questions/61906447/wicket-9-tomcat-10-cant-cast-jakarta-servlet-filter [2021] and
+  https://stackoverflow.com/questions/66741683/dispatcherservlet-cannot-be-cast-to-class-jakarta-servlet-servlet-classcastexce [2021]
+  that could be because Tomcat 10 isn't compatible with Tomcat 9.
+
+    "The issue is that Tomcat 10 uses jakarta.** packages (Jakarta EE 9) while Wicket 9.x is still based on javax.** packages (Java EE 8)."
+
+  BUT, according to https://devm.io/spring/spring-framework-6-release, Spring 6.0+ supports Tomcat 10. And I'm using 6.1.5
+  everywhere (as far as I can tell).
+
+  -------
+  So I modified the pom.xml file to import "jakarta.servlet :: jakarta.servlet-api" instead
+  of "javax.servlet :: jstl". Then I went into NoCacheFilter.java and replaced all the
+  imports of javax.servlet.Foo with jakarta.servlet.Foo.
+
+  I did NOT go to any of the OTHER files that imported javax.servlet.<anything>. Maybe I
+  should have. I didn't want to change too many things at once, so I just did that and tested
+  it. But then I got DIFFERENT errors.
+
+(1.1) It now LAUNCHES !! And I no longer get a 400 error when visiting the URL. But I DO get
+  a different error. In localhost.<date>.log I see this:
+
+  29-Mar-2024 21:40:21.225 SEVERE [http-nio-8080-exec-1] org.apache.catalina.core.StandardWrapperValve.invoke Servlet.service() for servlet [mvc-dispatcher] in context with path [/TeachChildrenToSave] threw exception [Handler processing failed: java.lang.NoClassDefFoundError: jakarta/servlet/jsp/jstl/core/Config] with root cause
+  	java.lang.ClassNotFoundException: jakarta.servlet.jsp.jstl.core.Config
+
+  ...and in catalina.out I see this:
+
+  java.lang.IllegalStateException: No primary or single unique constructor found for interface javax.servlet.http.HttpServletRequest
+  	at org.springframework.beans.BeanUtils.getResolvableConstructor(BeanUtils.java:265)
+
+  ----
+  I fixed that by changing ALL reference to javax.servlet.* to jakarta.servlet.*. I also changed all references to
+  javax.annotation to jakarta.annotation (and found the right thing to add to the POM file).
+
+(1.2) It now has the following error:
+
+  In file localhost.<date>.log:
+
+    30-Mar-2024 07:59:59.429 SEVERE [http-nio-8080-exec-6] org.apache.catalina.core.StandardWrapperValve.invoke Servlet.service() for servlet [mvc-dispatcher] in context with path [/TeachChildrenToSave] threw exception [Handler processing failed: java.lang.NoClassDefFoundError: jakarta/servlet/jsp/jstl/core/Config] with root cause
+        java.lang.ClassNotFoundException: jakarta.servlet.jsp.jstl.core.Config
+		at org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1353)
+		at org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1165)
+		at org.springframework.web.servlet.support.JstlUtils.exposeLocalizationContext(JstlUtils.java:103)
+		at org.springframework.web.servlet.view.JstlView.exposeHelpers(JstlView.java:137)
+
+  ----
+  Looks like maybe I need the jar that contains "jakarta.servlet.jsp.jstl.core.Config". Let me see if I can find what
+  that is...
+  ----
+  I added "jakarta.servlet :: jakarta.servlet-api" to the POM file and that worked.
+
+(1.3) It now has the following error when I launch the page:
+
+  In file localhost.<date>.log:
+
+    30-Mar-2024 08:10:58.086 SEVERE [http-nio-8080-exec-2] org.apache.catalina.core.ApplicationDispatcher.invoke Servlet.service() for servlet [jsp] threw exception
+        org.apache.jasper.JasperException: /WEB-INF/pages/home.jsp (line: [7], column: [8]) The absolute uri: [http://java.sun.com/jsp/jstl/core] cannot be resolved in either web.xml or the jar files deployed with this application
+
+  ----
+  Based on https://stackoverflow.com/questions/4928271/how-to-install-jstl-it-fails-with-the-absolute-uri-cannot-be-resolved-or-una
+  I am trying adding the following:
+
+      <dependency>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+          <version>3.0.1</version>
+      </dependency>
+  ----
+  Wow... that worked!! I was able to bring up the home page in Tomcat 10!
+

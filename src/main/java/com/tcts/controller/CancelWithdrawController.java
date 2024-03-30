@@ -3,8 +3,8 @@ package com.tcts.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import com.tcts.email.EmailSender;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;

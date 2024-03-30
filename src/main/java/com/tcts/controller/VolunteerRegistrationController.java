@@ -3,7 +3,7 @@ package com.tcts.controller;
 
 import java.sql.SQLException;
 import java.util.List;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

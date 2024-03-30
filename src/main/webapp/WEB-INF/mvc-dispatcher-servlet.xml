@@ -20,9 +20,10 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="10485760"/> <!-- 10 megabytes -->
-    </bean>
+<!-- FIXME: Commented out on 2024-03-29 because it seemed to be breaking things. I'm really not sure about this. -->
+<!--    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+<!--        <property name="maxUploadSize" value="10485760"/> &lt;!&ndash; 10 megabytes &ndash;&gt;-->
+<!--    </bean>-->
     
     <!-- Load in application properties reference -->
     <bean id="velocityEngine" class="org.apache.velocity.app.VelocityEngine">
