@@ -63,7 +63,7 @@ public class TeacherController {
 
     @RequestMapping(value = "teacherDelete.htm", method = RequestMethod.POST)
     public String deleteTeacher(
-            @RequestParam String teacherId,
+            @RequestParam("teacherId") String teacherId,
             HttpSession session,
             Model model,
             HttpServletRequest request
@@ -110,7 +110,7 @@ public class TeacherController {
     public String enterDataToEditTeacher(
             HttpSession session,
             Model model,
-            @RequestParam String userId
+            @RequestParam("userId") String userId
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);

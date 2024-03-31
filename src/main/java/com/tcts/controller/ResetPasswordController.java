@@ -60,7 +60,7 @@ public class ResetPasswordController {
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
             HttpSession session,
-            @RequestParam(value = "token") String token
+            @RequestParam("token") String token
         )
     {
         session.setAttribute("resetPasswordToken", token);

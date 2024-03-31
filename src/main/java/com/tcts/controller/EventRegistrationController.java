@@ -49,7 +49,7 @@ public class EventRegistrationController {
     public String eventRegistrationBySiteAdmin(
             HttpSession session,
             Model model,
-            @RequestParam String userId
+            @RequestParam("userId") String userId
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);

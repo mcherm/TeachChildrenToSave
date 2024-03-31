@@ -162,7 +162,7 @@ public class AdminEditController {
 
     @RequestMapping(value = "deleteAllowedDate.htm", method = RequestMethod.POST)
     public String deleteAllowedDate(
-            @RequestParam String parseableDateStr,
+            @RequestParam("parseableDateStr") String parseableDateStr,
             HttpSession session
         ) throws SQLException
     {
@@ -186,7 +186,7 @@ public class AdminEditController {
 
     @RequestMapping(value = "deleteAllowedTime.htm", method = RequestMethod.POST)
     public String deleteAllowedTime(
-            @RequestParam String allowedTime,
+            @RequestParam("allowedTime") String allowedTime,
             HttpSession session
         ) throws SQLException
     {
@@ -203,7 +203,7 @@ public class AdminEditController {
 
     @RequestMapping(value = "showEditSiteSetting.htm", method = RequestMethod.GET)
     public String showEditSiteSetting(
-            @RequestParam String settingToEdit,
+            @RequestParam("settingToEdit") String settingToEdit,
             HttpSession session,
             Model model
         ) throws SQLException

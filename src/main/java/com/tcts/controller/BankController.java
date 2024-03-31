@@ -81,7 +81,7 @@ public class BankController {
      */
     @RequestMapping(value = "deleteBank.htm", method = RequestMethod.GET)
     public String deleteBankConfirm(
-            @RequestParam String bankId,
+            @RequestParam("bankId") String bankId,
             HttpSession session,
             Model model
         ) throws SQLException
@@ -104,7 +104,7 @@ public class BankController {
      */
     @RequestMapping(value = "deleteBank.htm", method = RequestMethod.POST)
     public String deleteBank(
-            @RequestParam String bankId,
+            @RequestParam("bankId") String bankId,
             HttpSession session,
             HttpServletRequest request
     ) throws SQLException, BankHasVolunteersException, VolunteerHasEventsException {
@@ -134,7 +134,7 @@ public class BankController {
     public String enterDataToEditBank(
             HttpSession session,
             Model model,
-            @RequestParam String bankId
+            @RequestParam("bankId") String bankId
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);

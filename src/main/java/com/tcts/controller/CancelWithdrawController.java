@@ -109,7 +109,7 @@ public class CancelWithdrawController {
     public String doVolunteerWithdraw(
             HttpSession session,
             HttpServletRequest request,
-            @ModelAttribute WithdrawFormData formData
+            @ModelAttribute("formData") WithdrawFormData formData
         ) throws SQLException
     {
         // --- Ensure logged in as a Volunteer ---
@@ -245,7 +245,7 @@ public class CancelWithdrawController {
     public String doTeacherCancel(
             HttpSession session,
             HttpServletRequest request,
-            @ModelAttribute WithdrawFormData formData
+            @ModelAttribute("formData") WithdrawFormData formData
     ) throws SQLException
     {
         // --- Ensure logged in as a Teacher ---

@@ -188,6 +188,10 @@
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
+<!-- 2024-03-31 mcherm Considering adding this based on https://github.com/spring-projects/spring-framework/wiki/Upgrading-to-Spring-Framework-6.x#parameter-name-retention but it doesn't seem to work. -->
+<!--                    <compilerArgs>-->
+<!--                        <arg>-parameters</arg>-->
+<!--                    </compilerArgs>-->
                 </configuration>
             </plugin>
 

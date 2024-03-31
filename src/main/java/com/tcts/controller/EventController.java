@@ -53,7 +53,7 @@ public class EventController {
      */
     @RequestMapping(value = "deleteEvent.htm", method = RequestMethod.POST)
     public String deleteEvent(
-            @RequestParam String eventId,
+            @RequestParam("eventId") String eventId,
             HttpSession session,
             Model model
         ) throws SQLException
@@ -90,7 +90,7 @@ public class EventController {
     public String enterDataToEditEvent(
             HttpSession session,
             Model model,
-            @RequestParam String eventId
+            @RequestParam("eventId") String eventId
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);

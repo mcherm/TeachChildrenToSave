@@ -77,7 +77,7 @@ public class VolunteerController extends AuthenticationController{
 
     @RequestMapping(value = "volunteerDelete.htm", method = RequestMethod.POST)
     public String deleteVolunteer(
-            @RequestParam String volunteerId,
+            @RequestParam("volunteerId") String volunteerId,
             HttpSession session,
             Model model,
             HttpServletRequest request)
@@ -111,7 +111,7 @@ public class VolunteerController extends AuthenticationController{
     public String enterDataToEditVolunteer(
             HttpSession session,
             Model model,
-            @RequestParam String userId
+            @RequestParam("userId") String userId
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);

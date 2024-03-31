@@ -88,7 +88,7 @@ public class SchoolController {
     public String viewEditSchool(
             HttpSession session,
             Model model,
-            @RequestParam String schoolId
+            @RequestParam("schoolId") String schoolId
     ) throws SQLException {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
@@ -167,7 +167,7 @@ public class SchoolController {
 
     @RequestMapping(value = "deleteSchool.htm", method = RequestMethod.GET)
     public String deleteSchoolConfirm(
-            @RequestParam String schoolId,
+            @RequestParam("schoolId") String schoolId,
             HttpSession session,
             Model model
     ) throws SQLException {

@@ -115,7 +115,7 @@ public class DocumentController {
      */
     @RequestMapping(value = "deleteDocument.htm", method = RequestMethod.POST)
     public String deleteDocument(
-            @RequestParam String documentName,
+            @RequestParam("documentName") String documentName,
             HttpSession session
     ) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
