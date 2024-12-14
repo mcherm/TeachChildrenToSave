@@ -92,7 +92,7 @@ public class ResetPasswordController {
         	    String decodedToken = URLDecoder.decode(token, "UTF-8").replace(" ", "+"); //FIXME space is getting replaced by + in url encoder sometimes
                 String sentResetPaswordToken = potentialUser.getResetPasswordToken();
                 
-                if (decodedToken != null && sentResetPaswordToken != null && decodedToken.equalsIgnoreCase(sentResetPaswordToken)) {
+                if (decodedToken.equalsIgnoreCase(sentResetPaswordToken)) {
                 		String salt = SecurityUtil.generateSalt();
                         String hashedPassword = SecurityUtil.getHashedPassword(formData.getPassword(), salt);
                         database.updateUserCredential(potentialUser.getUserId(), hashedPassword, salt);
@@ -101,18 +101,17 @@ public class ResetPasswordController {
                         sessionData.setUser(potentialUser);
                         // FIXME: There's a minor bug here: the user being stored in the session has the wrong password. Shouldn't harm anything
                         return "redirect:" + potentialUser.getUserType().getHomepage();
-                }
-                else {
+                } else {
                 	model.addAttribute("formData", new LoginFormData());
         	        model.addAttribute("errorMessage", "Reset password link is not valid.");
         	        return "resetPassword";
                 }
                 
-        } else{
-			        // User does not exists
-			        model.addAttribute("formData", new LoginFormData());
-			        model.addAttribute("errorMessage", "Email Id does not exists.");
-			        return "forgotPassword";
+        } else {
+            // User does not exists
+            model.addAttribute("formData", new LoginFormData());
+            model.addAttribute("errorMessage", "Email Id does not exists.");
+            return "forgotPassword";
         }
     }
     
@@ -160,10 +159,10 @@ public class ResetPasswordController {
                 }
                 
         } else {
-			        // --- User does not exists
-			        model.addAttribute("formData", new LoginFormData());
-			        model.addAttribute("errorMessage", "Email Id does not exists.");
-			        return "forgotPassword";
+            // --- User does not exist
+            model.addAttribute("formData", new LoginFormData());
+            model.addAttribute("errorMessage", "Email Id does not exists.");
+            return "forgotPassword";
         }
        return "forgotPasswordResetEmailConfirm";
     }

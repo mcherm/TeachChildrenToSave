@@ -91,6 +91,12 @@
 	                		Send Email Announcement
 	                	</button>
 	                </li>
+
+					<li class="mb1">
+						<button onclick="js.loadURL('managePasswords.htm');" class="editOrRegister">
+							Manage Passwords
+						</button>
+					</li>
 	                
 	                <li class="mb1">
 	                	<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">

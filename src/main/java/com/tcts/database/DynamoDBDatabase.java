@@ -1187,7 +1187,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), userId),
                 attributeUpdate(user_hashed_password, hashedPassword),
-                attributeUpdate(user_password_salt, salt));
+                attributeUpdate(user_password_salt, salt),
+                attributeUpdate(user_reset_password_token, null));
     }
 
     @Override
