@@ -844,6 +844,17 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<User> getAllUsers() throws SQLException {
+        List<User> result = new ArrayList<>();
+        // -- Get the users --
+        for (Item item : tables.userTable.scan()) {
+            result.add(createUserFromDynamoDBItem(item));
+        }
+        // -- Return the result --
+        return result;
+    }
+
+    @Override
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
         List<PrettyPrintingDate> result = new ArrayList<PrettyPrintingDate>();
         for (Item scanOutcome : tables.allowedDatesTable.scan()) {

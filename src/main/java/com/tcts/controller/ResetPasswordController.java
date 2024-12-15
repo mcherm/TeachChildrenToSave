@@ -114,6 +114,25 @@ public class ResetPasswordController {
             return "forgotPassword";
         }
     }
+
+    /**
+     * This generates the URL that users should follow to reset their password. Make
+     * this public so it can be used elsewhere as needed.
+     */
+    public static String passwordResetUrl(HttpServletRequest request, String resetToken) {
+        final StringBuffer requestURL = request.getRequestURL();
+        final String servletPath = request.getServletPath();
+        assert requestURL.toString().endsWith(servletPath);
+        // now trim the servletPath from the end of the requestURL
+        requestURL.setLength(requestURL.length() - servletPath.length());
+        final String encodedToken;
+        try {
+            encodedToken = URLEncoder.encode(resetToken, "UTF-8").replace("+", "%20");
+        } catch(UnsupportedEncodingException err) {
+            throw new RuntimeException("UTF-8 encoding not supported");
+        }
+        return requestURL + "/sendPasswordResetEmail.htm?token=" + encodedToken;
+    }
     
     
     @RequestMapping(value = "/sendPasswordResetEmail.htm", method = RequestMethod.POST)
@@ -137,8 +156,8 @@ public class ResetPasswordController {
 
         		String randomToken = SecurityUtil.getHashedPassword(RandomStringUtils.randomAlphanumeric(20),  uuid_without_dashes);
                 database.updateResetPasswordToken(potentialUser.getUserId(), randomToken);
-                String url =  request.getRequestURL() + "?token=" + URLEncoder.encode(randomToken, "UTF-8").replace("+", "%20");
-                
+                String url = passwordResetUrl(request, randomToken);
+
                 try {
             		Map<String,Object> emailModel = new HashMap<String, Object>();
             		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;

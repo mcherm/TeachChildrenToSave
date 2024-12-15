@@ -218,6 +218,11 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<User> getAllUsers() throws SQLException {
+        return database.getAllUsers();
+    }
+
+    @Override
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
         return database.getAllowedDates();
     }

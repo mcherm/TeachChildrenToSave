@@ -202,7 +202,12 @@ public class MySQLDatabase implements DatabaseFacade {
             "select " + userFields + ", " + bankFields + 
 		    " from User join Bank on bank_id = organization_id  and (access_type = 'V' or access_type ='BA')" +
             " order by last_name asc, first_name asc";
-    
+
+    private final static String getAllUsersSQL =
+            "select " + userFields +
+            " from User" +
+            " order by last_name asc, first_name asc";
+
     private final static String getTeacherWithSchoolSQL =
     		"select " + userFields + ", " + schoolFields + 
 		    " from User join School on school_id = organization_id  and access_type = 'T'" +
@@ -311,6 +316,35 @@ public class MySQLDatabase implements DatabaseFacade {
         return getUserByIdOrEmail(userId, getUserByIdSQL);
     }
 
+    private User readUserFromResultSetRow(ResultSet resultSet) throws SQLException {
+        UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
+        switch(userType) {
+            case VOLUNTEER: {
+                Volunteer volunteer = new Volunteer();
+                volunteer.populateFieldsFromResultSetRow(resultSet);
+                return volunteer;
+            }
+            case TEACHER: {
+                Teacher teacher = new Teacher();
+                teacher.populateFieldsFromResultSetRow(resultSet);
+                return teacher;
+            }
+            case BANK_ADMIN: {
+                BankAdmin bankAdmin = new BankAdmin();
+                bankAdmin.populateFieldsFromResultSetRow(resultSet);
+                return bankAdmin;
+            }
+            case SITE_ADMIN: {
+                SiteAdmin siteAdmin = new SiteAdmin();
+                siteAdmin.populateFieldsFromResultSetRow(resultSet);
+                return siteAdmin;
+            }
+            default: {
+                throw new RuntimeException("This should never occur.");
+            }
+        }
+    }
+
 
     @Override
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
@@ -329,32 +363,7 @@ public class MySQLDatabase implements DatabaseFacade {
             User user = null;
             while (resultSet.next()) {
                 numberOfRows++;
-                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
-                switch(userType) {
-                    case VOLUNTEER: {
-                        Volunteer volunteer = new Volunteer();
-                        volunteer.populateFieldsFromResultSetRow(resultSet);
-                        user = volunteer;
-                    } break;
-                    case TEACHER: {
-                        Teacher teacher = new Teacher();
-                        teacher.populateFieldsFromResultSetRow(resultSet);
-                        user = teacher;
-                    } break;
-                    case BANK_ADMIN: {
-                        BankAdmin bankAdmin = new BankAdmin();
-                        bankAdmin.populateFieldsFromResultSetRow(resultSet);
-                        user = bankAdmin;
-                    } break;
-                    case SITE_ADMIN: {
-                        SiteAdmin siteAdmin = new SiteAdmin();
-                        siteAdmin.populateFieldsFromResultSetRow(resultSet);
-                        user = siteAdmin;
-                    } break;
-                    default: {
-                        throw new RuntimeException("This should never occur.");
-                    }
-                }
+                user = readUserFromResultSetRow(resultSet);
             }
             if (numberOfRows < 1) {
                 return null; // No user found
@@ -740,7 +749,27 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
-
+    @Override
+    public List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getAllUsersSQL);
+            resultSet = preparedStatement.executeQuery();
+            int numberOfRows = 0;
+            while (resultSet.next()) {
+                numberOfRows++;
+                User user = readUserFromResultSetRow(resultSet);
+                users.add(user);
+            }
+            return users;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
 
     @Override
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {

@@ -68,7 +68,7 @@ public interface DatabaseFacade {
      * insensitive or not is determined by the database implementation .  The Dynamo Db implementation
      * only allows one user per email regardless of case, and will ignore case of the email when
      * doing the user lookup
-     * */
+     */
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException;
 
     /**
@@ -140,10 +140,10 @@ public interface DatabaseFacade {
     public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) throws SQLException;
 
 
-        /**
-         * Insert a new Teacher in the database, and return it. Expects that all
-         * fields have been checked for containing valid values.
-         */
+    /**
+     * Insert a new Teacher in the database, and return it. Expects that all
+     * fields have been checked for containing valid values.
+     */
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException;
     
     /**
@@ -192,6 +192,9 @@ public interface DatabaseFacade {
     
     /** Returns the full list of all banks. */
     public List<Bank> getAllBanks() throws SQLException;
+
+    /** Returns the full list of users (with only user data). */
+    public List<User> getAllUsers() throws SQLException;
 
     /** Returns the allowed dates. */
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException;
@@ -333,12 +336,12 @@ public interface DatabaseFacade {
     public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException;
 
 
-        /**
-         * Get list of volunteers with their bank details.
-         *
-         * @return List<Volunteer>
-         * @throws SQLException
-         */
+    /**
+     * Get list of volunteers with their bank details.
+     *
+     * @return List<Volunteer>
+     * @throws SQLException
+     */
 	public List<Volunteer> getVolunteersWithBankData() throws SQLException;
 	
 	/**
@@ -346,7 +349,6 @@ public interface DatabaseFacade {
 	 * @return
 	 * @throws SQLException
 	 */
-
 	List<Teacher> getMatchedTeachers() throws SQLException;
 	
 	/**

@@ -183,6 +183,11 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<User> getAllUsers() throws SQLException {
+        return database.getAllUsers();
+    }
+
+    @Override
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
         return allowedDates.getCachedValue();
     }

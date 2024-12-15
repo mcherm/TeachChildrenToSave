@@ -715,6 +715,7 @@ body.viewEditEvents table,
 body.listAllowedDates table,
 body.listAllowedTimes table,
 body.viewSiteSettings table,
+body.managePasswords table,
 table.full-page-table {
   width: 100%;
   border: 1px solid #ccc;
@@ -738,6 +739,7 @@ body.viewEditEvents table thead th,
 body.listAllowedDates table thead th,
 body.listAllowedTimes table thead th,
 body.viewSiteSettings table thead th,
+body.managePasswords table thead th,
 table.full-page-table thead th {
   font-weight: bold;
   background-color: #0c345a;
@@ -761,6 +763,7 @@ body.viewEditEvents table tbody tr:nth-child(even),
 body.listAllowedDates table tbody tr:nth-child(even),
 body.listAllowedTimes table tbody tr:nth-child(even),
 body.viewSiteSettings table tbody tr:nth-child(even),
+body.managePasswords table tbody tr:nth-child(even),
 table.full-page-table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
@@ -778,6 +781,7 @@ body.viewEditEvents table td,
 body.listAllowedDates table td,
 body.listAllowedTimes table td,
 body.viewSiteSettings table td,
+body.managePasswords table td,
 table.full-page-table td {
   padding: .5em !important;
 }
@@ -868,6 +872,7 @@ td.emptyTableMessage {
   body.listAllowedDates table.responsive thead,
   body.listAllowedTimes table.responsive thead,
   body.viewSiteSettings table.responsive thead,
+  body.managePasswords table.responsive thead,
   body.documents table.responsive thead,
   body.teacherHome table.responsive thead {
     display: none;
@@ -977,6 +982,7 @@ td.emptyTableMessage {
   body.listAllowedDates table.responsive thead,
   body.listAllowedTimes table.responsive thead,
   body.viewSiteSettings table.responsive thead,
+  body.managePasswords table.responsive thead,
   body.documents table.responsive thead,
   body.teacherHome table.responsive thead {
     display: table-header-group;
