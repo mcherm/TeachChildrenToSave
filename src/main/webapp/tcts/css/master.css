@@ -1223,6 +1223,11 @@ body.evenRegistration .cancelBlock button {
   font-weight: bold;
 }
 
+.seriousWarning {
+  color: #b21b29;
+  font-weight: bold;
+}
+
 footer {
   max-width: 960px;
   margin-left: auto;

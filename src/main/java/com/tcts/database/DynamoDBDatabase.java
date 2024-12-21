@@ -905,7 +905,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 } catch (NoSuchUserException e) {
                     throw new RuntimeException ("Volunteer found but then could not be deleted.");
                 }
-
             };
         }
         if (volunteers.size() == 1) {
