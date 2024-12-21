@@ -784,6 +784,7 @@ body.viewSiteSettings table td,
 body.managePasswords table td,
 table.full-page-table td {
   padding: .5em !important;
+  vertical-align: middle;
 }
 
 body.schools table {
@@ -1360,3 +1361,21 @@ fieldset legend {
 table.same-size-cols {
   table-layout: fixed;
 }
+
+@media (min-width: 768px) {
+  div.scrollable {
+    width: 200px;
+    max-height: 50px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+  }
+}
+
+/*div.scrollable {*/
+/*  width: 200px;*/
+/*  max-height: 50px;*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  overflow-y: auto;*/
+/*}*/

@@ -45,6 +45,7 @@
                         <th scope="col" class="center">Grade</th>
                         <th scope="col">Delivery Method</th>
                         <th scope="col" class="center">Students</th>
+                        <th scope="col" >Notes</th>
                         <th scope="col">Teacher</th>
                         <th scope="col">Teacher Email</th>
                         <th scope="col">School</th>
@@ -67,6 +68,7 @@
                             <td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
                             <td data-title="Delivery Method"><c:out value="${event.deliveryMethodString}"/></td>
                             <td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>
+                            <td class="center" data-title="Notes"><div class="scrollable"><c:out value="${event.notes}"/></div> </td>
                             <td data-title="Teacher">
                                 <c:out value="${event.linkedTeacher.firstName}"/>
                                 <c:out value="${event.linkedTeacher.lastName}"/>
@@ -107,6 +109,7 @@
                             </td>
 
                         </tr>
+
                     </c:forEach>
                 </tbody>
             </table>
