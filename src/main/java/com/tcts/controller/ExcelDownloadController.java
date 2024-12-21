@@ -478,6 +478,7 @@ public class ExcelDownloadController implements InitializingBean {
                     new ColSpec<Event>("Grade", x -> x.getGrade()),
                     new ColSpec<Event>("Delivery Method", x -> x.getDeliveryMethodString()),
                     new ColSpec<Event>("Students", x -> x.getNumberStudents()),
+                    new ColSpec<Event>("Notes", x->x.getNotes()),
                     new ColSpec<Event>("Teacher", x -> x.getLinkedTeacher().getFirstName()+" "+x.getLinkedTeacher().getLastName()),
                     new ColSpec<Event>("Teacher Email", x -> x.getLinkedTeacher().getFirstName()+" "+x.getLinkedTeacher().getEmail())
                 )
@@ -541,6 +542,7 @@ public class ExcelDownloadController implements InitializingBean {
                 new ColSpec<Event>("Grade", x -> x.getGrade()),
                 new ColSpec<Event>("Delivery Method", x -> x.getDeliveryMethodString()),
                 new ColSpec<Event>("Students", x -> x.getNumberStudents()),
+                new ColSpec<Event>("Notes", x->x.getNotes()),
                 new ColSpec<Event>("Teacher", x -> x.getLinkedTeacher().getFirstName() + " " + x.getLinkedTeacher().getLastName()),
                 new ColSpec<Event>("Teacher Email", x -> x.getLinkedTeacher().getEmail()),
                 new ColSpec<Event>("School", x -> x.getLinkedTeacher().getLinkedSchool().getName()),
