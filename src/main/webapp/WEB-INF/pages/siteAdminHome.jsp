@@ -97,14 +97,20 @@
 							Manage Passwords
 						</button>
 					</li>
-	                
-	                <li class="mb1">
+
+					<li class="mb1">
+						<button onclick="js.loadURL('manageDatabase.htm');" class="editOrRegister">
+							Manage Database
+						</button>
+					</li>
+
+					<li class="mb1">
 	                	<button onclick="js.loadURL('editPersonalData.htm');" class="editOrRegister">
 	                		Edit my Account
 	                	</button>
 	                </li>
 
-	            </ul>
+				</ul>
 
 		
 			</main>
