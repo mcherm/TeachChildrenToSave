@@ -749,7 +749,6 @@ table.full-page-table thead th {
   padding-left: .5em;
   vertical-align: middle;
 }
-body.volunteerHome table tbody tr:nth-child(even),
 body.teacherHome table tbody tr:nth-child(even),
 body.createEvent table tbody tr:nth-child(even),
 body.evenRegistration table tbody tr:nth-child(even),
@@ -764,6 +763,11 @@ body.listAllowedTimes table tbody tr:nth-child(even),
 body.viewSiteSettings table tbody tr:nth-child(even),
 body.managePasswords table tbody tr:nth-child(even),
 table.full-page-table tbody tr:nth-child(even) {
+  background: #eaeaea;
+}
+body.volunteerHome table tbody tr:nth-child(4n+1),
+body.volunteerHome table tbody tr:nth-child(4n+2)
+{
   background: #eaeaea;
 }
 

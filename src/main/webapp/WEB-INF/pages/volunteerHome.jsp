@@ -124,7 +124,12 @@
 										</button>
 									</td>
 		                        </tr>
-		                    </c:forEach>
+								<tr>
+									<c:if test ="${not empty event.notes}">
+										<td colspan="9" class =  "italic">Class Note:  <c:out value="${event.notes}"/></td>
+									</c:if>
+								</tr>
+							</c:forEach>
 		                </tbody>
 		            </table>
 		        </div><%-- #events --%>
