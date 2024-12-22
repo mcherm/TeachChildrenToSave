@@ -751,7 +751,6 @@ table.full-page-table thead th {
 }
 body.teacherHome table tbody tr:nth-child(even),
 body.createEvent table tbody tr:nth-child(even),
-body.evenRegistration table tbody tr:nth-child(even),
 body.banks table tbody tr:nth-child(even),
 body.schools table tbody tr:nth-child(even),
 body.teachers table tbody tr:nth-child(even),
@@ -766,7 +765,9 @@ table.full-page-table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
 body.volunteerHome table tbody tr:nth-child(4n+1),
-body.volunteerHome table tbody tr:nth-child(4n+2)
+body.volunteerHome table tbody tr:nth-child(4n+2),
+body.evenRegistration table tbody tr:nth-child(4n+1),
+body.evenRegistration table tbody tr:nth-child(4n+2)
 {
   background: #eaeaea;
 }
