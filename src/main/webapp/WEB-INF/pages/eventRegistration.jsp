@@ -147,7 +147,13 @@
                             "                <button type='submit' class='editOrRegister details'>Sign Up</button>" +
                             "            </form>" +
                             "    </td>" +
-                            "</tr>";
+                            "</tr>" +
+                            "<tr>"+
+<%--                            <c:if test ="${ event.notes != null}">--%>
+                                "<td colspan='10' class = 'italic'>Class Note: "+ event.notes + "</td>"+
+<%--                            </c:if>--%>
+                            "</tr>"
+                        ;
                     }
                 });
                 html +=
