@@ -90,7 +90,7 @@
                 <c:if test="${not empty newVolunteers}">
                     <h2>New Volunteers</h2>
                     <div>When you've verfied a new user is valid, please approve the user.  This will place it on the approved list.  New users and approved users can sign up for classes normally.  However if you suspend a user that user will be unsigned up from any classes they had previously signed up for and be prevented from signing up for any classes in the future unless they are reinstated by you.</div>
-                    <table id="newVolunteersTable" class="responsive">
+                    <table id="newVolunteersTable" class="responsive" class = "striped">
                         <thead>
                             <tr>
                                 <th>First Name</th>
@@ -151,7 +151,7 @@
                     <a download="bankvolunteers.xls" href="excel/bankVolunteers.htm" class="downloadExcel">Export to Excel</a>
 
 
-                    <table id="normalVolunteersTable" class="responsive">
+                    <table id="normalVolunteersTable" class="responsive striped" >
 		                <thead>
 		                    <tr>
 		                        <th>First Name</th>

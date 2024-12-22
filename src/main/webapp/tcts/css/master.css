@@ -750,7 +750,6 @@ table.full-page-table thead th {
   vertical-align: middle;
 }
 body.volunteerHome table tbody tr:nth-child(even),
-body.bankAdminHome table tbody tr:nth-child(even),
 body.teacherHome table tbody tr:nth-child(even),
 body.createEvent table tbody tr:nth-child(even),
 body.evenRegistration table tbody tr:nth-child(even),
@@ -767,6 +766,15 @@ body.managePasswords table tbody tr:nth-child(even),
 table.full-page-table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
+
+table.striped > tbody > tr:nth-child(even) {
+  background: #eaeaea;
+}
+
+table.innerTable > tbody > tr:nth-child(even){
+  border-bottom: 1px solid #cdcdcd;
+}
+
 body.volunteerHome table td,
 body.bankAdminHome table td,
 body.teacherHome table td,
@@ -1376,6 +1384,10 @@ table.same-size-cols {
     overflow-y: auto;
   }
 }
+td.italic{
+  font-style: italic;
+}
+
 
 /*div.scrollable {*/
 /*  width: 200px;*/

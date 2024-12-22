@@ -1,6 +1,6 @@
 <%-- This is just a fragment of a page, loaded by javascript --%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<table>
+<table class = "innerTable">
     <tbody>
         <c:if test="${empty events}">
             <td colspan="5" class="emptyTableMessage">Not volunteered yet.</td>
@@ -21,6 +21,11 @@
                             <c:otherwise>Not eligible</c:otherwise>
                         </c:choose>
                     </td>
+                </c:if>
+            </tr>
+            <tr>
+                <c:if test ="${not empty event.notes}">
+                    <td colspan="7" class =  "italic">Class Note:  <c:out value="${event.notes}"/></td>
                 </c:if>
             </tr>
         </c:forEach>
