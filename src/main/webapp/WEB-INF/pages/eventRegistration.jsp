@@ -148,12 +148,13 @@
                             "            </form>" +
                             "    </td>" +
                             "</tr>" +
-                            "<tr>"+
-<%--                            <c:if test ="${ event.notes != null}">--%>
-                                "<td colspan='10' class = 'italic'>Class Note: "+ event.notes + "</td>"+
-<%--                            </c:if>--%>
-                            "</tr>"
-                        ;
+                            "<tr>" +
+                            (
+                                event.notes === null || event.notes === ""
+                                ? ""
+                                : "<td colspan='20' class = 'italic'>Class Note: "+ event.notes + "</td>"
+                            ) +
+                            "</tr>";
                     }
                 });
                 html +=
