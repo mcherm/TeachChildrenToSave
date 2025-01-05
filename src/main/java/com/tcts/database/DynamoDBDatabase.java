@@ -747,7 +747,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
+    public BankAdmin getBankAdminByBank(String bankId) throws SQLException { // FIXME: This is the old version; get rid of it
         List<Volunteer> volunteers = getVolunteersByBank(bankId);
         BankAdmin result = null;
         for (Volunteer volunteer : volunteers) {
@@ -755,8 +755,21 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 if (result == null) {
                     result = (BankAdmin) volunteer;
                 } else {
-                    throw new RuntimeException("Database appears to have multiple BankAdmins for one bank.");
+                    // Just allow this -- we're changing the rules
+                    // throw new RuntimeException("Database appears to have multiple BankAdmins for one bank.");
                 }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
+        List<Volunteer> volunteers = getVolunteersByBank(bankId);
+        List<BankAdmin> result = new ArrayList<>();
+        for (Volunteer volunteer : volunteers) {
+            if (volunteer instanceof  BankAdmin) {
+                result.add( (BankAdmin) volunteer);
             }
         }
         return result;

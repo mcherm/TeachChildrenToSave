@@ -168,8 +168,8 @@ public interface DatabaseFacade {
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
 
     /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin or there is no such bank. */
-    public BankAdmin getBankAdminByBank(String bankId)
-            throws SQLException;
+    public BankAdmin getBankAdminByBank(String bankId) throws SQLException; // FIXME: Old one-admin-per-bank model
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException; // FIXME: New multi-admins-per-bank model
 
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all

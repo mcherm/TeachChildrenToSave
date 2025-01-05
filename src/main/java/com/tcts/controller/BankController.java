@@ -67,8 +67,10 @@ public class BankController {
     public String showForm(Model model) throws SQLException {
         List<Bank> banks = database.getAllBanks();
         for (Bank bank : banks) {
-            BankAdmin bankAdmin = database.getBankAdminByBank(bank.getBankId());
-            bank.setLinkedBankAdmin(bankAdmin);
+            BankAdmin bankAdmin = database.getBankAdminByBank(bank.getBankId()); // FIXME: Older version; eliminate
+            bank.setLinkedBankAdmin(bankAdmin); // FIXME: Older version; eliminate
+            List<BankAdmin> bankAdmins = database.getBankAdminsByBank(bank.getBankId());
+            bank.setLinkedBankAdmins(bankAdmins);
         }
 
         model.addAttribute("banks", banks);
@@ -148,7 +150,7 @@ public class BankController {
         formData.setBankId(bankId);
         formData.setBankName(bank.getBankName());
         formData.setMinLMIForCRA(bank.getMinLMIForCRA() == null ? "" : bank.getMinLMIForCRA().toString());
-        BankAdmin bankAdmin = database.getBankAdminByBank(bankId);
+        BankAdmin bankAdmin = database.getBankAdminByBank(bankId); // FIXME: This needs to change
         if (bankAdmin != null) {
             formData.setFirstName(bankAdmin.getFirstName());
             formData.setLastName(bankAdmin.getLastName());

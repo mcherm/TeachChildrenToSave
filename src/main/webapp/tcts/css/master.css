@@ -780,6 +780,18 @@ table.innerTable > tbody > tr:nth-child(even){
   border-bottom: 1px solid #cdcdcd;
 }
 
+/*
+  We want thin vertical lines separating columns on the inner tables. (We want it
+  because the inner tables don't actually line up; each one has separate column
+  widths. The vertical lines help make it readable.) Get inner lines by putting
+  a left border on all but the first cell in both header and body.
+*/
+table.innerTable > tbody > tr > th:not(:first-child),
+table.innerTable > tbody > tr > td:not(:first-child) {
+  border-left: 1px solid #ccc;
+}
+
+
 body.volunteerHome table td,
 body.bankAdminHome table td,
 body.teacherHome table td,

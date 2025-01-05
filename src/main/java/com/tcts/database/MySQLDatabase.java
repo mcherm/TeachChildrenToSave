@@ -646,6 +646,34 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
+    @Override
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = connectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
+            preparedStatement.setString(1, bankId);
+            resultSet = preparedStatement.executeQuery();
+            List<BankAdmin> bankAdmins = new ArrayList<>();
+            int resultCount = 0;
+            while (resultSet.next()) {
+                resultCount += 1;
+                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
+                if (userType != UserType.BANK_ADMIN) {
+                    throw new RuntimeException("This should not occur.");
+                }
+                BankAdmin bankAdmin = new BankAdmin();
+                bankAdmin.populateFieldsFromResultSetRow(resultSet);
+                bankAdmins.add(bankAdmin);
+            }
+            return bankAdmins;
+        } finally {
+            closeSafely(connection, preparedStatement, resultSet);
+        }
+    }
+
 
     @Override
     public Bank getBankById(String bankId) throws SQLException {

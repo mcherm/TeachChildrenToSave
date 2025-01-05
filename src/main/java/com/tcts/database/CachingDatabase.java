@@ -163,6 +163,11 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
+        return database.getBankAdminsByBank(bankId);
+    }
+
+    @Override
     public Bank getBankById(String bankId) throws SQLException {
         return database.getBankById(bankId);
     }

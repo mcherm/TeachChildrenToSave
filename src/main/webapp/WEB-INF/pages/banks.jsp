@@ -44,9 +44,16 @@
                 <thead>
                     <tr>
                         <th scope="col">Bank Name</th>
-                        <th scope="col" class="center">Bank admin name</th>
-                        <th scope="col" class="center">Bank admin email</th>
-                        <th scope="col" class="center">Bank admin phone</th>
+                        <th>
+                            <div>Bank Admins</div>
+                            <table class="innerTable">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                </tr>
+                            </table>
+                        </th>
                         <th scope="col" class="center">
                             <span class="ada-read">Column of Delete buttons</span>
                         </th>
@@ -57,17 +64,34 @@
                 </thead>
                 <tbody>
                     <c:if test="${empty banks}">
-                        <td colspan="6" class="emptyTableMessage">There are no banks.</td>
+                        <td colspan="4" class="emptyTableMessage">There are no banks.</td>
                     </c:if>
                     <c:forEach var="bank" items="${banks}">
                         <tr>
                             <td data-title="Bank Name"><c:out value="${bank.bankName}"/></td>
-                            <td data-title="Bank Admin" class="center">
-                                <c:out value="${bank.linkedBankAdmin.firstName}"/>
-                                <c:out value="${bank.linkedBankAdmin.lastName}"/>
+                            <td>
+                                <table class="innerTable">
+                                    <tbody>
+                                        <c:if test="${empty bank.linkedBankAdmins}">
+                                            <td colspan="3" class="emptyTableMessage">No Bank Admin.</td>
+                                        </c:if>
+                                        <c:forEach items="${bank.linkedBankAdmins}" var="linkedBankAdmin">
+                                            <tr>
+                                                <td data-title="Bank Admin" class="center">
+                                                    <c:out value="${linkedBankAdmin.firstName}"/>
+                                                    <c:out value="${linkedBankAdmin.lastName}"/>
+                                                </td>
+                                                <td class="center" data-title="Bank Admin Email">
+                                                    <c:out value="${linkedBankAdmin.email}"/>
+                                                </td>
+                                                <td class="center" data-title="Bank Admin Phone">
+                                                    <c:out value="${linkedBankAdmin.phoneNumber}"/>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
                             </td>
-                            <td class="center" data-title="Bank Admin Email"><c:out value="${bank.linkedBankAdmin.email}"/></td>
-                            <td class="center" data-title="Bank Admin Phone"><c:out value="${bank.linkedBankAdmin.phoneNumber}"/></td>
                             <td class="action">
                                 <button onclick="js.loadURL('deleteBank.htm?bankId=<c:out value="${bank.bankId}"/>');"
                                         class="editOrRegister delete">Delete</button>

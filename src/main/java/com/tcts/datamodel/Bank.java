@@ -3,6 +3,7 @@ package com.tcts.datamodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Represents a single bank. Contains data from one row of the Bank table.
@@ -14,7 +15,8 @@ public class Bank {
     private String bankSpecificDataLabel;
 
     // --- Linked data - loaded only when needed ---
-    private BankAdmin linkedBankAdmin;
+    private BankAdmin linkedBankAdmin; // FIXME: The old one-admin-per-bank model
+    private List<BankAdmin> linkedBankAdmins; // FIXME: thew new, multiple-admins model
 
 
     /**
@@ -43,12 +45,20 @@ public class Bank {
         this.bankName = bankName;
     }
 
-    public BankAdmin getLinkedBankAdmin() {
+    public BankAdmin getLinkedBankAdmin() { // FIXME: Old version; get rid of it
         return linkedBankAdmin;
+    }
+
+    public List<BankAdmin> getLinkedBankAdmins() {
+        return linkedBankAdmins;
     }
 
     public void setLinkedBankAdmin(BankAdmin linkedBankAdmin) {
         this.linkedBankAdmin = linkedBankAdmin;
+    }
+
+    public void setLinkedBankAdmins(List<BankAdmin> linkedBankAdmins) {
+        this.linkedBankAdmins = linkedBankAdmins;
     }
 
     public BigDecimal getMinLMIForCRA() {
