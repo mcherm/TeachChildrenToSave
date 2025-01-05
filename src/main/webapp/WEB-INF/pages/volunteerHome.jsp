@@ -20,25 +20,32 @@
 
 		        <h1>Your Home Page</h1>
 
+				<c:if test="${not volunteerSignupsOpen}">
+					<div class="importantMessage">
+						Signups for classes will be available soon.
+					</div>
+				</c:if>
+
 		        <div class="actions">
 		        
 		            <h2>Actions</h2>
 		         
 		            <ul class="noUl">
-		                <li class="mb1">
-                            <c:choose>
-                                <c:when test="${!(sessionData.volunteer.getApprovalStatus() == ApprovalStatus.Suspended)}">
-                                    <button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
-                                        Register for a class
-                                    </button>
-                                </c:when>
-                                <c:otherwise>
-                                    <div>The administrator for your bank has suspended your account. You
-                                    can not volunteer for classes at this time.</div>
-                                </c:otherwise>
-                            </c:choose>
-		                </li>
-		                
+						<c:if test="${volunteerSignupsOpen}">
+							<li class="mb1">
+									<c:choose>
+										<c:when test="${!(sessionData.volunteer.getApprovalStatus() == ApprovalStatus.Suspended)}">
+											<button onclick="js.loadURL('eventRegistration.htm');" class="editOrRegister">
+												Register for a class
+											</button>
+										</c:when>
+										<c:otherwise>
+											<div>The administrator for your bank has suspended your account. You
+											can not volunteer for classes at this time.</div>
+										</c:otherwise>
+									</c:choose>
+							</li>
+						</c:if>
 		                <li class="mb1">
 		                	<button onclick="js.loadURL('editVolunteerPersonalData.htm');" class="editOrRegister">
 		                		Edit my account

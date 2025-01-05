@@ -97,7 +97,9 @@
                     "    <th scope='col' class='sortable' id='col_for_craEligible''><button onclick='sortBy(\"craEligible\")'><span class='ada-read'>Sort by&nbsp;</span>CRA</button></th>" +
                     </c:if>
                     "    <th scope='col' class='action'><span class='ada-read'>Column of Details buttons</span></th>" +
+                    <c:if test="${volunteerSignupsOpen}">
                     "    <th scope='col' class='action'><span class='ada-read'>Column of Sign Up buttons</span></th>" +
+                    </c:if>
                     "</tr></thead>" +
                     "<tbody>";
                 <c:if test="${empty events}">
@@ -140,6 +142,7 @@
                             "        <input type='hidden' name='doneURL' value='${calledByURL}'/>" +
                             "        <button class='editOrRegister details' type='submit'>Details</button>" +
                             "    </form></td>" +
+                            <c:if test="${volunteerSignupsOpen}">
                             "    <td class='action'>" +
                             "            <form method='POST' action='eventRegistration.htm'>" +
                             "                <input type='hidden' name='eventId' value='" + event.eventId + "'>" +
@@ -147,13 +150,15 @@
                             "                <button type='submit' class='editOrRegister details'>Sign Up</button>" +
                             "            </form>" +
                             "    </td>" +
+                            </c:if>
                             "</tr>" +
-                            "<tr>"+
-<%--                            <c:if test ="${ event.notes != null}">--%>
-                                "<td colspan='10' class = 'italic'>Class Note: "+ event.notes + "</td>"+
-<%--                            </c:if>--%>
-                            "</tr>"
-                        ;
+                            "<tr>" +
+                            (
+                                event.notes === null || event.notes === ""
+                                ? ""
+                                : "<td colspan='11' class = 'italic'>Class Note: "+ event.notes + "</td>"
+                            ) +
+                            "</tr>";
                     }
                 });
                 html +=
@@ -364,6 +369,12 @@
 
             <c:if test = "${calledBy == 'bankAdmin' }">
                 <h1>My Volunteering</h1>
+                <c:if test="${not volunteerSignupsOpen}">
+                    <div class="importantMessage">
+                        Signups for classes will be available soon.
+                    </div>
+                </c:if>
+
             </c:if>
 
             <c:if test = "${calledBy == 'siteAdmin' || calledBy == 'bankAdmin' }">

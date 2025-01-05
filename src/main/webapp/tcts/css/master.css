@@ -1411,6 +1411,10 @@ td.italic{
   font-style: italic;
 }
 
+.importantMessage {
+  font-style: italic;
+}
+
 /**
   A layout item (typically a div) containing some buttons which are laid out
   horizontally when there is space (and vertically when there isn't).

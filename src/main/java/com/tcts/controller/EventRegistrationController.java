@@ -89,6 +89,7 @@ public class EventRegistrationController {
                             Volunteer volunteer, //the volunteer to be signed up for a class),
                             SessionData sessionData)
             throws SQLException {
+
         model.addAttribute ("volunteerId", volunteer.getUserId());
         model.addAttribute("volunteerFirstName",volunteer.getFirstName());
         model.addAttribute("volunteerLastName", volunteer.getLastName());
@@ -96,6 +97,9 @@ public class EventRegistrationController {
         model.addAttribute("events", database.getAllAvailableEvents());
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
+        boolean volunteerSignupsOpen = EventRegistrationController.isVolunteerSignupsOpen(database);
+        model.addAttribute("volunteerSignupsOpen", volunteerSignupsOpen);
+
         if (sessionData.getBankAdmin() != null)  {
             model.addAttribute("calledBy", "bankAdmin");
             model.addAttribute("calledByURL", "eventRegistration.htm");
@@ -122,19 +126,19 @@ public class EventRegistrationController {
     }
 
     @RequestMapping(value="/eventRegistration.htm", method=RequestMethod.POST)
-    public String createEvent(HttpSession session, HttpServletRequest request,
+    public String volunteerForEvent(HttpSession session, HttpServletRequest request,
                               @ModelAttribute("formData") EventRegistrationFormData formData)
             throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException
     {
         SessionData sessionData = SessionData.fromSession(session);
         String volunteerId;
         Volunteer volunteer;
-
+        boolean open = isVolunteerSignupsOpen(database);
         if (sessionData.getSiteAdmin() != null) {
             volunteerId = formData.getVolunteerId();
-        } else if (sessionData.getVolunteer() != null) {
+        } else if (sessionData.getVolunteer() != null  && open) {
             volunteerId = sessionData.getVolunteer().getUserId();
-        } else if (sessionData.getBankAdmin() != null) {
+        } else if (sessionData.getBankAdmin() != null && open) {
             volunteerId = sessionData.getBankAdmin().getUserId();
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged-in.");
@@ -286,4 +290,24 @@ public class EventRegistrationController {
             return "redirect:" + sessionData.getUser().getUserType().getHomepage();
         }
     }
+
+    /**
+     * This method uses the database connection to verify whether the volunteer registration
+     * is open. It return true if it is open, false if not.
+     */
+    public static boolean isVolunteerSignupsOpen(DatabaseFacade database) throws SQLException {
+        String setting = database.getSiteSettings().get("VolunteerSignupsOpen");
+        return setting != null && setting.trim().toLowerCase().equals("yes");
+    }
+    /**
+     * This method ensures that the volunteer registration is open, throwing an exception
+     * it is not.
+     */
+    public void ensureVolunteerSignupsIsOpen() throws SQLException {
+        if (!isVolunteerSignupsOpen(database)) {
+            throw new RuntimeException("Cannot register for classes if teacher registration is not open.");
+        }
+    }
+
+
 }

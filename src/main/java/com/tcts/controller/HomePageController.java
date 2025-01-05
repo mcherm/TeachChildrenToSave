@@ -89,6 +89,9 @@ public class HomePageController {
         // --- Display the page ---
         model.addAttribute("bank", bank);
         model.addAttribute("events", events);
+        boolean volunteerSignupsOpen = EventRegistrationController.isVolunteerSignupsOpen(database);
+        model.addAttribute("volunteerSignupsOpen", volunteerSignupsOpen);
+
         if (volunteerDocs.size() == 0){
             model.addAttribute("showDocuments", false);
         } else {
@@ -148,7 +151,7 @@ public class HomePageController {
     }
 
     /**
-     * Render the home page for a volunteer.
+     * Render the home page for a bankAdmin.
      */
     @RequestMapping(value = "bankAdminHome.htm", method = RequestMethod.GET)
     public String showBankAdminHomePage(HttpSession session, Model model) throws SQLException {

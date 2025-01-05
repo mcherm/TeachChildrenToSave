@@ -25,7 +25,7 @@
             </tr>
             <tr>
                 <c:if test ="${not empty event.notes}">
-                    <td colspan="7" class =  "italic">Class Note:  <c:out value="${event.notes}"/></td>
+                    <td colspan="8" class =  "italic">Class Note:  <c:out value="${event.notes}"/></td>
                 </c:if>
             </tr>
         </c:forEach>
