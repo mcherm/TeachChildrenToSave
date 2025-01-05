@@ -42,6 +42,7 @@ import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.NewBankAdminFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -253,13 +254,16 @@ public interface DatabaseFacade {
     /** Inserts a new bank and the corresponding bank admin. Password is set to null. */
 	void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException;
 
+    /** Insert a new Bank Admin for a bank. Password is set to null. */
+    void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException;
+
     /**
      * Modifies fields of an existing bank. If person fields like email are present, it
      * modifies the existing bank admin (if there is one) or creates a new Bank Admin (if
      * there wasn't one). If person fields like email are NOT present, nothing happens with
      * the Bank Admin if there wasn't one, or if there WAS a bank admin then that person
      * is transformed into a Volunteer.
-     */
+     */ // FIXME: Now that this formData doesn't have the admin, we should CHANGE THE NAME
     public void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
 

@@ -7,7 +7,7 @@
         <%@include file="include/commonHead.jsp"%>
         <script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
     </head>
-    <body class="">
+    <body class="editBank">
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -34,50 +34,6 @@
                                 <div class="inputCnt">
                                     <div class="info">Bank Name</div>
                                     <form:input path="bankName"/>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="formElementCnt">
-                            <label>
-                                <div class="inputCnt">
-                                    <div class="info">
-                                        Bank Admin First Name
-                                    </div>
-                                    <form:input path="firstName" />
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="formElementCnt">
-                            <label>
-                                <div class="inputCnt">
-                                    <div class="info">
-                                        Bank Admin Last Name
-                                    </div>
-                                    <form:input path="lastName" />
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="formElementCnt">
-                            <label>
-                                <div class="inputCnt">
-                                    <div class="info">
-                                        Bank Admin Email Address
-                                    </div>
-                                    <form:input path="email" />
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="formElementCnt">
-                            <label>
-                                <div class="inputCnt">
-                                    <div class="info">
-                                        Bank Admin Phone Number
-                                    </div>
-                                    <form:input path="phoneNumber" />
                                 </div>
                             </label>
                         </div>
@@ -116,6 +72,47 @@
 
                 <div>
                     <button onclick="js.loadURL('<c:out value="${cancelURL}"/>')" class="editOrRegister cancel">Cancel</button>
+                </div>
+
+                <div class="listOfBankAdmins">
+                    <h2>Bank Admin(s)</h2>
+
+                    <table class="responsive">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:if test="${empty formData.bankAdmins}">
+                                <td colspan="3" class="emptyTableMessage">No Bank Admin.</td>
+                            </c:if>
+                            <c:forEach items="${formData.bankAdmins}" var="bankAdmin">
+                                <tr>
+                                    <td data-title="Bank Admin" class="center">
+                                        <c:out value="${bankAdmin.firstName}"/>
+                                        <c:out value="${bankAdmin.lastName}"/>
+                                    </td>
+                                    <td class="center" data-title="Bank Admin Email">
+                                        <c:out value="${bankAdmin.email}"/>
+                                    </td>
+                                    <td class="center" data-title="Bank Admin Phone">
+                                        <c:out value="${bankAdmin.phoneNumber}"/>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+
+                    <div class="horiz-buttons">
+                        <button class="editOrRegister" onclick="alert('this button does not yet work')">Mark Volunteer as Bank Admin</button>
+                        <button class="editOrRegister"
+                                onclick="js.loadURL('newBankAdmin.htm?bankId=<c:out value="${formData.bankId}"/>');">
+                            Make New Bank Admin
+                        </button>
+                    </div>
                 </div>
 
             </main>

@@ -45,6 +45,7 @@ import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.NewBankAdminFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -327,6 +328,12 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
         database.insertNewBankAndAdmin(formData);
+        allBanks.refreshNow();
+    }
+
+    @Override
+    public void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException {
+        database.insertNewBankAdmin(formData);
         allBanks.refreshNow();
     }
 

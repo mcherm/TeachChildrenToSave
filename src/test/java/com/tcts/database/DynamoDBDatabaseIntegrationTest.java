@@ -473,10 +473,6 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
-        editBankFormData.setFirstName("Jan");
-        editBankFormData.setLastName("Smith");
-        editBankFormData.setEmail("jsmith@firstib.com");
-        editBankFormData.setPhoneNumber("");
         editBankFormData.setMinLMIForCRA("34");
         dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
@@ -490,10 +486,6 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
-        editBankFormData.setFirstName("Jan");
-        editBankFormData.setLastName("Smith");
-        editBankFormData.setEmail("jsmith@firstib.com");
-        editBankFormData.setPhoneNumber("");
         editBankFormData.setMinLMIForCRA("12.6");
         dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
@@ -507,50 +499,11 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
-        editBankFormData.setFirstName("Jan");
-        editBankFormData.setLastName("Smith");
-        editBankFormData.setEmail("jsmith@firstib.com");
-        editBankFormData.setPhoneNumber("");
         editBankFormData.setMinLMIForCRA("");
         dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("First Savings", bank.getBankName());
         assertNull(bank.getMinLMIForCRA());
-    }
-
-    @Test
-    public void testModifyBankAdminFields() throws Exception {
-        String bankId = insertNewBankAndReturnTheId();
-        EditBankFormData editBankFormData = new EditBankFormData();
-        editBankFormData.setBankId(bankId);
-        editBankFormData.setFirstName("Bob");
-        editBankFormData.setLastName("Edwards");
-        editBankFormData.setEmail("bob.edwards@gmail.com");
-        editBankFormData.setPhoneNumber("555-1234");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
-        BankAdmin bankAdmin = dynamoDBDatabase.getBankAdminByBank(bankId);
-        assertEquals("Bob", bankAdmin.getFirstName());
-        assertEquals("Edwards", bankAdmin.getLastName());
-        assertEquals("bob.edwards@gmail.com", bankAdmin.getEmail());
-        assertEquals("555-1234", bankAdmin.getPhoneNumber());
-    }
-
-    @Test
-    public void testCreateBankAdminWithModifyBankAndBankAdmin() throws Exception {
-        insertBankWithoutAdmin();
-        List<Bank> banks = dynamoDBDatabase.getAllBanks();
-        assertEquals(1, banks.size());
-        String bankId = banks.get(0).getBankId();
-        EditBankFormData editBankFormData = new EditBankFormData();
-        editBankFormData.setBankId(bankId);
-        editBankFormData.setFirstName("Bob");
-        editBankFormData.setLastName("Edwards");
-        editBankFormData.setEmail("bob.edwards@gmail.com");
-        editBankFormData.setPhoneNumber("555-1234");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
-        BankAdmin bankAdmin = dynamoDBDatabase.getBankAdminByBank(bankId);
-        assertNotNull(bankAdmin);
-        assertEquals("bob.edwards@gmail.com", bankAdmin.getEmail());
     }
 
     @Test

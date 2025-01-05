@@ -56,6 +56,7 @@ import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.NewBankAdminFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -1045,68 +1046,35 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(bank_name, formData.getBankName()));
         // -- Insert bank admin --
         if (formHasBankAdmin) {
-            verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
-            String bankAdminId = dynamoDBHelper.createUniqueId();
-            dynamoDBHelper.insertIntoTable(tables.userTable,
-                    new ItemMaker(user_id, bankAdminId)
-                            .withString(user_type, UserType.BANK_ADMIN.getDBValue())
-                            .withString(user_email, formData.getEmail().toLowerCase())   //for purposes of user lookup only allow one user per email regardless of case
-                            .withString(user_original_email,formData.getEmail())  //preserves case for purposes of sending email
-                            .withString(user_first_name, formData.getFirstName())
-                            .withString(user_last_name, formData.getLastName())
-                            .withString(user_phone_number, formData.getPhoneNumber())
-                            .withString(user_organization_id, bankId)
-                            .withInt(user_approval_status, ApprovalStatus.CHECKED.getDbValue()));
+            NewBankAdminFormData newFormData = new NewBankAdminFormData();
+            newFormData.setBankId(bankId);
+            newFormData.setFirstName(formData.getFirstName());
+            newFormData.setLastName(formData.getLastName());
+            newFormData.setEmail(formData.getEmail());
+            newFormData.setPhoneNumber(formData.getPhoneNumber());
+
+            insertNewBankAdmin(newFormData);
         }
     }
 
     @Override
+    public void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException {
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
+        String bankAdminId = dynamoDBHelper.createUniqueId();
+        dynamoDBHelper.insertIntoTable(tables.userTable,
+                new ItemMaker(user_id, bankAdminId)
+                        .withString(user_type, UserType.BANK_ADMIN.getDBValue())
+                        .withString(user_email, formData.getEmail().toLowerCase())   //for purposes of user lookup only allow one user per email regardless of case
+                        .withString(user_original_email,formData.getEmail())  //preserves case for purposes of sending email
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_organization_id, formData.getBankId())
+                        .withInt(user_approval_status, ApprovalStatus.CHECKED.getDbValue()));
+    }
+
+    @Override
     public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
-        // If it has an email we presume it has a bank admin, and vice versa
-        boolean formHasBankAdmin = ! isEmpty(formData.getEmail());
-
-        // -- Find the existingBankAdminId --
-        BankAdmin currentBankAdmin = getBankAdminByBank(formData.getBankId());
-        boolean currentBankAdminExists = currentBankAdmin != null;
-        String currentBankAdminUserId = currentBankAdminExists ? currentBankAdmin.getUserId() : null;
-
-        if (formHasBankAdmin) {
-            verifyEmailNotInUseByAnyoneElse(currentBankAdminUserId, formData.getEmail());
-            if (currentBankAdminExists) {
-                // -- Update the bank admin --
-                tables.userTable.updateItem(
-                        new PrimaryKey(user_id.name(), currentBankAdminUserId),
-                        attributeUpdate(user_first_name, formData.getFirstName()),
-                        attributeUpdate(user_last_name, formData.getLastName()),
-                        attributeUpdate(user_email, formData.getEmail().toLowerCase()),  //for purposes of user lookup - email is case insensitive
-                        attributeUpdate(user_original_email, formData.getEmail()),  //for purposes of user lookup - email is case insensitive
-                        attributeUpdate(user_phone_number, formData.getPhoneNumber()));
-            } else {
-                // -- Create new bank admin --
-                String newBankAdminId = dynamoDBHelper.createUniqueId();
-                dynamoDBHelper.insertIntoTable(tables.userTable,
-                        new ItemMaker(user_id, newBankAdminId)
-                                .withString(user_type, UserType.BANK_ADMIN.getDBValue())
-                                .withString(user_email, formData.getEmail().toLowerCase())
-                                .withString(user_original_email,formData.getEmail())  //preserves case for purposes of sending email
-                                .withString(user_first_name, formData.getFirstName())
-                                .withString(user_last_name, formData.getLastName())
-                                .withString(user_phone_number, formData.getPhoneNumber())
-                                .withString(user_organization_id, formData.getBankId())
-                                .withInt(user_approval_status, ApprovalStatus.CHECKED.getDbValue()));
-            }
-        } else {
-            if (currentBankAdminExists) {
-                // -- Should transform Bank Admin into a Volunteer --
-                // FIXME: Requirements question: instead of deleting, should this transform them into a Volunteer?
-                tables.userTable.updateItem(
-                        new PrimaryKey(user_id.name(), currentBankAdminUserId),
-                        attributeUpdate(user_type, UserType.VOLUNTEER.getDBValue()));
-            } else {
-                // -- Bank admin didn't exist and will continue to not exist --
-            }
-        }
-
         // -- Update the bank --
         tables.bankTable.updateItem(
                 new PrimaryKey(bank_id.name(), formData.getBankId()),

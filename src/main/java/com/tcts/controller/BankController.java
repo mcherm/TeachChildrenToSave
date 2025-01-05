@@ -3,6 +3,7 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.tcts.formdata.NewBankAdminFormData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -145,21 +146,22 @@ public class BankController {
         }
 
         // --- Load existing data ---
+        EditBankFormData formData = initializeNewEditBankFormData(bankId);
+
+        // --- Show the edit page ---
+        return showEditBankWithErrors(model, sessionData, formData, null);
+    }
+
+    /** Create an EditBankFormData loading everything from the DB (using the bankId). */
+    private EditBankFormData initializeNewEditBankFormData(String bankId) throws SQLException {
         Bank bank = database.getBankById(bankId);
         EditBankFormData formData = new EditBankFormData();
         formData.setBankId(bankId);
         formData.setBankName(bank.getBankName());
         formData.setMinLMIForCRA(bank.getMinLMIForCRA() == null ? "" : bank.getMinLMIForCRA().toString());
-        BankAdmin bankAdmin = database.getBankAdminByBank(bankId); // FIXME: This needs to change
-        if (bankAdmin != null) {
-            formData.setFirstName(bankAdmin.getFirstName());
-            formData.setLastName(bankAdmin.getLastName());
-            formData.setEmail(bankAdmin.getEmail());
-            formData.setPhoneNumber(bankAdmin.getPhoneNumber());
-        }
-
-        // --- Show the edit page ---
-        return showEditBankWithErrors(model, sessionData, formData, null);
+        List<BankAdmin> bankAdmins = database.getBankAdminsByBank(bankId);
+        formData.setBankAdmins(bankAdmins);
+        return formData;
     }
 
 
@@ -168,8 +170,17 @@ public class BankController {
      * returns the string, so you can invoke it as "return showEditBankWithErrors(...)".
      */
     public String showEditBankWithErrors(Model model, SessionData sessionData, EditBankFormData formData, Errors errors)
-            throws SQLException
     {
+        String cancelURL = bankEditCancelURL(sessionData);
+
+        model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "editBank";
+    }
+
+    /** Subroutine to tell us where to go to if we cancel while editing a bank or its bank admins. */
+    private static String bankEditCancelURL(SessionData sessionData) {
         String cancelURL;
         switch(sessionData.getUser().getUserType()) {
             case BANK_ADMIN:
@@ -181,11 +192,7 @@ public class BankController {
             default:
                 throw new RuntimeException("We checked if they were logged in, so this should be impossible.");
         }
-
-        model.addAttribute("cancelURL", cancelURL);
-        model.addAttribute("formData", formData);
-        model.addAttribute("errors", errors);
-        return "editBank";
+        return cancelURL;
     }
 
 
@@ -286,4 +293,85 @@ public class BankController {
         return "addBank";
     }
 
+
+    @RequestMapping(value = "newBankAdmin.htm", method = RequestMethod.GET)
+    public String showNewBankAdmin(
+            HttpSession session,
+            Model model,
+            @RequestParam("bankId") String bankId
+    ) throws SQLException {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            // FIXME: Maybe I should all BankAdmins to add a new BankAdmin. But right now
+            //   I am NOT allowing that -- only the site admin. (NOTE: Need to confirm
+            //   that it is actually only avaliable to the Site Admin.)
+            throw new NotLoggedInException();
+        }
+
+        // --- Prepare data ---
+        Bank bank = database.getBankById(bankId);
+        String bankName = bank.getBankName();
+        NewBankAdminFormData formData = new NewBankAdminFormData();
+        formData.setBankId(bankId);
+
+        // --- Show the edit page ---
+        return showNewBankAdminWithErrors(model, sessionData, bankName, formData, null);
+    }
+
+
+    @RequestMapping(value = "newBankAdmin.htm", method = RequestMethod.POST)
+    public String doNewBankAdmin(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") NewBankAdminFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Validation Rules ---
+        String bankId = formData.getBankId();
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            String bankName = database.getBankById(bankId).getBankName();
+            return showNewBankAdminWithErrors(model, sessionData, bankName, formData, errors);
+        }
+
+        // --- Perform the updates ---
+        try {
+            database.insertNewBankAdmin(formData);
+        } catch(EmailAlreadyInUseException err) {
+            return showAddBankWithErrors(model,
+                    new Errors("That email is already in use; please choose another."));
+        }
+
+        // --- Load existing data ---
+        EditBankFormData editBankFormData = initializeNewEditBankFormData(bankId);
+
+        // --- Successful; show the master bank edit again ---
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null); // FIXME: Developing this
+    }
+
+
+    /**
+     * A subroutine used to set up and then show the new bank admin form. It
+     * returns the string, so you can invoke it as "return showEditBankWithErrors(...)".
+     */
+    public String showNewBankAdminWithErrors(
+            Model model,
+            SessionData sessionData,
+            String bankName,
+            NewBankAdminFormData formData,
+            Errors errors
+    ) {
+        String cancelURL = bankEditCancelURL(sessionData);
+
+        model.addAttribute("bankName", bankName);
+        model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "newBankAdmin";
+    }
 }
