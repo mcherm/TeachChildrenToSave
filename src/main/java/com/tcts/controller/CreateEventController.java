@@ -130,12 +130,11 @@ public class CreateEventController {
     }
 
     /**
-     * This method uses the database connection to verify whether the volunteer registration
+     * This method uses the database connection to verify whether the course creation
      * is open. It return true if it is open, false if not.
      */
     public static boolean isEventCreationOpen(DatabaseFacade database) throws SQLException {
         String setting = database.getSiteSettings().get("CourseCreationOpen");
         return setting != null && setting.trim().toLowerCase().equals("yes");
     }
-
 }

@@ -1393,6 +1393,9 @@ td.italic{
   font-style: italic;
 }
 
+.importantMessage {
+  font-style: italic;
+}
 
 /*div.scrollable {*/
 /*  width: 200px;*/
