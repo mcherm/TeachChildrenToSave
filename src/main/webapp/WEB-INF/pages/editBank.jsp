@@ -80,14 +80,16 @@
                     <table class="responsive">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:if test="${empty formData.bankAdmins}">
-                                <td colspan="3" class="emptyTableMessage">No Bank Admin.</td>
+                                <tr>
+                                    <td colspan="3" class="emptyTableMessage">No Bank Admin.</td>
+                                </tr>
                             </c:if>
                             <c:forEach items="${formData.bankAdmins}" var="bankAdmin">
                                 <tr>
@@ -107,7 +109,10 @@
                     </table>
 
                     <div class="horiz-buttons">
-                        <button class="editOrRegister" onclick="alert('this button does not yet work')">Mark Volunteer as Bank Admin</button>
+                        <button class="editOrRegister"
+                                onclick="js.loadURL('markAsBankAdmin.htm?bankId=<c:out value="${formData.bankId}"/>')">
+                            Mark Volunteer as Bank Admin
+                        </button>
                         <button class="editOrRegister"
                                 onclick="js.loadURL('newBankAdmin.htm?bankId=<c:out value="${formData.bankId}"/>');">
                             Make New Bank Admin

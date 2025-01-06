@@ -1083,6 +1083,13 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
+    public void markVolunteerAsBankAdmin(String userId) throws SQLException {
+        tables.userTable.updateItem(
+                new PrimaryKey(user_id.name(), userId),
+                attributeUpdate(user_type, "BA"));
+    }
+
+    @Override
     public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
         // This approach will CREATE the bank if it doesn't exist. I THINK that behavior doesn't break anything.
         tables.bankTable.updateItem(

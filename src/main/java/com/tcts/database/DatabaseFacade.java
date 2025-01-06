@@ -264,8 +264,13 @@ public interface DatabaseFacade {
      * the Bank Admin if there wasn't one, or if there WAS a bank admin then that person
      * is transformed into a Volunteer.
      */ // FIXME: Now that this formData doesn't have the admin, we should CHANGE THE NAME
-    public void modifyBankAndBankAdmin(EditBankFormData formData)
+    void modifyBankAndBankAdmin(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
+
+    /**
+     * Changes a user from being a Volunteer to being a BankAdmin.
+     */
+    void markVolunteerAsBankAdmin(String userId) throws SQLException;
 
     /**
      * Sets a particular field on a bank.

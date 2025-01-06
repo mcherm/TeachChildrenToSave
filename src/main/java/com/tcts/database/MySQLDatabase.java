@@ -1340,6 +1340,11 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
+    @Override
+    public void markVolunteerAsBankAdmin(String userId) throws SQLException {
+        // FIXME: Since we stopped using MySQL this isn't really testable and so I'm not implementing it.
+        throw new SQLException("Marking a Volunteer as a Bank Admin is not yet supported by MySQL.");
+    }
 
     @Override
     public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData)

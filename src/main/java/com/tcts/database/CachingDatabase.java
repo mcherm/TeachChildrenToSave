@@ -344,6 +344,12 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public void markVolunteerAsBankAdmin(String userId) throws SQLException {
+        database.markVolunteerAsBankAdmin(userId);
+        allBanks.refreshNow();
+    }
+
+    @Override
     public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
         database.setBankSpecificFieldLabel(formData);
         allBanks.refreshNow();

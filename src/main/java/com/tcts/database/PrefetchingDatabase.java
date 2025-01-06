@@ -361,6 +361,11 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public void markVolunteerAsBankAdmin(String userId) throws SQLException {
+        database.markVolunteerAsBankAdmin(userId);
+    }
+
+    @Override
     public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
         database.setBankSpecificFieldLabel(formData);
     }

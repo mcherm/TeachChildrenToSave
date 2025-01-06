@@ -3,6 +3,7 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.tcts.formdata.MarkAsBankAdminFormData;
 import com.tcts.formdata.NewBankAdminFormData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -351,7 +352,7 @@ public class BankController {
         EditBankFormData editBankFormData = initializeNewEditBankFormData(bankId);
 
         // --- Successful; show the master bank edit again ---
-        return showEditBankWithErrors(model, sessionData, editBankFormData, null); // FIXME: Developing this
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null);
     }
 
 
@@ -373,5 +374,58 @@ public class BankController {
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "newBankAdmin";
+    }
+
+    @RequestMapping(value = "markAsBankAdmin.htm", method = RequestMethod.GET)
+    public String showMarkAsBankAdmin(
+            HttpSession session,
+            Model model,
+            @RequestParam("bankId") String bankId
+    ) throws SQLException {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            // FIXME: Maybe I should all BankAdmins to mark as a new BankAdmin. But right now
+            //   I am NOT allowing that -- only the site admin. (NOTE: Need to confirm
+            //   that it is actually only avaliable to the Site Admin.)
+            throw new NotLoggedInException();
+        }
+
+        // --- Prepare data ---
+        Bank bank = database.getBankById(bankId);
+        String bankName = bank.getBankName();
+        List<Volunteer> volunteers = database.getVolunteersByBank(bankId);
+        // exclude the current bank admins, if any (they ARE volunteers, but we
+        // don't want them for this purpose)
+        volunteers.removeIf(x -> x.getUserType() == UserType.BANK_ADMIN);
+
+        // --- Show the edit page ---
+        String cancelURL = bankEditCancelURL(sessionData);
+        model.addAttribute("bankName", bankName);
+        model.addAttribute("bankId", bankId);
+        model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("volunteers", volunteers);
+        return "markAsBankAdmin";
+    }
+
+    @RequestMapping(value = "markAsBankAdmin.htm", method = RequestMethod.POST)
+    public String doMarkAsBankAdmin(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") MarkAsBankAdminFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Perform the updates ---
+        database.markVolunteerAsBankAdmin(formData.getUserId());
+
+        // --- Load existing data ---
+        EditBankFormData editBankFormData = initializeNewEditBankFormData(formData.getBankId());
+
+        // --- Successful; show the master bank edit again ---
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null);
     }
 }
