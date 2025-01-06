@@ -1083,10 +1083,10 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void markVolunteerAsBankAdmin(String userId) throws SQLException {
+    public void setUserType(String userId, UserType userType) throws SQLException {
         tables.userTable.updateItem(
                 new PrimaryKey(user_id.name(), userId),
-                attributeUpdate(user_type, "BA"));
+                attributeUpdate(user_type, userType.getDBValue()));
     }
 
     @Override

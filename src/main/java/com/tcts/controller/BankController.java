@@ -173,8 +173,11 @@ public class BankController {
     public String showEditBankWithErrors(Model model, SessionData sessionData, EditBankFormData formData, Errors errors)
     {
         String cancelURL = bankEditCancelURL(sessionData);
+        // only the site admin can change who is a bank admin and who is a mere volunteer
+        boolean canEditAdmins = sessionData.getSiteAdmin() == null;
 
         model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("canEditAdmins", canEditAdmins);
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "editBank";
@@ -420,7 +423,28 @@ public class BankController {
         }
 
         // --- Perform the updates ---
-        database.markVolunteerAsBankAdmin(formData.getUserId());
+        database.setUserType(formData.getUserId(), UserType.BANK_ADMIN);
+
+        // --- Load existing data ---
+        EditBankFormData editBankFormData = initializeNewEditBankFormData(formData.getBankId());
+
+        // --- Successful; show the master bank edit again ---
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null);
+    }
+
+    @RequestMapping(value = "markAsVolunteer.htm", method = RequestMethod.POST)
+    public String doMarkAsVolunteer(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") MarkAsBankAdminFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Perform the updates ---
+        database.setUserType(formData.getUserId(), UserType.VOLUNTEER);
 
         // --- Load existing data ---
         EditBankFormData editBankFormData = initializeNewEditBankFormData(formData.getBankId());

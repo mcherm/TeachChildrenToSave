@@ -11,6 +11,7 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
@@ -361,8 +362,8 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void markVolunteerAsBankAdmin(String userId) throws SQLException {
-        database.markVolunteerAsBankAdmin(userId);
+    public void setUserType(String userId, UserType userType) throws SQLException {
+        database.setUserType(userId, userType);
     }
 
     @Override

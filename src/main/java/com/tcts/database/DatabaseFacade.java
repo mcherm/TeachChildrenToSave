@@ -17,6 +17,7 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
@@ -268,9 +269,11 @@ public interface DatabaseFacade {
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
 
     /**
-     * Changes a user from being a Volunteer to being a BankAdmin.
+     * Sets the user type for a user. This can be safely used to convert someone between
+     * being a Volunteer and a BankAdmin, but other changes may not be valid if the
+     * user is in certain states (eg: changing a teacher with a class to anything else).
      */
-    void markVolunteerAsBankAdmin(String userId) throws SQLException;
+    void setUserType(String userId, UserType userType) throws SQLException;
 
     /**
      * Sets a particular field on a bank.

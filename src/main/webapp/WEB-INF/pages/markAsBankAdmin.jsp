@@ -56,7 +56,7 @@
                   <form method="POST" id="formData" action="markAsBankAdmin.htm">
                     <input type="hidden" id="userId" name="userId" value="<c:out value="${volunteer.userId}"/>"/>
                     <input type="hidden" id="bankId" name="bankId" value="<c:out value="${bankId}"/>"/>
-                    <button class="editOrRegister" type="submit">Make Admin</button>
+                    <button class="editOrRegister" type="submit">Mark&nbsp;As Admin</button>
                   </form>
                 </td>
               </tr>
