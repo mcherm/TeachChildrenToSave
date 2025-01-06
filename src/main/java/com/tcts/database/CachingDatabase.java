@@ -160,11 +160,6 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
-        return database.getBankAdminByBank(bankId);
-    }
-
-    @Override
     public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
         return database.getBankAdminsByBank(bankId);
     }
@@ -339,8 +334,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
-        database.modifyBankAndBankAdmin(formData);
+    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+        database.modifyBank(formData);
         allBanks.refreshNow();
     }
 

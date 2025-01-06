@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.math.BigDecimal;
+import java.util.stream.Collectors;
+
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -403,9 +405,24 @@ public class ExcelDownloadController implements InitializingBean {
                 bankController::showBanks,
                 "Banks",
                 new ColSpec<Bank>("Bank Name", b -> b.getBankName()),
-                new ColSpec<Bank>("Bank Admin Name", b -> b.getLinkedBankAdmin().getFirstName() + " " + b.getLinkedBankAdmin().getLastName()),
-                new ColSpec<Bank>("Bank Admin Email", b -> b.getLinkedBankAdmin().getEmail()),
-                new ColSpec<Bank>("Bank Admin Phone", b -> b.getLinkedBankAdmin().getPhoneNumber())
+                new ColSpec<Bank>("Bank Admin Name", b ->
+                    b.getLinkedBankAdmins()
+                        .stream()
+                        .map(ba -> ba.getFirstName() + " " + ba.getLastName())
+                        .collect(Collectors.joining(", "))
+                ),
+                new ColSpec<Bank>("Bank Admin Email", b ->
+                    b.getLinkedBankAdmins()
+                        .stream()
+                        .map(ba -> ba.getEmail())
+                        .collect(Collectors.joining(", "))
+                ),
+                new ColSpec<Bank>("Bank Admin Phone", b ->
+                    b.getLinkedBankAdmins()
+                        .stream()
+                        .map(ba -> ba.getPhoneNumber())
+                        .collect(Collectors.joining(", "))
+                )
             ));
 
             this.put("allowedDates", new WorkbookSpec<CM_SM>(

@@ -169,9 +169,8 @@ public interface DatabaseFacade {
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
 
-    /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin or there is no such bank. */
-    public BankAdmin getBankAdminByBank(String bankId) throws SQLException; // FIXME: Old one-admin-per-bank model
-    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException; // FIXME: New multi-admins-per-bank model
+    /** Returns the list of all Bank Admins for the given bank. */
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException;
 
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all
@@ -264,8 +263,8 @@ public interface DatabaseFacade {
      * there wasn't one). If person fields like email are NOT present, nothing happens with
      * the Bank Admin if there wasn't one, or if there WAS a bank admin then that person
      * is transformed into a Volunteer.
-     */ // FIXME: Now that this formData doesn't have the admin, we should CHANGE THE NAME
-    void modifyBankAndBankAdmin(EditBankFormData formData)
+     */
+    void modifyBank(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
 
     /**

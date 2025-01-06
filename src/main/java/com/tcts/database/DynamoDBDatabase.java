@@ -748,23 +748,6 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public BankAdmin getBankAdminByBank(String bankId) throws SQLException { // FIXME: This is the old version; get rid of it
-        List<Volunteer> volunteers = getVolunteersByBank(bankId);
-        BankAdmin result = null;
-        for (Volunteer volunteer : volunteers) {
-            if (volunteer instanceof  BankAdmin) {
-                if (result == null) {
-                    result = (BankAdmin) volunteer;
-                } else {
-                    // Just allow this -- we're changing the rules
-                    // throw new RuntimeException("Database appears to have multiple BankAdmins for one bank.");
-                }
-            }
-        }
-        return result;
-    }
-
-    @Override
     public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
         List<Volunteer> volunteers = getVolunteersByBank(bankId);
         List<BankAdmin> result = new ArrayList<>();
@@ -1074,7 +1057,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
         // -- Update the bank --
         tables.bankTable.updateItem(
                 new PrimaryKey(bank_id.name(), formData.getBankId()),

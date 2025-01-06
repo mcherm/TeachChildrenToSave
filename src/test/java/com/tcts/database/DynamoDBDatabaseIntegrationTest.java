@@ -474,7 +474,7 @@ public class DynamoDBDatabaseIntegrationTest {
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
         editBankFormData.setMinLMIForCRA("34");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        dynamoDBDatabase.modifyBank(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("First Savings", bank.getBankName());
         assertEquals(new BigDecimal(34), bank.getMinLMIForCRA());
@@ -487,7 +487,7 @@ public class DynamoDBDatabaseIntegrationTest {
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
         editBankFormData.setMinLMIForCRA("12.6");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        dynamoDBDatabase.modifyBank(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("First Savings", bank.getBankName());
         assertEquals(new BigDecimal("12.6"), bank.getMinLMIForCRA());
@@ -500,7 +500,7 @@ public class DynamoDBDatabaseIntegrationTest {
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("First Savings");
         editBankFormData.setMinLMIForCRA("");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        dynamoDBDatabase.modifyBank(editBankFormData);
         Bank bank = dynamoDBDatabase.getBankById(bankId);
         assertEquals("First Savings", bank.getBankName());
         assertNull(bank.getMinLMIForCRA());
@@ -514,7 +514,7 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("Neighbors Bank");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        dynamoDBDatabase.modifyBank(editBankFormData);
         List<Bank> banks = dynamoDBDatabase.getAllBanks();
         assertEquals(1, banks.size());
         List<Volunteer> volunteersAndBankAdmins2 = dynamoDBDatabase.getVolunteersByBank(banks.get(0).getBankId());
@@ -532,7 +532,7 @@ public class DynamoDBDatabaseIntegrationTest {
         EditBankFormData editBankFormData = new EditBankFormData();
         editBankFormData.setBankId(bankId);
         editBankFormData.setBankName("Neighbors Bank");
-        dynamoDBDatabase.modifyBankAndBankAdmin(editBankFormData);
+        dynamoDBDatabase.modifyBank(editBankFormData);
         List<Bank> banks2 = dynamoDBDatabase.getAllBanks();
         assertEquals(1, banks2.size());
         Bank bank2 = banks2.get(0);

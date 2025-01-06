@@ -618,36 +618,6 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-    public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = connectionFactory.getConnection();
-            preparedStatement = connection.prepareStatement(getBankAdminByBankSQL);
-            preparedStatement.setString(1, bankId);
-            resultSet = preparedStatement.executeQuery();
-            BankAdmin bankAdmin = null;
-            int resultCount = 0;
-            while (resultSet.next()) {
-                resultCount += 1;
-                if (resultCount > 1) {
-                    throw new InconsistentDatabaseException("Multiple bank admins for bank " + bankId);
-                }
-                UserType userType = UserType.fromDBValue(resultSet.getString("access_type"));
-                if (userType != UserType.BANK_ADMIN) {
-                    throw new RuntimeException("This should not occur.");
-                }
-                bankAdmin = new BankAdmin();
-                bankAdmin.populateFieldsFromResultSetRow(resultSet);
-            }
-            return bankAdmin;
-        } finally {
-            closeSafely(connection, preparedStatement, resultSet);
-        }
-    }
-
-    @Override
     public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1312,7 +1282,7 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBankAndBankAdmin(
+    public void modifyBank(
             EditBankFormData formData
         ) throws SQLException, EmailAlreadyInUseException, NoSuchBankException
     {

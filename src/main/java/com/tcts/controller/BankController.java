@@ -69,8 +69,6 @@ public class BankController {
     public String showForm(Model model) throws SQLException {
         List<Bank> banks = database.getAllBanks();
         for (Bank bank : banks) {
-            BankAdmin bankAdmin = database.getBankAdminByBank(bank.getBankId()); // FIXME: Older version; eliminate
-            bank.setLinkedBankAdmin(bankAdmin); // FIXME: Older version; eliminate
             List<BankAdmin> bankAdmins = database.getBankAdminsByBank(bank.getBankId());
             bank.setLinkedBankAdmins(bankAdmins);
         }
@@ -160,8 +158,6 @@ public class BankController {
         formData.setBankId(bankId);
         formData.setBankName(bank.getBankName());
         formData.setMinLMIForCRA(bank.getMinLMIForCRA() == null ? "" : bank.getMinLMIForCRA().toString());
-        List<BankAdmin> bankAdmins = database.getBankAdminsByBank(bankId);
-        formData.setBankAdmins(bankAdmins);
         return formData;
     }
 
@@ -171,13 +167,16 @@ public class BankController {
      * returns the string, so you can invoke it as "return showEditBankWithErrors(...)".
      */
     public String showEditBankWithErrors(Model model, SessionData sessionData, EditBankFormData formData, Errors errors)
+            throws SQLException
     {
         String cancelURL = bankEditCancelURL(sessionData);
+        List<BankAdmin> bankAdmins = database.getBankAdminsByBank(formData.getBankId());
         // only the site admin can change who is a bank admin and who is a mere volunteer
-        boolean canEditAdmins = sessionData.getSiteAdmin() == null;
+        boolean canEditAdmins = sessionData.getSiteAdmin() != null;
 
         model.addAttribute("cancelURL", cancelURL);
         model.addAttribute("canEditAdmins", canEditAdmins);
+        model.addAttribute("bankAdmins", bankAdmins);
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "editBank";
@@ -220,7 +219,7 @@ public class BankController {
         }
 
         try {
-            database.modifyBankAndBankAdmin(formData);
+            database.modifyBank(formData);
         } catch(NoSuchBankException err) {
             throw new InvalidParameterFromGUIException();
         } catch(EmailAlreadyInUseException err) {
@@ -247,7 +246,7 @@ public class BankController {
     public String enterDataToAddBank(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") CreateBankFormData formData
+            @ModelAttribute("formData") CreateBankFormData formData // FIXME: Why? Where does this come from?
     ) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -307,9 +306,6 @@ public class BankController {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
-            // FIXME: Maybe I should all BankAdmins to add a new BankAdmin. But right now
-            //   I am NOT allowing that -- only the site admin. (NOTE: Need to confirm
-            //   that it is actually only avaliable to the Site Admin.)
             throw new NotLoggedInException();
         }
 
@@ -337,9 +333,9 @@ public class BankController {
 
         // --- Validation Rules ---
         String bankId = formData.getBankId();
+        String bankName = database.getBankById(bankId).getBankName();
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
-            String bankName = database.getBankById(bankId).getBankName();
             return showNewBankAdminWithErrors(model, sessionData, bankName, formData, errors);
         }
 
@@ -347,7 +343,7 @@ public class BankController {
         try {
             database.insertNewBankAdmin(formData);
         } catch(EmailAlreadyInUseException err) {
-            return showAddBankWithErrors(model,
+            return showNewBankAdminWithErrors(model, sessionData, bankName, formData,
                     new Errors("That email is already in use; please choose another."));
         }
 
@@ -388,9 +384,6 @@ public class BankController {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
-            // FIXME: Maybe I should all BankAdmins to mark as a new BankAdmin. But right now
-            //   I am NOT allowing that -- only the site admin. (NOTE: Need to confirm
-            //   that it is actually only avaliable to the Site Admin.)
             throw new NotLoggedInException();
         }
 

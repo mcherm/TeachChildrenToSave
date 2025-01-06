@@ -19,7 +19,7 @@
 
             <main id="main">
 
-                <h1>Edit Bank<c:if test="canEditAdmins"> (and Bank Admin)</c:if></h1>
+                <h1>Edit Bank<c:if test="${canEditAdmins}"> (and Bank Admin)</c:if></h1>
 
                 <%@include file="include/errors.jsp"%>
 
@@ -74,7 +74,7 @@
                     <button onclick="js.loadURL('<c:out value="${cancelURL}"/>')" class="editOrRegister cancel">Cancel</button>
                 </div>
 
-                <c:if test="canEditAdmins">
+                <c:if test="${canEditAdmins}">
                     <div class="listOfBankAdmins">
                         <h2>Bank Admin(s)</h2>
 
@@ -90,12 +90,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:if test="${empty formData.bankAdmins}">
+                                <c:if test="${empty bankAdmins}">
                                     <tr>
                                         <td colspan="3" class="emptyTableMessage">No Bank Admin.</td>
                                     </tr>
                                 </c:if>
-                                <c:forEach items="${formData.bankAdmins}" var="bankAdmin">
+                                <c:forEach items="${bankAdmins}" var="bankAdmin">
                                     <tr>
                                         <td data-title="Bank Admin" class="center">
                                             <c:out value="${bankAdmin.firstName}"/>

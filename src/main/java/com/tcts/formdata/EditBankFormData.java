@@ -14,7 +14,6 @@ public class EditBankFormData extends ValidatedFormData<RuntimeException> {
     private String bankName;
     private String bankId;
     private String minLMIForCRA; // If valid, can be "" (meaning no setting) or a number 0..100.
-    private List<BankAdmin> bankAdmins;
 
     private static final BigDecimal ZERO = new BigDecimal(0);
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
@@ -71,11 +70,4 @@ public class EditBankFormData extends ValidatedFormData<RuntimeException> {
         this.minLMIForCRA = minLMIForCRA;
     }
 
-    public List<BankAdmin> getBankAdmins() {
-        return bankAdmins;
-    }
-
-    public void setBankAdmins(List<BankAdmin> bankAdmins) {
-        this.bankAdmins = bankAdmins;
-    }
 }
