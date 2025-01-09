@@ -213,7 +213,7 @@ public class HomePageController {
 
 
     /**
-     * Render the home page for a teacher.
+     * Render the home page for a site admin?.
      */
     @RequestMapping(value = "siteAdminHome.htm", method = RequestMethod.GET)
     public String showSiteAdminHomePage(HttpSession session) {

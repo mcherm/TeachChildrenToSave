@@ -31,7 +31,7 @@
                         <button onclick="js.loadURL('createEventBySiteAdmin.htm')" class="editOrRegister cancel">Create New Class</button>
                         <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
                     </li>
-                    	
+
                 </ul>
             </div>
 
@@ -40,7 +40,7 @@
             <table id="approvedVolunteersTable" class="responsive">
                 <thead>
                     <tr>
-                        <th scope="col">Date</th>
+                        <th scope="col">DateX</th>
                         <th scope="col">Time</th>
                         <th scope="col" class="center">Grade</th>
                         <th scope="col">Delivery Method</th>

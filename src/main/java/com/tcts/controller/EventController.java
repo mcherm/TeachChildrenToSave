@@ -83,7 +83,8 @@ public class EventController {
         }
 
         model.addAttribute("events", database.getAllEvents());
-        return "events";
+        model.addAttribute("calledByURL", "viewEditEvents.htm");
+        return "sortedClasses";
     }
     
     @RequestMapping(value = "editEvent.htm", method = RequestMethod.GET)
@@ -190,7 +191,7 @@ public class EventController {
             model.addAttribute("events", database.getAllEvents());
         }
         
-        return "events";
+        return "sortedClasses";
     }
 
 

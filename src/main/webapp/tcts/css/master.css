@@ -815,6 +815,9 @@ body.evenRegistration td.action {
 body.evenRegistration .editOrRegister {
   width: 70px;
 }
+body.evenRegistration button.wideButton {
+  width: 300px;
+}
 
 th.sortable {
   background-image: url("../img/updown.gif");
@@ -829,6 +832,9 @@ th.sortable.descending {
 
 th.sortable.ascending {
   background-image: url("../img/down.gif");
+}
+th.sortable > button{
+  margin-right: 17px;
 }
 
 body.eventDetails label {
@@ -978,6 +984,11 @@ td.emptyTableMessage {
   table.responsive .teacher {
     width: 19%;
   }
+
+  table.responsive .email {
+    width: 19%;
+  }
+
   table.responsive .school {
     width: 30%;
     border-bottom: none;
