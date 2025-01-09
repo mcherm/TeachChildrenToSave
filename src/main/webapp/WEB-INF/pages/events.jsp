@@ -40,7 +40,7 @@
             <table id="approvedVolunteersTable" class="responsive">
                 <thead>
                     <tr>
-                        <th scope="col">DateX</th>
+                        <th scope="col">Date</th>
                         <th scope="col">Time</th>
                         <th scope="col" class="center">Grade</th>
                         <th scope="col">Delivery Method</th>
