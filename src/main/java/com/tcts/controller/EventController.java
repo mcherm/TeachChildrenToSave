@@ -84,6 +84,8 @@ public class EventController {
 
         model.addAttribute("events", database.getAllEvents());
         model.addAttribute("calledByURL", "viewEditEvents.htm");
+        model.addAttribute("allowedDates", database.getAllowedDates());
+        model.addAttribute("allowedTimes", database.getAllowedTimes());
         return "sortedClasses";
     }
     
