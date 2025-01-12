@@ -716,6 +716,8 @@ body.listAllowedDates table,
 body.listAllowedTimes table,
 body.viewSiteSettings table,
 body.managePasswords table,
+body.editBank table,
+body.markAsBankAdmin table,
 table.full-page-table {
   width: 100%;
   border: 1px solid #ccc;
@@ -740,6 +742,8 @@ body.listAllowedDates table thead th,
 body.listAllowedTimes table thead th,
 body.viewSiteSettings table thead th,
 body.managePasswords table thead th,
+body.editBank table thead th,
+body.markAsBankAdmin table thead th,
 table.full-page-table thead th {
   font-weight: bold;
   background-color: #0c345a;
@@ -761,6 +765,8 @@ body.listAllowedDates table tbody tr:nth-child(even),
 body.listAllowedTimes table tbody tr:nth-child(even),
 body.viewSiteSettings table tbody tr:nth-child(even),
 body.managePasswords table tbody tr:nth-child(even),
+body.editBank table tbody tr:nth-child(even),
+body.markAsBankAdmin table tbody tr:nth-child(even),
 table.full-page-table tbody tr:nth-child(even) {
   background: #eaeaea;
 }
@@ -780,6 +786,18 @@ table.innerTable > tbody > tr:nth-child(even){
   border-bottom: 1px solid #cdcdcd;
 }
 
+/*
+  We want thin vertical lines separating columns on the inner tables. (We want it
+  because the inner tables don't actually line up; each one has separate column
+  widths. The vertical lines help make it readable.) Get inner lines by putting
+  a left border on all but the first cell in both header and body.
+*/
+table.innerTable > tbody > tr > th:not(:first-child),
+table.innerTable > tbody > tr > td:not(:first-child) {
+  border-left: 1px solid #ccc;
+}
+
+
 body.volunteerHome table td,
 body.bankAdminHome table td,
 body.teacherHome table td,
@@ -795,6 +813,8 @@ body.listAllowedDates table td,
 body.listAllowedTimes table td,
 body.viewSiteSettings table td,
 body.managePasswords table td,
+body.editBank table td,
+body.markAsBankAdmin table td,
 table.full-page-table td {
   padding: .5em !important;
   vertical-align: middle;
@@ -893,6 +913,8 @@ td.emptyTableMessage {
   body.listAllowedTimes table.responsive thead,
   body.viewSiteSettings table.responsive thead,
   body.managePasswords table.responsive thead,
+  body.editBank table.responsive thead,
+  body.markAsBankAdmin table.responsive thead,
   body.documents table.responsive thead,
   body.teacherHome table.responsive thead {
     display: none;
@@ -1008,6 +1030,8 @@ td.emptyTableMessage {
   body.listAllowedTimes table.responsive thead,
   body.viewSiteSettings table.responsive thead,
   body.managePasswords table.responsive thead,
+  body.editBank table.responsive thead,
+  body.markAsBankAdmin table.responsive thead,
   body.documents table.responsive thead,
   body.teacherHome table.responsive thead {
     display: table-header-group;
@@ -1407,6 +1431,22 @@ td.italic{
 .importantMessage {
   font-style: italic;
 }
+
+/**
+  A layout item (typically a div) containing some buttons which are laid out
+  horizontally when there is space (and vertically when there isn't).
+ */
+.horiz-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 1em;
+  margin-top: 1em;
+  margin-right: 1em;
+}
+.horiz-buttons button {
+  min-width: 300px;
+}
+
 
 /*div.scrollable {*/
 /*  width: 200px;*/

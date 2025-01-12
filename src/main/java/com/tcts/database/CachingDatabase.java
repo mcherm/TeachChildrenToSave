@@ -20,6 +20,7 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
@@ -45,6 +46,7 @@ import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.NewBankAdminFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -158,8 +160,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public BankAdmin getBankAdminByBank(String bankId) throws SQLException {
-        return database.getBankAdminByBank(bankId);
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
+        return database.getBankAdminsByBank(bankId);
     }
 
     @Override
@@ -326,8 +328,20 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBankAndBankAdmin(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
-        database.modifyBankAndBankAdmin(formData);
+    public void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException {
+        database.insertNewBankAdmin(formData);
+        allBanks.refreshNow();
+    }
+
+    @Override
+    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+        database.modifyBank(formData);
+        allBanks.refreshNow();
+    }
+
+    @Override
+    public void setUserType(String userId, UserType userType) throws SQLException {
+        database.setUserType(userId, userType);
         allBanks.refreshNow();
     }
 

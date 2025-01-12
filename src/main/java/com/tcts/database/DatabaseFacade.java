@@ -17,6 +17,7 @@ import com.tcts.datamodel.School;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
+import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.AllowedDateAlreadyInUseException;
 import com.tcts.exception.AllowedTimeAlreadyInUseException;
@@ -42,6 +43,7 @@ import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.EventRegistrationFormData;
+import com.tcts.formdata.NewBankAdminFormData;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
 import com.tcts.formdata.TeacherRegistrationFormData;
 import com.tcts.formdata.VolunteerRegistrationFormData;
@@ -167,9 +169,8 @@ public interface DatabaseFacade {
     /** Return the list of volunteers that have a particular bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
 
-    /** Returns the Bank Admin for the given bank, or null if that bank has no Bank Admin or there is no such bank. */
-    public BankAdmin getBankAdminByBank(String bankId)
-            throws SQLException;
+    /** Returns the list of all Bank Admins for the given bank. */
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException;
 
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all
@@ -253,6 +254,9 @@ public interface DatabaseFacade {
     /** Inserts a new bank and the corresponding bank admin. Password is set to null. */
 	void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException;
 
+    /** Insert a new Bank Admin for a bank. Password is set to null. */
+    void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException;
+
     /**
      * Modifies fields of an existing bank. If person fields like email are present, it
      * modifies the existing bank admin (if there is one) or creates a new Bank Admin (if
@@ -260,8 +264,15 @@ public interface DatabaseFacade {
      * the Bank Admin if there wasn't one, or if there WAS a bank admin then that person
      * is transformed into a Volunteer.
      */
-    public void modifyBankAndBankAdmin(EditBankFormData formData)
+    void modifyBank(EditBankFormData formData)
             throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
+
+    /**
+     * Sets the user type for a user. This can be safely used to convert someone between
+     * being a Volunteer and a BankAdmin, but other changes may not be valid if the
+     * user is in certain states (eg: changing a teacher with a class to anything else).
+     */
+    void setUserType(String userId, UserType userType) throws SQLException;
 
     /**
      * Sets a particular field on a bank.

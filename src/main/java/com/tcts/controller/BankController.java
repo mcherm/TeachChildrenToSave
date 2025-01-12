@@ -3,6 +3,8 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.tcts.formdata.MarkAsBankAdminFormData;
+import com.tcts.formdata.NewBankAdminFormData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -67,8 +69,8 @@ public class BankController {
     public String showForm(Model model) throws SQLException {
         List<Bank> banks = database.getAllBanks();
         for (Bank bank : banks) {
-            BankAdmin bankAdmin = database.getBankAdminByBank(bank.getBankId());
-            bank.setLinkedBankAdmin(bankAdmin);
+            List<BankAdmin> bankAdmins = database.getBankAdminsByBank(bank.getBankId());
+            bank.setLinkedBankAdmins(bankAdmins);
         }
 
         model.addAttribute("banks", banks);
@@ -143,21 +145,20 @@ public class BankController {
         }
 
         // --- Load existing data ---
+        EditBankFormData formData = initializeNewEditBankFormData(bankId);
+
+        // --- Show the edit page ---
+        return showEditBankWithErrors(model, sessionData, formData, null);
+    }
+
+    /** Create an EditBankFormData loading everything from the DB (using the bankId). */
+    private EditBankFormData initializeNewEditBankFormData(String bankId) throws SQLException {
         Bank bank = database.getBankById(bankId);
         EditBankFormData formData = new EditBankFormData();
         formData.setBankId(bankId);
         formData.setBankName(bank.getBankName());
         formData.setMinLMIForCRA(bank.getMinLMIForCRA() == null ? "" : bank.getMinLMIForCRA().toString());
-        BankAdmin bankAdmin = database.getBankAdminByBank(bankId);
-        if (bankAdmin != null) {
-            formData.setFirstName(bankAdmin.getFirstName());
-            formData.setLastName(bankAdmin.getLastName());
-            formData.setEmail(bankAdmin.getEmail());
-            formData.setPhoneNumber(bankAdmin.getPhoneNumber());
-        }
-
-        // --- Show the edit page ---
-        return showEditBankWithErrors(model, sessionData, formData, null);
+        return formData;
     }
 
 
@@ -168,6 +169,21 @@ public class BankController {
     public String showEditBankWithErrors(Model model, SessionData sessionData, EditBankFormData formData, Errors errors)
             throws SQLException
     {
+        String cancelURL = bankEditCancelURL(sessionData);
+        List<BankAdmin> bankAdmins = database.getBankAdminsByBank(formData.getBankId());
+        // only the site admin can change who is a bank admin and who is a mere volunteer
+        boolean canEditAdmins = sessionData.getSiteAdmin() != null;
+
+        model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("canEditAdmins", canEditAdmins);
+        model.addAttribute("bankAdmins", bankAdmins);
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "editBank";
+    }
+
+    /** Subroutine to tell us where to go to if we cancel while editing a bank or its bank admins. */
+    private static String bankEditCancelURL(SessionData sessionData) {
         String cancelURL;
         switch(sessionData.getUser().getUserType()) {
             case BANK_ADMIN:
@@ -179,11 +195,7 @@ public class BankController {
             default:
                 throw new RuntimeException("We checked if they were logged in, so this should be impossible.");
         }
-
-        model.addAttribute("cancelURL", cancelURL);
-        model.addAttribute("formData", formData);
-        model.addAttribute("errors", errors);
-        return "editBank";
+        return cancelURL;
     }
 
 
@@ -207,7 +219,7 @@ public class BankController {
         }
 
         try {
-            database.modifyBankAndBankAdmin(formData);
+            database.modifyBank(formData);
         } catch(NoSuchBankException err) {
             throw new InvalidParameterFromGUIException();
         } catch(EmailAlreadyInUseException err) {
@@ -234,7 +246,7 @@ public class BankController {
     public String enterDataToAddBank(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") CreateBankFormData formData
+            @ModelAttribute("formData") CreateBankFormData formData // FIXME: Why? Where does this come from?
     ) throws SQLException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -284,4 +296,153 @@ public class BankController {
         return "addBank";
     }
 
+
+    @RequestMapping(value = "newBankAdmin.htm", method = RequestMethod.GET)
+    public String showNewBankAdmin(
+            HttpSession session,
+            Model model,
+            @RequestParam("bankId") String bankId
+    ) throws SQLException {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Prepare data ---
+        Bank bank = database.getBankById(bankId);
+        String bankName = bank.getBankName();
+        NewBankAdminFormData formData = new NewBankAdminFormData();
+        formData.setBankId(bankId);
+
+        // --- Show the edit page ---
+        return showNewBankAdminWithErrors(model, sessionData, bankName, formData, null);
+    }
+
+
+    @RequestMapping(value = "newBankAdmin.htm", method = RequestMethod.POST)
+    public String doNewBankAdmin(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") NewBankAdminFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Validation Rules ---
+        String bankId = formData.getBankId();
+        String bankName = database.getBankById(bankId).getBankName();
+        Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            return showNewBankAdminWithErrors(model, sessionData, bankName, formData, errors);
+        }
+
+        // --- Perform the updates ---
+        try {
+            database.insertNewBankAdmin(formData);
+        } catch(EmailAlreadyInUseException err) {
+            return showNewBankAdminWithErrors(model, sessionData, bankName, formData,
+                    new Errors("That email is already in use; please choose another."));
+        }
+
+        // --- Load existing data ---
+        EditBankFormData editBankFormData = initializeNewEditBankFormData(bankId);
+
+        // --- Successful; show the master bank edit again ---
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null);
+    }
+
+
+    /**
+     * A subroutine used to set up and then show the new bank admin form. It
+     * returns the string, so you can invoke it as "return showEditBankWithErrors(...)".
+     */
+    public String showNewBankAdminWithErrors(
+            Model model,
+            SessionData sessionData,
+            String bankName,
+            NewBankAdminFormData formData,
+            Errors errors
+    ) {
+        String cancelURL = bankEditCancelURL(sessionData);
+
+        model.addAttribute("bankName", bankName);
+        model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("formData", formData);
+        model.addAttribute("errors", errors);
+        return "newBankAdmin";
+    }
+
+    @RequestMapping(value = "markAsBankAdmin.htm", method = RequestMethod.GET)
+    public String showMarkAsBankAdmin(
+            HttpSession session,
+            Model model,
+            @RequestParam("bankId") String bankId
+    ) throws SQLException {
+        // --- Ensure logged in ---
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Prepare data ---
+        Bank bank = database.getBankById(bankId);
+        String bankName = bank.getBankName();
+        List<Volunteer> volunteers = database.getVolunteersByBank(bankId);
+        // exclude the current bank admins, if any (they ARE volunteers, but we
+        // don't want them for this purpose)
+        volunteers.removeIf(x -> x.getUserType() == UserType.BANK_ADMIN);
+
+        // --- Show the edit page ---
+        String cancelURL = bankEditCancelURL(sessionData);
+        model.addAttribute("bankName", bankName);
+        model.addAttribute("bankId", bankId);
+        model.addAttribute("cancelURL", cancelURL);
+        model.addAttribute("volunteers", volunteers);
+        return "markAsBankAdmin";
+    }
+
+    @RequestMapping(value = "markAsBankAdmin.htm", method = RequestMethod.POST)
+    public String doMarkAsBankAdmin(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") MarkAsBankAdminFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Perform the updates ---
+        database.setUserType(formData.getUserId(), UserType.BANK_ADMIN);
+
+        // --- Load existing data ---
+        EditBankFormData editBankFormData = initializeNewEditBankFormData(formData.getBankId());
+
+        // --- Successful; show the master bank edit again ---
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null);
+    }
+
+    @RequestMapping(value = "markAsVolunteer.htm", method = RequestMethod.POST)
+    public String doMarkAsVolunteer(
+            HttpSession session,
+            Model model,
+            @ModelAttribute("formData") MarkAsBankAdminFormData formData
+    ) throws SQLException {
+        SessionData sessionData = SessionData.fromSession(session);
+        if (sessionData.getSiteAdmin() == null) {
+            throw new NotLoggedInException();
+        }
+
+        // --- Perform the updates ---
+        database.setUserType(formData.getUserId(), UserType.VOLUNTEER);
+
+        // --- Load existing data ---
+        EditBankFormData editBankFormData = initializeNewEditBankFormData(formData.getBankId());
+
+        // --- Successful; show the master bank edit again ---
+        return showEditBankWithErrors(model, sessionData, editBankFormData, null);
+    }
 }
