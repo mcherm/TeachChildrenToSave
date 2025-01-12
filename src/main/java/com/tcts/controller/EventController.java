@@ -190,10 +190,9 @@ public class EventController {
     	}
         else {
         	// --- Successful; show the master event edit again ---
-            model.addAttribute("events", database.getAllEvents());
+            return showAllEvents(session, model);
         }
         
-        return "sortedClasses";
     }
 
 
