@@ -11,7 +11,6 @@
 
     <script src="<c:url value="/tcts/js/jquery-1.11.1.min.js" />"></script>
     <script type="text/javascript">
-        <%@include file="include/sortableTable.jsp"%>
         availableEvents = [
             <c:forEach items="${events}" var="event" varStatus="eventStatus">
             {
@@ -41,15 +40,7 @@
             }<c:if test="${not eventStatus.last}">,</c:if>
             </c:forEach>
         ];
-
-
-        /*
-         * This is accessed as filterSettings[field][value] and it returns true if that
-         * box is checked and false if it isn't. Only the checked values should be shown
-         * UNLESS none of the values for a field are checked, in which case that field
-         * should not restrict the display of events.
-         */
-        var filterSettings = {};
+        <%@include file="include/sortableTable.jsp"%>
 
         /*
          * This creates the table of events (dynamically constructing the HTML).
@@ -57,16 +48,16 @@
         function buildTable() {
             var html =
                 "<thead><tr>" +
-                "    <th data-title='Sort list by:' scope='col' class='sortable date' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\")'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
-                "    <th scope='col' class='sortable time' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\")'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
-                "    <th scope='col' class='sortable grade' id='col_for_grade'><button onclick='sortBy(\"grade\")'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
-                "    <th scope='col' class='sortable deliveryMethodString' id='col_for_deliveryMethodString'><button onclick='sortBy(\"deliveryMethodString\")'><span class='ada-read'>Sort by&nbsp;</span>Delivery Method</button></th>" +
-                "    <th scope='col' class='sortable students' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\")'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
-                "    <th scope='col' class='sortable teacher' id='col_for_firstName'><button onclick='sortBy(\"firstName\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
-                "    <th scope='col' class='sortable email' id='col_for_email'><button onclick='sortBy(\"email\")'><span class='ada-read'>Sort by&nbsp;</span>Teacher Email</button></th>" +
-                "    <th scope='col' class='sortable school' id='col_for_schoolName'><button onclick='sortBy(\"schoolName\")'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
-                "    <th scope='col' class='sortable teacher' id='col_for_volunteerFirstName'><button onclick='sortBy(\"volunteerFirstName\")'><span class='ada-read'>Sort by&nbsp;</span>Volunteer</button></th>" +
-                "    <th scope='col' class='sortable email' id='col_for_volunteerEmail'><button onclick='sortBy(\"volunteerEmail\")'><span class='ada-read'>Sort by&nbsp;</span>Volunteer Email</button></th>" +
+                "    <th data-title='Sort list by:' scope='col' class='sortable date' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
+                "    <th scope='col' class='sortable time' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
+                "    <th scope='col' class='sortable grade' id='col_for_grade'><button onclick='sortBy(\"grade\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
+                "    <th scope='col' class='sortable deliveryMethodString' id='col_for_deliveryMethodString'><button onclick='sortBy(\"deliveryMethodString\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Delivery Method</button></th>" +
+                "    <th scope='col' class='sortable students' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
+                "    <th scope='col' class='sortable teacher' id='col_for_firstName'><button onclick='sortBy(\"firstName\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
+                "    <th scope='col' class='sortable email' id='col_for_email'><button onclick='sortBy(\"email\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Teacher Email</button></th>" +
+                "    <th scope='col' class='sortable school' id='col_for_schoolName'><button onclick='sortBy(\"schoolName\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
+                "    <th scope='col' class='sortable teacher' id='col_for_volunteerFirstName'><button onclick='sortBy(\"volunteerFirstName\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Volunteer</button></th>" +
+                "    <th scope='col' class='sortable email' id='col_for_volunteerEmail'><button onclick='sortBy(\"volunteerEmail\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Volunteer Email</button></th>" +
                 "    <th scope='col' class='action'><span class='ada-read'>Column of Details buttons</span></th>" +
                 "    <th scope='col' class='action'><span class='ada-read'>Column of Delete buttons</span></th>" +
                 "    <th scope='col' class='action'><span class='ada-read'>Column of Modify buttons</span></th>" +
@@ -139,152 +130,8 @@
             $('#dynamicEventTable').html(html);
         }
 
-        /*
-         * This is the function that gets called when a checkbox is clicked.
-         */
-        function toggleFilter(field, value) {
-            filterSettings[field][value] = ! filterSettings[field][value];
-
-            console.log('the filter field/value are: ' + field + ' / ' + value)
-
-            buildTable();
-        }
-
-        /*
-         * lookupTable is an object used as a map. if key is a key in lookupTable, this
-         * returns the corresponding value from lookupTable. If it is NOT a key in lookupTable,
-         * this returns -1. The "safely" in the name refers to the fact that we are
-         * avoiding returning undefined which would cause problems in the sort function.
-         */
-        function getValueSafely(lookupTable, key) {
-            var result = lookupTable[key];
-            if (result === undefined) {
-                return -1;
-            } else {
-                return result;
-            }
-        }
-
-        /*
-         * Returns true if value1 is less than value2, when both are values
-         * of the given field. Passes field in order to allow us to have
-         * different sorting logic for different types of fields. The default
-         * is basic string ordering.
-         */
-        function isLessThan(field, value1, value2) {
-            if ($.inArray(field, ['grade', 'numberStudents']) > -1) {
-                // -- numeric sort --
-                return parseInt(value1) < parseInt(value2);
-            } else if (field == 'eventDate') {
-                // -- date sort --
-                var dateOrder = {
-                    <c:forEach items="${allowedDates}" var="date" varStatus="status">
-                    "<c:out value="${date.pretty}"/>": <c:out value="${status.index}"/>
-                    <c:if test="${!status.last}">,</c:if>
-                    </c:forEach>
-                };
-                return getValueSafely(dateOrder, value1) < getValueSafely(dateOrder, value2);
-            } else if (field == 'eventTime') {
-                // -- time sort --
-                var timeOrder = {
-                    <c:forEach items="${allowedTimes}" var="time" varStatus="status">
-                    "<c:out value="${time}"/>": <c:out value="${status.index}"/>
-                    <c:if test="${!status.last}">,</c:if>
-                    </c:forEach>
-                };
-                return getValueSafely(timeOrder, value1) < getValueSafely(timeOrder, value2);
-            } else {
-                // -- string sort --
-                return value1 < value2;
-            }
-        }
-
-        /*
-         * This is the function that gets called when a sort box is clicked.
-         */
-        function  sortBy(field) {
-            var descending = $("#col_for_" + field).hasClass("ascending");
-            availableEvents.sort(function(event1, event2) {
-                if (descending) {
-                    var temp = event1;
-                    event1 = event2;
-                    event2 = temp;
-                }
-                if (event1[field] == event2[field]) {
-                    return 0;
-                } else if (isLessThan(field, event1[field], event2[field])) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            });
-            buildTable();
-            $("#col_for_" + field).addClass(descending ? "descending" : "ascending");
-        }
-
-        function filterByOptionList(selected){
-
-            var theItem = selected.options[selected.selectedIndex];
-
-            var selectedOption = theItem.value;
-
-            var theCategory = $( 'option:selected', selected).data("name");
-
-
-            if (theCategory != '' && selectedOption != ''){
-
-                console.log('selectionOption: ' + selectedOption);
-                console.log('selectedCategory: ' + theCategory);
-
-                toggleFilter(theCategory, selectedOption);
-
-            } else {
-
-                // TODO: reset category filter when a dropdown has been cleared, as well as filter based on all select/option
-
-            }
-        }
 
         $(document).ready(function() {
-            var createSelectionCheckboxes = function(args) {
-                filterSettings[args.field] = {};
-                var countsAndValues = countsAndDistinctValuesForField(availableEvents, args.field);
-                var counts = countsAndValues.counts;
-                var values = countsAndValues.values;
-
-
-                var html =
-                    "<fieldset>" +
-                    "    <legend>" + args.legend + "</legend>" +
-                    "       <ul>";
-
-                /* the selectList is for mobile display, so we don't have to render a lot of checkboxes  */
-                var selectListHtml = "<label><span>" + args.legend + "</span><select onchange='filterByOptionList(this)'><option data-name='' value='' selected>Select a filter</option>";
-
-                $.each(values, function(i,value) {
-                    filterSettings[args.field][value] = false;
-                    html +=
-                        "<li>" +
-                        "    <label>" +
-                        "        <input type='checkbox' onclick='toggleFilter(\"" + args.field + "\",\"" + value + "\");' />" +
-                        "        <span class='txt'>" + args.itemLabel(value) + " (" + counts[value] + ")" + "</span>" +
-                        "    </label>" +
-                        "</li>";
-
-                    selectListHtml += "<option data-name='" + args.field + "' value='" + value +  "'>" + args.itemLabel(value) + " (" + counts[value] + ")</option>";
-
-                });
-                html +=
-                    "    </ul>" +
-                    "</fieldset>";
-
-                selectListHtml += "</select></label>";
-
-                $('#' + args.field +'_checkboxes').html(html);
-
-                $('#' + args.field +'_select').html(selectListHtml);
-
-            }
             createSelectionCheckboxes({
                 field: 'eventDate',
                 legend: 'Date',
@@ -321,14 +168,6 @@
                 }}
             });
 
-            <%-- FIXME: Here I should have another checkbox for selecting by CRA Eligible --%>
-            <%--
-            createSelectionCheckboxes({
-                field: 'lmiEligible',
-                legend: 'CRA Eligible',
-                itemLabel: function(s) {return {'true': 'Yes', 'false': 'No'}[s];}
-            });
-            --%>
             buildTable();
 
         });
@@ -366,7 +205,7 @@
             <legend>
                 Refine by:
             </legend>
-
+            <%--for each checkbox the name must be of the form field_checkboxes where field exactly matches the field name in availableEvents--%>
             <div class="checkboxLists">
                 <div id="available_checkboxes"><%-- populated by javascript --%></div>
                 <div id="eventDate_checkboxes"><%-- populated by javascript --%></div>
