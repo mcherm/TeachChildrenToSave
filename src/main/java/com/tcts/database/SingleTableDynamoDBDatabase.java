@@ -93,11 +93,13 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
      */
     public SingleTableDynamoDBDatabase(Configuration configuration) {
         dynamoDbClient = connectToDB(configuration);
-        final String environment = configuration.getProperty("dynamoDB.environment", "dev");
-        tableName = "TCTS1." + environment;
+        tableName = getTableName(configuration);
     }
 
-    private DynamoDbClient connectToDB(Configuration configuration) {
+    /**
+     * Static method to get a DB connection. Made public to use in SingleTableDynamoDBSetup.
+     */
+    public static DynamoDbClient connectToDB(Configuration configuration) {
         String accessKey = configuration.getProperty("aws.access_key");
         String accessSecret = configuration.getProperty("aws.secret_access_key");
         Region region = Region.US_EAST_1;
@@ -107,6 +109,14 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
                 .credentialsProvider(credentialsProvider)
                 .region(region)
                 .build();
+    }
+
+    /**
+     * Static method to create the table name. Made public for use in SingleTableDynamoDBSetup.
+     */
+    public static String getTableName(Configuration configuration) {
+        final String environment = configuration.getProperty("dynamoDB.environment", "dev");
+        return "TCTS1." + environment;
     }
 
     // ========== Methods of DatabaseFacade Class ==========

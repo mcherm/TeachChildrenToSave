@@ -284,7 +284,6 @@ public class DynamoDBSetup {
             insertSiteSetting("EventDatesOnHomepage", "April 24-28");
             insertSiteSetting("CourseCreationOpen", "yes");
             insertSiteSetting("VolunteerSignupsOpen", "yes");
-
             insertSiteSetting("ShowDocuments", "yes");
 
             insertAllowedDate("2017-04-24");
