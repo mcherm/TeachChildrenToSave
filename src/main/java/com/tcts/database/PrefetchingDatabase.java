@@ -71,7 +71,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
     private Future<Map<String,String>> prefetchedSiteSettings;
     private final Object eventListLock; // always hold this lock when reading/writing prefetchedEventList.
     private Future<List<Event>> prefetchedEventList;
-    private final Object documentsLock;  //always hold this lock when reading/writing prefected Documents
+    private final Object documentsLock;  //always hold this lock when reading/writing prefetched Documents
     private Future<SortedSet<Document>> prefetchedDocuments;
 
 

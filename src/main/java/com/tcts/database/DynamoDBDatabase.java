@@ -428,7 +428,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 volunteer.setStreetAddress(getStringField(item, user_street_address));
                 volunteer.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
                 volunteer.setCity(getStringField(item, user_city));
-                volunteer.setState(getStringField(item,user_state));
+                volunteer.setState(getStringField(item, user_state));
                 volunteer.setZip(getStringField(item, user_zip));
                 user = volunteer;
             } break;
@@ -566,7 +566,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 new PrimaryKey(user_id.name(), formData.getUserId()),
                 attributeUpdate(user_email, formData.getEmail().toLowerCase()),
                 //original_email preserves the original email case as typed in by the user for purposes of sending the user email.  The
-                //email standard does not require the user portion of an email to be case insensitive although in practiice
+                //email standard does not require the user portion of an email to be case insensitive although in practice
                 //most email providers use case insensitive emails.  original_email is the value that will be returned for email
                 //on a user lookup
                 attributeUpdate(user_original_email, formData.getEmail()),

@@ -105,10 +105,25 @@
             <version>1.4</version>
         </dependency>
 
+        <!-- Older version of AWS library; will drop support on Dec 31 2025. -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
             <version>1.12.592</version>
+        </dependency>
+
+        <!-- Older version of AWS library; will drop support on Dec 31 2025. -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
+            <version>1.12.592</version>
+        </dependency>
+
+        <!-- Newer version of AWS library. -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>2.30.17</version>
         </dependency>
 
         <dependency>
@@ -117,11 +132,6 @@
             <version>2.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.12.592</version>
-        </dependency>
 
         <dependency>
             <groupId>commons-fileupload</groupId>

@@ -1,0 +1,115 @@
+=== Existing DB design ===
+allowedDatesTable;
+ * event_date_allowed (String) PK
+
+allowedTimesTable;
+ * event_time_allowed (String) PK
+
+bankTable;
+ * bank_id (String) PK
+ * bank_name (String)
+ * min_lmi_for_cra (Decimal)
+ * bank_specific_data_label (String)
+
+documentsTable;
+ * document_name (String) PK
+ * document_show_to_teacher (Boolean)
+ * document_show_to_volunteer (Boolean)
+ * document_show_to_bank_admin (Boolean)
+
+eventTable;
+ * event_id (String) PK
+ * event_teacher_id (String)
+ * event_date (String)
+ * event_time (String)
+ * event_grade (Int)
+ * event_delivery_method (String)
+ * event_number_students (Int)
+ * event_notes (String)
+ * event_volunteer_id (String)
+ > eventByTeacher;
+   * event_teacher_id (String) PK
+ > eventByVolunteer;
+  * event_volunteer_id (String) PK
+
+schoolTable;
+ * school_id (String) PK
+ * school_name (String)
+ * school_addr1 (String)
+ * school_city (String)
+ * school_state (String)
+ * school_zip (String)
+ * school_county (String)
+ * school_district (String)
+ * school_phone (String)
+ * school_lmi_eligible (Decimal)
+ * school_slc (String)
+
+siteSettingsTable;
+ * site_setting_name (String) PK
+ * site_setting_value (String)
+
+userTable;
+ * user_id (String) PK
+ * user_type (String)
+ * user_email (String)
+ * user_original_email (String)
+ * user_hashed_password (String)
+ * user_password_salt (String)
+ * user_first_name (String)
+ * user_last_name (String)
+ * user_phone_number (String)
+ * user_reset_password_token (String)
+ [SiteAdmin]
+ [Teacher]
+ * user_organization_id (String)
+ [Volunteer | BankAdmin]
+ * user_organization_id (String)
+ * user_approval_status (Int)
+ * user_bank_specific_data (String)
+ * user_street_address (String)
+ * user_suite_or_floor_number (String)
+ * user_city (String)
+ * user_state (String)
+ * user_zip (String)
+ > userByEmail;
+   * user_email (String)
+ > userByOrganization;
+   * user_organization_id (String)
+ > userByUserType;
+   * user_type (String)
+
+=== Proposed Single Table Design ===
+
+ * PK: "key" One of:
+   * allowedDates
+   * allowedTimes
+   * documents
+   * siteSettings
+   * bank:<id>
+   * event:<id>
+   * school:<id>
+   * user:<id>
+ * GSI: by "bank_id"
+ * GIS: by "event_id"
+ * GSI: by "school_id"
+ * GSI: by "user_email"
+ * GSI: by "event_teacher_id"
+ * GSI: by "event_volunteer_id"
+ * GSI: by "user_organization_id"
+ * GSI: by "user_type"
+
+
+Scan of siteSettings is special: We store all the key-name fields in a
+    single record. For updates we read in the record, modify it, and
+    write it out. Race conditions are possible and we don't mind.
+Same for allowedDates and allowedTimes and documents.
+Write single new record: easy
+Get by ID: easy
+Get User by Email: Needs an index by "user_email"
+Get Events by Teacher: Needs an index by "event_teacher_id"
+Get All Available Events:
+   > Needs to scan all schools [could this be cached?]
+   > Needs to scan all teachers [could this be cached?]
+   > Needs to scan Event-by-volunteer
+GetAllUsers: can scan "user_email"
