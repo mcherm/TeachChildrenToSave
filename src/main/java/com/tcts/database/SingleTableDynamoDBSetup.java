@@ -156,7 +156,44 @@ public class SingleTableDynamoDBSetup {
         insertAllowedDates();
         insertAllowedTimes();
 
+        insertBank("Applied Bank", null);
+        insertBank("Artisan's Bank", null);
+        insertBank("Bank of America", "BofA Internal Mail Code");
+        insertBank("Barclay's Bank Delaware", null);
+        insertBank("BNY Mellon Trust of Delaware", null);
+        insertBank("Brandywine Trust Company", null);
+        insertBank("Brown Brothers Harriman Trust Company", null);
+        final String aBankId = insertBank("Capital One", null);
+        insertBank("Charles Schwab Bank", null);
+        insertBank("Chase Bank USA", null);
+        insertBank("CNB", null);
+        insertBank("Comenity Bank", null);
+        insertBank("Commonwealth Trust Company", null);
+        insertBank("Community Bank Delaware", null);
+        insertBank("County Bank", null);
+        insertBank("Deutsche Bank Trust Company Delaware", null);
+        insertBank("Discover Bank", null);
+        insertBank("Fulton Bank", null);
+        insertBank("Glenmede", null);
+        insertBank("HSBC Trust Company",  null);
+        insertBank("JPMorgan Trust Company of Delaware", null);
+        insertBank("Key National Trust Company of Delaware", null);
+        insertBank("M&T Bank", null);
+        insertBank("MidCoast Community Bank", null);
+        insertBank("Morgan Stanley Private Bank", null);
+        insertBank("PNC Bank", null);
+        insertBank("Principal Trust Company", null);
+        insertBank("UBS Trust Company", null);
+        insertBank("Wells Fargo Bank", null);
+        insertBank("WSFS Bank", null);
+        insertBank("Delaware Bankers Association", null);
+        insertBank("CEEE Volunteers", null);
+        insertBank("Middletown High School - Bank at School", null);
+        insertBank("The Bryn Mawr Trust Company of DE", null);
+
         insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm@mcherm.com","Michael","Chermside","SA",null,"610-810-1806",0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+BankAdmin@gmail.com","Michael","Chermside","BA",aBankId,"610-810-1806",0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+Volunteer@gmail.com","Michael","Chermside","V",aBankId,"610-810-1806",0);
     }
 
     /**
@@ -228,13 +265,30 @@ public class SingleTableDynamoDBSetup {
         dynamoDbClient.putItem(putItemRequest);
     }
 
-    private void insertUser(String passwordSalt, String passwordHash, String email,
+    /** Insert a bank into the database. Returns the unique ID it was assigned. */
+    public String insertBank(String bankName, String bankSpecificDataLabel)
+    {
+        final String uniqueId = dynamoDBHelper.createUniqueId();
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("bank", bank_id, uniqueId)
+                        .withString(bank_name, bankName)
+                        .withString(bank_specific_data_label, bankSpecificDataLabel)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+        return uniqueId;
+    }
+
+    /** Insert a user into the database. Returns the unique ID it was assigned. */
+    private String insertUser(String passwordSalt, String passwordHash, String email,
                             String firstName, String lastName, String userType,
                             String organizationId, String phoneNumber, int userStatus)
     {
+        final String uniqueId = dynamoDBHelper.createUniqueId();
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
-                .item(new ItemBuilder("user", user_id, dynamoDBHelper.createUniqueId())
+                .item(new ItemBuilder("user", user_id, uniqueId)
                         .withString(user_type, userType)
                         .withString(user_password_salt, passwordSalt)
                         .withString(user_hashed_password, passwordHash)
@@ -248,6 +302,7 @@ public class SingleTableDynamoDBSetup {
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
+        return uniqueId;
     }
 
 

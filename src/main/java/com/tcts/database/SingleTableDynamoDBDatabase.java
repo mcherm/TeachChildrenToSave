@@ -51,12 +51,15 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,16 +70,22 @@ import static com.tcts.database.SingleTableDbField.*;
 
 // FIXME: Still under development
 public class SingleTableDynamoDBDatabase implements DatabaseFacade {
+    // ========== Instance Variables ==========
     private final DynamoDbClient dynamoDbClient;
     private final String tableName;
+
+
+    // ========== main() - TEMPORARY ==========
 
     // FIXME: Remove
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDBDatabase instance = new SingleTableDynamoDBDatabase(configuration);
-        final List<String> allowedTimes = instance.getAllowedTimes();
-        System.out.println("allowedTimes: " + allowedTimes);
+        final List<Volunteer> volunteers = instance.getVolunteersByBank("2276617159709856195");
+        System.out.println("volunteers: " + volunteers);
     }
+
+    // ========== Constructor ==========
 
     /**
      * Constructor.
@@ -85,6 +94,8 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         dynamoDbClient = connectToDB(configuration);
         tableName = getTableName(configuration);
     }
+
+    // ========== Static Methods for Use in Constructor ==========
 
     /**
      * Static method to get a DB connection. Made public to use in SingleTableDynamoDBSetup.
@@ -109,6 +120,8 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         return "TCTS1." + environment;
     }
 
+    // ========== Create Object Functions ==========
+
     /**
      * This retrieves a field which is a string from an Item. If the field is missing
      * (null) it will return an empty string ("") instead of null. This mirrors what
@@ -132,6 +145,36 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         } else {
             return Integer.parseInt(attributeValue.n());
         }
+    }
+
+    /**
+     * This retrieves a field which is a BigDecimal from an Item.
+     *
+     * @throws NumberFormatException if the field is not an integer
+     */
+    private BigDecimal getDecimalField(Map<String,AttributeValue> item, SingleTableDbField field) {
+        final AttributeValue attributeValue = item.get(field.name());
+        return attributeValue == null ? null : new BigDecimal(attributeValue.s());
+    }
+
+    /**
+     * Creates a Bank object from the corresponding Item retrieved from DynamoDB. If passed
+     * null, it returns null.
+     */
+    private Bank createBankFromDynamoDbItem(Map<String,AttributeValue> item) {
+        if (item == null) {
+            return null;
+        }
+        Bank bank = new Bank();
+        bank.setBankId(getStringField(item, bank_id));
+        bank.setBankName(getStringField(item, bank_name));
+        bank.setMinLMIForCRA(getDecimalField(item, min_lmi_for_cra));
+        if (getStringField(item, bank_specific_data_label) == null) {
+            bank.setBankSpecificDataLabel(""); // Use "" when there is a null in the DB
+        } else {
+            bank.setBankSpecificDataLabel(getStringField(item, bank_specific_data_label));
+        }
+        return bank;
     }
 
     /**
@@ -191,6 +234,7 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         return user;
     }
 
+    // ========== Helper Functions for Common DB Queries ==========
 
     /**
      * We have some singleton items in our single-table design: allowedDates, allowedTimes, documents,
@@ -211,6 +255,41 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         }
         return getItemResponse.item();
     }
+
+    /**
+     * Used when we do a lookup in an index and now need to retrieve the individual
+     * item from the table using the table_key.
+     */
+    private Map<String,AttributeValue> getItemAfterIndexLookup(Map<String,AttributeValue> indexItem) {
+        final AttributeValue tableKey = indexItem.get(table_key.name());
+        final GetItemRequest getItemRequest = GetItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of(table_key.name(), tableKey))
+                .build();
+        final GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
+        return getItemResponse.item();
+    }
+
+    // ========== Comparators for sorting ==========
+
+    /** Comparator for sorting banks. */
+    private final Comparator<Bank> compareBanks = new Comparator<Bank>() {
+        @Override
+        public int compare(Bank bank1, Bank bank2) {
+            return bank1.getBankName().compareTo(bank2.getBankName());
+        }
+    };
+
+    private final Comparator<User> compareUsersByName = new Comparator<User>() {
+        @Override
+        public int compare(User user1, User user2) {
+            int byLastName = user1.getLastName().compareTo(user2.getLastName());
+            if (byLastName != 0) {
+                return byLastName;
+            }
+            return user1.getFirstName().compareTo(user2.getFirstName());
+        }
+    };
 
     // ========== Methods of DatabaseFacade Class ==========
 
@@ -309,12 +388,28 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // We look for users with this organization id
+        final QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(tableName)
+                .indexName("ByUserOrganizationId")
+                .keyConditionExpression("user_organization_id = :bank_id")
+                .expressionAttributeValues(Map.of(":bank_id", AttributeValue.builder().s(bankId).build()))
+                .build();
+        final QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
+
+        // For each one found in the index, we have to do a getItem from the table to get the fields ---
+        return queryResponse.items().stream()
+                .map(indexItem -> (Volunteer) createUserFromDynamoDbItem(getItemAfterIndexLookup(indexItem)))
+                .sorted(compareUsersByName)
+                .toList();
     }
 
     @Override
     public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getVolunteersByBank(bankId).stream()
+                .filter(volunteer -> volunteer instanceof BankAdmin)
+                .map(volunteer -> (BankAdmin) volunteer)
+                .toList();
     }
 
     @Override
@@ -339,7 +434,18 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Bank> getAllBanks() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // Scan over the ByBankId index to get all of the banks
+        final ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(tableName)
+                .indexName("ByBankId")
+                .build();
+        final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+
+        // For each item, we have to look it up in the real table to get all the fields
+        return scanResponse.items().stream()
+                .map(indexItem -> createBankFromDynamoDbItem(getItemAfterIndexLookup(indexItem)))
+                .sorted(compareBanks)
+                .toList();
     }
 
     @Override
@@ -362,8 +468,8 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
                         throw new RuntimeException("Invalid date in the database: '" + dateStr + "'.", err);
                     }
                 })
+                .sorted()
                 .toList();
-        Collections.sort(result);
         return result;
     }
 
