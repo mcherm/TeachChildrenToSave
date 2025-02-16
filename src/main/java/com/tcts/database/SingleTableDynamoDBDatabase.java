@@ -81,8 +81,8 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDBDatabase instance = new SingleTableDynamoDBDatabase(configuration);
-        final List<Volunteer> volunteers = instance.getVolunteersByBank("2276617159709856195");
-        System.out.println("volunteers: " + volunteers);
+        final List<School> schools = instance.getAllSchools();
+        System.out.println("schools: " + schools);
     }
 
     // ========== Constructor ==========
@@ -178,6 +178,31 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
     }
 
     /**
+     * Creates a School object from the corresponding Item retrieved from DynamoDB. If passed
+     * null, it returns null.
+     */
+    private School createSchoolFromDynamoDBItem(Map<String,AttributeValue> item) {
+        if (item == null) {
+            return null;
+        }
+        School school = new School();
+        school.setSchoolId(getStringField(item, school_id));
+        school.setName(getStringField(item, school_name));
+        school.setAddressLine1(getStringField(item, school_addr1));
+        school.setCity(getStringField(item, school_city));
+        school.setState(getStringField(item, school_state));
+        school.setZip(getStringField(item, school_zip));
+        school.setCounty(getStringField(item, school_county));
+        school.setSchoolDistrict(getStringField(item, school_district));
+        school.setPhone(getStringField(item, school_phone));
+        if (item.containsKey(school_lmi_eligible.name())) {
+            school.setLmiEligible(getDecimalField(item, school_lmi_eligible));
+        }
+        school.setSLC(getStringField(item, school_slc));
+        return school;
+    }
+
+    /**
      * Creates a User object from the corresponding Item retrieved from DynamoDB. It will
      * be of the appropriate concrete sub-type of User. If passed null, it returns null.
      * None of the linked data is filled in.
@@ -270,6 +295,67 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         return getItemResponse.item();
     }
 
+    /** An interface for passing a method reference a function to build an object from a DB item. */
+    private interface CreateFunction<T> {
+        T create(Map<String,AttributeValue> item);
+    }
+
+    /**
+     * For a given type which is in the table using keys like "foo:83333323", this will return
+     * all the objects of that type. It will EITHER use a table scan OR an index to do so.
+     *
+     * @return the list of objects
+     * @param <T> the type to return, Event, School, Bank, or User.
+     */
+    private <T> List<T> getAllUsingIndexOrScan(
+            String indexName, String keyPrefix, CreateFunction<T> createFunction, Comparator<T> comparator
+    ) {
+        // DESIGN NOTE:
+        // There are 2 ways we could query this. In approach 1, we use the BySchoolId
+        // index. This avoids having to do a full table scan; that index will contain
+        // an entry for every individual school. BUT, we will need to perform a getItem()
+        // for each individual school after looking it up in the index.
+        //
+        // In approach 2, we do a scan using a filter specifying that the table_key
+        // begins with "school:". This avoids having to make a second series of calls
+        // BUT it performs a full table scan.
+        //
+        // The best approach to use depends on the fraction of the table entries that
+        // are schools. If that fraction is very small then we should use approach 1; if
+        // it is even a moderate fraction of the table then we should use approach 2.
+        //
+        // Based on existing measurements it seems like approach 2 is better for our
+        // actual data. ALSO NOTE - if we projected all the fields into the index then
+        // we could read from the index quickly... but that's a good bit more data to
+        // store (and there would be several copies of it).
+        final boolean USE_INDEX = false;
+        if (USE_INDEX) {
+            // Scan over the SchoolId index to get all the schools
+            final ScanRequest scanRequest = ScanRequest.builder()
+                    .tableName(tableName)
+                    .indexName(indexName)
+                    .build();
+            final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+
+            // For each item, we have to look it up in the real table to get all the fields
+            return scanResponse.items().stream()
+                    .map(indexItem -> createFunction.create(getItemAfterIndexLookup(indexItem)))
+                    .sorted(comparator)
+                    .toList();
+        } else {
+            final ScanRequest scanRequest = ScanRequest.builder()
+                    .tableName(tableName)
+                    .filterExpression("begins_with( " + table_key.name() + ", :keyPrefix )")
+                    .expressionAttributeValues(Map.of(":keyPrefix", AttributeValue.builder().s(keyPrefix).build()))
+                    .build();
+            final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+            return scanResponse.items().stream()
+                    .map(createFunction::create)
+                    .sorted(comparator)
+                    .toList();
+        }
+    }
+
     // ========== Comparators for sorting ==========
 
     /** Comparator for sorting banks. */
@@ -277,6 +363,14 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         @Override
         public int compare(Bank bank1, Bank bank2) {
             return bank1.getBankName().compareTo(bank2.getBankName());
+        }
+    };
+
+    /** Comparator for sorting schools. */
+    private final Comparator<School> compareSchools = new Comparator<School>() {
+        @Override
+        public int compare(School school1, School school2) {
+            return school1.getName().compareTo(school2.getName());
         }
     };
 
@@ -429,23 +523,12 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<School> getAllSchools() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getAllUsingIndexOrScan("BySchoolId", "school:", this::createSchoolFromDynamoDBItem, compareSchools);
     }
 
     @Override
     public List<Bank> getAllBanks() throws SQLException {
-        // Scan over the ByBankId index to get all of the banks
-        final ScanRequest scanRequest = ScanRequest.builder()
-                .tableName(tableName)
-                .indexName("ByBankId")
-                .build();
-        final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
-
-        // For each item, we have to look it up in the real table to get all the fields
-        return scanResponse.items().stream()
-                .map(indexItem -> createBankFromDynamoDbItem(getItemAfterIndexLookup(indexItem)))
-                .sorted(compareBanks)
-                .toList();
+        return getAllUsingIndexOrScan("ByBankId", "bank:", this::createBankFromDynamoDbItem, compareBanks);
     }
 
     @Override
