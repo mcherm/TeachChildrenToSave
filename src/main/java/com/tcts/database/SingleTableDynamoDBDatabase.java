@@ -133,6 +133,7 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
+        // FIXME: HEREAMI - should implement this next
         throw new RuntimeException("Not implemented yet"); // FIXME: Implement
     }
 

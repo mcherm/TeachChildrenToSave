@@ -1,9 +1,10 @@
 package com.tcts.database;
 
 import com.tcts.common.Configuration;
+import com.tcts.database.dynamodb.DynamoDBHelper;
+import com.tcts.database.dynamodb.ItemBuilder;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
@@ -18,11 +19,12 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.tcts.database.SingleTableDbField.*;
+
 
 /**
  * A class with code for setting up a database. Can be executed from main(), but might
@@ -35,9 +37,10 @@ public class SingleTableDynamoDBSetup {
             Configuration configuration = new Configuration();
             final DynamoDbClient dynamoDbClient = SingleTableDynamoDBDatabase.connectToDB(configuration);
             final String tableName = SingleTableDynamoDBDatabase.getTableName(configuration);
+            final SingleTableDynamoDBSetup instance = new SingleTableDynamoDBSetup(dynamoDbClient, tableName);
 
-            reinitializeDatabase(dynamoDbClient, tableName);
-            insertData(dynamoDbClient, tableName);
+            instance.reinitializeDatabase();
+            instance.insertData();
         } catch(Exception err) {
             err.printStackTrace();
         }
@@ -45,16 +48,32 @@ public class SingleTableDynamoDBSetup {
         System.out.println("Done.");
     }
 
+    // ========== Instance Variables ==========
+
+    final DynamoDbClient dynamoDbClient;
+    final String tableName;
+    final DynamoDBHelper dynamoDBHelper;
+
+    /**
+     * Constructor.
+     */
+    private SingleTableDynamoDBSetup(DynamoDbClient dynamoDbClient, String tableName) {
+        this.dynamoDbClient = dynamoDbClient;
+        this.tableName = tableName;
+        this.dynamoDBHelper = new DynamoDBHelper();
+    }
+
+
     /**
      * When called, this wipes the entire DynamoDB database and then recreates it.
      */
-    public static void reinitializeDatabase(DynamoDbClient dynamoDbClient, String tableName) {
-        deleteDatabaseTable(dynamoDbClient, tableName);
-        createDatabaseTable(dynamoDbClient, tableName);
+    public void reinitializeDatabase() {
+        deleteDatabaseTable();
+        createDatabaseTable();
     }
 
     /** Delete a table. If it doesn't exist, returns without doing anything. */
-    private static void deleteDatabaseTable(DynamoDbClient dynamoDbClient, String tableName) {
+    private void deleteDatabaseTable() {
         final DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder().tableName(tableName).build();
         try {
             dynamoDbClient.deleteTable(deleteTableRequest);
@@ -72,7 +91,7 @@ public class SingleTableDynamoDBSetup {
     private record GSIData(String name, String attribute) {}
 
     /** Create a table. */
-    private static void createDatabaseTable(DynamoDbClient dynamoDbClient, String tableName) {
+    private void createDatabaseTable() {
         final GSIData[] gsiData = {
                 new GSIData("ByBankId", "bank_id"),
                 new GSIData("ByEventId", "event_id"),
@@ -86,7 +105,7 @@ public class SingleTableDynamoDBSetup {
 
         final List<AttributeDefinition> attributeDefinitions = Stream
                 .concat(
-                        Stream.of("key"), // the primary key of the table
+                        Stream.of(key.name()), // the primary key of the table
                         Arrays.stream(gsiData).map(x -> x.attribute)
                 )
                 .map(x -> AttributeDefinition.builder()
@@ -112,7 +131,7 @@ public class SingleTableDynamoDBSetup {
                 .tableName(tableName)
                 .attributeDefinitions(attributeDefinitions)
                 .keySchema(KeySchemaElement.builder()
-                        .attributeName("key")
+                        .attributeName(key.name())
                         .keyType(KeyType.HASH)
                         .build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
@@ -132,28 +151,55 @@ public class SingleTableDynamoDBSetup {
     /**
      * Insert the starting data into the DB.
      */
-    private static void insertData(DynamoDbClient dynamoDbClient, String tableName) {
-        insertSiteSettings(dynamoDbClient, tableName);
+    private void insertData() {
+        insertSiteSettings();
 
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm@mcherm.com","Michael","Chermside","SA",null,"610-810-1806",0);
     }
 
     /**
      * Insert the single record that has the starting values for site settings.
      */
-    private static void insertSiteSettings(DynamoDbClient dynamoDbClient, String tableName) {
+    private void insertSiteSettings() {
+
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
-                .item(Map.of(
-                        "key", AttributeValue.builder().s("siteSettings").build(),
-                        "keyvalues", AttributeValue.builder().ss(
+                .item(new ItemBuilder("siteSettings")
+                        .withStrings(
+                                keyvalues,
                                 "CourseCreationOpen=yes",
                                 "CurrentYear=2025",
                                 "EventDatesOnHomepage=April 25 - 29, 2024",
                                 "ShowDocuments=yes",
                                 "VolunteerSignupsOpen=yes"
-                        ).build()
-                ))
+                        )
+                        .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
     }
+
+
+    private void insertUser(String passwordSalt, String passwordHash, String email,
+                            String firstName, String lastName, String userType,
+                            String organizationId, String phoneNumber, int userStatus)
+    {
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("user", user_id, dynamoDBHelper.createUniqueId())
+                        .withString(user_type, userType)
+                        .withString(user_password_salt, passwordSalt)
+                        .withString(user_hashed_password, passwordHash)
+                        .withString(user_email, email.toLowerCase()) // in canonical form
+                        .withString(user_original_email, email) // in original form
+                        .withString(user_first_name, firstName)
+                        .withString(user_last_name, lastName)
+                        .withString(user_phone_number, phoneNumber)
+                        .withString(user_organization_id, organizationId)
+                        .withInt(user_approval_status, userStatus)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+
 }
