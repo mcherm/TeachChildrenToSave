@@ -8,6 +8,7 @@ import com.tcts.datamodel.BankAdmin;
 import com.tcts.datamodel.Document;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
+import com.tcts.datamodel.SiteAdmin;
 import com.tcts.datamodel.SiteStatistics;
 import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
@@ -48,16 +49,20 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
-import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+
+import static com.tcts.database.SingleTableDbField.*;
 
 
 // FIXME: Still under development
@@ -66,26 +71,11 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
     private final String tableName;
 
     // FIXME: Remove
-    public static void main(String[] args) {
-        Configuration configuration = new Configuration();
-        String connectURL = configuration.getProperty("dynamoDB.connect");
-        String signingRegion = configuration.getProperty("dynamoDB.signingRegion");
-        String accessKey = configuration.getProperty("aws.access_key");
-        String accessSecret = configuration.getProperty("aws.secret_access_key");
-        String proxyHost = configuration.getProperty("dynamodb.proxyhost");
-        Region region = Region.US_EAST_1;
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, accessSecret);
-        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
-        DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
-                .credentialsProvider(credentialsProvider)
-                .region(region)
-                .build();
-        ScanRequest scanRequest = ScanRequest.builder().tableName("TCTS.dev.SiteSettings").build();
-        ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
-        for (Map<String, AttributeValue> item: scanResponse.items()) {
-            System.out.println("site_setting_name: " + item.get("site_setting_name").s());
-            System.out.println("site_setting_value: " + item.get("site_setting_value").s());
-        }
+    public static void main(String[] args) throws Exception {
+        final Configuration configuration = new Configuration();
+        final SingleTableDynamoDBDatabase instance = new SingleTableDynamoDBDatabase(configuration);
+        final List<String> allowedTimes = instance.getAllowedTimes();
+        System.out.println("allowedTimes: " + allowedTimes);
     }
 
     /**
@@ -119,10 +109,114 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         return "TCTS1." + environment;
     }
 
+    /**
+     * This retrieves a field which is a string from an Item. If the field is missing
+     * (null) it will return an empty string ("") instead of null. This mirrors what
+     * we do when storing the value, and is done because DynamoDB is not able to store
+     * empty string values.
+     */
+    private String getStringField(Map<String,AttributeValue> item, SingleTableDbField field) {
+        final AttributeValue fieldValue = item.get(field.name());
+        return fieldValue == null ? "" : fieldValue.s();
+    }
+
+    /**
+     * This retrieves a field which is an int from an Item.
+     *
+     * @throws NumberFormatException if the field is null or is not an integer
+     */
+    private int getIntField(Map<String,AttributeValue> item, SingleTableDbField field) {
+        final AttributeValue attributeValue = item.get(field.name());
+        if (attributeValue == null) {
+            throw new NullPointerException("Numeric field " + field.name() + " is null");
+        } else {
+            return Integer.parseInt(attributeValue.n());
+        }
+    }
+
+    /**
+     * Creates a User object from the corresponding Item retrieved from DynamoDB. It will
+     * be of the appropriate concrete sub-type of User. If passed null, it returns null.
+     * None of the linked data is filled in.
+     */
+    private User createUserFromDynamoDbItem(Map<String,AttributeValue> item) {
+        if (item == null) {
+            return null;
+        }
+        final UserType userType = UserType.fromDBValue(getStringField(item, user_type));
+        final User user = switch(userType) {
+            case TEACHER -> {
+                Teacher teacher = new Teacher();
+                teacher.setSchoolId(getStringField(item, user_organization_id));
+                yield teacher;
+            }
+            case VOLUNTEER -> {
+                Volunteer volunteer = new Volunteer();
+                volunteer.setBankId(getStringField(item, user_organization_id));
+                volunteer.setApprovalStatus(ApprovalStatus.fromDBValue(getIntField(item,user_approval_status)));
+                volunteer.setBankSpecificData(getStringField(item, user_bank_specific_data));
+                volunteer.setStreetAddress(getStringField(item, user_street_address));
+                volunteer.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
+                volunteer.setCity(getStringField(item, user_city));
+                volunteer.setState(getStringField(item, user_state));
+                volunteer.setZip(getStringField(item, user_zip));
+                yield volunteer;
+            }
+            case BANK_ADMIN -> {
+                BankAdmin bankAdmin = new BankAdmin();
+                bankAdmin.setBankId(getStringField(item, user_organization_id));
+                bankAdmin.setApprovalStatus(ApprovalStatus.fromDBValue(getIntField(item,user_approval_status)));
+                bankAdmin.setBankSpecificData(getStringField(item, user_bank_specific_data));
+                bankAdmin.setStreetAddress(getStringField(item, user_street_address));
+                bankAdmin.setSuiteOrFloorNumber(getStringField(item, user_suite_or_floor_number));
+                bankAdmin.setCity(getStringField(item, user_city));
+                bankAdmin.setState(getStringField(item,user_state));
+                bankAdmin.setZip(getStringField(item, user_zip));
+                yield bankAdmin;
+            }
+            case SITE_ADMIN -> {
+                SiteAdmin siteAdmin = new SiteAdmin();
+                yield siteAdmin;
+            }
+        };
+        user.setUserId(getStringField(item, user_id));
+        user.setEmail(getStringField(item, user_original_email));  //gets the email with case preserved as the user originally typed it
+        user.setHashedPassword(getStringField(item, user_hashed_password));
+        user.setSalt(getStringField(item, user_password_salt));
+        user.setFirstName(getStringField(item, user_first_name));
+        user.setLastName(getStringField(item, user_last_name));
+        user.setPhoneNumber(getStringField(item, user_phone_number));
+        user.setResetPasswordToken(getStringField(item, user_reset_password_token));
+        user.setUserType(userType);
+        return user;
+    }
+
+
+    /**
+     * We have some singleton items in our single-table design: allowedDates, allowedTimes, documents,
+     * and siteSettings. This retrieves the (single) item for one of those. If the item does not
+     * exist, this throws a RuntimeException.
+     *
+     * @param singletonItemKey the name of the key entry for the singleton item
+     * @return the value of the item.
+     */
+    private Map<String,AttributeValue> getSingletonItem(String singletonItemKey) {
+        final GetItemRequest getItemRequest = GetItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of(table_key.name(), AttributeValue.builder().s(singletonItemKey).build()))
+                .build();
+        final GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
+        if (!getItemResponse.hasItem()) {
+            throw new RuntimeException("No " + singletonItemKey + " found. DB may not be initialized.");
+        }
+        return getItemResponse.item();
+    }
+
     // ========== Methods of DatabaseFacade Class ==========
 
     @Override
     public int getFieldLength(DatabaseField field) {
+        // FIXME: We made a new enum, and now this takes the wrong type! No sure what to do about that.
         throw new RuntimeException("Not implemented yet"); // FIXME: Implement
     }
 
@@ -133,8 +227,34 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
-        // FIXME: HEREAMI - should implement this next
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- First, we look in the index to find out the key ---
+        final QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(tableName)
+                .indexName("ByUserEmail")
+                .keyConditionExpression("user_email = :email")
+                .expressionAttributeValues(Map.of(":email", AttributeValue.builder().s(email.toLowerCase()).build()))
+                .build();
+        final QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
+
+        final AttributeValue keyValue = switch (queryResponse.count()) {
+            case 0 -> null;
+            case 1 -> queryResponse.items().get(0).get(table_key.name());
+            default -> throw new InconsistentDatabaseException(
+                    "More than one user with email address '" + email + "'.");
+        };
+
+        // --- If there was no user, return null ---
+        if (keyValue == null) {
+            return null;
+        }
+
+        // --- Then we do the actual getItem from the table to get the fields ---
+        final GetItemRequest getItemRequest = GetItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of(table_key.name(), keyValue))
+                .build();
+        final GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
+        return createUserFromDynamoDbItem(getItemResponse.item());
     }
 
     @Override
@@ -229,12 +349,47 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final Map<String,AttributeValue> item = getSingletonItem("allowedDates");
+        final AttributeValue allowedDateValues = item.get(allowed_date_values.name());
+        if (allowedDateValues == null) {
+            throw new RuntimeException("No allowed dates found. DB may not be initialized.");
+        }
+        final List<PrettyPrintingDate> result = allowedDateValues.ss().stream()
+                .map(dateStr -> {
+                    try {
+                        return PrettyPrintingDate.fromParsableDate(dateStr);
+                    } catch (ParseException err) {
+                        throw new RuntimeException("Invalid date in the database: '" + dateStr + "'.", err);
+                    }
+                })
+                .toList();
+        Collections.sort(result);
+        return result;
     }
 
     @Override
     public List<String> getAllowedTimes() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final Map<String,AttributeValue> item = getSingletonItem("allowedTimes");
+        final AttributeValue allowedTimeValuesWithSort = item.get(allowed_time_values_with_sort.name());
+        if (allowedTimeValuesWithSort == null) {
+            throw new RuntimeException("No allowed times found. DB may not be initialized.");
+        }
+
+        // Create a record type we can sort on
+        record SortKeyAndTimeValue(int sortKey, String timeValue) implements Comparable<SortKeyAndTimeValue> {
+            @Override
+            public int compareTo(SortKeyAndTimeValue o) {
+                return Integer.compare(this.sortKey, o.sortKey);
+            }
+        }
+        return allowedTimeValuesWithSort.ss().stream()
+                .map(x -> {
+                    String[] pieces = x.split("\\|",2); // split on first vertical-bar
+                    return new SortKeyAndTimeValue(Integer.parseInt(pieces[0]), pieces[1]);
+                })
+                .sorted()
+                .map(x -> x.timeValue)
+                .toList();
     }
 
     @Override
@@ -394,14 +549,8 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public Map<String, String> getSiteSettings() throws SQLException {
-        final Map<String,AttributeValue> key = Map.of("key", AttributeValue.builder().s("siteSettings").build());
-        final GetItemRequest getItemRequest = GetItemRequest.builder()
-            .tableName(tableName)
-            .key(key)
-            .build();
-        final GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
-        final Map<String,AttributeValue> item = getItemResponse.item();
-        final AttributeValue keyvalues = item.get("keyvalues");
+        final Map<String,AttributeValue> item = getSingletonItem("siteSettings");
+        final AttributeValue keyvalues = item.get(SingleTableDbField.site_setting_entries.name());
         if (keyvalues == null) {
             throw new RuntimeException("No site settings found. DB may not be initialized.");
         }

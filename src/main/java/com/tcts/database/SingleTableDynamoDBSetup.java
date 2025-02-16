@@ -105,7 +105,7 @@ public class SingleTableDynamoDBSetup {
 
         final List<AttributeDefinition> attributeDefinitions = Stream
                 .concat(
-                        Stream.of(key.name()), // the primary key of the table
+                        Stream.of(table_key.name()), // the primary key of the table
                         Arrays.stream(gsiData).map(x -> x.attribute)
                 )
                 .map(x -> AttributeDefinition.builder()
@@ -131,7 +131,7 @@ public class SingleTableDynamoDBSetup {
                 .tableName(tableName)
                 .attributeDefinitions(attributeDefinitions)
                 .keySchema(KeySchemaElement.builder()
-                        .attributeName(key.name())
+                        .attributeName(table_key.name())
                         .keyType(KeyType.HASH)
                         .build())
                 .billingMode(BillingMode.PAY_PER_REQUEST)
@@ -153,6 +153,8 @@ public class SingleTableDynamoDBSetup {
      */
     private void insertData() {
         insertSiteSettings();
+        insertAllowedDates();
+        insertAllowedTimes();
 
         insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm@mcherm.com","Michael","Chermside","SA",null,"610-810-1806",0);
     }
@@ -161,12 +163,11 @@ public class SingleTableDynamoDBSetup {
      * Insert the single record that has the starting values for site settings.
      */
     private void insertSiteSettings() {
-
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
                 .item(new ItemBuilder("siteSettings")
                         .withStrings(
-                                keyvalues,
+                                site_setting_entries,
                                 "CourseCreationOpen=yes",
                                 "CurrentYear=2025",
                                 "EventDatesOnHomepage=April 25 - 29, 2024",
@@ -178,6 +179,54 @@ public class SingleTableDynamoDBSetup {
         dynamoDbClient.putItem(putItemRequest);
     }
 
+    /**
+     * Insert the single record that has the starting values for allowed dates.
+     */
+    private void insertAllowedDates() {
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedDates")
+                        .withStrings(
+                                allowed_date_values,
+                                "2017-04-24",
+                                "2017-04-25",
+                                "2017-04-26",
+                                "2017-04-27",
+                                "2017-04-28"
+                        )
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+    /**
+     * Insert the single record that has the starting values for allowed times.
+     */
+    private void insertAllowedTimes() {
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedTimes")
+                        .withStrings(
+                                allowed_time_values_with_sort,
+                                "0|9:00 to 9:45 AM",
+                                "1|9:30 to 10:15 AM",
+                                "2|10:00 to 10:45 AM",
+                                "3|10:30 to 11:15 AM",
+                                "4|11:00 to 11:45 AM",
+                                "5|11:30 AM to 12:15 PM",
+                                "6|12:00 to 12:45 PM",
+                                "7|12:30 to 1:15 PM",
+                                "8|1:00 to 1:45 PM",
+                                "9|1:30 to 2:15 PM",
+                                "10|2:00 to 2:45 PM",
+                                "11|2:30 to 3:15 PM",
+                                "12|3:00 to 3:45 PM",
+                                "13|Flexible"
+                        )
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
 
     private void insertUser(String passwordSalt, String passwordHash, String email,
                             String firstName, String lastName, String userType,

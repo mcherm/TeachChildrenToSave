@@ -5,17 +5,19 @@ package com.tcts.database;
  */
 public enum SingleTableDbField {
     // Master hash key
-    key,
+    table_key,
 
     // SiteSettings
-    keyvalues,
+    site_setting_entries,
 
 //    // Documents
 //    document_name, document_show_to_teacher, document_show_to_volunteer, document_show_to_bank_admin,
-//    // AllowedDates
-//    event_date_allowed,
-//    // AllowedTimes
-//    event_time_allowed, event_time_sort_key,
+
+    // AllowedDates
+    allowed_date_values,
+
+    // AllowedTimes
+    allowed_time_values_with_sort,
 
     // Bank
     bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label,

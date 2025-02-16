@@ -81,7 +81,7 @@ userTable;
 
 === Proposed Single Table Design ===
 
- * PK: "key" One of:
+ * PK: "table_key" One of:
    * allowedDates
    * allowedTimes
    * documents

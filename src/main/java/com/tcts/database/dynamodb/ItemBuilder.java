@@ -140,7 +140,7 @@ public class ItemBuilder {
 
     public Map<String, AttributeValue> build() {
         final Map<String, AttributeValue> result = new HashMap<>();
-        result.put(SingleTableDbField.key.name(), AttributeValue.builder().s(tableKeyValue).build());
+        result.put(SingleTableDbField.table_key.name(), AttributeValue.builder().s(tableKeyValue).build());
         for (NonEmptyField nonEmptyField : this.nonEmptyFields) {
             nonEmptyField.addFieldToMap(result);
         }
