@@ -64,12 +64,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import static com.tcts.database.SingleTableDbField.*;
 
 
 // FIXME: Still under development
-public class SingleTableDynamoDBDatabase implements DatabaseFacade {
+public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     // ========== Instance Variables ==========
     private final DynamoDbClient dynamoDbClient;
     private final String tableName;
@@ -80,9 +81,17 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
     // FIXME: Remove
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
-        final SingleTableDynamoDBDatabase instance = new SingleTableDynamoDBDatabase(configuration);
-        final List<School> schools = instance.getAllSchools();
-        System.out.println("schools: " + schools);
+        final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
+//        final List<School> schools = instance.getAllSchools();
+//        System.out.println("schools: " + schools);
+//        for (School school : schools) {
+//            System.out.println("school: " + school.getName());
+//        }
+        final List<BankAdmin> bankAdmins = instance.getBankAdmins();
+        System.out.println("bankAdmins: " + bankAdmins);
+        for (BankAdmin bankAdmin : bankAdmins) {
+            System.out.println("bankAdmin: " + bankAdmin.getFirstName() + " " + bankAdmin.getLastName());
+        }
     }
 
     // ========== Constructor ==========
@@ -90,7 +99,7 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
     /**
      * Constructor.
      */
-    public SingleTableDynamoDBDatabase(Configuration configuration) {
+    public SingleTableDynamoDbDatabase(Configuration configuration) {
         dynamoDbClient = connectToDB(configuration);
         tableName = getTableName(configuration);
     }
@@ -181,7 +190,7 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
      * Creates a School object from the corresponding Item retrieved from DynamoDB. If passed
      * null, it returns null.
      */
-    private School createSchoolFromDynamoDBItem(Map<String,AttributeValue> item) {
+    private School createSchoolFromDynamoDbItem(Map<String,AttributeValue> item) {
         if (item == null) {
             return null;
         }
@@ -304,6 +313,10 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
      * For a given type which is in the table using keys like "foo:83333323", this will return
      * all the objects of that type. It will EITHER use a table scan OR an index to do so.
      *
+     * @param indexName the index to use, eg "ByBankId"
+     * @param keyPrefix the prefix for keys, eg "bank:"
+     * @param createFunction this is a function to create an instance from a dynamodb record
+     * @param comparator this is used to sort the list before returning
      * @return the list of objects
      * @param <T> the type to return, Event, School, Bank, or User.
      */
@@ -311,14 +324,18 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
             String indexName, String keyPrefix, CreateFunction<T> createFunction, Comparator<T> comparator
     ) {
         // DESIGN NOTE:
-        // There are 2 ways we could query this. In approach 1, we use the BySchoolId
-        // index. This avoids having to do a full table scan; that index will contain
-        // an entry for every individual school. BUT, we will need to perform a getItem()
-        // for each individual school after looking it up in the index.
+        // There are 2 ways we could query this. In approach 1, we use an index. It is
+        // either an index by the field we want to sort on (eg: ByUserType for finding
+        // users of a certain type) or an index containing only the items we want (eg:
+        // the BySchoolId index for finding a school). This avoids having to do scan of
+        // the full table -- the index directly contains an entry for every individual
+        // record. HOWEVER, since we do not project all the fields into our indexes, we
+        // will need to perform a getItem() for each individual item after looking it
+        // up in the index.
         //
-        // In approach 2, we do a scan using a filter specifying that the table_key
-        // begins with "school:". This avoids having to make a second series of calls
-        // BUT it performs a full table scan.
+        // In approach 2, we do a full table scan using a filter specifying the items
+        // we want including a prefix for the table_key (like "school:"). This avoids
+        // having to make a second series of calls BUT it performs a full table scan.
         //
         // The best approach to use depends on the fraction of the table entries that
         // are schools. If that fraction is very small then we should use approach 1; if
@@ -328,6 +345,9 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         // actual data. ALSO NOTE - if we projected all the fields into the index then
         // we could read from the index quickly... but that's a good bit more data to
         // store (and there would be several copies of it).
+        //
+        // SO, this method implements BOTH approaches, but is hard-coded to always use
+        // approach 2.
         final boolean USE_INDEX = false;
         if (USE_INDEX) {
             // Scan over the SchoolId index to get all the schools
@@ -356,7 +376,75 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
         }
     }
 
-    // ========== Comparators for sorting ==========
+    /**
+     * This returns all users of a given type by doing a full table scan and finding the records
+     * that match. It is intended for use only in getUsersByType().
+     *
+     * @param userType the user type to return. Note that this does NOT include BANK_ADMINs when
+     *                 asked for Volunteers; the 4 types are distinct.
+     * @return a List of the users. They will all be of the appropriate subtype of User.
+     */
+    private List<User> getUsersByTypeUsingScan(UserType userType) {
+        final ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(tableName)
+                .filterExpression(
+                        "begins_with( " + table_key.name() + ", :keyPrefix ) and " + user_type.name() + " = :userName")
+                .expressionAttributeValues(Map.of(
+                        ":keyPrefix", AttributeValue.builder().s("user:").build(),
+                        ":userName", AttributeValue.builder().s(userType.getDBValue()).build()))
+                .build();
+        final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+        return scanResponse.items().stream()
+                .map(this::createUserFromDynamoDbItem)
+                .sorted(compareUsersByName)
+                .toList();
+    }
+
+    /**
+     * This returns all users of a given type by doing a lookup in the ByUserType index, then
+     * looking in the table for that key. It is intended for use only in getUsersByType().
+     *
+     * @param userType the user type to return. Note that this does NOT include BANK_ADMINs when
+     *                 asked for Volunteers; the 4 types are distinct.
+     * @return a List of the users. They will all be of the appropriate subtype of User.
+     */
+    private List<User> getUsersByTypeUsingIndex(UserType userType) {
+        final QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(tableName)
+                .indexName("ByUserType")
+                .keyConditionExpression(user_type.name() + " = :userType")
+                .expressionAttributeValues(Map.of(
+                        ":userType", AttributeValue.builder().s(userType.getDBValue()).build()))
+                .build();
+        final QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
+
+        // For each item, we have to look it up in the real table to get all the fields
+        return queryResponse.items().stream()
+                .map(indexItem -> createUserFromDynamoDbItem(getItemAfterIndexLookup(indexItem)))
+                .sorted(compareUsersByName)
+                .toList();
+    }
+
+    /**
+     * This returns all users of a given type.
+     *
+     * @param userType the user type to return. Note that this does NOT include BANK_ADMINs when
+     *                 asked for Volunteers; the 4 types are distinct.
+     * @return a List of the users. They will all be of the appropriate subtype of User.
+     */
+    private List<User> getUsersByType(UserType userType) {
+        // DESIGN NOTE:
+        //
+        // We use a different approach for the common types of users (a scan)
+        // and the rare types of users (an index lookup).
+        return switch(userType) {
+            case VOLUNTEER, TEACHER -> getUsersByTypeUsingScan(userType);
+            case BANK_ADMIN, SITE_ADMIN -> getUsersByTypeUsingIndex(userType);
+        };
+    }
+
+
+        // ========== Comparators for sorting ==========
 
     /** Comparator for sorting banks. */
     private final Comparator<Bank> compareBanks = new Comparator<Bank>() {
@@ -523,7 +611,7 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<School> getAllSchools() throws SQLException {
-        return getAllUsingIndexOrScan("BySchoolId", "school:", this::createSchoolFromDynamoDBItem, compareSchools);
+        return getAllUsingIndexOrScan("BySchoolId", "school:", this::createSchoolFromDynamoDbItem, compareSchools);
     }
 
     @Override
@@ -533,7 +621,7 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<User> getAllUsers() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getAllUsingIndexOrScan("ByUserEmail", "user:", this::createUserFromDynamoDbItem, compareUsersByName);
     }
 
     @Override
@@ -698,7 +786,24 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<Teacher> getTeachersWithSchoolData() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // Step 1: read in all the schools so we can easily add them in.
+        //   (This would be inefficient if there were lots of schools with
+        //   no teachers, but we expect instead that most schools have
+        //   multiple teachers, and at least one.)
+        final Map<String,School> schoolsById = getAllSchools().stream()
+                .collect(Collectors.toMap(
+                        School::getSchoolId,
+                        x -> x
+                ));
+
+        // Step 2: read in the teachers, then set the school for each one.
+        return getUsersByType(UserType.TEACHER).stream()
+                .map(user -> {
+                    final Teacher teacher = (Teacher) user;
+                    teacher.setLinkedSchool(schoolsById.get(teacher.getSchoolId()));
+                    return teacher;
+                })
+                .toList();
     }
 
     @Override
@@ -733,13 +838,15 @@ public class SingleTableDynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getUsersByType(UserType.BANK_ADMIN).stream()
+                .map(x -> (BankAdmin) x)
+                .toList();
     }
 
     @Override
     public Map<String, String> getSiteSettings() throws SQLException {
         final Map<String,AttributeValue> item = getSingletonItem("siteSettings");
-        final AttributeValue keyvalues = item.get(SingleTableDbField.site_setting_entries.name());
+        final AttributeValue keyvalues = item.get(site_setting_entries.name());
         if (keyvalues == null) {
             throw new RuntimeException("No site settings found. DB may not be initialized.");
         }

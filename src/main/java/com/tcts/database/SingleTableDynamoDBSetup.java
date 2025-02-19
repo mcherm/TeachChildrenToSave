@@ -35,8 +35,8 @@ public class SingleTableDynamoDBSetup {
         System.out.println("Starting...");
         try {
             Configuration configuration = new Configuration();
-            final DynamoDbClient dynamoDbClient = SingleTableDynamoDBDatabase.connectToDB(configuration);
-            final String tableName = SingleTableDynamoDBDatabase.getTableName(configuration);
+            final DynamoDbClient dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
+            final String tableName = SingleTableDynamoDbDatabase.getTableName(configuration);
             final SingleTableDynamoDBSetup instance = new SingleTableDynamoDBSetup(dynamoDbClient, tableName);
 
             instance.reinitializeDatabase();
@@ -156,7 +156,7 @@ public class SingleTableDynamoDBSetup {
         insertAllowedDates();
         insertAllowedTimes();
 
-        insertSchool("New Castle", "Appoquinimink", "Bunker Hill Elementary School", "N120", "1070 Bunker Hill Road", "Middletown", "DE", "19709", "302.378.5135", "15.4");
+        final String aSchoolId = insertSchool("New Castle", "Appoquinimink", "Bunker Hill Elementary School", "N120", "1070 Bunker Hill Road", "Middletown", "DE", "19709", "302.378.5135", "15.4");
         insertSchool("New Castle", "Appoquinimink", "Cedar Lane Elementary School", "N120", "1221 Cedar Lane Road", "Middletown", "DE", "19709", "302.378.5045", "13");
         insertSchool("New Castle", "Appoquinimink", "Loss (Olive B.) Elementary School", "N120", "200 Brennan Boulevard", "Bear", "DE", "19701", "302.832.1343", "7.7");
         insertSchool("New Castle", "Appoquinimink", "Old State Elementary School", "N120", "580 Tony Marchio Drive", "Townsend", "DE", "19734", "302.378.6720", "31.5");
@@ -353,8 +353,9 @@ public class SingleTableDynamoDBSetup {
         insertBank("The Bryn Mawr Trust Company of DE", null);
 
         insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm@mcherm.com","Michael","Chermside","SA",null,"610-810-1806",0);
-        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+BankAdmin@gmail.com","Michael","Chermside","BA",aBankId,"610-810-1806",0);
-        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+Volunteer@gmail.com","Michael","Chermside","V",aBankId,"610-810-1806",0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+BankAdmin@gmail.com","BankAdmin","Chermside","BA",aBankId,"610-810-1806",0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+Volunteer@gmail.com","Volunteer","Chermside","V",aBankId,"610-810-1806",0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+Teacher@gmail.com","Teacher","Chermside","T",aSchoolId,"610-810-1806",0);
     }
 
     /**
