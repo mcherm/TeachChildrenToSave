@@ -2,6 +2,8 @@ package com.tcts.database;
 
 import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
+import com.tcts.database.dynamodb.DynamoDBHelper;
+import com.tcts.database.dynamodb.ItemBuilder;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
@@ -49,6 +51,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
@@ -65,15 +68,53 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tcts.database.SingleTableDbField.*;
 
 
 // FIXME: Still under development
 public class SingleTableDynamoDbDatabase implements DatabaseFacade {
+    // ========== Constants ==========
+
+    /** An indicator value for event_volunteer_id that means no volunteer; used in place of null. */
+    private final String NO_VOLUNTEER = "0";
+
+    /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
+    private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap<>() {{
+        put(DatabaseField.site_setting_name, 30);
+        put(DatabaseField.site_setting_value, 100);
+        put(DatabaseField.event_time, 30);
+        put(DatabaseField.event_grade, 8);
+        put(DatabaseField.event_delivery_method, 1);
+        put(DatabaseField.event_notes, 1000);
+        put(DatabaseField.bank_name, 45);
+        put(DatabaseField.user_email, 50);
+        put(DatabaseField.user_original_email, 50);
+        put(DatabaseField.user_first_name, 50);
+        put(DatabaseField.user_last_name, 50);
+        put(DatabaseField.user_street_address, 60);
+        put(DatabaseField.user_suite_or_floor_number, 20);
+        put(DatabaseField.user_city, 45);
+        put(DatabaseField.user_zip, 10);
+        put(DatabaseField.user_state, 2);
+        put(DatabaseField.user_phone_number, 45);
+        put(DatabaseField.user_bank_specific_data, 500);
+        put(DatabaseField.school_name, 80);
+        put(DatabaseField.school_addr1, 60);
+        put(DatabaseField.school_city, 45);
+        put(DatabaseField.school_zip, 10);
+        put(DatabaseField.school_county, 45);
+        put(DatabaseField.school_district, 45);
+        put(DatabaseField.school_state, 2);
+        put(DatabaseField.school_phone, 45);
+        put(DatabaseField.school_slc, 10);
+    }};
+
     // ========== Instance Variables ==========
     private final DynamoDbClient dynamoDbClient;
     private final String tableName;
+    private final DynamoDBHelper dynamoDBHelper;
 
 
     // ========== main() - TEMPORARY ==========
@@ -82,15 +123,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-//        final List<School> schools = instance.getAllSchools();
-//        System.out.println("schools: " + schools);
-//        for (School school : schools) {
-//            System.out.println("school: " + school.getName());
-//        }
-        final List<BankAdmin> bankAdmins = instance.getBankAdmins();
-        System.out.println("bankAdmins: " + bankAdmins);
-        for (BankAdmin bankAdmin : bankAdmins) {
-            System.out.println("bankAdmin: " + bankAdmin.getFirstName() + " " + bankAdmin.getLastName());
+        final List<Event> events = instance.getAllEvents();
+        System.out.println("events: " + events);
+        for (Event event : events) {
+            System.out.println("event: " + event.getEventId());
         }
     }
 
@@ -102,6 +138,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public SingleTableDynamoDbDatabase(Configuration configuration) {
         dynamoDbClient = connectToDB(configuration);
         tableName = getTableName(configuration);
+        dynamoDBHelper = new DynamoDBHelper();
     }
 
     // ========== Static Methods for Use in Constructor ==========
@@ -209,6 +246,28 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         }
         school.setSLC(getStringField(item, school_slc));
         return school;
+    }
+
+    private Event createEventFromDynamoDbItem(Map<String,AttributeValue> item) {
+        if (item == null) {
+            return null;
+        }
+        Event event = new Event();
+        event.setEventId(getStringField(item, event_id));
+        event.setTeacherId(getStringField(item, event_teacher_id));
+        try {
+            event.setEventDate(PrettyPrintingDate.fromParsableDate(getStringField(item, event_date)));
+        } catch(ParseException err) {
+            throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
+        }
+        event.setEventTime(getStringField(item, event_time));
+        event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        event.setDeliveryMethod(getStringField(item, event_delivery_method));
+        event.setNumberStudents(getIntField(item, event_number_students));
+        event.setNotes(getStringField(item, event_notes));
+        String volunteerString = getStringField(item, event_volunteer_id);
+        event.setVolunteerId(volunteerString.equals(NO_VOLUNTEER) ? null : volunteerString);
+        return event;
     }
 
     /**
@@ -444,41 +503,28 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
 
-        // ========== Comparators for sorting ==========
+    // ========== Comparators for sorting ==========
 
     /** Comparator for sorting banks. */
-    private final Comparator<Bank> compareBanks = new Comparator<Bank>() {
-        @Override
-        public int compare(Bank bank1, Bank bank2) {
-            return bank1.getBankName().compareTo(bank2.getBankName());
-        }
-    };
+    private final Comparator<Bank> compareBanks = Comparator.comparing(Bank::getBankName);
 
     /** Comparator for sorting schools. */
-    private final Comparator<School> compareSchools = new Comparator<School>() {
-        @Override
-        public int compare(School school1, School school2) {
-            return school1.getName().compareTo(school2.getName());
-        }
-    };
+    private final Comparator<School> compareSchools = Comparator.comparing(School::getName);
 
-    private final Comparator<User> compareUsersByName = new Comparator<User>() {
-        @Override
-        public int compare(User user1, User user2) {
-            int byLastName = user1.getLastName().compareTo(user2.getLastName());
-            if (byLastName != 0) {
-                return byLastName;
-            }
-            return user1.getFirstName().compareTo(user2.getFirstName());
-        }
-    };
+    /** Comparator for sorting events. */
+    private final Comparator<Event> compareEvents =
+            Comparator.comparing(Event::getEventDate).thenComparing(Event::getEventId);
+
+    private final Comparator<User> compareUsersByName =
+            Comparator.comparing(User::getLastName).thenComparing(User::getFirstName);
 
     // ========== Methods of DatabaseFacade Class ==========
 
     @Override
     public int getFieldLength(DatabaseField field) {
-        // FIXME: We made a new enum, and now this takes the wrong type! No sure what to do about that.
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // FIXME: We made a new enum, and now this takes the wrong type! I should probably fix that,
+        //   but I'm not sure how.
+        return FIELD_LENGTHS.get(field);
     }
 
     @Override
@@ -560,7 +606,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final String uniqueId = dynamoDBHelper.createUniqueId();
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("event", event_id, uniqueId)
+                        .withString(event_teacher_id, teacherId)
+                        .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
+                        .withString(event_time, formData.getEventTime())
+                        .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withString(event_delivery_method, formData.getDeliveryMethod())
+                        .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
+                        .withString(event_notes, formData.getNotes())
+                        .withString(event_volunteer_id, NO_VOLUNTEER)
+                        .build())
+                .conditionExpression("attribute_not_exists(" + table_key.name() + ")") // verify it is unique
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
@@ -696,7 +757,48 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get the schools ---
+        Map<String,School> schools = getAllSchools().stream()
+                .collect(Collectors.toMap(
+                        School::getSchoolId,
+                        x -> x
+                ));
+
+        // --- get the banks ---
+        Map<String,Bank> banks = getAllBanks().stream()
+                .collect(Collectors.toMap(
+                        Bank::getBankId,
+                        x -> x
+                ));
+
+        // -- get the users --
+        Map<String,User> users = getAllUsers().stream()
+                .collect(Collectors.toMap(
+                        User::getUserId,
+                        x -> x
+                ));
+
+        // --- get the events and populate data in them ---
+        return getAllUsingIndexOrScan("ByEventId", "event:", this::createEventFromDynamoDbItem, compareEvents).stream()
+                .map(event -> {
+                    final Teacher teacher = (Teacher) users.get(event.getTeacherId());
+                    // if LinkedSchool is not already set for the teacher, set it
+                    if (teacher.getLinkedSchool() == null) {
+                        teacher.setLinkedSchool(schools.get(teacher.getSchoolId()));
+                    }
+                    event.setLinkedTeacher(teacher);
+                    if (event.getVolunteerId() != null) {
+                        final Volunteer volunteer = (Volunteer) users.get(event.getVolunteerId());
+                        // if linkedBank is not already set for the volunteer, set it
+                        if (volunteer.getLinkedBank() == null) {
+                            volunteer.setLinkedBank(banks.get(volunteer.getBankId()));
+                        }
+                        event.setLinkedVolunteer(volunteer);
+                    }
+                    return event;
+                })
+                .sorted(compareEvents)
+                .toList();
     }
 
     @Override
@@ -813,7 +915,28 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Volunteer> getVolunteersWithBankData() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // Step 1: read in all the Banks so we can easily add them in.
+        //   (This would be inefficient if there were lots of Banks with
+        //   no volunteers, but we expect instead that most banks have
+        //   multiple volunteers, and at least one.)
+        final Map<String,Bank> banksById = getAllBanks().stream()
+                .collect(Collectors.toMap(
+                        Bank::getBankId,
+                        x -> x
+                ));
+
+        // Step 2: read in the Volunteers (including BankAdmins), then set the bank
+        //   for each one.
+        return Stream.concat(
+                getUsersByType(UserType.VOLUNTEER).stream(),
+                getUsersByType(UserType.BANK_ADMIN).stream())
+                .map(user -> {
+                    final Volunteer volunteer = (Volunteer) user;
+                    volunteer.setLinkedBank(banksById.get(volunteer.getBankId()));
+                    return volunteer;
+                })
+                .sorted(compareUsersByName)
+                .toList();
     }
 
     @Override
