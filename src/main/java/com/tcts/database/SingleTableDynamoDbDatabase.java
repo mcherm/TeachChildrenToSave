@@ -49,6 +49,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
@@ -86,8 +87,11 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final School school = instance.getSchoolById("4116142378696936793");
-        System.out.println("school: " + school + " > " + school.getName());
+        final List<User> users = instance.getUsersByType(UserType.BANK_ADMIN);
+        System.out.println("users: " + users);
+        for (User user : users) {
+            System.out.println(user.getFirstName() + " " + user.getLastName());
+        }
     }
 
     // ========== Constants ==========
@@ -374,7 +378,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * use the "&lt;item-type>:&lt;unique-id>" pattern for their primary key in the table. Returns null if
      * no object of that type is found with this ID.
      *
-     * @param keyPrefix the prefix eg: "school"
+     * @param keyPrefix the prefix eg: "school:"
      * @param createFunction the function for constructing an object from the database item
      * @param id the id of the object to return
      * @return the object or null if no object of that type is found with the given id
@@ -382,19 +386,64 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      */
     private <T> T getObjectByUniqueId(String keyPrefix, CreateFunction<T> createFunction, String id) {
         // --- First, we look in the index to find out the key ---
-        final String tableKey = keyPrefix + ":" + id;
+        final String tableKey = keyPrefix + id;
         final GetItemRequest getItemRequest = GetItemRequest.builder()
                 .tableName(tableName)
                 .key(Map.of(table_key.name(), AttributeValue.builder().s(tableKey).build()))
                 .build();
         final GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
         if (getItemResponse.hasItem()) {
-            final Map<String,AttributeValue> indexItem = getItemResponse.item();
-            final Map<String,AttributeValue> actualItem = getItemAfterIndexLookup(indexItem);
-            return createFunction.create(actualItem);
+            return createFunction.create(getItemResponse.item());
         } else {
             return null; // That ID wasn't found, so return null
         }
+    }
+
+    /**
+     * This looks in an index to find all the items that match the primary key of that index,
+     * then finds the actual item for each, converts it into an object, sorts them, and
+     * returns it.
+     *
+     * @param indexName the index to search in (eg: "ByUserOrganizationId")
+     * @param keyField the field which is the key for that index (eg: user_organization_id)
+     * @param keyValue the value of the key (eg: "122834382608201305")
+     * @param createFunction the function to create the object from a database item
+     * @param comparator the comparator to use for sorting
+     * @return a list of matching items (which can be of length 0)
+     * @param <T> the type of the objects in the list
+     */
+    private <T> List<T> getObjectsByIndexLookup(
+            String indexName, SingleTableDbField keyField, String keyValue, CreateFunction<T> createFunction, Comparator<T> comparator
+    ) {
+        final QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(tableName)
+                .indexName(indexName)
+                .keyConditionExpression(keyField.name() + " = :key_val")
+                .expressionAttributeValues(Map.of(":key_val", AttributeValue.builder().s(keyValue).build()))
+                .build();
+        final QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
+
+        // For each one found in the index, we have to do a getItem from the table to get the fields ---
+        return queryResponse.items().stream()
+                .map(indexItem -> createFunction.create(getItemAfterIndexLookup(indexItem)))
+                .sorted(comparator)
+                .toList();
+    }
+    
+    /**
+     * Deletes an item that is listed with a key of "&lt;type>:%ld;id>". This will NOT verify whether
+     * the item exists beforehand -- if it doesn't exist this will complete with no errors.
+     *
+     * @param keyPrefix the prefix, eg: "school:"
+     * @param id the id to delete
+     */
+    private void deleteItem(String keyPrefix, String id) {
+        final String tableKey = keyPrefix + id;
+        final DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of(table_key.name(), AttributeValue.builder().s(tableKey).build()))
+                .build();
+        dynamoDbClient.deleteItem(deleteItemRequest);
     }
 
     /**
@@ -497,20 +546,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * @return a List of the users. They will all be of the appropriate subtype of User.
      */
     private List<User> getUsersByTypeUsingIndex(UserType userType) {
-        final QueryRequest queryRequest = QueryRequest.builder()
-                .tableName(tableName)
-                .indexName("ByUserType")
-                .keyConditionExpression(user_type.name() + " = :userType")
-                .expressionAttributeValues(Map.of(
-                        ":userType", AttributeValue.builder().s(userType.getDBValue()).build()))
-                .build();
-        final QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
-
-        // For each item, we have to look it up in the real table to get all the fields
-        return queryResponse.items().stream()
-                .map(indexItem -> createUserFromDynamoDbItem(getItemAfterIndexLookup(indexItem)))
-                .sorted(compareUsersByName)
-                .toList();
+        return getObjectsByIndexLookup("ByUserType", user_type, userType.getDBValue(),
+                this::createUserFromDynamoDbItem, compareUsersByName);
     }
 
     /**
@@ -696,7 +733,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public School getSchoolById(String schoolId) throws SQLException {
-        return getObjectByUniqueId("school", this::createSchoolFromDynamoDbItem, schoolId);
+        return getObjectByUniqueId("school:", this::createSchoolFromDynamoDbItem, schoolId);
     }
 
     @Override
@@ -761,7 +798,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // Note: Does NOT verify whether the school exists and throw NoSuchSchoolException where appropriate
+        // Note: Does not verify whether the school is referenced anywhere.
+        deleteItem("school:", schoolId);
     }
 
     @Override
@@ -1025,7 +1064,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getObjectsByIndexLookup("ByUserOrganizationId", user_organization_id, schoolId,
+                item -> (Teacher) createUserFromDynamoDbItem(item),
+                compareUsersByName::compare
+                );
     }
 
     @Override
