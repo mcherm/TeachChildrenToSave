@@ -155,6 +155,7 @@ public class SingleTableDynamoDBSetup {
         insertSiteSettings();
         insertAllowedDates();
         insertAllowedTimes();
+        insertDocuments();
 
         final String aSchoolId = insertSchool("New Castle", "Appoquinimink", "Bunker Hill Elementary School", "N120", "1070 Bunker Hill Road", "Middletown", "DE", "19709", "302.378.5135", "15.4");
         insertSchool("New Castle", "Appoquinimink", "Cedar Lane Elementary School", "N120", "1221 Cedar Lane Road", "Middletown", "DE", "19709", "302.378.5045", "13");
@@ -427,8 +428,26 @@ public class SingleTableDynamoDBSetup {
         dynamoDbClient.putItem(putItemRequest);
     }
 
+    /** Insert the single record that has the starting value for documents. */
+    private void insertDocuments() {
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("documents")
+                        .withStrings(
+                                documents_values,
+                                "T|F|F|TCTSD FAQs.pdf",
+                                "F|T|T|TCTSD Lesson Plan_Handouts 2024_IN-PERSON_REV.pdf",
+                                "F|T|T|TCTSD Lesson Plan_Handouts 2024_VIRTUAL_REV.pdf",
+                                "F|T|T|TCTSD Logo & Slogan Contest 2025.pdf",
+                                "F|T|T|TCTSD Volunteer Certificate 2024.pdf"
+                        )
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
     /** Insert a bank into the database. Returns the unique ID it was assigned. */
-    public String insertBank(String bankName, String bankSpecificDataLabel)
+    private String insertBank(String bankName, String bankSpecificDataLabel)
     {
         final String uniqueId = dynamoDBHelper.createUniqueId();
         final PutItemRequest putItemRequest = PutItemRequest.builder()
@@ -443,7 +462,7 @@ public class SingleTableDynamoDBSetup {
     }
 
     /** Insert a school into the database. Returns the unique ID it was assigned. */
-    public String insertSchool(String schoolCounty, String schoolDistrict, String schoolName, String schoolSlc,
+    private String insertSchool(String schoolCounty, String schoolDistrict, String schoolName, String schoolSlc,
                                String schoolAddr1, String schoolCity, String schoolState, String schoolZip,
                                String schoolPhone, String schoolLmiEligible)
     {
@@ -491,6 +510,5 @@ public class SingleTableDynamoDBSetup {
         dynamoDbClient.putItem(putItemRequest);
         return uniqueId;
     }
-
 
 }

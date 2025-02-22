@@ -10,8 +10,8 @@ public enum SingleTableDbField {
     // SiteSettings
     site_setting_entries,
 
-//    // Documents
-//    document_name, document_show_to_teacher, document_show_to_volunteer, document_show_to_bank_admin,
+    // Documents
+    documents_values,
 
     // AllowedDates
     allowed_date_values,

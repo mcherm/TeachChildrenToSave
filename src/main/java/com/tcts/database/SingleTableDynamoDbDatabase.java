@@ -64,9 +64,13 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -123,10 +127,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final List<Event> events = instance.getAllEvents();
-        System.out.println("events: " + events);
-        for (Event event : events) {
-            System.out.println("event: " + event.getEventId());
+        final SortedSet<Document> documents = instance.getDocuments();
+        System.out.println("documents: " + documents);
+        for (Document document : documents) {
+            System.out.println("document: " + document.getName() + " " + document.getShowToTeacher());
         }
     }
 
@@ -883,7 +887,60 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public SiteStatistics getSiteStatistics() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        int numEvents = 0;
+        int numMatchedEvents = 0;
+        int numUnmatchedEvents = 0;
+        int num3rdGradeEvents = 0;
+        int num4thGradeEvents = 0;
+        int numInPersonEvents = 0;
+        int numVirtualEvents = 0;
+        final Set<String> volunteerIdsActuallySignedUp = new HashSet<>();
+        final Set<String> teacherIdsWithClassesThatHaveVolunteers = new HashSet<>();
+
+        for (final Event event : getAllEvents()) {
+            numEvents += 1;
+            if (event.getVolunteerId() == null) {
+                numUnmatchedEvents += 1;
+            } else {
+                numMatchedEvents += 1;
+                volunteerIdsActuallySignedUp.add(event.getVolunteerId());
+                teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
+            }
+            if (event.getGrade().equals("3")) {
+                num3rdGradeEvents += 1;
+            } else if (event.getGrade().equals("4")) {
+                num4thGradeEvents += 1;
+            }
+            if (event.getDeliveryMethod().equals("P")) {
+                numInPersonEvents += 1;
+            } else if (event.getDeliveryMethod().equals("V")) {
+                numVirtualEvents += 1;
+            }
+        }
+        final int numVolunteers = volunteerIdsActuallySignedUp.size();
+        final int numParticipatingTeachers = teacherIdsWithClassesThatHaveVolunteers.size();
+        // Loop through the teachers separately to count schools (more efficient than querying each one separately)
+        Set<String> schoolIdsWithClassesThatHaveVolunteers = new HashSet<String>();
+        for (User user : getUsersByType(UserType.TEACHER)) {
+            final Teacher teacher = (Teacher) user;
+            if (teacherIdsWithClassesThatHaveVolunteers.contains(teacher.getUserId())) {
+                schoolIdsWithClassesThatHaveVolunteers.add(teacher.getSchoolId());
+            }
+        }
+        final int numParticipatingSchools = schoolIdsWithClassesThatHaveVolunteers.size();
+
+        final SiteStatistics siteStatistics = new SiteStatistics();
+        siteStatistics.setNumEvents(numEvents);
+        siteStatistics.setNumMatchedEvents(numMatchedEvents);
+        siteStatistics.setNumUnmatchedEvents(numUnmatchedEvents);
+        siteStatistics.setNum3rdGradeEvents(num3rdGradeEvents);
+        siteStatistics.setNum4thGradeEvents(num4thGradeEvents);
+        siteStatistics.setNumInPersonEvents(numInPersonEvents);
+        siteStatistics.setNumVirtualEvents(numVirtualEvents);
+        siteStatistics.setNumVolunteers(numVolunteers);
+        siteStatistics.setNumParticipatingTeachers(numParticipatingTeachers);
+        siteStatistics.setNumParticipatingSchools(numParticipatingSchools);
+        return siteStatistics;
     }
 
     @Override
@@ -992,7 +1049,30 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public SortedSet<Document> getDocuments() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final Map<String,AttributeValue> item = getSingletonItem("documents");
+        if (item == null) {
+            throw new RuntimeException("No documents found. DB may not be initialized.");
+        }
+        final AttributeValue entries = item.get(documents_values.name());
+        final Function<String,Boolean> readBoolLetter = s -> switch(s) {
+            case "T" -> true;
+            case "F" -> false;
+            default -> throw new RuntimeException("Invalid data in documents.");
+        };
+        SortedSet<Document> result = new TreeSet<>();
+        for (String documentEntry : entries.ss()) {
+            final String[] fields = documentEntry.split("\\|",4);
+            if (fields.length != 4) {
+                throw new RuntimeException("Invalid data in documents.");
+            }
+            final boolean showToTeacher = readBoolLetter.apply(fields[0]);
+            final boolean showToVolunteer = readBoolLetter.apply(fields[1]);
+            final boolean showToBankAdmin = readBoolLetter.apply(fields[2]);
+            final String docName = fields[3];
+            final Document document = new Document(docName, showToTeacher, showToVolunteer, showToBankAdmin);
+            result.add(document);
+        }
+        return result;
     }
 
     @Override
