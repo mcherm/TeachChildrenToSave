@@ -842,7 +842,24 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final String uniqueId = dynamoDBHelper.createUniqueId();
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("school", school_id, uniqueId)
+                        .withString(school_name, school.getSchoolName())
+                        .withString(school_addr1, school.getSchoolAddress1())
+                        .withString(school_city, school.getCity())
+                        .withString(school_state, school.getState())
+                        .withString(school_zip, school.getZip())
+                        .withString(school_county, school.getCounty())
+                        .withString(school_district, school.getDistrict())
+                        .withString(school_phone, school.getPhone())
+                        .withString(school_lmi_eligible, school.getLmiEligible())
+                        .withString(school_slc, school.getSLC())
+                        .build())
+                .conditionExpression("attribute_not_exists(" + table_key.name() + ")") // verify it is unique
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
