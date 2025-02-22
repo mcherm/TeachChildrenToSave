@@ -79,6 +79,17 @@ import static com.tcts.database.SingleTableDbField.*;
 
 // FIXME: Still under development
 public class SingleTableDynamoDbDatabase implements DatabaseFacade {
+
+    // ========== main() - TEMPORARY ==========
+
+    // FIXME: Remove
+    public static void main(String[] args) throws Exception {
+        final Configuration configuration = new Configuration();
+        final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
+        final School school = instance.getSchoolById("4116142378696936793");
+        System.out.println("school: " + school + " > " + school.getName());
+    }
+
     // ========== Constants ==========
 
     /** An indicator value for event_volunteer_id that means no volunteer; used in place of null. */
@@ -119,20 +130,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     private final DynamoDbClient dynamoDbClient;
     private final String tableName;
     private final DynamoDBHelper dynamoDBHelper;
-
-
-    // ========== main() - TEMPORARY ==========
-
-    // FIXME: Remove
-    public static void main(String[] args) throws Exception {
-        final Configuration configuration = new Configuration();
-        final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final SortedSet<Document> documents = instance.getDocuments();
-        System.out.println("documents: " + documents);
-        for (Document document : documents) {
-            System.out.println("document: " + document.getName() + " " + document.getShowToTeacher());
-        }
-    }
 
     // ========== Constructor ==========
 
@@ -205,6 +202,11 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     private BigDecimal getDecimalField(Map<String,AttributeValue> item, SingleTableDbField field) {
         final AttributeValue attributeValue = item.get(field.name());
         return attributeValue == null ? null : new BigDecimal(attributeValue.s());
+    }
+
+    /** An interface for passing a method reference a function to build an object from a DB item. */
+    private interface CreateFunction<T> {
+        T create(Map<String,AttributeValue> item);
     }
 
     /**
@@ -367,9 +369,32 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         return getItemResponse.item();
     }
 
-    /** An interface for passing a method reference a function to build an object from a DB item. */
-    private interface CreateFunction<T> {
-        T create(Map<String,AttributeValue> item);
+    /**
+     * This is used to look up an object from the database using its unique ID. It works on any objects that
+     * use the "&lt;item-type>:&lt;unique-id>" pattern for their primary key in the table. Returns null if
+     * no object of that type is found with this ID.
+     *
+     * @param keyPrefix the prefix eg: "school"
+     * @param createFunction the function for constructing an object from the database item
+     * @param id the id of the object to return
+     * @return the object or null if no object of that type is found with the given id
+     * @param <T> the type of the object to return (eg: School)
+     */
+    private <T> T getObjectByUniqueId(String keyPrefix, CreateFunction<T> createFunction, String id) {
+        // --- First, we look in the index to find out the key ---
+        final String tableKey = keyPrefix + ":" + id;
+        final GetItemRequest getItemRequest = GetItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of(table_key.name(), AttributeValue.builder().s(tableKey).build()))
+                .build();
+        final GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
+        if (getItemResponse.hasItem()) {
+            final Map<String,AttributeValue> indexItem = getItemResponse.item();
+            final Map<String,AttributeValue> actualItem = getItemAfterIndexLookup(indexItem);
+            return createFunction.create(actualItem);
+        } else {
+            return null; // That ID wasn't found, so return null
+        }
     }
 
     /**
@@ -671,7 +696,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public School getSchoolById(String schoolId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getObjectByUniqueId("school", this::createSchoolFromDynamoDbItem, schoolId);
     }
 
     @Override
@@ -812,7 +837,23 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // This approach will CREATE the school if it doesn't exist.
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("school", school_id, school.getSchoolId())
+                        .withString(school_name, school.getSchoolName())
+                        .withString(school_addr1, school.getSchoolAddress1())
+                        .withString(school_city, school.getCity())
+                        .withString(school_state, school.getState())
+                        .withString(school_zip, school.getZip())
+                        .withString(school_county, school.getCounty())
+                        .withString(school_district, school.getDistrict())
+                        .withString(school_phone, school.getPhone())
+                        .withString(school_lmi_eligible, school.getLmiEligible())
+                        .withString(school_slc, school.getSLC())
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
