@@ -209,7 +209,7 @@ public class EventController {
         formData.setDeliveryMethod(event.getDeliveryMethod());
         formData.setNotes(event.getNotes());
         formData.setEventId(event.getEventId());
-        formData.setNumberStudents(new Integer(event.getNumberStudents()==0?0:event.getNumberStudents()).toString());
+        formData.setNumberStudents(Integer.valueOf(event.getNumberStudents()==0?0:event.getNumberStudents()).toString());
         
         return formData;
     }

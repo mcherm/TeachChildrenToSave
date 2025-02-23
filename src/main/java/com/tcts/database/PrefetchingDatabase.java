@@ -351,7 +351,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
         database.modifyBank(formData);
         refreshEventList();
     }

@@ -222,9 +222,6 @@ public class BankController {
             database.modifyBank(formData);
         } catch(NoSuchBankException err) {
             throw new InvalidParameterFromGUIException();
-        } catch(EmailAlreadyInUseException err) {
-            return showEditBankWithErrors(model, sessionData, formData,
-                    new Errors("That email is already in use; please choose another."));
         }
 
         // --- Successful; show the master bank edit again ---

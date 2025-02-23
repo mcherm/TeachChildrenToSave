@@ -1057,7 +1057,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
         // -- Update the bank --
         tables.bankTable.updateItem(
                 new PrimaryKey(bank_id.name(), formData.getBankId()),

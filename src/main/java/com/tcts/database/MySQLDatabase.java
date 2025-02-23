@@ -1284,7 +1284,7 @@ public class MySQLDatabase implements DatabaseFacade {
     @Override
     public void modifyBank(
             EditBankFormData formData
-        ) throws SQLException, EmailAlreadyInUseException, NoSuchBankException
+        ) throws SQLException, NoSuchBankException
     {
         Connection connection = null;
         PreparedStatement preparedStatement = null;

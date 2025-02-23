@@ -87,10 +87,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final List<User> users = instance.getUsersByType(UserType.BANK_ADMIN);
-        System.out.println("users: " + users);
-        for (User user : users) {
-            System.out.println(user.getFirstName() + " " + user.getLastName());
+        final List<BankAdmin> bankAdmins = instance.getBankAdminsByBank("7877716731266149226");
+        System.out.println("bankAdmins: " + bankAdmins);
+        for (BankAdmin bankAdmin : bankAdmins) {
+            System.out.println(bankAdmin.getFirstName() + " " + bankAdmin.getLastName());
         }
     }
 
@@ -429,9 +429,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 .sorted(comparator)
                 .toList();
     }
-    
+
     /**
-     * Deletes an item that is listed with a key of "&lt;type>:%ld;id>". This will NOT verify whether
+     * Deletes an item that is listed with a key of "&lt;type>:&lt;id>". This will NOT verify whether
      * the item exists beforehand -- if it doesn't exist this will complete with no errors.
      *
      * @param keyPrefix the prefix, eg: "school:"
@@ -568,6 +568,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         };
     }
 
+    /**
+     * Called in the services that insert a user; throws an exception if the email is in use.
+     * Email comparison ignores case (so it doesn't matter what case the passed in email has)
+     *
+     * @param userId the userId of the user who is allowed to be using this email or NULL if no one should be using it
+     * @param email email to check if already in use
+     */
+    private void verifyEmailNotInUseByAnyoneElse(String userId, String email) throws SQLException, EmailAlreadyInUseException {
+        if (email == null || email.isEmpty()) {
+            throw new RuntimeException("Not a valid email: '" + email + "'.");
+        }
+        User otherUserWithSameEmail = getUserByEmail(email);
+        if (otherUserWithSameEmail != null && !otherUserWithSameEmail.getUserId().equals(userId)) {
+            throw new EmailAlreadyInUseException();
+        }
+    }
 
     // ========== Comparators for sorting ==========
 
@@ -728,7 +744,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public Bank getBankById(String bankId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getObjectByUniqueId("bank:", this::createBankFromDynamoDbItem, bankId);
+        // FIXME: HEREAMI
     }
 
     @Override
@@ -897,17 +914,64 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // FIXME: It might be nice to enforce that the bank name is unique
+        // -- Insert bank --
+        final String uniqueBankId = dynamoDBHelper.createUniqueId();
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("bank", bank_id, uniqueBankId)
+                        .withString(bank_name, formData.getBankName())
+                        .build())
+                .conditionExpression("attribute_not_exists(" + table_key.name() + ")") // verify it is unique
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+        // -- Insert bank admin --
+        // If it has an email we presume it has a bank admin, and if not we assume it doesn't
+        final boolean formHasBankAdmin = ! (formData.getEmail() == null || formData.getEmail().isEmpty());
+        if (formHasBankAdmin) {
+            NewBankAdminFormData newFormData = new NewBankAdminFormData();
+            newFormData.setBankId(uniqueBankId);
+            newFormData.setFirstName(formData.getFirstName());
+            newFormData.setLastName(formData.getLastName());
+            newFormData.setEmail(formData.getEmail());
+            newFormData.setPhoneNumber(formData.getPhoneNumber());
+            insertNewBankAdmin(newFormData);
+        }
     }
 
     @Override
     public void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
+        final String uniqueId = dynamoDBHelper.createUniqueId();
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("user", user_id, uniqueId)
+                        .withString(user_type, UserType.BANK_ADMIN.getDBValue())
+                        .withString(user_email, formData.getEmail().toLowerCase())   //for purposes of user lookup only allow one user per email regardless of case
+                        .withString(user_original_email,formData.getEmail())  //preserves case for purposes of sending email
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_organization_id, formData.getBankId())
+                        .withInt(user_approval_status, ApprovalStatus.CHECKED.getDbValue())
+                        .build())
+                .conditionExpression("attribute_not_exists(" + table_key.name() + ")") // verify it is unique
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
-    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+    public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
+        // This approach will CREATE the bank if it doesn't exist instead of throwing an exception
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("bank", bank_id, formData.getBankId())
+                        .withString(bank_name, formData.getBankName())
+                        .withString(min_lmi_for_cra, formData.getMinLMIForCRA())
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+        // FIXME: HEREAMI
     }
 
     @Override

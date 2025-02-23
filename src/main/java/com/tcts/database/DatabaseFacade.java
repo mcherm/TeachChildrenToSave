@@ -258,14 +258,10 @@ public interface DatabaseFacade {
     void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException;
 
     /**
-     * Modifies fields of an existing bank. If person fields like email are present, it
-     * modifies the existing bank admin (if there is one) or creates a new Bank Admin (if
-     * there wasn't one). If person fields like email are NOT present, nothing happens with
-     * the Bank Admin if there wasn't one, or if there WAS a bank admin then that person
-     * is transformed into a Volunteer.
+     * Modifies fields of an existing bank.
      */
     void modifyBank(EditBankFormData formData)
-            throws SQLException, EmailAlreadyInUseException, NoSuchBankException;
+            throws SQLException, NoSuchBankException;
 
     /**
      * Sets the user type for a user. This can be safely used to convert someone between

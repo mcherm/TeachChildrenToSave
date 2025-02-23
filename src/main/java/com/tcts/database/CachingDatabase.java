@@ -334,7 +334,7 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBank(EditBankFormData formData) throws SQLException, EmailAlreadyInUseException, NoSuchBankException {
+    public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
         database.modifyBank(formData);
         allBanks.refreshNow();
     }
