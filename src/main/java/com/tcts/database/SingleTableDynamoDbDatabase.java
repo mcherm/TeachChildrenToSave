@@ -4,6 +4,7 @@ import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemBuilder;
+import com.tcts.database.dynamodb.UpdateItemBuilder;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.BankAdmin;
@@ -57,6 +58,7 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -87,11 +89,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final List<Volunteer> volunteers = instance.getVolunteersByBank("4730181816074897257");
-        System.out.println("volunteers: " + volunteers);
-        for (Volunteer volunteer : volunteers) {
-            System.out.println(volunteer.getFirstName() + " " + volunteer.getLastName());
-        }
+        final User user = instance.getUserById("2075337998040712579");
+        System.out.println("user: " + user + ": " + user.getFirstName());
     }
 
     // ========== Constants ==========
@@ -569,8 +568,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     /**
-     * Called in the services that insert a user; throws an exception if the email is in use.
-     * Email comparison ignores case (so it doesn't matter what case the passed in email has)
+     * Called in the services that insert a user; throws an exception if the email is in use by
+     * anyone other than the indicated userId. Email comparison ignores case (so it doesn't matter
+     * what case the passed in email has).
      *
      * @param userId the userId of the user who is allowed to be using this email or NULL if no one should be using it
      * @param email email to check if already in use
@@ -611,7 +611,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getObjectByUniqueId("user:", this::createUserFromDynamoDbItem, userId);
     }
 
     @Override
@@ -648,7 +648,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
+        // FIXME: The format for making an updateItemRequest is horrible. I have to do SOMETHING better
+        final String itemKey = "user:" + formData.getUserId();
+        // Because emails are commonly case-insensitive, we store a lower-case version of the email
+        // ("user_email") in addition to the original format ("user_original_email") and enforce
+        // uniqueness on the lower-case field.
+        final String userEmail = formData.getEmail().toLowerCase();
+
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, itemKey)
+                .withString(user_email, userEmail)
+                .withString(user_original_email, formData.getEmail())
+                .withString(user_first_name, formData.getFirstName())
+                .withString(user_last_name, formData.getLastName())
+                .withString(user_phone_number, formData.getPhoneNumber())
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
