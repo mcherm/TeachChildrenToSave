@@ -166,7 +166,7 @@ public interface DatabaseFacade {
     
     public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException;
 
-    /** Return the list of volunteers that have a particular bank. */
+    /** Return the list of volunteers that have a particular bank. Includes BankAdmins at that bank. */
     public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException;
 
     /** Returns the list of all Bank Admins for the given bank. */
@@ -207,10 +207,10 @@ public interface DatabaseFacade {
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 
     /**
-     * This will delete a bank, the bank admin AND ALL Volunteers
-     * belonging to that bank.
+     * This will delete a bank, the bank admin AND ALL Volunteers belonging to that bank. It will fail if
+     * any volunteer from that bank is currently signed up for any classes.
      */
-    public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException;
+    public void deleteBankAndBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException;
     
     /**
      * Delete volunteer from database. If the volunteer has signed up for any events,

@@ -990,7 +990,7 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
 	@Override
-	public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+	public void deleteBankAndBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {

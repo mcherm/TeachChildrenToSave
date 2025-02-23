@@ -292,8 +292,8 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
-        database.deleteBankandBankVolunteers(bankId);
+    public void deleteBankAndBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+        database.deleteBankAndBankVolunteers(bankId);
         allBanks.refreshNow();
         availableEvents.refreshNow();
     }

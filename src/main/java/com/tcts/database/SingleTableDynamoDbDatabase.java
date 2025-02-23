@@ -87,10 +87,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public static void main(String[] args) throws Exception {
         final Configuration configuration = new Configuration();
         final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final List<BankAdmin> bankAdmins = instance.getBankAdminsByBank("7877716731266149226");
-        System.out.println("bankAdmins: " + bankAdmins);
-        for (BankAdmin bankAdmin : bankAdmins) {
-            System.out.println(bankAdmin.getFirstName() + " " + bankAdmin.getLastName());
+        final List<Volunteer> volunteers = instance.getVolunteersByBank("4730181816074897257");
+        System.out.println("volunteers: " + volunteers);
+        for (Volunteer volunteer : volunteers) {
+            System.out.println(volunteer.getFirstName() + " " + volunteer.getLastName());
         }
     }
 
@@ -678,7 +678,12 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        if (volunteerId == null) {
+            throw new RuntimeException("This method doesn't handle null for volunteerId.");
+            // NOTE: It *could* handle that if we wanted it to, but for now that's just basically an assert
+        }
+        return getObjectsByIndexLookup("ByEventVolunteerId", event_volunteer_id, volunteerId,
+                this::createEventFromDynamoDbItem, compareEvents);
     }
 
     @Override
@@ -745,7 +750,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     @Override
     public Bank getBankById(String bankId) throws SQLException {
         return getObjectByUniqueId("bank:", this::createBankFromDynamoDbItem, bankId);
-        // FIXME: HEREAMI
     }
 
     @Override
@@ -821,13 +825,27 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBankandBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+    public void deleteBankAndBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+        // First, delete all the volunteers
+        List<Volunteer> volunteers = getVolunteersByBank(bankId);
+        for (Volunteer volunteer : volunteers) {
+            try {
+                deleteVolunteer(volunteer.getUserId());
+            } catch (NoSuchUserException err) {
+                throw new RuntimeException ("Volunteer found but then could not be deleted.");
+            }
+        }
+        // Then delete the bank
+        deleteItem("bank:", bankId);
     }
 
     @Override
     public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        List<Event> events = getEventsByVolunteer(volunteerId);
+        if (!events.isEmpty()) {
+            throw new VolunteerHasEventsException();
+        }
+        deleteItem("user:", volunteerId);
     }
 
     @Override
@@ -971,7 +989,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
-        // FIXME: HEREAMI
     }
 
     @Override
