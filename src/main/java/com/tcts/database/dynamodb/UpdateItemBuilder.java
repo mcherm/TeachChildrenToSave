@@ -40,7 +40,7 @@ public class UpdateItemBuilder {
      * Adds another field of type String.
      */
     public UpdateItemBuilder withString(SingleTableDbField field, String value) {
-        fieldsToSet.add(new StringFieldToSet(fieldsToSet.size(), field, value));
+        fieldsToSet.add(new StringFieldToSet(fieldsToSet.size(), field, value == null ? "" : value));
         return this;
     }
 

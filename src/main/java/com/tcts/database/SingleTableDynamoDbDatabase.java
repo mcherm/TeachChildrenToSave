@@ -649,7 +649,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     @Override
     public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
         verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
-        // FIXME: The format for making an updateItemRequest is horrible. I have to do SOMETHING better
         final String itemKey = "user:" + formData.getUserId();
         // Because emails are commonly case-insensitive, we store a lower-case version of the email
         // ("user_email") in addition to the original format ("user_original_email") and enforce
@@ -668,7 +667,26 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
+        final String itemKey = "user:" + formData.getUserId();
+        // Because emails are commonly case-insensitive, we store a lower-case version of the email
+        // ("user_email") in addition to the original format ("user_original_email") and enforce
+        // uniqueness on the lower-case field.
+        final String userEmail = formData.getEmail().toLowerCase();
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, itemKey)
+                .withString(user_email, userEmail)
+                .withString(user_original_email, formData.getEmail())
+                .withString(user_first_name, formData.getFirstName())
+                .withString(user_last_name, formData.getLastName())
+                .withString(user_phone_number, formData.getPhoneNumber())
+                .withString(user_bank_specific_data, formData.getBankSpecificData())
+                .withString(user_street_address, formData.getStreetAddress())
+                .withString(user_suite_or_floor_number, formData.getSuiteOrFloorNumber())
+                .withString(user_city, formData.getCity())
+                .withString(user_state, formData.getState())
+                .withString(user_zip, formData.getZip())
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
@@ -683,12 +701,75 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getObjectsByIndexLookup("ByEventTeacherId", event_teacher_id, teacherId,
+                this::createEventFromDynamoDbItem, compareEvents);
+        // FIXME: HEREAM do this next
     }
 
     @Override
     public List<Event> getAllAvailableEvents() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // NOTE: This is incredibly similar to getAllEvents(). Normally, I would try to make
+        // the two of them share code. HOWEVER, this is the single most important function
+        // in the whole interface -- it is the slow step that powers the signup process.
+        // So a little duplication is acceptable for performance here. It even duplicates
+        // code from getAllUsingIndexOrScan(). Basically, all the normal "try not to
+        // duplicate code too much" rules are disregarded for this function.
+
+        // --- get the schools ---
+        Map<String,School> schools = getAllSchools().stream()
+                .collect(Collectors.toMap(
+                        School::getSchoolId,
+                        x -> x
+                ));
+
+        // --- get the banks ---
+        Map<String,Bank> banks = getAllBanks().stream()
+                .collect(Collectors.toMap(
+                        Bank::getBankId,
+                        x -> x
+                ));
+
+        // -- get the users --
+        Map<String,User> users = getAllUsers().stream()
+                .collect(Collectors.toMap(
+                        User::getUserId,
+                        x -> x
+                ));
+
+        // --- get the events and populate data in them ---
+        final ScanRequest scanRequest = ScanRequest.builder()
+                .tableName(tableName)
+                .filterExpression("begins_with( " + table_key.name() + ", :keyPrefix )") // FIXME: And more!
+                .expressionAttributeValues(Map.of(":keyPrefix", AttributeValue.builder().s("event:").build()))
+                .build();
+        final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+        return scanResponse.items().stream()
+                .map(item -> {
+                    // --- make the event ---
+                    final Event event = createEventFromDynamoDbItem(item);
+
+                    // --- populate the teacher ---
+                    final Teacher teacher = (Teacher) users.get(event.getTeacherId());
+                    // if LinkedSchool is not already set for the teacher, set it
+                    if (teacher.getLinkedSchool() == null) {
+                        teacher.setLinkedSchool(schools.get(teacher.getSchoolId()));
+                    }
+                    event.setLinkedTeacher(teacher);
+
+                    // --- populate the volunteer ---
+                    if (event.getVolunteerId() != null) {
+                        final Volunteer volunteer = (Volunteer) users.get(event.getVolunteerId());
+                        // if linkedBank is not already set for the volunteer, set it
+                        if (volunteer.getLinkedBank() == null) {
+                            volunteer.setLinkedBank(banks.get(volunteer.getBankId()));
+                        }
+                        event.setLinkedVolunteer(volunteer);
+                    }
+
+                    return event;
+                })
+                .sorted(compareEvents)
+                .toList();
     }
 
     @Override
@@ -703,7 +784,31 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- Load the volunteer, since we know it'll be needed if there are ANY events ---
+        final Volunteer volunteer = (Volunteer) getUserById(volunteerId);
+        volunteer.setLinkedBank(getBankById(volunteer.getBankId()));
+
+        // --- Now get the events ---
+        return getEventsByVolunteer(volunteerId).stream()
+                .map(event -> {
+                    try {
+                        // --- populate the teacher ---
+                        final Teacher teacher = (Teacher) getUserById(event.getTeacherId());
+                        teacher.setLinkedSchool(getSchoolById(teacher.getSchoolId()));
+                        event.setLinkedTeacher(teacher);
+
+                        // --- populate the volunteer ---
+                        assert event.getVolunteerId().equals(volunteerId);
+                        event.setLinkedVolunteer(volunteer);
+
+                        // --- the event is ready now ---
+                        return event;
+                    } catch(SQLException err) {
+                        throw new RuntimeException(err); // these things won't throw SQLException ANYWAY.
+                    }
+                })
+                .sorted(compareEvents)
+                .toList();
     }
 
     @Override
@@ -865,7 +970,11 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // Note: Does NOT verify whether the teacher exists and throw NoSuchSchoolException where appropriate
+        if (!getEventsByTeacher(teacherId).isEmpty()) {
+            throw new TeacherHasEventsException();
+        }
+        deleteItem("user:", teacherId);
     }
 
     @Override
@@ -921,11 +1030,12 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public Event getEventById(String eventId) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getObjectByUniqueId("event:", this::createEventFromDynamoDbItem, eventId);
     }
 
     @Override
     public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
+        // FIXME: This might be wrong because it's doing a PUT not a MODIFY!!
         // This approach will CREATE the school if it doesn't exist.
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
@@ -996,6 +1106,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     @Override
     public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
         // This approach will CREATE the bank if it doesn't exist instead of throwing an exception
+        // FIXME: This does a put, instead of a modify. Is that right?
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
                 .item(new ItemBuilder("bank", bank_id, formData.getBankId())
