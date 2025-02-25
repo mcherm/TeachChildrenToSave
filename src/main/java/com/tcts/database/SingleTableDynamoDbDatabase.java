@@ -833,7 +833,17 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final String volunteerIdToUse = volunteerId == null ? NO_VOLUNTEER : volunteerId;
+
+        final UpdateItemBuilder builder = new UpdateItemBuilder(tableName, "event:" + eventId)
+                .withString(event_volunteer_id, volunteerIdToUse);
+        if (volunteerId == null) {
+            builder.withStringFieldNotEqualsCondition(event_volunteer_id, NO_VOLUNTEER);
+        } else {
+            builder.withStringFieldEqualsCondition(event_volunteer_id, NO_VOLUNTEER);
+        }
+        final UpdateItemRequest updateItemRequest = builder.build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override

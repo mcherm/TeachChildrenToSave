@@ -2,6 +2,7 @@ package com.tcts.database.dynamodb;
 
 import com.tcts.database.SingleTableDbField;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValuesOnConditionCheckFailure;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.tcts.database.SingleTableDbField.event_volunteer_id;
 import static com.tcts.database.SingleTableDbField.table_key;
 
 /**
@@ -23,6 +25,7 @@ public class UpdateItemBuilder {
     private final String tableName;
     private final String itemKey;
     private final List<FieldToSet> fieldsToSet;
+    private final List<Condition> conditions;
 
     /**
      * Constructor.
@@ -34,6 +37,7 @@ public class UpdateItemBuilder {
         this.tableName = tableName;
         this.itemKey = itemKey;
         this.fieldsToSet = new ArrayList<>();
+        this.conditions = new ArrayList<>();
     }
 
     /**
@@ -60,18 +64,38 @@ public class UpdateItemBuilder {
         return this;
     }
 
+    /** Add a condition where some field is equal to a value. */
+    public UpdateItemBuilder withStringFieldEqualsCondition(SingleTableDbField field, String value) {
+        conditions.add(new StringFieldEqualsCondition(conditions.size(), field, value));
+        return this;
+    }
+
+    /** Add a condition where some field is not equal to a value. */
+    public UpdateItemBuilder withStringFieldNotEqualsCondition(SingleTableDbField field, String value) {
+        conditions.add(new StringFieldNotEqualsCondition(conditions.size(), field, value));
+        return this;
+    }
+
     /** Call this after setting all the fields to get the request object. */
     public UpdateItemRequest build() {
-        return UpdateItemRequest.builder()
+        final Map<String,AttributeValue> attributeValues = new HashMap<>();
+        fieldsToSet.forEach(x -> attributeValues.put(x.getExpressionName(), x.getAttributeValue()));
+
+        final UpdateItemRequest.Builder builder = UpdateItemRequest.builder()
                 .tableName(tableName)
                 .key(Map.of(table_key.name(), AttributeValue.builder().s(itemKey).build()))
                 .updateExpression(
                         "SET " + fieldsToSet.stream()
                         .map(FieldToSet::getSetSubexpression)
-                        .collect(Collectors.joining(", ")))
-                .expressionAttributeValues(this.fieldsToSet.stream()
-                        .collect(Collectors.toMap(FieldToSet::getExpressionName, FieldToSet::getAttributeValue)))
-                .build();
+                        .collect(Collectors.joining(", ")));
+        if (!conditions.isEmpty()) {
+            builder.conditionExpression(conditions.stream()
+                    .map(Condition::getConditionExpression)
+                    .collect(Collectors.joining(" AND ")));
+            conditions.forEach(cond -> attributeValues.put(cond.getExpressionName(), cond.getAttributeValue()));
+        }
+        builder.expressionAttributeValues(attributeValues);
+        return builder.build();
     }
 
     // ========== Inner Classes ==========
@@ -145,6 +169,73 @@ public class UpdateItemBuilder {
         @Override
         public AttributeValue getAttributeValue() {
             return AttributeValue.builder().ss(value).build();
+        }
+    }
+
+    /** Internal data - parent for any condition. */
+    private static abstract class Condition {
+        protected final int index;
+
+        /** Constructor. */
+        public Condition(int index) {
+            this.index = index;
+        }
+
+        /** How we'll name the field in the expression. */
+        public String getExpressionName() {
+            return ":cond" + index;
+        }
+
+        /** Returns the value in the expression. */
+        public abstract AttributeValue getAttributeValue();
+
+        /** Returns the condition expression string. */
+        public abstract String getConditionExpression();
+    }
+
+    /** For conditions where field = value. */
+    private static class StringFieldEqualsCondition extends Condition {
+        protected final SingleTableDbField field;
+        protected final String value;
+
+        /** Constructor. */
+        public StringFieldEqualsCondition(int index, SingleTableDbField field, String value) {
+            super(index);
+            this.field = field;
+            this.value = value;
+        }
+
+        @Override
+        public AttributeValue getAttributeValue() {
+            return AttributeValue.builder().s(value).build();
+        }
+
+        @Override
+        public String getConditionExpression() {
+            return field.name() + " = " + getExpressionName();
+        }
+    }
+
+    /** For conditions where field != value. */
+    private static class StringFieldNotEqualsCondition extends Condition {
+        protected final SingleTableDbField field;
+        protected final String value;
+
+        /** Constructor. */
+        public StringFieldNotEqualsCondition(int index, SingleTableDbField field, String value) {
+            super(index);
+            this.field = field;
+            this.value = value;
+        }
+
+        @Override
+        public AttributeValue getAttributeValue() {
+            return AttributeValue.builder().s(value).build();
+        }
+
+        @Override
+        public String getConditionExpression() {
+            return field.name() + " <> " + getExpressionName();
         }
     }
 }
