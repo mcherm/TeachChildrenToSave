@@ -703,7 +703,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
         return getObjectsByIndexLookup("ByEventTeacherId", event_teacher_id, teacherId,
                 this::createEventFromDynamoDbItem, compareEvents);
-        // FIXME: HEREAM do this next
     }
 
     @Override
@@ -739,8 +738,15 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         // --- get the events and populate data in them ---
         final ScanRequest scanRequest = ScanRequest.builder()
                 .tableName(tableName)
-                .filterExpression("begins_with( " + table_key.name() + ", :keyPrefix )") // FIXME: And more!
-                .expressionAttributeValues(Map.of(":keyPrefix", AttributeValue.builder().s("event:").build()))
+                .filterExpression(
+                        "begins_with( " + table_key.name() + ", :keyPrefix ) AND " +
+                        "( attribute_not_exists(" + event_volunteer_id.name() + ") OR " +
+                        event_volunteer_id.name() + " = :zero )"
+                )
+                .expressionAttributeValues(Map.of(
+                        ":keyPrefix", AttributeValue.builder().s("event:").build(),
+                        ":zero", AttributeValue.builder().s("0").build()
+                ))
                 .build();
         final ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
         return scanResponse.items().stream()
@@ -1161,7 +1167,26 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // NOTE: Instead of checking for AllowedDateAlreadyInUseException, we will simply leave as-is if already in use
+        // --- get the existing value ---
+        final List<PrettyPrintingDate> oldAllowedDates = getAllowedDates();
+        // --- tweak it as needed ---
+        final String parseableToAdd = formData.getParsableDateStr();
+        // add it at the end without duplicates by dropping any that match before adding it at the end
+        final String[] newAllowedDates = Stream.concat(
+                oldAllowedDates.stream()
+                    .map(PrettyPrintingDate::getParseable)
+                    .filter(s -> !s.equals(parseableToAdd)),
+                Stream.of(parseableToAdd))
+                .toArray(String[]::new);
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedDates")
+                        .withStrings(allowed_date_values, newAllowedDates)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
@@ -1196,7 +1221,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get the existing value ---
+        final List<PrettyPrintingDate> oldAllowedDates = getAllowedDates();
+        // --- tweak it as needed ---
+        final String parseableToDelete = date.getParseable();
+        final String[] newAllowedDates = oldAllowedDates.stream()
+                .map(PrettyPrintingDate::getParseable)
+                .filter(s -> !s.equals(parseableToDelete))
+                .toArray(String[]::new);
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedDates")
+                        .withStrings(allowed_date_values, newAllowedDates)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
