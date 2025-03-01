@@ -314,7 +314,8 @@ public interface DatabaseFacade {
     public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException;
 
 	/**
-     *		Delete allowed time
+     * Delete allowed time. Will remove this particular allowed time from the list of allowed times if
+     * it is there. If the given time is not in the list this will throw NoSuchAllowedTimeException.
      */
     public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException;
 

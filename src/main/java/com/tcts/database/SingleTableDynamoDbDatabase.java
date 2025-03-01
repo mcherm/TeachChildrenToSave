@@ -1191,7 +1191,41 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void insertNewAllowedTime(AddAllowedTimeFormData formData) throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get the existing values (in order) ---
+        final List<String> oldAllowedTimes = getAllowedTimes();
+        // --- check for invalid times ---
+        if (formData.getAllowedTime().equals("") || oldAllowedTimes.contains(formData.getAllowedTime())) {
+            throw new AllowedTimeAlreadyInUseException();
+        }
+        // --- find the spot to insert OR that the insert-before is invalid ---
+        final int insertBefore = formData.getTimeToInsertBefore().equals("")
+                ? oldAllowedTimes.size()
+                : oldAllowedTimes.indexOf(formData.getTimeToInsertBefore());
+        if (insertBefore == -1) {
+            throw new NoSuchAllowedTimeException();
+        }
+        // --- insert new value and mark with order ---
+        final String[] newAllowedTimesWithSort = new String[oldAllowedTimes.size() + 1];
+        int index = 0;
+        for (String oldAllowedTime : oldAllowedTimes) {
+            if (index == insertBefore) {
+                newAllowedTimesWithSort[index] = index + "|" + formData.getAllowedTime();
+                index += 1;
+            }
+            newAllowedTimesWithSort[index] = index + "|" + oldAllowedTime;
+            index += 1;
+        }
+        if (index == insertBefore) {
+            newAllowedTimesWithSort[index] = index + "|" + formData.getAllowedTime();
+        }
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedTimes")
+                        .withStrings(allowed_time_values_with_sort, newAllowedTimesWithSort)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
@@ -1216,7 +1250,29 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get the existing values (in order) ---
+        final List<String> oldAllowedTimes = getAllowedTimes();
+        // --- check if the value is missing ---
+        if (!oldAllowedTimes.contains(time)) {
+            throw new NoSuchAllowedTimeException();
+        }
+        // --- mark with order while also skipping the one we should delete ---
+        final String[] newAllowedTimesWithSort = new String[oldAllowedTimes.size() - 1];
+        int index = 0;
+        for (String oldAllowedTime : oldAllowedTimes) {
+            if (!oldAllowedTime.equals(time)) {
+                newAllowedTimesWithSort[index] = index + "|" + oldAllowedTime;
+                index += 1;
+            }
+        }
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedTimes")
+                        .withStrings(allowed_time_values_with_sort, newAllowedTimesWithSort)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
