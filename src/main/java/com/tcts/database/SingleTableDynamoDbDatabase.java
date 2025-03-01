@@ -71,7 +71,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -995,7 +997,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void deleteEvent(String eventId) throws SQLException, NoSuchEventException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        deleteItem("event:", eventId);
     }
 
     @Override
@@ -1443,7 +1445,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         if (keyvalues == null) {
             throw new RuntimeException("No site settings found. DB may not be initialized.");
         }
-        final Map<String,String> result = new HashMap<>();
+        final SortedMap<String,String> result = new TreeMap<>();
         for (String entry : keyvalues.ss()) {
             final String[] keyAndValue = entry.split("=",2);
             switch (keyAndValue.length) {
@@ -1457,7 +1459,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get existing values ---
+        final Map<String,String> oldSiteSettings = getSiteSettings();
+        // --- update it ---
+        oldSiteSettings.put(settingName, settingValue);
+        // --- convert to the form for output ---
+        final String[] siteSettingKeyValues = oldSiteSettings.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .toArray(String[]::new);
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("siteSettings")
+                        .withStrings(site_setting_entries, siteSettingKeyValues)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
@@ -1490,11 +1507,54 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void createOrModifyDocument(Document document) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get existing documents ---
+        final SortedSet<Document> documents = getDocuments();
+        // --- modify as desired ---
+        // NOTE: This counts on the fact that createOrModifyDocument gives us back a
+        //   *mutable* SortedSet. If not, we'd need to copy it to a new mutable one.
+        documents.removeIf(doc -> doc.getName().equals(document.getName()));
+        documents.add(document);
+        // --- write it out ---
+        final String[] documentsValues = documents.stream()
+                .map(doc ->
+                        (doc.getShowToTeacher() ? "T" : "F") + "|" +
+                        (doc.getShowToVolunteer() ? "T" : "F") + "|" +
+                        (doc.getShowToBankAdmin() ? "T" : "F") + "|" +
+                        doc.getName())
+                .toArray(String[]::new);
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("documents")
+                        .withStrings(documents_values, documentsValues)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 
     @Override
     public void deleteDocument(String documentName) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // --- get existing documents ---
+        final SortedSet<Document> documents = getDocuments();
+        // --- modify as desired ---
+        // NOTE: This counts on the fact that createOrModifyDocument gives us back a
+        //   *mutable* SortedSet. If not, we'd need to copy it to a new mutable one.
+        documents.removeIf(doc -> doc.getName().equals(documentName));
+        // --- write it out ---
+        final String[] documentsValues = documents.stream()
+                .map(doc ->
+                        (doc.getShowToTeacher() ? "T" : "F") + "|" +
+                                (doc.getShowToVolunteer() ? "T" : "F") + "|" +
+                                (doc.getShowToBankAdmin() ? "T" : "F") + "|" +
+                                doc.getName())
+                .toArray(String[]::new);
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("documents")
+                        .withStrings(documents_values, documentsValues)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
     }
 }
