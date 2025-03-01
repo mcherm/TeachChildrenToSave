@@ -693,12 +693,43 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifyTeacherSchool(String userId, String organizationId) throws SQLException, NoSuchSchoolException, NoSuchUserException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // NOTE: At the moment, this is NOT checking whether the user exists (it will create it if not, but with
+        //   all the other fields missing) and it is not checking whether the school exists. Except in the case
+        //   of bugs elsewhere, that should be fine.
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, "user:" + userId)
+                .withString(user_organization_id, organizationId)
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
+        // --- check for uniqueness ---
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
+        // --- generate the new ID ---
+        final String newTeacherId = dynamoDBHelper.createUniqueId();
+        // --- store it ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("user", user_id, newTeacherId)
+                        .withString(user_type, UserType.TEACHER.getDBValue())
+                        .withInt(user_approval_status, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue())
+                        .withString(user_email, formData.getEmail().toLowerCase()) // in canonical form
+                        .withString(user_original_email, formData.getEmail()) // in original form
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_organization_id, formData.getSchoolId())
+                        .withString(user_hashed_password, hashedPassword)
+                        .withString(user_password_salt, salt)
+                        .build()
+                )
+                .conditionExpression("attribute_not_exists(" + table_key.name() + ")") // verify it is unique
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+        // --- retrieve it and return it ---
+        return (Teacher) getUserById(newTeacherId);
     }
 
     @Override
@@ -882,7 +913,38 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
+        // --- check for uniqueness ---
+        verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
+        // --- generate the new ID ---
+        final String newVolunteerId = dynamoDBHelper.createUniqueId();
+        // --- store it ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("user", user_id, newVolunteerId)
+                        .withString(user_type, UserType.VOLUNTEER.getDBValue())
+                        .withInt(user_approval_status, ApprovalStatus.INITIAL_APPROVAL_STATUS.getDbValue())
+                        .withString(user_email, formData.getEmail().toLowerCase()) // in canonical form
+                        .withString(user_original_email, formData.getEmail()) // in original form
+                        .withString(user_first_name, formData.getFirstName())
+                        .withString(user_last_name, formData.getLastName())
+                        .withString(user_phone_number, formData.getPhoneNumber())
+                        .withString(user_bank_specific_data, formData.getBankSpecificData())
+                        .withString(user_organization_id, formData.getBankId())
+                        .withString(user_hashed_password, hashedPassword)
+                        .withString(user_password_salt, salt)
+                        .withString(user_street_address, formData.getStreetAddress())
+                        .withString(user_suite_or_floor_number, formData.getSuiteOrFloorNumber())
+                        .withString(user_city, formData.getCity())
+                        .withString(user_state, formData.getState())
+                        .withString(user_zip, formData.getZip())
+                        .build()
+                )
+                .conditionExpression("attribute_not_exists(" + table_key.name() + ")") // verify it is unique
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+        // --- retrieve it and return it ---
+        return (Volunteer) getUserById(newVolunteerId);
     }
 
     @Override
