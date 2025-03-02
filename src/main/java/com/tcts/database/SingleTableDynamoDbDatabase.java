@@ -50,6 +50,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -1199,12 +1200,18 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void setUserType(String userId, UserType userType) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, "user:" + userId)
+                .withString(user_type, userType.getDBValue())
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
     public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, "bank:" + formData.getBankId())
+                .withString(bank_specific_data_label, formData.getBankSpecificFieldLabel())
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
@@ -1294,7 +1301,21 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final String tableKey = "event:" + formData.getEventId();
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, tableKey)
+                .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
+                .withString(event_time, formData.getEventTime())
+                .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                .withString(event_delivery_method, formData.getDeliveryMethod())
+                .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
+                .withString(event_notes, formData.getNotes())
+                .withStringFieldEqualsCondition(table_key, tableKey) // confirm it exists
+                .build();
+        try {
+            dynamoDbClient.updateItem(updateItemRequest);
+        } catch(ConditionalCheckFailedException err) {
+            throw new NoSuchEventException();
+        }
     }
 
     @Override

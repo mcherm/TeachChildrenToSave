@@ -2,7 +2,6 @@ package com.tcts.database.dynamodb;
 
 import com.tcts.database.SingleTableDbField;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ReturnValuesOnConditionCheckFailure;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tcts.database.SingleTableDbField.event_volunteer_id;
 import static com.tcts.database.SingleTableDbField.table_key;
 
 /**

@@ -1,6 +1,7 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.tcts.formdata.MarkAsBankAdminFormData;
@@ -387,7 +388,8 @@ public class BankController {
         // --- Prepare data ---
         Bank bank = database.getBankById(bankId);
         String bankName = bank.getBankName();
-        List<Volunteer> volunteers = database.getVolunteersByBank(bankId);
+        // fetch volunteers, then copy into a mutable list
+        List<Volunteer> volunteers = new ArrayList<>(database.getVolunteersByBank(bankId));
         // exclude the current bank admins, if any (they ARE volunteers, but we
         // don't want them for this purpose)
         volunteers.removeIf(x -> x.getUserType() == UserType.BANK_ADMIN);
