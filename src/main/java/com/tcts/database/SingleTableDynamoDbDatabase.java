@@ -1,5 +1,7 @@
 package com.tcts.database;
 
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.dynamodb.DynamoDBHelper;
@@ -83,18 +85,11 @@ import java.util.stream.Stream;
 import static com.tcts.database.SingleTableDbField.*;
 
 
-// FIXME: Still under development
+/**
+ * An implementation of the facade that stores everything in a single DynamoDB Database (with
+ * records of different types).
+ */
 public class SingleTableDynamoDbDatabase implements DatabaseFacade {
-
-    // ========== main() - TEMPORARY ==========
-
-    // FIXME: Remove
-    public static void main(String[] args) throws Exception {
-        final Configuration configuration = new Configuration();
-        final SingleTableDynamoDbDatabase instance = new SingleTableDynamoDbDatabase(configuration);
-        final User user = instance.getUserById("2075337998040712579");
-        System.out.println("user: " + user + ": " + user.getFirstName());
-    }
 
     // ========== Constants ==========
 
@@ -1116,7 +1111,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
-        // FIXME: This might be wrong because it's doing a PUT not a MODIFY!!
         // This approach will CREATE the school if it doesn't exist.
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
@@ -1187,7 +1181,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     @Override
     public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
         // This approach will CREATE the bank if it doesn't exist instead of throwing an exception
-        // FIXME: This does a put, instead of a modify. Is that right?
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)
                 .item(new ItemBuilder("bank", bank_id, formData.getBankId())
@@ -1510,22 +1503,40 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<Teacher> getMatchedTeachers() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getAllEvents().stream()
+                .filter(event -> event.getLinkedVolunteer() != null)
+                .map(Event::getLinkedTeacher)
+                .distinct()
+                .toList();
     }
 
     @Override
     public List<Teacher> getUnMatchedTeachers() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getAllAvailableEvents().stream()
+                .map(Event::getLinkedTeacher)
+                .distinct()
+                .toList();
     }
 
     @Override
     public List<Volunteer> getMatchedVolunteers() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        return getAllEvents().stream()
+                .map(Event::getLinkedVolunteer)
+                .filter(x -> x != null)
+                .distinct()
+                .toList();
     }
 
     @Override
     public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        final Set<Volunteer> matchedVolunteers = new HashSet<>(getMatchedVolunteers());
+        return Stream.concat(
+                getUsersByType(UserType.VOLUNTEER).stream(),
+                getUsersByType(UserType.BANK_ADMIN).stream())
+                .filter(x -> !matchedVolunteers.contains(x))
+                .map(x -> (Volunteer) x)
+                .distinct()
+                .toList();
     }
 
     @Override
