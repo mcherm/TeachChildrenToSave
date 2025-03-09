@@ -1320,17 +1320,31 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // FIXME: It would be better if we verified that the user exists
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, "user:" + userId)
+                .withString(user_hashed_password, hashedPassword)
+                .withString(user_password_salt, salt)
+                .withString(user_reset_password_token, null)
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
     public void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // FIXME: It would be better if we verified that the user exists
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, "user:" + userId)
+                .withString(user_reset_password_token, resetPasswordToken)
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override
     public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException {
-        throw new RuntimeException("Not implemented yet"); // FIXME: Implement
+        // FIXME: It would be better if we verified that the user exists
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, "user:" + volunteerId)
+                .withInt(user_approval_status, approvalStatus.getDbValue())
+                .build();
+        dynamoDbClient.updateItem(updateItemRequest);
     }
 
     @Override

@@ -307,7 +307,6 @@ public interface DatabaseFacade {
 	void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException;
 	
 	/** This will update reset password link token in db. */
-	
 	void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException;
 
     /** Update the userStatus field of a specific volunteer. */
