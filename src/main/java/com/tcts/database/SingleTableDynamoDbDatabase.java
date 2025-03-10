@@ -273,8 +273,13 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
-        String volunteerString = getStringField(item, event_volunteer_id);
-        event.setVolunteerId(volunteerString.equals(NO_VOLUNTEER) ? null : volunteerString);
+        final String volunteerStringField = getStringField(item, event_volunteer_id);
+        final String volunteerString = switch(volunteerStringField) {
+            case NO_VOLUNTEER -> null;
+            case "" -> null;
+            default -> volunteerStringField;
+        };
+        event.setVolunteerId(volunteerString);
         return event;
     }
 
