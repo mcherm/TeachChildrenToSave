@@ -94,7 +94,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     // ========== Constants ==========
 
     /** An indicator value for event_volunteer_id that means no volunteer; used in place of null. */
-    private final String NO_VOLUNTEER = "0";
+    private final static String NO_VOLUNTEER = "0";
 
     /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
     private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap<>() {{
@@ -165,7 +165,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      */
     public static String getTableName(Configuration configuration) {
         final String environment = configuration.getProperty("dynamoDB.environment", "dev");
-        return "TCTS1." + environment;
+        final String instance = configuration.getProperty("dynamoDB.instance", "TEST");
+        return "TCTS." + instance + "." + environment;
     }
 
     // ========== Create Object Functions ==========
@@ -176,7 +177,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * we do when storing the value, and is done because DynamoDB is not able to store
      * empty string values.
      */
-    private String getStringField(Map<String,AttributeValue> item, SingleTableDbField field) {
+    private static String getStringField(Map<String,AttributeValue> item, SingleTableDbField field) {
         final AttributeValue fieldValue = item.get(field.name());
         return fieldValue == null ? "" : fieldValue.s();
     }
@@ -186,7 +187,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *
      * @throws NumberFormatException if the field is null or is not an integer
      */
-    private int getIntField(Map<String,AttributeValue> item, SingleTableDbField field) {
+    private static int getIntField(Map<String,AttributeValue> item, SingleTableDbField field) {
         final AttributeValue attributeValue = item.get(field.name());
         if (attributeValue == null) {
             throw new NullPointerException("Numeric field " + field.name() + " is null");
@@ -200,7 +201,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *
      * @throws NumberFormatException if the field is not an integer
      */
-    private BigDecimal getDecimalField(Map<String,AttributeValue> item, SingleTableDbField field) {
+    private static BigDecimal getDecimalField(Map<String,AttributeValue> item, SingleTableDbField field) {
         final AttributeValue attributeValue = item.get(field.name());
         return attributeValue == null ? null : new BigDecimal(attributeValue.s());
     }
@@ -214,7 +215,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * Creates a Bank object from the corresponding Item retrieved from DynamoDB. If passed
      * null, it returns null.
      */
-    private Bank createBankFromDynamoDbItem(Map<String,AttributeValue> item) {
+    static Bank createBankFromDynamoDbItem(Map<String,AttributeValue> item) {
         if (item == null) {
             return null;
         }
@@ -234,7 +235,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * Creates a School object from the corresponding Item retrieved from DynamoDB. If passed
      * null, it returns null.
      */
-    private School createSchoolFromDynamoDbItem(Map<String,AttributeValue> item) {
+    static School createSchoolFromDynamoDbItem(Map<String,AttributeValue> item) {
         if (item == null) {
             return null;
         }
@@ -255,7 +256,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         return school;
     }
 
-    private Event createEventFromDynamoDbItem(Map<String,AttributeValue> item) {
+    static Event createEventFromDynamoDbItem(Map<String,AttributeValue> item) {
         if (item == null) {
             return null;
         }
@@ -731,7 +732,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     @Override
     public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
         return getObjectsByIndexLookup("ByEventTeacherId", event_teacher_id, teacherId,
-                this::createEventFromDynamoDbItem, compareEvents);
+                SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, compareEvents);
     }
 
     @Override
@@ -814,7 +815,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             // NOTE: It *could* handle that if we wanted it to, but for now that's just basically an assert
         }
         return getObjectsByIndexLookup("ByEventVolunteerId", event_volunteer_id, volunteerId,
-                this::createEventFromDynamoDbItem, compareEvents);
+                SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, compareEvents);
     }
 
     @Override
@@ -945,22 +946,25 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public Bank getBankById(String bankId) throws SQLException {
-        return getObjectByUniqueId("bank:", this::createBankFromDynamoDbItem, bankId);
+        return getObjectByUniqueId("bank:", SingleTableDynamoDbDatabase::createBankFromDynamoDbItem, bankId);
     }
 
     @Override
     public School getSchoolById(String schoolId) throws SQLException {
-        return getObjectByUniqueId("school:", this::createSchoolFromDynamoDbItem, schoolId);
+        return getObjectByUniqueId(
+                "school:", SingleTableDynamoDbDatabase::createSchoolFromDynamoDbItem, schoolId);
     }
 
     @Override
     public List<School> getAllSchools() throws SQLException {
-        return getAllUsingIndexOrScan("BySchoolId", "school:", this::createSchoolFromDynamoDbItem, compareSchools);
+        return getAllUsingIndexOrScan(
+                "BySchoolId", "school:", SingleTableDynamoDbDatabase::createSchoolFromDynamoDbItem, compareSchools);
     }
 
     @Override
     public List<Bank> getAllBanks() throws SQLException {
-        return getAllUsingIndexOrScan("ByBankId", "bank:", this::createBankFromDynamoDbItem, compareBanks);
+        return getAllUsingIndexOrScan(
+                "ByBankId", "bank:", SingleTableDynamoDbDatabase::createBankFromDynamoDbItem, compareBanks);
     }
 
     @Override
@@ -1082,7 +1086,12 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 ));
 
         // --- get the events and populate data in them ---
-        return getAllUsingIndexOrScan("ByEventId", "event:", this::createEventFromDynamoDbItem, compareEvents).stream()
+        return getAllUsingIndexOrScan(
+                "ByEventId",
+                "event:",
+                SingleTableDynamoDbDatabase::createEventFromDynamoDbItem,
+                compareEvents
+        ).stream()
                 .map(event -> {
                     final Teacher teacher = (Teacher) users.get(event.getTeacherId());
                     // if LinkedSchool is not already set for the teacher, set it
@@ -1106,7 +1115,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public Event getEventById(String eventId) throws SQLException {
-        return getObjectByUniqueId("event:", this::createEventFromDynamoDbItem, eventId);
+        return getObjectByUniqueId("event:", SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, eventId);
     }
 
     @Override

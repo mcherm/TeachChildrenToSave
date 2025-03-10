@@ -37,9 +37,10 @@ public class SingleTableDynamoDBSetup {
             Configuration configuration = new Configuration();
             final DynamoDbClient dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
             final String tableName = SingleTableDynamoDbDatabase.getTableName(configuration);
-            final SingleTableDynamoDBSetup instance = new SingleTableDynamoDBSetup(dynamoDbClient, tableName);
 
-            instance.reinitializeDatabase();
+            reinitializeDatabase(dynamoDbClient, tableName);
+
+            final SingleTableDynamoDBSetup instance = new SingleTableDynamoDBSetup(dynamoDbClient, tableName);
             instance.insertData();
         } catch(Exception err) {
             err.printStackTrace();
@@ -67,13 +68,13 @@ public class SingleTableDynamoDBSetup {
     /**
      * When called, this wipes the entire DynamoDB database and then recreates it.
      */
-    public void reinitializeDatabase() {
-        deleteDatabaseTable();
-        createDatabaseTable();
+    public static void reinitializeDatabase(DynamoDbClient dynamoDbClient, String tableName) {
+        deleteDatabaseTable(dynamoDbClient, tableName);
+        createDatabaseTable(dynamoDbClient, tableName);
     }
 
     /** Delete a table. If it doesn't exist, returns without doing anything. */
-    private void deleteDatabaseTable() {
+    private static void deleteDatabaseTable(DynamoDbClient dynamoDbClient, String tableName) {
         final DeleteTableRequest deleteTableRequest = DeleteTableRequest.builder().tableName(tableName).build();
         try {
             dynamoDbClient.deleteTable(deleteTableRequest);
@@ -91,7 +92,7 @@ public class SingleTableDynamoDBSetup {
     private record GSIData(String name, String attribute) {}
 
     /** Create a table. */
-    private void createDatabaseTable() {
+    private static void createDatabaseTable(DynamoDbClient dynamoDbClient, String tableName) {
         final GSIData[] gsiData = {
                 new GSIData("ByBankId", "bank_id"),
                 new GSIData("ByEventId", "event_id"),
