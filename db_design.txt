@@ -79,6 +79,7 @@ userTable;
  > userByUserType;
    * user_type (String)
 
+
 === Proposed Single Table Design ===
 
  * PK: "table_key" One of:
@@ -113,3 +114,10 @@ Get All Available Events:
    > Needs to scan all teachers [could this be cached?]
    > Needs to scan Event-by-volunteer
 GetAllUsers: can scan "user_email"
+
+
+=== Proposed Multiple Site Design ===
+
+[vaguely] Have site-materials. Maybe in an S3 bucket. Or maybe in folders within the source code.
+    In the source code doesn't scale as well if there are going to be a huge number of sites.
+    But with a limited number of sites it may be more managable.

@@ -1,6 +1,7 @@
 package com.tcts.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AboutController {
 
     @RequestMapping(value = "/about.htm", method = RequestMethod.GET)
-    public String aboutPage() {
+    public String aboutPage(Model model) {
+        model.addAttribute("site", "DE");
         return "about"; // which .jsp to display
     }
 
