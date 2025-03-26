@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tcts.database.DatabaseFacade;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ import com.tcts.util.TemplateUtil;
 public class ContactController {
 
     @Autowired
-    private Configuration configuration;
-    
+    private DatabaseFacade database;
+
     @Autowired
     private EmailUtil emailUtil;
     
@@ -40,14 +41,14 @@ public class ContactController {
 
     @RequestMapping(value = "/contact.htm", method = RequestMethod.GET)
     public String aboutPage(Model model) {
-        model.addAttribute("email", configuration.getProperty("email.from"));
+        model.addAttribute("email", EmailUtil.getSiteEmail(database));
         model.addAttribute("formData", new ContactUsFormData());
         return "contact";
     }
     
     @RequestMapping(value = "/contactConfirm.htm", method = RequestMethod.GET)
     public String doContactUsConfirm(Model model) {
-        model.addAttribute("email", configuration.getProperty("email.from"));
+        model.addAttribute("email", EmailUtil.getSiteEmail(database));
         model.addAttribute("confirmationMessage", "Your message has been sent to site administrator successfully.");
         model.addAttribute("formData", new ContactUsFormData());
         return "contact";
@@ -64,7 +65,7 @@ public class ContactController {
     		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
     		
     		emailModel.put("logoImage", logoImage);
-        	emailModel.put("to", configuration.getProperty("email.from"));
+            emailModel.put("to", EmailUtil.getSiteEmail(database));
         	emailModel.put("subject", "Contact Us message");
         	emailModel.put("emailAddress", formData.getEmailAddress());
         	emailModel.put("message", formData.getMessage());
@@ -72,10 +73,10 @@ public class ContactController {
             emailUtil.sendEmail(emailContent, emailModel);
         } catch(AppConfigurationException err) {
             // FIXME: Need to log or report this someplace more reliable.
-            System.err.println("Could not send email for contac us form '" + formData.getEmailAddress() + "'.");
+            System.err.println("Could not send email for contact us form '" + formData.getEmailAddress() + "'.");
         } catch(IOException err) {
             // FIXME: Need to log or report this someplace more reliable.
-        	 System.err.println("Could not send email for contac us form '" + formData.getEmailAddress() + "'.");
+        	 System.err.println("Could not send email for contact us form '" + formData.getEmailAddress() + "'.");
         }
         
         return "redirect:" + "/contactConfirm.htm";

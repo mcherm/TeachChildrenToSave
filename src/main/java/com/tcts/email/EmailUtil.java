@@ -1,9 +1,11 @@
 package com.tcts.email;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
+import com.tcts.database.DatabaseFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +29,32 @@ public final class EmailUtil {
     @Autowired
     Configuration configuration;
 
+    @Autowired
+    private DatabaseFacade database;
+
     public EmailUtil() {
         // FIXME: Two of these are being created. Find out why, and make only one be created.
+    }
+
+    /**
+     * A method for accessing the email for the site. This email is used as the "from" for
+     * emails it sends, but also as the contact address, and a copy of all site-wide email
+     * announcements are sent to this address. If configured properly, this should always
+     * exist, so this throws an AppConfigurationException if not, which the user is not particularly
+     * expected to detect and fix.
+     */
+    public static String getSiteEmail(DatabaseFacade database) {
+        final Map<String,String> siteSettings;
+        try {
+             siteSettings = database.getSiteSettings();
+        } catch (SQLException err) {
+            throw new AppConfigurationException("Cannot read site settings from database.");
+        }
+        final String result = siteSettings.get("SiteEmail");
+        if (result == null) {
+            throw new AppConfigurationException("SiteSettings does not contain SiteEmail.");
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -55,7 +81,7 @@ public final class EmailUtil {
         Message message = new Message().withSubject(subject).withBody(body);
         
         // Assemble the email.
-        String from = configuration.getProperty("email.from");
+        final String from = getSiteEmail(database);
        	SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
         AWSCredentials credentials = new BasicAWSCredentials(
                 configuration.getProperty("aws.access_key"),

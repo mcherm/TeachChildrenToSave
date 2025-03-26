@@ -159,7 +159,7 @@ public class EmailAnnouncementController {
                 receiptModel.put("emails",emailList);
                 receiptModel.put("subject","Teach Children To Save Email Announcement Receipt");
                 receiptModel.put("groupsSentTo",groupsSentTo );
-                String tctsEmail = configuration.getProperty("email.from");
+                String tctsEmail = EmailUtil.getSiteEmail(database);
                 receiptModel.put("to", tctsEmail );
                 String receiptContent = templateUtil.generateTemplate("announcementReceipt", receiptModel);
                 emailUtil.sendEmail(receiptContent, receiptModel);

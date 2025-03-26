@@ -373,7 +373,9 @@ public class SingleTableDynamoDBSetup {
                                 "CurrentYear=2025",
                                 "EventDatesOnHomepage=April 25 - 29, 2024",
                                 "ShowDocuments=yes",
-                                "VolunteerSignupsOpen=yes"
+                                "VolunteerSignupsOpen=yes",
+                                "SiteEmail=teach2save@udel.edu",
+                                "DocumentBucketName=teachchildrentosavede-documents"
                         )
                         .build())
                 .build();
