@@ -16,7 +16,7 @@ public class AboutController {
 
     @RequestMapping(value = "/about.htm", method = RequestMethod.GET)
     public String aboutPage(Model model) {
-        model.addAttribute("site", "DE");
+        model.addAttribute("site", "DE"); // FIXME: Need to set this "correctly" (after deciding what that is)
         return "about"; // which .jsp to display
     }
 
