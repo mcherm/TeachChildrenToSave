@@ -267,7 +267,21 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
         }
         event.setEventTime(getStringField(item, event_time));
-        event.setGrade(getStringField(item, event_grade));
+        // in the old singleTable event_grade was an int. If reading normally fails we'll try that.
+        String grade = getStringField(item, event_grade);
+        if (grade == null) {
+            try {
+                int intGrade = getIntField(item, event_grade);
+                grade = switch (intGrade) {
+                    case 3 -> "3rd Grade";
+                    case 4 -> "4th Grade";
+                    default -> Integer.toString(intGrade);
+                };
+            } catch(NumberFormatException err) {
+                // leave grade as null
+            }
+        }
+        event.setGrade(grade);
         event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));

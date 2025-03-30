@@ -36,11 +36,12 @@ public class DynamoDBMigrate {
     public DynamoDBMigrate() {
         final Configuration configuration = new Configuration();
         dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
-        multiTablePrefix = "TCTS.prod.";
+        multiTablePrefix = "TCTS.prod."; // NOTE: The source is hard-coded here, while the destination comes from config
         singleTableName = SingleTableDynamoDbDatabase.getTableName(configuration);
     }
 
     public void migrate() {
+        System.out.println("Reinitializing database " + singleTableName);
         SingleTableDynamoDBSetup.reinitializeDatabase(dynamoDbClient, singleTableName);
         migrateAllowedDates();
         migrateAllowedTimes();
@@ -311,8 +312,8 @@ public class DynamoDBMigrate {
                                     .withString(SingleTableDbField.event_teacher_id, event.getTeacherId())
                                     .withString(SingleTableDbField.event_date, event.getEventDate().getParseable())
                                     .withString(SingleTableDbField.event_time, event.getEventTime())
-                                    .withString(SingleTableDbField.event_grade, event.getGrade())
-                                    .withString(SingleTableDbField.event_delivery_method, event.getDeliveryMethod())
+                                    .withString(SingleTableDbField.event_grade, patchGrade(event.getGrade()))
+                                    .withString(SingleTableDbField.event_delivery_method, patchDeliveryMethod(event.getDeliveryMethod()))
                                     .withInt(SingleTableDbField.event_number_students, event.getNumberStudents())
                                     .withString(SingleTableDbField.event_notes, event.getNotes())
                                     .withString(SingleTableDbField.event_volunteer_id, event.getVolunteerId())
@@ -321,6 +322,36 @@ public class DynamoDBMigrate {
                             .build();
                     dynamoDbClient.putItem(putItemRequest);
                 });
+    }
+
+    /**
+     * We changed the encoding for Grade between old and new DB so this converts it if we encounter
+     * the old format.
+     */
+    private static String patchGrade(String grade) {
+        if (grade == null) {
+            return null;
+        }
+        return switch (grade) {
+            case "3" -> "3rd Grade";
+            case "4" -> "4th Grade";
+            default -> grade;
+        };
+    }
+
+    /**
+     * We changed the encoding for DeliveryMethod between old and new DB so this converts it if we encounter
+     * the old format.
+     */
+    private static String patchDeliveryMethod(String deliveryMethod) {
+        if (deliveryMethod == null) {
+            return null;
+        }
+        return switch (deliveryMethod) {
+            case "P" -> "In-Person";
+            case "V" -> "Virtual";
+            default -> deliveryMethod;
+        };
     }
 
 }
