@@ -235,6 +235,16 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return database.getAllowedGrades();
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return database.getAllowedDeliveryMethods();
+    }
+
+    @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
         return database.getBankAdmins();
     }

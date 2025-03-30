@@ -94,16 +94,6 @@ public class Event {
         return deliveryMethod;
     }
 
-    public String getDeliveryMethodString() {
-        if (deliveryMethod.equals("P")) {
-            return "In person";
-        } else if (deliveryMethod.equals("V")) {
-            return "Virtual";
-        } else {
-            return ""; // This should never happen!
-        }
-    }
-
     public void setDeliveryMethod(String deliveryMethod) {
         this.deliveryMethod = deliveryMethod;
     }

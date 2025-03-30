@@ -236,18 +236,18 @@ insert into User (password_salt, password_hash, email, first_name, last_name, ac
 insert into User (password_salt, password_hash, email, first_name, last_name, access_type, organization_id, phone_number, user_status) values ('AjVW337bQJs=','jtZ3UlKhhAuyKpo98aGUfTiPy74=','rchermside+curley@gmail.com','Curley','Urbane','V','4','1-800-234-1234','0');
 
 
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '1:00 to 1:45 PM', 4, 20, 'These are some notes.', 6);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', 3, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', 3, 23, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '2:00 to 2:45 PM', 4, 20, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '11:00 to 11:45 AM', 4, 15, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-22'), '9:00 to 9:45 AM', 4, 14, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '11:00 to 11:45 AM', 3, 22, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '12:30 to 1:15 PM', 5, 23, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-22'), '9:00 to 9:45 AM', 5, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', 4, 12, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '11:00 to 11:45 AM', 3, 7, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-22'), '11:00 to 11:45 AM', 3, 14, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '9:00 to 9:45 AM', 5, 13, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (5, DATE('2015-04-22'), '10:30 to 11:15 AM', 4, 23, '', null);
-insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (5, DATE('2015-04-23'), '11:00 to 11:45 AM', 3, 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '1:00 to 1:45 PM', "4th Grade", 20, 'These are some notes.', 6);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', "3rd Grade", 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', "3rd Grade", 23, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '2:00 to 2:45 PM', "4th Grade", 20, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '11:00 to 11:45 AM', "4th Grade", 15, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-22'), '9:00 to 9:45 AM', "4th Grade", 14, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '11:00 to 11:45 AM', "3rd Grade", 22, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '12:30 to 1:15 PM', "5th Grade", 23, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-22'), '9:00 to 9:45 AM', "5th Grade", 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-21'), '9:00 to 9:45 AM', "4th Grade", 12, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '11:00 to 11:45 AM', "3rd Grade", 7, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-22'), '11:00 to 11:45 AM', "3rd Grade", 14, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (4, DATE('2015-04-23'), '9:00 to 9:45 AM', "5th Grade", 13, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (5, DATE('2015-04-22'), '10:30 to 11:15 AM', "4th Grade", 23, '', null);
+insert into Event (teacher_id, event_date, event_time, grade, number_students, notes, volunteer_id) values (5, DATE('2015-04-23'), '11:00 to 11:45 AM', "3rd Grade", 15, '', null);

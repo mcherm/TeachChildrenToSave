@@ -479,7 +479,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
         }
         event.setEventTime(getStringField(item, event_time));
-        event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        event.setGrade(getStringField(item, event_grade));
         event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
@@ -709,7 +709,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(event_teacher_id, teacherId)
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
-                        .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withString(event_grade, formData.getGrade())
                         .withString(event_delivery_method, formData.getDeliveryMethod())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
@@ -881,6 +881,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
             result.add(sortableTime.timeStr);
         }
         return result;
+    }
+
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return List.of("3rd Grade", "4th Grade");
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return List.of("In-Person", "Virtual");
     }
 
     @Override
@@ -1156,7 +1166,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 new PrimaryKey(event_id.name(), formData.getEventId()),
                 attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
                 attributeUpdate(event_time, formData.getEventTime()),
-                intAttributeUpdate(event_grade, Integer.parseInt(formData.getGrade())),
+                attributeUpdate(event_grade, formData.getGrade()),
                 attributeUpdate(event_delivery_method, formData.getDeliveryMethod()),
                 intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
                 attributeUpdate(event_notes, formData.getNotes()));
@@ -1219,14 +1229,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 volunteerIdsActuallySignedUp.add(event.getVolunteerId());
                 teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
             }
-            if (event.getGrade().equals("3")) {
+            // FIXME: This way of counting isn't valid now that the list of grades isn't fixed
+            if (event.getGrade().equals("3rd Grade")) {
                 num3rdGradeEvents += 1;
-            } else if (event.getGrade().equals("4")) {
+            } else if (event.getGrade().equals("4th Grade")) {
                 num4thGradeEvents += 1;
             }
-            if (event.getDeliveryMethod().equals("P")) {
+            // FIXME: This way of counting isn't valid now that the list of delivery methods isn't fixed
+            if (event.getDeliveryMethod().equals("In-Person")) {
                 numInPersonEvents += 1;
-            } else if (event.getDeliveryMethod().equals("V")) {
+            } else if (event.getDeliveryMethod().equals("Virtual")) {
                 numVirtualEvents += 1;
             }
         }

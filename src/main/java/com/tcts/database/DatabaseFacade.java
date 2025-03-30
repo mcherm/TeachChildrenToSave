@@ -203,6 +203,12 @@ public interface DatabaseFacade {
     /** Returns the allowed times. */
     public List<String> getAllowedTimes() throws SQLException;
 
+    /** Returns the allowed grades. */
+    public List<String> getAllowedGrades() throws SQLException;
+
+    /** Returns the allowed delivery methods. */
+    public List<String> getAllowedDeliveryMethods() throws SQLException;
+
 
     public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException;
 

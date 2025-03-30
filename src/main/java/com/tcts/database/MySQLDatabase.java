@@ -247,8 +247,8 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
     private final static String getNumUnmatchedEventsSQL = "select count(*) from Event where volunteer_id is null";
-    private final static String getNum3rdGradeEventsSQL = "select count(*) from Event where grade = 3";
-    private final static String getNum4thGradeEventsSQL = "select count(*) from Event where grade = 4";
+    private final static String getNum3rdGradeEventsSQL = "select count(*) from Event where grade = '3rd Grade'";
+    private final static String getNum4thGradeEventsSQL = "select count(*) from Event where grade = '4th Grade'";
     private final static String getNumVolunteersSQL = "select count(*) from User where access_type = 'V'";
     private final static String getNumParticipatingTeachersSQL = "select count(distinct teacher_id) from Event";
     private final static String getNumParticipatingSchoolsSQL = "select count(distinct organization_id) from Event join User on teacher_id = user_id";
@@ -809,8 +809,18 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
-    		
-	private User insertNewUser(String hashedPassword, String salt, String email,
+
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return List.of("3rd Grade", "4th Grade");
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return List.of("In-Person", "Virtual");
+    }
+
+    private User insertNewUser(String hashedPassword, String salt, String email,
 			String firstName, String lastName, UserType userType,
 			String organizationId, String phoneNumber)
         throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException

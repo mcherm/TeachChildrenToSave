@@ -76,9 +76,8 @@
                                     Grade
                                 </div>
                                 <form:select path="grade">
-                                    <form:option value="" label="Select One..."/>
-                                    <form:option value="3" label="3rd Grade"/>
-                                    <form:option value="4" label="4th Grade"/>
+                                    <form:option value="" label="Select One..." />
+                                    <form:options items="${allowedGrades}"/>
                                 </form:select>
                             </div>
                         </label>
@@ -91,9 +90,8 @@
                                     Delivery Method
                                 </div>
                                 <form:select path="deliveryMethod">
-                                    <form:option value="" label="Select One..."/>
-                                    <form:option value="P" label="In-Person"/>
-                                    <form:option value="V" label="Virtual"/>
+                                    <form:option value="" label="Select One..." />
+                                    <form:options items="${allowedDeliveryMethods}"/>
                                 </form:select>
                             </div>
                         </label>

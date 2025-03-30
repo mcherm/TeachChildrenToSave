@@ -50,6 +50,7 @@ public class MockDataCreator {
         private final List<String> schoolIds;
         private final List<String> eventTimes;
         private final List<String> eventGrades;
+        private final List<String> eventDeliveryMethods;
         private final List<PrettyPrintingDate> eventDates;
 
         /** Constructor. */
@@ -62,7 +63,8 @@ public class MockDataCreator {
             this.schoolIds = getSchoolIds();
             this.eventDates = getEventDates();
             this.eventTimes = getEventTimes();
-            this.eventGrades = Arrays.asList("3", "4");
+            this.eventGrades = getGrades();
+            this.eventDeliveryMethods = getDeliveryMethods();
         }
 
         /** Utility to read a list of strings from a newline-separated file. */
@@ -117,6 +119,15 @@ public class MockDataCreator {
             return result;
         }
 
+        /** Gets a list of the grades. */
+        private List<String> getGrades() throws SQLException {
+            return database.getAllowedGrades();
+        }
+
+        private List<String> getDeliveryMethods() throws SQLException {
+            return database.getAllowedDeliveryMethods();
+        }
+
         public String getRandomEmail(String firstName, String lastName) {
             return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@" + randomFrom(emailDomains);
         }
@@ -157,6 +168,10 @@ public class MockDataCreator {
 
         public String getRandomEventGrades() {
             return randomFrom(eventGrades);
+        }
+
+        public String getRandomDeliveryMethod() {
+            return randomFrom(eventDeliveryMethods);
         }
 
         public PrettyPrintingDate getRandomEventDate() {
@@ -215,6 +230,7 @@ public class MockDataCreator {
         createEventFormData.setEventTime(randomDataSource.getRandomEventTime());
         createEventFormData.setGrade(randomDataSource.getRandomEventGrades());
         createEventFormData.setNumberStudents(randomDataSource.getRandomNumberOfStudents());
+        createEventFormData.setDeliveryMethod(randomDataSource.getRandomDeliveryMethod());
         createEventFormData.setNotes(randomDataSource.getRandomEventNotes());
         database.insertEvent(teacherId, createEventFormData);
     }

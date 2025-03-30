@@ -2,8 +2,6 @@ package com.tcts.database;
 
 import com.tcts.common.Configuration;
 import com.tcts.database.dynamodb.ItemBuilder;
-import com.tcts.database.DatabaseField;
-import com.tcts.database.SingleTableDbField;
 import com.tcts.datamodel.Document;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
@@ -313,7 +311,7 @@ public class DynamoDBMigrate {
                                     .withString(SingleTableDbField.event_teacher_id, event.getTeacherId())
                                     .withString(SingleTableDbField.event_date, event.getEventDate().getParseable())
                                     .withString(SingleTableDbField.event_time, event.getEventTime())
-                                    .withInt(SingleTableDbField.event_grade, Integer.parseInt(event.getGrade()))
+                                    .withString(SingleTableDbField.event_grade, event.getGrade())
                                     .withString(SingleTableDbField.event_delivery_method, event.getDeliveryMethod())
                                     .withInt(SingleTableDbField.event_number_students, event.getNumberStudents())
                                     .withString(SingleTableDbField.event_notes, event.getNotes())

@@ -873,8 +873,8 @@ public class DynamoDBDatabaseIntegrationTest {
         CreateEventFormData createEventFormData = new CreateEventFormData();
         createEventFormData.setEventDate(date);
         createEventFormData.setEventTime(time);
-        createEventFormData.setGrade("3");
-        createEventFormData.setDeliveryMethod("P");
+        createEventFormData.setGrade("3rd Grade");
+        createEventFormData.setDeliveryMethod("In-Person");
         createEventFormData.setNumberStudents("25");
         createEventFormData.setNotes("The class is quite unruly.");
         dynamoDBDatabase.insertEvent(teacherId, createEventFormData);
@@ -901,8 +901,8 @@ public class DynamoDBDatabaseIntegrationTest {
         Event eventFetched = events.get(0);
         assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
         assertEquals("2:00", eventFetched.getEventTime());
-        assertEquals("3", eventFetched.getGrade());
-        assertEquals("P", eventFetched.getDeliveryMethod());
+        assertEquals("3rd Grade", eventFetched.getGrade());
+        assertEquals("In-Person", eventFetched.getDeliveryMethod());
         assertEquals(25, eventFetched.getNumberStudents());
         assertEquals("The class is quite unruly.", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
@@ -929,8 +929,8 @@ public class DynamoDBDatabaseIntegrationTest {
         Event eventFetched = dynamoDBDatabase.getEventById(event.getEventId());
         assertEquals("2016-12-19", eventFetched.getEventDate().getParseable());
         assertEquals("2:00", eventFetched.getEventTime());
-        assertEquals("3", eventFetched.getGrade());
-        assertEquals("P", eventFetched.getDeliveryMethod());
+        assertEquals("3rd Grade", eventFetched.getGrade());
+        assertEquals("In-Person", eventFetched.getDeliveryMethod());
         assertEquals(25, eventFetched.getNumberStudents());
         assertEquals("The class is quite unruly.", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());
@@ -968,8 +968,8 @@ public class DynamoDBDatabaseIntegrationTest {
         eventRegistrationFormData.setEventId(event.getEventId());
         eventRegistrationFormData.setEventDate(secondDate);
         eventRegistrationFormData.setEventTime(secondTime);
-        eventRegistrationFormData.setGrade("4");
-        eventRegistrationFormData.setDeliveryMethod("P");
+        eventRegistrationFormData.setGrade("4th Grade");
+        eventRegistrationFormData.setDeliveryMethod("In-Person");
         eventRegistrationFormData.setNumberStudents("16");
         eventRegistrationFormData.setNotes("");
         dynamoDBDatabase.modifyEvent(eventRegistrationFormData);
@@ -980,8 +980,8 @@ public class DynamoDBDatabaseIntegrationTest {
         // -- Validate --
         assertEquals("2017-03-12", eventFetched.getEventDate().getParseable());
         assertEquals(secondTime, eventFetched.getEventTime());
-        assertEquals("4", eventFetched.getGrade());
-        assertEquals("P", eventFetched.getDeliveryMethod());
+        assertEquals("4th Grade", eventFetched.getGrade());
+        assertEquals("In-Person", eventFetched.getDeliveryMethod());
         assertEquals(16, eventFetched.getNumberStudents());
         assertEquals("", eventFetched.getNotes());
         assertNotNull(eventFetched.getTeacherId());

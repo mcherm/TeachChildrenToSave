@@ -25,7 +25,7 @@
                 </h1>
 
                 <h2>
-                    Teachers and bank volunteers collaborate to help 3<sup>rd</sup> and 4<sup>th</sup> grade students learn critical lessons in personal finance and economics in a short, 45-minute lesson.
+                    Teachers and bank volunteers collaborate to help grade school students learn critical lessons in personal finance and economics in a short, 45-minute lesson.
                 </h2>
 
                 <h3>Teachers</h3>

@@ -80,6 +80,22 @@ public class CachingDatabase implements DatabaseFacade {
                 }
             };
 
+    private final CachedValue<List<String>,SQLException> allowedGrades =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
+                @Override
+                public List<String> generateValue() throws SQLException {
+                    return Collections.unmodifiableList(database.getAllowedGrades());
+                }
+            };
+
+    private final CachedValue<List<String>,SQLException> allowedDeliveryMethods =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
+                @Override
+                public List<String> generateValue() throws SQLException {
+                    return Collections.unmodifiableList(database.getAllowedDeliveryMethods());
+                }
+            };
+
     private final CachedValue<List<Bank>,SQLException> allBanks =
             new CachedValue<List<Bank>,SQLException>(REFRESH_IN_MILLIS) {
                 @Override
@@ -197,6 +213,16 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public List<String> getAllowedTimes() throws SQLException {
         return allowedTimes.getCachedValue();
+    }
+
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return allowedGrades.getCachedValue();
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return allowedDeliveryMethods.getCachedValue();
     }
 
     @Override

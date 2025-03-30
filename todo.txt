@@ -1,4 +1,10 @@
 
+-------- NEW TASKS 2025 --------
+* In DynamoDBMigrate, I need to convert "3"/"4" to "3rd Grade"/"4th Grade" and "P"/"V" to "In-Person"/"Virtual".
+* For Grades and Delivery Methods, I need to provide edit screens for the site admin.
+* In SiteStatistics, it has hard-coded grade lists. Fix that and the DB routines that populate it.
+* In mvc-dispatcher-servlet.xml I seem to have broken document upload and must fix it.
+
 -------- OPEN TASKS --------
 1)  List of States to Choose from?
 

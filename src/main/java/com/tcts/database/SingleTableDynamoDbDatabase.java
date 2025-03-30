@@ -1,7 +1,5 @@
 package com.tcts.database;
 
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.dynamodb.DynamoDBHelper;
@@ -269,7 +267,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
         }
         event.setEventTime(getStringField(item, event_time));
-        event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        event.setGrade(getStringField(item, event_grade));
         event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
@@ -589,6 +587,44 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         }
     }
 
+    /**
+     * A common body for all of the methods that return a List&lt;String&gt; from a singleton item which
+     * is sorted using a vertical-bar.
+     *
+     * @param singletonItemName the name of the singleton item
+     * @param valuesWithSort the SingelTableDbField for the value
+     * @param nameOfItemInErrors a name for the singleton item in error messages
+     * @return the List (in the correct order).
+     */
+    private List<String> getSortedStrings(
+            String singletonItemName,
+            SingleTableDbField valuesWithSort,
+            String nameOfItemInErrors
+    ) {
+        final Map<String,AttributeValue> item = getSingletonItem(singletonItemName);
+        final AttributeValue allowedValuesWithSort = item.get(valuesWithSort.name());
+        if (allowedValuesWithSort == null) {
+            throw new RuntimeException("No " + nameOfItemInErrors + " found. DB may not be initialized.");
+        }
+
+        // Create a record type we can sort on
+        record SortKeyAndValue(int sortKey, String value) implements Comparable<SortKeyAndValue> {
+            @Override
+            public int compareTo(SortKeyAndValue o) {
+                return Integer.compare(this.sortKey, o.sortKey);
+            }
+        }
+        return allowedValuesWithSort.ss().stream()
+                .map(x -> {
+                    String[] pieces = x.split("\\|",2); // split on first vertical-bar
+                    return new SortKeyAndValue(Integer.parseInt(pieces[0]), pieces[1]);
+                })
+                .sorted()
+                .map(x -> x.value)
+                .toList();
+    }
+
+
     // ========== Comparators for sorting ==========
 
     /** Comparator for sorting banks. */
@@ -861,7 +897,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                         .withString(event_teacher_id, teacherId)
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
-                        .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withString(event_grade, formData.getGrade())
                         .withString(event_delivery_method, formData.getDeliveryMethod())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
@@ -999,27 +1035,17 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<String> getAllowedTimes() throws SQLException {
-        final Map<String,AttributeValue> item = getSingletonItem("allowedTimes");
-        final AttributeValue allowedTimeValuesWithSort = item.get(allowed_time_values_with_sort.name());
-        if (allowedTimeValuesWithSort == null) {
-            throw new RuntimeException("No allowed times found. DB may not be initialized.");
-        }
+        return getSortedStrings("allowedTimes", allowed_time_values_with_sort, "allowed times");
+    }
 
-        // Create a record type we can sort on
-        record SortKeyAndTimeValue(int sortKey, String timeValue) implements Comparable<SortKeyAndTimeValue> {
-            @Override
-            public int compareTo(SortKeyAndTimeValue o) {
-                return Integer.compare(this.sortKey, o.sortKey);
-            }
-        }
-        return allowedTimeValuesWithSort.ss().stream()
-                .map(x -> {
-                    String[] pieces = x.split("\\|",2); // split on first vertical-bar
-                    return new SortKeyAndTimeValue(Integer.parseInt(pieces[0]), pieces[1]);
-                })
-                .sorted()
-                .map(x -> x.timeValue)
-                .toList();
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return getSortedStrings("allowedGrades", allowed_grade_values_with_sort, "allowed grades");
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return getSortedStrings("allowedDeliveryMethods", allowed_delivery_method_values_with_sort, "allowed delivery methods");
     }
 
     @Override
@@ -1312,7 +1338,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(tableName, tableKey)
                 .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                 .withString(event_time, formData.getEventTime())
-                .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                .withString(event_grade, formData.getGrade())
                 .withString(event_delivery_method, formData.getDeliveryMethod())
                 .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                 .withString(event_notes, formData.getNotes())
@@ -1422,14 +1448,16 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 volunteerIdsActuallySignedUp.add(event.getVolunteerId());
                 teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
             }
-            if (event.getGrade().equals("3")) {
+            // FIXME: This way of calculating grades is invalid now that the list of grades isn't fixed
+            if (event.getGrade().equals("3rd Grade")) {
                 num3rdGradeEvents += 1;
-            } else if (event.getGrade().equals("4")) {
+            } else if (event.getGrade().equals("4th Grade")) {
                 num4thGradeEvents += 1;
             }
-            if (event.getDeliveryMethod().equals("P")) {
+            // FIXME: This way of calculating delivery methods is invalid now that the list of grades isn't fixed
+            if (event.getDeliveryMethod().equals("In-Person")) {
                 numInPersonEvents += 1;
-            } else if (event.getDeliveryMethod().equals("V")) {
+            } else if (event.getDeliveryMethod().equals("Virtual")) {
                 numVirtualEvents += 1;
             }
         }
