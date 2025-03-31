@@ -31,7 +31,7 @@
                         </li>
 
                         <li class="mb1">
-                            <button onclick="js.loadURL('siteAdminHome.htm')" class="editOrRegister cancel">Back</button>
+                            <button onclick="js.loadURL('editAllowedValues.htm')" class="editOrRegister cancel">Back</button>
                         </li>
                      	
                     </ul>

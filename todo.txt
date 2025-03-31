@@ -1,8 +1,10 @@
 
 -------- NEW TASKS 2025 --------
-* For Grades and Delivery Methods, I need to provide edit screens for the site admin.
 * In SiteStatistics, it has hard-coded grade lists. Fix that and the DB routines that populate it.
+* Make the grades and delivery methods become invisible if there is only one choice.
 * In mvc-dispatcher-servlet.xml I seem to have broken document upload and must fix it.
+* Delete MySQL database support. Remove SQLException everywhere.
+* Collapse SingleTableDbField and DatabaseField into just one class.
 
 -------- OPEN TASKS --------
 1)  List of States to Choose from?

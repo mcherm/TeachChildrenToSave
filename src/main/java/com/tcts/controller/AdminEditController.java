@@ -2,16 +2,14 @@ package com.tcts.controller;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
+import com.tcts.formdata.AddAllowedValueFormData;
 import jakarta.servlet.http.HttpSession;
 
 import com.tcts.common.PrettyPrintingDate;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.AllowedValueAlreadyInUseException;
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
-import com.tcts.formdata.EditAllowedDateFormData;
-import com.tcts.formdata.EditAllowedTimeFormData;
 import com.tcts.formdata.EditSiteSettingFormData;
 import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.exception.InvalidParameterFromGUIException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchAllowedValueException;
 import com.tcts.exception.NotLoggedInException;
 
 
@@ -52,14 +49,22 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "listAllowedTimes.htm", method = RequestMethod.GET)
-    public String listAllowedTimes(
+    @RequestMapping(value = "listAllowedValues.htm", method = RequestMethod.GET)
+    public String listAllowedValues(
+            @RequestParam("valueType") String valueType,
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) throws SQLException {
         ensureSiteAdminLoggedIn(session);
-        return showListAllowedTimesPage(model);
+        model.addAttribute("valueType", valueType);
+        final List<String> allowedValues = switch (valueType) {
+            case "Time" -> database.getAllowedTimes();
+            case "Grade" -> database.getAllowedGrades();
+            case "Delivery Method" -> database.getAllowedDeliveryMethods();
+            default -> throw new InvalidParameterFromGUIException("Invalid value type: '" + valueType + "'.");
+        };
+        model.addAttribute("allowedValues", allowedValues);
+        return "listAllowedValues";
     }
 
 
@@ -89,15 +94,17 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "addAllowedTime.htm", method = RequestMethod.GET)
-    public String showAddAllowedTime(
+    @RequestMapping(value = "addAllowedValue.htm", method = RequestMethod.GET)
+    public String showAddAllowedValue(
             HttpSession session,
-            Model model
-        ) throws SQLException
+            Model model,
+            @RequestParam("valueType") String valueType
+    ) throws SQLException
     {
         ensureSiteAdminLoggedIn(session);
-        AddAllowedTimeFormData formData = new AddAllowedTimeFormData();
-        return showAddAllowedTimePageWithErrors(model, formData, null);
+        final AddAllowedValueFormData formData = new AddAllowedValueFormData();
+        formData.setValueType(valueType);
+        return showAddAllowedValuePageWithErrors(model, formData, null);
     }
 
 
@@ -119,7 +126,7 @@ public class AdminEditController {
         // --- Insert it ---
         try {
             database.insertNewAllowedDate(formData);
-        } catch(AllowedDateAlreadyInUseException err) {
+        } catch(AllowedValueAlreadyInUseException err) {
             return showAddAllowedDatePageWithErrors(model, formData,
                     new Errors("That date is already listed as an allowed date."));
         }
@@ -128,35 +135,46 @@ public class AdminEditController {
         return "redirect:listAllowedDates.htm";
     }
 
+    @RequestMapping(value = "editAllowedValues.htm", method = RequestMethod.GET)
+    public String editAllowedValues(HttpSession session) {
+        ensureSiteAdminLoggedIn(session);
+        return "editAllowedValues";
+    }
 
-    @RequestMapping(value = "addAllowedTime.htm", method = RequestMethod.POST)
-    public String doAddAllowedTime(
+
+    @RequestMapping(value = "addAllowedValue.htm", method = RequestMethod.POST)
+    public String doAddAllowedValue(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") AddAllowedTimeFormData formData
-        ) throws SQLException
+            @ModelAttribute("formData") AddAllowedValueFormData formData
+    ) throws SQLException
     {
         ensureSiteAdminLoggedIn(session);
 
         // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
-            return showAddAllowedTimePageWithErrors(model, formData, errors);
+            return showAddAllowedValuePageWithErrors(model, formData, errors);
         }
 
         // --- Insert it ---
         try {
-            database.insertNewAllowedTime(formData);
-        } catch(AllowedTimeAlreadyInUseException err) {
-            return showAddAllowedTimePageWithErrors(model, formData,
-                    new Errors("That time is already listed as an allowed time."));
-        } catch(NoSuchAllowedTimeException err) {
-            return showAddAllowedTimePageWithErrors(model, formData,
-                    new Errors("The time you inserted this before does not exist."));
+            switch (formData.valueType) {
+                case "Time": database.insertNewAllowedTime(formData.allowedValue, formData.valueToInsertBefore); break;
+                case "Grade": database.insertNewAllowedGrade(formData.allowedValue, formData.valueToInsertBefore); break;
+                case "Delivery Method": database.insertNewAllowedDeliveryMethod(formData.allowedValue, formData.valueToInsertBefore); break;
+                default: throw new InvalidParameterFromGUIException("Invalid field type: '" + formData.valueType + "'.");
+            }
+        } catch(AllowedValueAlreadyInUseException err) {
+            return showAddAllowedValuePageWithErrors(model, formData,
+                    new Errors("That " + formData.valueType + " is already listed as an allowed " + formData.valueType + "."));
+        } catch(NoSuchAllowedValueException err) {
+            return showAddAllowedValuePageWithErrors(model, formData,
+                    new Errors("The " + formData.valueType + " you inserted this before does not exist."));
         }
 
-        // --- Return to the time list ---
-        return "redirect:listAllowedTimes.htm";
+        // --- Return to the value list ---
+        return "redirect:listAllowedValues.htm?valueType=" + formData.valueType;
     }
 
 
@@ -176,7 +194,7 @@ public class AdminEditController {
         }
         try {
             database.deleteAllowedDate(new PrettyPrintingDate(date));
-        } catch (NoSuchAllowedDateException e) {
+        } catch (NoSuchAllowedValueException e) {
             throw new InvalidParameterFromGUIException();
         }
 
@@ -184,21 +202,27 @@ public class AdminEditController {
     }
 
 
-    @RequestMapping(value = "deleteAllowedTime.htm", method = RequestMethod.POST)
-    public String deleteAllowedTime(
-            @RequestParam("allowedTime") String allowedTime,
+    @RequestMapping(value = "deleteAllowedValue.htm", method = RequestMethod.POST)
+    public String deleteAllowedValue(
+            @RequestParam("valueType") String valueType,
+            @RequestParam("allowedValue") String allowedValue,
             HttpSession session
-        ) throws SQLException
+    ) throws SQLException
     {
         ensureSiteAdminLoggedIn(session);
 
         try {
-			database.deleteAllowedTime(allowedTime);
-		} catch (NoSuchAllowedTimeException e) {
-			throw new InvalidParameterFromGUIException();
-		}
+            switch (valueType) {
+                case "Time" -> database.deleteAllowedTime(allowedValue);
+                case "Grade" -> database.deleteAllowedGrade(allowedValue);
+                case "Delivery Method" -> database.deleteAllowedDeliveryMethod(allowedValue);
+                default -> throw new InvalidParameterFromGUIException();
+            }
+        } catch (NoSuchAllowedValueException e) {
+            throw new InvalidParameterFromGUIException();
+        }
 
-        return "redirect:listAllowedTimes.htm";
+        return "redirect:listAllowedValues.htm?valueType=" + valueType;
     }
 
     @RequestMapping(value = "showEditSiteSetting.htm", method = RequestMethod.GET)
@@ -228,11 +252,6 @@ public class AdminEditController {
         return "listAllowedDates";
     }
 
-    public String showListAllowedTimesPage(Model model) throws SQLException {
-        model.addAttribute("allowedTimes", database.getAllowedTimes());
-        return "listAllowedTimes";
-    }
-
     public String showViewSiteSettingsPage(Model model) throws SQLException {
         model.addAttribute("siteSettings", database.getSiteSettings());
         return "viewSiteSettings";
@@ -244,23 +263,28 @@ public class AdminEditController {
         return "addAllowedDate";
     }
 
-    public String showAddAllowedTimePageWithErrors(
+    public String showAddAllowedValuePageWithErrors(
             Model model,
-            AddAllowedTimeFormData formData,
+            AddAllowedValueFormData formData,
             Errors errors
     ) throws SQLException
     {
-        model.addAttribute("allowedTimes", database.getAllowedTimes());
+        assert formData.valueType != null;
+        final List<String> allowedValues = switch(formData.valueType) {
+            case "Time" -> database.getAllowedTimes();
+            case "Grade" -> database.getAllowedGrades();
+            case "Delivery Method" -> database.getAllowedDeliveryMethods();
+            default -> throw new IllegalStateException("Invalid allowedValue: " + formData.valueType);
+        };
+        model.addAttribute("valueType", formData.valueType);
+        model.addAttribute("allowedValues", allowedValues);
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
-        return "addAllowedTime";
+        return "addAllowedValue";
     }
 
     /**
      * A subroutine that launches the page for editing a site setting.
-     * @param model
-     * @param settingToEdit
-     * @return
      */
     public String showEditSiteSettingPage(Model model, String settingToEdit) throws SQLException {
         EditSiteSettingFormData formData = new EditSiteSettingFormData();
@@ -268,28 +292,6 @@ public class AdminEditController {
         formData.setSettingValue(database.getSiteSettings().get(settingToEdit));
         model.addAttribute("formData", formData);
         return "editSiteSetting";
-    }
-
-    /**
-     * A subroutine used to display the edit-date form.
-     */
-    public String showEditAllowedDateWithErrors(Model model, EditAllowedDateFormData formData, Errors errors)
-            throws SQLException
-    {
-        model.addAttribute("formData", formData);
-        model.addAttribute("errors", errors);
-        return "editAllowedTime";
-    }
-
-    /**
-     * A subroutine used to set up and then show the add user form. It
-     */
-    public String showEditAllowedTimeWithErrors(Model model, EditAllowedTimeFormData formData, Errors errors)
-            throws SQLException
-    {
-        model.addAttribute("formData", formData);
-        model.addAttribute("errors", errors);
-        return "editAllowedTime";
     }
 
 

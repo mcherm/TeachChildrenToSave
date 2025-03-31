@@ -19,14 +19,12 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.AllowedValueAlreadyInUseException;
 import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchAllowedValueException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -34,7 +32,6 @@ import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.TeacherHasEventsException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
@@ -290,21 +287,29 @@ public interface DatabaseFacade {
     public void insertNewSchool(CreateSchoolFormData school) throws SQLException;
 
     /** Inserts a new allowed date. */
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException;
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException;
 
     /**
      * Inserts a new allowed time. The name of the time must be unique, and is contained in the
-     * allowedTime field of the formData. The timeToInsertBefore field of the form must either
+     * allowedTime field. The timeToInsertBefore field must either
      * contain an empty string (in which case the sort_order will place this after the last
      * existing time) or the name of an existing time (in which case that and all subsequent
      * sort_orders will be incremented to make space for this new one).
      *
-     * @throws AllowedTimeAlreadyInUseException if an existing time has the same string as this one
-     * @throws NoSuchAllowedTimeException if the timeToInsertBefore field has something that is not
+     * @param newAllowedTime the new time to add
+     * @param timeToInsertBefore the time it should be inserted before, OR "" to place it at the end
+     * @throws AllowedValueAlreadyInUseException if an existing time has the same string as this one
+     * @throws NoSuchAllowedValueException if the timeToInsertBefore field has something that is not
      *   either an existing time or "".
      */
-    public void insertNewAllowedTime(AddAllowedTimeFormData formData)
-            throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException;
+    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore)
+            throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException;
+
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore)
+        throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException;
+
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore)
+            throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException;
 
     public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
 
@@ -322,12 +327,25 @@ public interface DatabaseFacade {
      * Delete allowed time. Will remove this particular allowed time from the list of allowed times if
      * it is there. If the given time is not in the list this will throw NoSuchAllowedTimeException.
      */
-    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException;
+    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException;
+
+    /**
+     * Delete allowed grade. Will remove this particular allowed grade from the list of allowed grades if
+     * it is there. If the given grade is not in the list this will throw NoSuchAllowedGradeException.
+     */
+    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException;
+
+    /**
+     * Delete allowed delivery method. Will remove this particular allowed delivery method from the list of
+     * allowed delivery methods if it is there. If the given delivery method is not in the list this will throw
+     * NoSuchAllowedDeliveryMethodException.
+     */
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException;
 
     /**
      *		Delete allowed date
      */
-	public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException;
+	public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException;
 
     /** Retrieves a bunch of basic statistics about the database. */
     public SiteStatistics getSiteStatistics() throws SQLException;

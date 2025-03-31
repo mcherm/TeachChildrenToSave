@@ -15,18 +15,15 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.AllowedValueAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchAllowedValueException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchSchoolException;
 import com.tcts.exception.TeacherHasEventsException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
@@ -127,7 +124,7 @@ public class DynamoDBDatabaseIntegrationTest {
         assertEquals("TestValue", siteSettings.get("TestSetting"));
     }
 
-    private PrettyPrintingDate insertDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException {
+    private PrettyPrintingDate insertDateAndReturnIt() throws SQLException, AllowedValueAlreadyInUseException {
         String parsableDateStr = "2016-12-19";
         AddAllowedDateFormData addAllowedDateFormData = new AddAllowedDateFormData();
         addAllowedDateFormData.setParsableDateStr(parsableDateStr);
@@ -140,14 +137,14 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void testWriteOneDateAndReturnIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    public void testWriteOneDateAndReturnIt() throws SQLException, AllowedValueAlreadyInUseException, ParseException {
         insertDateAndReturnIt();
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
         assertEquals(Collections.singletonList(PrettyPrintingDate.fromParsableDate("2016-12-19")), allowedDates);
     }
 
     @Test
-    public void testWriteThreeDatesOutOfOrderAndReadThem() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    public void testWriteThreeDatesOutOfOrderAndReadThem() throws SQLException, AllowedValueAlreadyInUseException, ParseException {
         AddAllowedDateFormData addAllowedDateFormData1 = new AddAllowedDateFormData();
         addAllowedDateFormData1.setParsableDateStr("2016-12-21");
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData1);
@@ -166,8 +163,8 @@ public class DynamoDBDatabaseIntegrationTest {
                 allowedDates);
     }
 
-    @Test(expected = AllowedDateAlreadyInUseException.class)
-    public void testWriteSameDateTwiceAndReadIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException {
+    @Test(expected = AllowedValueAlreadyInUseException.class)
+    public void testWriteSameDateTwiceAndReadIt() throws SQLException, AllowedValueAlreadyInUseException, ParseException {
         AddAllowedDateFormData addAllowedDateFormData1 = new AddAllowedDateFormData();
         addAllowedDateFormData1.setParsableDateStr("2016-12-19");
         dynamoDBDatabase.insertNewAllowedDate(addAllowedDateFormData1);
@@ -177,7 +174,7 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     @Test
-    public void testInsertDateDeleteIt() throws SQLException, AllowedDateAlreadyInUseException, ParseException, NoSuchAllowedDateException {
+    public void testInsertDateDeleteIt() throws SQLException, AllowedValueAlreadyInUseException, ParseException, NoSuchAllowedValueException {
         insertDateAndReturnIt();
         dynamoDBDatabase.deleteAllowedDate(PrettyPrintingDate.fromParsableDate("2016-12-19"));
         List<PrettyPrintingDate> allowedDates = dynamoDBDatabase.getAllowedDates();
@@ -187,36 +184,24 @@ public class DynamoDBDatabaseIntegrationTest {
     }
 
     /** Used a few places to create a time. */
-    private String insertTimeAndReturnIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+    private String insertTimeAndReturnIt() throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         String result = "2:00";
-        AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
-        addAllowedTimeFormData.setAllowedTime(result);
-        addAllowedTimeFormData.setTimeToInsertBefore("");
-        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
+        dynamoDBDatabase.insertNewAllowedTime(result, "");
         return result;
     }
 
     @Test
-    public void testWriteOneTimeAndReadIt() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+    public void testWriteOneTimeAndReadIt() throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         String timeStr = insertTimeAndReturnIt();
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
         assertEquals(Collections.singletonList(timeStr), allowedTimes);
     }
 
     @Test
-    public void testWriteThreeTimesOutOfOrderAndReadThem() throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
-        AddAllowedTimeFormData addAllowedTimeFormData1 = new AddAllowedTimeFormData();
-        addAllowedTimeFormData1.setAllowedTime("6:00");
-        addAllowedTimeFormData1.setTimeToInsertBefore("");
-        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData1);
-        AddAllowedTimeFormData addAllowedTimeFormData2 = new AddAllowedTimeFormData();
-        addAllowedTimeFormData2.setAllowedTime("2:00");
-        addAllowedTimeFormData2.setTimeToInsertBefore("6:00");
-        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData2);
-        AddAllowedTimeFormData addAllowedTimeFormData3 = new AddAllowedTimeFormData();
-        addAllowedTimeFormData3.setAllowedTime("4:00");
-        addAllowedTimeFormData3.setTimeToInsertBefore("6:00");
-        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData3);
+    public void testWriteThreeTimesOutOfOrderAndReadThem() throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        dynamoDBDatabase.insertNewAllowedTime("6:00", "");
+        dynamoDBDatabase.insertNewAllowedTime("2:00", "6:00");
+        dynamoDBDatabase.insertNewAllowedTime("4:00", "6:00");
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
         assertEquals(
                 Arrays.asList("2:00", "4:00", "6:00"),
@@ -225,7 +210,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
 
     @Test
-    public void testInsertTimeDeleteIt() throws SQLException, AllowedTimeAlreadyInUseException, ParseException, NoSuchAllowedTimeException {
+    public void testInsertTimeDeleteIt() throws SQLException, AllowedValueAlreadyInUseException, ParseException, NoSuchAllowedValueException {
         String time = insertTimeAndReturnIt();
         dynamoDBDatabase.deleteAllowedTime(time);
         List<String> allowedTimes = dynamoDBDatabase.getAllowedTimes();
@@ -520,7 +505,7 @@ public class DynamoDBDatabaseIntegrationTest {
         List<Volunteer> volunteersAndBankAdmins2 = dynamoDBDatabase.getVolunteersByBank(banks.get(0).getBankId());
         assertEquals(1, volunteersAndBankAdmins2.size());
         assertEquals(volunteersAndBankAdmins1.get(0).getUserId(), volunteersAndBankAdmins2.get(0).getUserId());
-        assertEquals(UserType.VOLUNTEER, volunteersAndBankAdmins2.get(0).getUserType());
+        assertEquals(UserType.BANK_ADMIN, volunteersAndBankAdmins2.get(0).getUserType());
     }
 
     @Test
@@ -958,10 +943,7 @@ public class DynamoDBDatabaseIntegrationTest {
 
         // -- Allow second time --
         String secondTime = "3:00 - 4:00";
-        AddAllowedTimeFormData addAllowedTimeFormData = new AddAllowedTimeFormData();
-        addAllowedTimeFormData.setAllowedTime(secondTime);
-        addAllowedTimeFormData.setTimeToInsertBefore("");
-        dynamoDBDatabase.insertNewAllowedTime(addAllowedTimeFormData);
+        dynamoDBDatabase.insertNewAllowedTime(secondTime, "");
 
         // -- Update first event --
         EventRegistrationFormData eventRegistrationFormData = new EventRegistrationFormData();
