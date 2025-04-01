@@ -5,6 +5,12 @@ allowedDatesTable;
 allowedTimesTable;
  * event_time_allowed (String) PK
 
+allowedGrades;
+ * event_grades_allowed (String) PK
+
+allowedDeliveryMethods;
+ * event_delivery_methods_allowed (String) PK
+
 bankTable;
  * bank_id (String) PK
  * bank_name (String)
@@ -85,6 +91,8 @@ userTable;
  * PK: "table_key" One of:
    * allowedDates
    * allowedTimes
+   * allowedGrades
+   * allowedDeliveryMethods
    * documents
    * siteSettings
    * bank:<id>

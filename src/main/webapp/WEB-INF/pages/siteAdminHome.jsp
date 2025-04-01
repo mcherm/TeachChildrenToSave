@@ -56,17 +56,11 @@
                         </button>
                     </li>
 
-                    <li class="mb1">
-                        <button onclick="js.loadURL('listAllowedDates.htm');" class="editOrRegister">
-                            Add/Remove Class Dates
-                        </button>
-                    </li>
-
-                    <li class="mb1">
-                        <button onclick="js.loadURL('listAllowedTimes.htm');" class="editOrRegister">
-                            Add/Remove Class Times
-                        </button>
-                    </li>
+					<li class="mb1">
+						<button onclick="js.loadURL('editAllowedValues.htm')" class="editOrRegister">
+							Edit Lists of Values
+						</button>
+					</li>
 
 					<li class="mb1">
 						<button onclick="js.loadURL('viewSiteSettings.htm');" class="editOrRegister">

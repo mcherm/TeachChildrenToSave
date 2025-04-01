@@ -86,6 +86,8 @@ public class EventController {
         model.addAttribute("calledByURL", "viewEditEvents.htm");
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
+        model.addAttribute("allowedGrades", database.getAllowedGrades());
+        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
         return "sortedClasses";
     }
     
@@ -125,6 +127,8 @@ public class EventController {
     {
     	model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
+        model.addAttribute("allowedGrades", database.getAllowedGrades());
+        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
         model.addAttribute("formData", formData);
         model.addAttribute("errorMessage", errorMessage);
         return "editEvent";
@@ -164,17 +168,11 @@ public class EventController {
         if (!database.getAllowedTimes().contains(formData.getEventTime())) {
             return showEditEventWithErrorMessage(model, formData, "You must select a time from the list.");
         }
-        if (formData.getGrade() == null || formData.getGrade().length() == 0) {
-            return showEditEventWithErrorMessage(model, formData, "You must specify the grade.");
+        if (!database.getAllowedGrades().contains(formData.getGrade())) {
+            return showEditEventWithErrorMessage(model, formData, "You must select a valid grade.");
         }
-        if (!(formData.getGrade().equals("3") || formData.getGrade().equals("4"))) {
-            throw new InvalidParameterFromGUIException("GUI should only let you choose valid grades.");
-        }
-        if (formData.getDeliveryMethod() == null || formData.getDeliveryMethod().length() == 0 ) {
-            return showEditEventWithErrorMessage(model, formData, "You must specify in-person or virtual.");
-        }
-        if (!(formData.getDeliveryMethod().equals("P") || formData.getDeliveryMethod().equals("V"))) {
-            throw new InvalidParameterFromGUIException(("GUI should only let you choose valid values for delivery method."));
+        if (!database.getAllowedDeliveryMethods().contains(formData.getDeliveryMethod())) {
+            return showEditEventWithErrorMessage(model, formData, "You must select a valid delivery method.");
         }
 
         // --- Update the event ---

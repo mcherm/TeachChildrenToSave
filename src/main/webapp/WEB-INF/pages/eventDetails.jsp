@@ -50,7 +50,7 @@
                             </div>
                             <div id="deliveryMethodField">
                                 <label>Delivery Method:</label>
-                                <span class="value"><c:out value="${event.deliveryMethodString}"/></span>
+                                <span class="value"><c:out value="${event.deliveryMethod}"/></span>
                             </div>
                             <div id="numberStudentsField">
                                 <label>Students:</label>

@@ -1,5 +1,6 @@
 package com.tcts.formdata;
 
+import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.DatabaseField;
 
 import java.sql.SQLException;
@@ -9,7 +10,7 @@ import java.util.Date;
  * Data fields in the form used to create a new event.
  */
 public class CreateEventFormData extends ValidatedFormData<SQLException> {
-    private Date eventDate;
+    private PrettyPrintingDate eventDate;
     private String eventTime;
     private String grade;
     private String deliveryMethod;
@@ -30,19 +31,11 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
         if (!database.getAllowedTimes().contains(eventTime)) {
             errors.addError("You must select a time from the list.");
         }
-        if (grade == null || grade.length() == 0) {
-            errors.addError("You must specify the grade.");
-        } else {
-            if (!(grade.equals("3") || grade.equals("4"))) {
-                errors.addError("That is not a valid grade.");
-            }
+        if (!database.getAllowedGrades().contains(grade)) {
+            errors.addError("You must select a grade from the list.");
         }
-        if (deliveryMethod == null || deliveryMethod.length() == 0) {
-            errors.addError("You must specify the delivery method.");
-        } else {
-            if (!(deliveryMethod.equals("P") || deliveryMethod.equals("V"))) {
-                errors.addError("That is not a valid delivery method.");
-            }
+        if (!database.getAllowedDeliveryMethods().contains(deliveryMethod)) {
+            errors.addError("You must select a delivery method from the list.");
         }
         if (numberStudents == null || numberStudents.length() == 0) {
             errors.addError("Please specify the approximate number of students so the volunteers can ensure they have enough materials.");
@@ -59,11 +52,11 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
         validateLength(notes, DatabaseField.event_notes, errors);
     }
 
-    public Date getEventDate() {
+    public PrettyPrintingDate getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Date eventDate) {
+    public void setEventDate(PrettyPrintingDate eventDate) {
         this.eventDate = eventDate;
     }
 

@@ -62,15 +62,15 @@
          * is basic string ordering.
          */
         function isLessThan(field, value1, value2) {
-            if ($.inArray(field, ['grade', 'numberStudents']) > -1) {
+            if (field == 'numberStudents') {
                 // -- numeric sort --
                 return parseInt(value1) < parseInt(value2);
             } else if (field == 'eventDate') {
                 // -- date sort --
                 var dateOrder = {
                     <c:forEach items="${allowedDates}" var="date" varStatus="status">
-                    "<c:out value="${date.pretty}"/>": <c:out value="${status.index}"/>
-                    <c:if test="${!status.last}">,</c:if>
+                        "<c:out value="${date.pretty}"/>": <c:out value="${status.index}"/>
+                        <c:if test="${!status.last}">,</c:if>
                     </c:forEach>
                 };
                 return getValueSafely(dateOrder, value1) < getValueSafely(dateOrder, value2);
@@ -78,11 +78,29 @@
                 // -- time sort --
                 var timeOrder = {
                     <c:forEach items="${allowedTimes}" var="time" varStatus="status">
-                    "<c:out value="${time}"/>": <c:out value="${status.index}"/>
-                    <c:if test="${!status.last}">,</c:if>
+                        "<c:out value="${time}"/>": <c:out value="${status.index}"/>
+                        <c:if test="${!status.last}">,</c:if>
                     </c:forEach>
                 };
                 return getValueSafely(timeOrder, value1) < getValueSafely(timeOrder, value2);
+            } else if (field == 'grade') {
+                // -- grade sort --
+                var gradeOrder = {
+                    <c:forEach items="${allowedGrades}" var="grade" varStatus="status">
+                        "<c:out value="${grade}"/>": <c:out value="${status.index}"/>
+                        <c:if test="${!status.last}">,</c:if>
+                    </c:forEach>
+                };
+                return getValueSafely(gradeOrder, value1) < getValueSafely(gradeOrder, value2);
+            } else if (field = 'deliveryMethod') {
+                // -- deliveryMethod sort --
+                var deliveryMethodOrder = {
+                    <c:forEach items="${allowedDeliveryMethods}" var="deliveryMethod" varStatus="status">
+                        "<c:out value="${deliveryMethod}"/>": <c:out value="${status.index}"/>
+                        <c:if test="${!status.last}">,</c:if>
+                    </c:forEach>
+                };
+                return getValueSafely(deliveryMethodOrder, value1) < getValueSafely(deliveryMethodOrder, value2);
             } else {
                 // -- string sort --
                 return value1 < value2;

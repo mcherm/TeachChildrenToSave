@@ -57,7 +57,7 @@ public class EmailSender {
                 "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                 "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                 "<td>" + event.getGrade()  + "</td>" +
-                "<td>" + event.getDeliveryMethodString()  + "</td>" +
+                "<td>" + event.getDeliveryMethod()  + "</td>" +
                 "<td>" + event.getNumberStudents()  + "</td>" +
                 "<td>" + event.getNotes()  + "</td></tr></table>";
         emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
@@ -91,7 +91,7 @@ public class EmailSender {
                     "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                     "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                     "<td>" + event.getGrade()  + "</td>" +
-                    "<td>" + event.getDeliveryMethodString()  + "</td>" +
+                    "<td>" + event.getDeliveryMethod()  + "</td>" +
                     "<td>" + event.getNumberStudents()  + "</td>" +
                     "<td>" + event.getNotes()  + "</td></tr></table>";
 

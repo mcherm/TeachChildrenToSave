@@ -97,6 +97,8 @@ public class EventRegistrationController {
         model.addAttribute("events", database.getAllAvailableEvents());
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
+        model.addAttribute("allowedGrades", database.getAllowedGrades());
+        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
         boolean volunteerSignupsOpen = EventRegistrationController.isVolunteerSignupsOpen(database);
         model.addAttribute("volunteerSignupsOpen", volunteerSignupsOpen);
 
@@ -116,7 +118,7 @@ public class EventRegistrationController {
             throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
         }
 
-        // the siteadmin and bankadmin both have currently signed up events listed on eventregistration page.  a regular volunteer does not
+        // the siteadmin and bankadmin both have currently signed up events listed on eventregistration page. a regular volunteer does not
         if ((sessionData.getSiteAdmin() != null)|| (sessionData.getBankAdmin() != null)) {
             // get a list of events the volunteer is currently signed up for
             List<Event> volunteerEvents = database.getEventsByVolunteerWithTeacherAndSchool(volunteer.getUserId());
@@ -192,7 +194,7 @@ public class EventRegistrationController {
                             "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                             "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                             "<td>" + event.getGrade()  + "</td>" +
-                            "<td>" + event.getDeliveryMethodString()  + "</td>" +
+                            "<td>" + event.getDeliveryMethod()  + "</td>" +
                             "<td>" + event.getNumberStudents()  + "</td>" +
                             "<td>" + event.getNotes()  + "</td></tr></table>";
                 emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);
@@ -254,7 +256,7 @@ public class EventRegistrationController {
                                 "<td>" + teacher.getFirstName() + " " + teacher.getLastName()  + "</td>" +
                                 "<td>" + volunteer.getFirstName() + " " + volunteer.getLastName()  + "</td>" +
                                 "<td>" + event.getGrade()  + "</td>" +
-                                "<td>" + event.getDeliveryMethodString()  + "</td>" +
+                                "<td>" + event.getDeliveryMethod()  + "</td>" +
                                 "<td>" + event.getNumberStudents()  + "</td>" +
                                 "<td>" + event.getNotes()  + "</td></tr></table>";
                     emailModel.put("class", htmlTableDataHeader + htmlTableDataValue);

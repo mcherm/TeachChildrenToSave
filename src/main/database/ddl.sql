@@ -36,7 +36,7 @@ create table Event
         teacher_id INT NOT NULL,
         event_date DATE NOT NULL,
         event_time VARCHAR(30) NOT NULL,
-        grade VARCHAR(8) NOT NULL,
+        grade VARCHAR(15) NOT NULL,
         number_students INT NOT NULL,
         notes VARCHAR(1000),
         volunteer_id INT,

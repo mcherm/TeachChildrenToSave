@@ -78,9 +78,9 @@ public class ExcelDownloadController implements InitializingBean {
     public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName) throws SQLException, IOException {
         try {
             this.threadLocalSession.set(session);
-            WorkbookSpec workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
+            WorkbookSpec<CM_SM> workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
             ExtendedModelMap mockModel = new ExtendedModelMap();
-            String pageWeWouldRender = ((ExcelDownloadController.CM_SM)workbookSpec.controllerMethod).invoke(session, mockModel);
+            String pageWeWouldRender = (workbookSpec.controllerMethod).invoke(session, mockModel);
 
             assert pageWeWouldRender.equals(workbookSpec.expectedJSPPage);
 
@@ -93,9 +93,9 @@ public class ExcelDownloadController implements InitializingBean {
 
    @RequestMapping(value="/excel/{locationSpecName}/{parameter}.htm", method=RequestMethod.GET)
    public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName, @PathVariable("parameter") String parameter) throws SQLException, IOException {
-      WorkbookSpec workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
+      WorkbookSpec<CM_PSM> workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
       ExtendedModelMap mockModel = new ExtendedModelMap();
-      String pageWeWouldRender = ((ExcelDownloadController.CM_PSM)workbookSpec.controllerMethod).invoke(parameter, session, mockModel);
+      String pageWeWouldRender = (workbookSpec.controllerMethod).invoke(parameter, session, mockModel);
 
       assert pageWeWouldRender.equals(workbookSpec.expectedJSPPage);
 
@@ -380,6 +380,18 @@ public class ExcelDownloadController implements InitializingBean {
         private final List<ColSpec> colSpecs;
 
 
+        /**
+         * Constructor.
+         *
+         * @param expectedJSPPage the string naming the page that controllerMethod should navigate to (if it works right)
+         * @param keyInModel the field in Model that contains the list we will use to build an excel sheet
+         * @param controllerMethod this is a function which can be called. Its arguments must be either (Session, Model)
+         *          or (String, Session, Model) -- depending on whether this is parameterized with CM_SM or CM_PSM.
+         *          The function will populate the field "keyInModel" in the Model that is provided with the list of
+         *          objects we intend to render on the Excel document.
+         * @param filename the filename to use for output
+         * @param colSpecs description of the columns on the page: label and generation function
+         */
         public WorkbookSpec(String expectedJSPPage, String keyInModel, ControllerMethod controllerMethod, String filename, ColSpec ...colSpecs) {
             this.expectedJSPPage = expectedJSPPage;
             this.keyInModel = keyInModel;
@@ -433,12 +445,28 @@ public class ExcelDownloadController implements InitializingBean {
                 new ColSpec<PrettyPrintingDate>("Date", d -> d.getPretty())
             ));
 
-            this.put("allowedTimes", new WorkbookSpec<CM_SM>(
-                "listAllowedTimes",
-                "allowedTimes",
-                adminEditController::listAllowedTimes,
-                "AllowedTimes",
-                new ColSpec<String>("Time", x -> x)
+            this.put("allowedTimes", new WorkbookSpec<CM_PSM>(
+                    "listAllowedValues",
+                    "allowedValues",
+                    adminEditController::listAllowedValues,
+                    "AllowedTimes",
+                    new ColSpec<String>("Time", x -> x)
+            ));
+
+            this.put("allowedGrades", new WorkbookSpec<CM_PSM>(
+                    "listAllowedValues",
+                    "allowedValues",
+                    adminEditController::listAllowedValues,
+                    "AllowedGrades",
+                    new ColSpec<String>("Grade", x -> x)
+            ));
+
+            this.put("allowedDelivery Methods", new WorkbookSpec<CM_PSM>(
+                    "listAllowedValues",
+                    "allowedValues",
+                    adminEditController::listAllowedValues,
+                    "AllowedDeliveryMethods",
+                    new ColSpec<String>("Delivery Method", x -> x)
             ));
 
             this.put("schools", new WorkbookSpec<CM_SM>(
@@ -493,7 +521,7 @@ public class ExcelDownloadController implements InitializingBean {
                     new ColSpec<Event>("Time", x -> x.getEventTime()),
                     new ColSpec<Event>("School", x -> x.getLinkedTeacher().getLinkedSchool().getName()),
                     new ColSpec<Event>("Grade", x -> x.getGrade()),
-                    new ColSpec<Event>("Delivery Method", x -> x.getDeliveryMethodString()),
+                    new ColSpec<Event>("Delivery Method", x -> x.getDeliveryMethod()),
                     new ColSpec<Event>("Students", x -> x.getNumberStudents()),
                     new ColSpec<Event>("Notes", x->x.getNotes()),
                     new ColSpec<Event>("Teacher", x -> x.getLinkedTeacher().getFirstName()+" "+x.getLinkedTeacher().getLastName()),
@@ -557,7 +585,7 @@ public class ExcelDownloadController implements InitializingBean {
                 new ColSpec<Event>("Date", x -> x.getEventDate().getPretty()),
                 new ColSpec<Event>("Time", x -> x.getEventTime()),
                 new ColSpec<Event>("Grade", x -> x.getGrade()),
-                new ColSpec<Event>("Delivery Method", x -> x.getDeliveryMethodString()),
+                new ColSpec<Event>("Delivery Method", x -> x.getDeliveryMethod()),
                 new ColSpec<Event>("Students", x -> x.getNumberStudents()),
                 new ColSpec<Event>("Notes", x->x.getNotes()),
                 new ColSpec<Event>("Teacher", x -> x.getLinkedTeacher().getFirstName() + " " + x.getLinkedTeacher().getLastName()),

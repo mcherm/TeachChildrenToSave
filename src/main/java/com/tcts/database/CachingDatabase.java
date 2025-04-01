@@ -22,14 +22,12 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.AllowedValueAlreadyInUseException;
 import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchAllowedValueException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -37,7 +35,6 @@ import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.TeacherHasEventsException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
@@ -77,6 +74,22 @@ public class CachingDatabase implements DatabaseFacade {
                 @Override
                 public List<String> generateValue() throws SQLException {
                     return Collections.unmodifiableList(database.getAllowedTimes());
+                }
+            };
+
+    private final CachedValue<List<String>,SQLException> allowedGrades =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
+                @Override
+                public List<String> generateValue() throws SQLException {
+                    return Collections.unmodifiableList(database.getAllowedGrades());
+                }
+            };
+
+    private final CachedValue<List<String>,SQLException> allowedDeliveryMethods =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
+                @Override
+                public List<String> generateValue() throws SQLException {
+                    return Collections.unmodifiableList(database.getAllowedDeliveryMethods());
                 }
             };
 
@@ -200,6 +213,16 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return allowedGrades.getCachedValue();
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return allowedDeliveryMethods.getCachedValue();
+    }
+
+    @Override
     public List<BankAdmin> getBankAdmins() throws SQLException {
         return database.getBankAdmins();
     }
@@ -255,17 +278,29 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException {
         database.insertNewAllowedDate(formData);
         allowedDates.refreshNow();
     }
 
     @Override
-    public void insertNewAllowedTime(AddAllowedTimeFormData formData)
-            throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException
+    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore)
+            throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException
     {
-        database.insertNewAllowedTime(formData);
+        database.insertNewAllowedTime(newAllowedTime, timeToInsertBefore);
         allowedTimes.refreshNow();
+    }
+
+    @Override
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        database.insertNewAllowedGrade(newAllowedGrade, gradeToInsertBefore);
+        allowedGrades.refreshNow();
+    }
+
+    @Override
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        database.insertNewAllowedDeliveryMethod(newAllowedDeliveryMethod, deliveryMethodToInsertBefore);
+        allowedDeliveryMethods.refreshNow();
     }
 
     @Override
@@ -379,13 +414,25 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
+    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException {
         allowedTimes.refreshNow();
         database.deleteAllowedTime(time);
     }
 
     @Override
-    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
+    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException {
+        allowedGrades.refreshNow();
+        database.deleteAllowedGrade(grade);
+    }
+
+    @Override
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException {
+        allowedDeliveryMethods.refreshNow();
+        database.deleteAllowedDeliveryMethod(deliveryMethod);
+    }
+
+    @Override
+    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException {
         allowedDates.refreshNow();
         database.deleteAllowedDate(date);
     }

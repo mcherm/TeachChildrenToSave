@@ -1,7 +1,5 @@
 package com.tcts.database;
 
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.common.SitesConfig;
@@ -20,9 +18,8 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.*;
+import com.tcts.exception.*;  //fixme
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
@@ -94,8 +91,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         put(DatabaseField.site_setting_name, 30);
         put(DatabaseField.site_setting_value, 100);
         put(DatabaseField.event_time, 30);
-        put(DatabaseField.event_grade, 8);
-        put(DatabaseField.event_delivery_method, 1);
+        put(DatabaseField.event_grade, 30);
+        put(DatabaseField.event_delivery_method, 30);
         put(DatabaseField.event_notes, 1000);
         put(DatabaseField.bank_name, 45);
         put(DatabaseField.user_email, 50);
@@ -266,7 +263,21 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
         }
         event.setEventTime(getStringField(item, event_time));
-        event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        // in the old singleTable event_grade was an int. If reading normally fails we'll try that.
+        String grade = getStringField(item, event_grade);
+        if (grade == null) {
+            try {
+                int intGrade = getIntField(item, event_grade);
+                grade = switch (intGrade) {
+                    case 3 -> "3rd Grade";
+                    case 4 -> "4th Grade";
+                    default -> Integer.toString(intGrade);
+                };
+            } catch(NumberFormatException err) {
+                // leave grade as null
+            }
+        }
+        event.setGrade(grade);
         event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
@@ -586,6 +597,134 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         }
     }
 
+    /**
+     * A common body for all of the methods that return a List&lt;String&gt; from a singleton item which
+     * is sorted using a vertical-bar.
+     *
+     * @param singletonItemName the name of the singleton item
+     * @param valuesWithSort the SingelTableDbField for the value
+     * @param nameOfItemInErrors a name for the singleton item in error messages
+     * @return the List (in the correct order).
+     */
+    private List<String> getSortedStrings(
+            String singletonItemName,
+            SingleTableDbField valuesWithSort,
+            String nameOfItemInErrors
+    ) {
+        final Map<String,AttributeValue> item = getSingletonItem(singletonItemName);
+        final AttributeValue allowedValuesWithSort = item.get(valuesWithSort.name());
+        if (allowedValuesWithSort == null) {
+            throw new RuntimeException("No " + nameOfItemInErrors + " found. DB may not be initialized.");
+        }
+
+        // Create a record type we can sort on
+        record SortKeyAndValue(int sortKey, String value) implements Comparable<SortKeyAndValue> {
+            @Override
+            public int compareTo(SortKeyAndValue o) {
+                return Integer.compare(this.sortKey, o.sortKey);
+            }
+        }
+        return allowedValuesWithSort.ss().stream()
+                .map(x -> {
+                    String[] pieces = x.split("\\|",2); // split on first vertical-bar
+                    return new SortKeyAndValue(Integer.parseInt(pieces[0]), pieces[1]);
+                })
+                .sorted()
+                .map(x -> x.value)
+                .toList();
+    }
+
+    /**
+     * A common body for all of the methods that delete an entry from a singleton item which
+     * is sorted using a vertical-bar.
+     *
+     * @param valueToDelete the value to be deleted
+     * @param oldAllowedValues the existing list of values (which must have just been retrieved)
+     * @param singletonItemName the name of the singleton item
+     * @param valuesWithSort  the SingelTableDbField for the value
+     */
+    private void deleteFromSortedStrings(
+            final String valueToDelete,
+            final List<String> oldAllowedValues,
+            final String singletonItemName,
+            final SingleTableDbField valuesWithSort
+    ) throws SQLException, NoSuchAllowedValueException {
+        // --- check if the value is missing ---
+        if (!oldAllowedValues.contains(valueToDelete)) {
+            throw new NoSuchAllowedValueException();
+        }
+        // --- mark with order while also skipping the one we should delete ---
+        final String[] newAllowedValuesWithSort = new String[oldAllowedValues.size() - 1];
+        int index = 0;
+        for (String oldAllowedValue : oldAllowedValues) {
+            if (!oldAllowedValue.equals(valueToDelete)) {
+                newAllowedValuesWithSort[index] = index + "|" + oldAllowedValue;
+                index += 1;
+            }
+        }
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(getTableName())
+                .item(new ItemBuilder(singletonItemName)
+                        .withStrings(valuesWithSort, newAllowedValuesWithSort)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+    /**
+     * A common body for all of the methods that insert an entry into a singleton item which
+     * is sorted using a vertical-bar.
+     *
+     * @param newValue the value to be inserted
+     * @param valueToInsertBefore the existing value that the new value should be inserted before,
+     *                            or "" to insert at the end of the list
+     * @param oldAllowedValues the existing list of values (which must have just been retrieved)
+     * @param singletonItemName the name of the singleton item
+     * @param valuesWithSort  the SingelTableDbField for the value
+     */
+    private void insertNewSortedString(
+            final String newValue,
+            final String valueToInsertBefore,
+            final List<String> oldAllowedValues,
+            final String singletonItemName,
+            final SingleTableDbField valuesWithSort
+    ) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        // --- check for invalid times ---
+        if (newValue.equals("") || oldAllowedValues.contains(newValue)) {
+            throw new AllowedValueAlreadyInUseException();
+        }
+        // --- find the spot to insert OR that the insert-before is invalid ---
+        final int insertBefore = valueToInsertBefore.equals("")
+                ? oldAllowedValues.size()
+                : oldAllowedValues.indexOf(valueToInsertBefore);
+        if (insertBefore == -1) {
+            throw new NoSuchAllowedValueException();
+        }
+        // --- insert new value and mark with order ---
+        final String[] newAllowedValuesWithSort = new String[oldAllowedValues.size() + 1];
+        int index = 0;
+        for (String oldAllowedValue : oldAllowedValues) {
+            if (index == insertBefore) {
+                newAllowedValuesWithSort[index] = index + "|" + newValue;
+                index += 1;
+            }
+            newAllowedValuesWithSort[index] = index + "|" + oldAllowedValue;
+            index += 1;
+        }
+        if (index == insertBefore) {
+            newAllowedValuesWithSort[index] = index + "|" + newValue;
+        }
+        // --- write it out (overwriting the existing one) ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(getTableName())
+                .item(new ItemBuilder(singletonItemName)
+                        .withStrings(valuesWithSort, newAllowedValuesWithSort)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
     // ========== Comparators for sorting ==========
 
     /** Comparator for sorting banks. */
@@ -858,7 +997,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                         .withString(event_teacher_id, teacherId)
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
-                        .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withString(event_grade, formData.getGrade())
                         .withString(event_delivery_method, formData.getDeliveryMethod())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
@@ -996,27 +1135,17 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public List<String> getAllowedTimes() throws SQLException {
-        final Map<String,AttributeValue> item = getSingletonItem("allowedTimes");
-        final AttributeValue allowedTimeValuesWithSort = item.get(allowed_time_values_with_sort.name());
-        if (allowedTimeValuesWithSort == null) {
-            throw new RuntimeException("No allowed times found. DB may not be initialized.");
-        }
+        return getSortedStrings("allowedTimes", allowed_time_values_with_sort, "allowed times");
+    }
 
-        // Create a record type we can sort on
-        record SortKeyAndTimeValue(int sortKey, String timeValue) implements Comparable<SortKeyAndTimeValue> {
-            @Override
-            public int compareTo(SortKeyAndTimeValue o) {
-                return Integer.compare(this.sortKey, o.sortKey);
-            }
-        }
-        return allowedTimeValuesWithSort.ss().stream()
-                .map(x -> {
-                    String[] pieces = x.split("\\|",2); // split on first vertical-bar
-                    return new SortKeyAndTimeValue(Integer.parseInt(pieces[0]), pieces[1]);
-                })
-                .sorted()
-                .map(x -> x.timeValue)
-                .toList();
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return getSortedStrings("allowedGrades", allowed_grade_values_with_sort, "allowed grades");
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return getSortedStrings("allowedDeliveryMethods", allowed_delivery_method_values_with_sort, "allowed delivery methods");
     }
 
     @Override
@@ -1241,7 +1370,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException {
         // NOTE: Instead of checking for AllowedDateAlreadyInUseException, we will simply leave as-is if already in use
         // --- get the existing value ---
         final List<PrettyPrintingDate> oldAllowedDates = getAllowedDates();
@@ -1265,42 +1394,18 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewAllowedTime(AddAllowedTimeFormData formData) throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
-        // --- get the existing values (in order) ---
-        final List<String> oldAllowedTimes = getAllowedTimes();
-        // --- check for invalid times ---
-        if (formData.getAllowedTime().equals("") || oldAllowedTimes.contains(formData.getAllowedTime())) {
-            throw new AllowedTimeAlreadyInUseException();
-        }
-        // --- find the spot to insert OR that the insert-before is invalid ---
-        final int insertBefore = formData.getTimeToInsertBefore().equals("")
-                ? oldAllowedTimes.size()
-                : oldAllowedTimes.indexOf(formData.getTimeToInsertBefore());
-        if (insertBefore == -1) {
-            throw new NoSuchAllowedTimeException();
-        }
-        // --- insert new value and mark with order ---
-        final String[] newAllowedTimesWithSort = new String[oldAllowedTimes.size() + 1];
-        int index = 0;
-        for (String oldAllowedTime : oldAllowedTimes) {
-            if (index == insertBefore) {
-                newAllowedTimesWithSort[index] = index + "|" + formData.getAllowedTime();
-                index += 1;
-            }
-            newAllowedTimesWithSort[index] = index + "|" + oldAllowedTime;
-            index += 1;
-        }
-        if (index == insertBefore) {
-            newAllowedTimesWithSort[index] = index + "|" + formData.getAllowedTime();
-        }
-        // --- write it out (overwriting the existing one) ---
-        final PutItemRequest putItemRequest = PutItemRequest.builder()
-                .tableName(getTableName())
-                .item(new ItemBuilder("allowedTimes")
-                        .withStrings(allowed_time_values_with_sort, newAllowedTimesWithSort)
-                        .build())
-                .build();
-        dynamoDbClient.putItem(putItemRequest);
+    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        insertNewSortedString(newAllowedTime, timeToInsertBefore, getAllowedTimes(), "allowedTimes", allowed_time_values_with_sort);
+    }
+
+    @Override
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        insertNewSortedString(newAllowedGrade, gradeToInsertBefore, getAllowedGrades(), "allowedGrades", allowed_grade_values_with_sort);
+    }
+
+    @Override
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        insertNewSortedString(newAllowedDeliveryMethod, deliveryMethodToInsertBefore, getAllowedDeliveryMethods(), "allowedDeliveryMethods", allowed_delivery_method_values_with_sort);
     }
 
     @Override
@@ -1309,7 +1414,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
                 .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                 .withString(event_time, formData.getEventTime())
-                .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                .withString(event_grade, formData.getGrade())
                 .withString(event_delivery_method, formData.getDeliveryMethod())
                 .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                 .withString(event_notes, formData.getNotes())
@@ -1352,34 +1457,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
-        // --- get the existing values (in order) ---
-        final List<String> oldAllowedTimes = getAllowedTimes();
-        // --- check if the value is missing ---
-        if (!oldAllowedTimes.contains(time)) {
-            throw new NoSuchAllowedTimeException();
-        }
-        // --- mark with order while also skipping the one we should delete ---
-        final String[] newAllowedTimesWithSort = new String[oldAllowedTimes.size() - 1];
-        int index = 0;
-        for (String oldAllowedTime : oldAllowedTimes) {
-            if (!oldAllowedTime.equals(time)) {
-                newAllowedTimesWithSort[index] = index + "|" + oldAllowedTime;
-                index += 1;
-            }
-        }
-        // --- write it out (overwriting the existing one) ---
-        final PutItemRequest putItemRequest = PutItemRequest.builder()
-                .tableName(getTableName())
-                .item(new ItemBuilder("allowedTimes")
-                        .withStrings(allowed_time_values_with_sort, newAllowedTimesWithSort)
-                        .build())
-                .build();
-        dynamoDbClient.putItem(putItemRequest);
+    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException {
+        deleteFromSortedStrings(time, getAllowedTimes(), "allowedTimes", allowed_time_values_with_sort);
     }
 
     @Override
-    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
+    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException {
+        deleteFromSortedStrings(grade, getAllowedGrades(), "allowedGrades", allowed_grade_values_with_sort);
+    }
+
+    @Override
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException {
+        deleteFromSortedStrings(deliveryMethod, getAllowedDeliveryMethods(), "allowedDeliveryMethods", allowed_delivery_method_values_with_sort);
+    }
+
+    @Override
+    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException {
         // --- get the existing value ---
         final List<PrettyPrintingDate> oldAllowedDates = getAllowedDates();
         // --- tweak it as needed ---
@@ -1419,14 +1512,16 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 volunteerIdsActuallySignedUp.add(event.getVolunteerId());
                 teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
             }
-            if (event.getGrade().equals("3")) {
+            // FIXME: This way of calculating grades is invalid now that the list of grades isn't fixed
+            if (event.getGrade().equals("3rd Grade")) {
                 num3rdGradeEvents += 1;
-            } else if (event.getGrade().equals("4")) {
+            } else if (event.getGrade().equals("4th Grade")) {
                 num4thGradeEvents += 1;
             }
-            if (event.getDeliveryMethod().equals("P")) {
+            // FIXME: This way of calculating delivery methods is invalid now that the list of grades isn't fixed
+            if (event.getDeliveryMethod().equals("In-Person")) {
                 numInPersonEvents += 1;
-            } else if (event.getDeliveryMethod().equals("V")) {
+            } else if (event.getDeliveryMethod().equals("Virtual")) {
                 numVirtualEvents += 1;
             }
         }

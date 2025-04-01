@@ -31,14 +31,12 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.AllowedValueAlreadyInUseException;
 import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchAllowedValueException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -47,7 +45,6 @@ import com.tcts.exception.PrimaryKeyAlreadyExistsException;
 import com.tcts.exception.TeacherHasEventsException;
 import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
@@ -479,7 +476,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
             throw new InconsistentDatabaseException("Date '" + getStringField(item, event_date) + "' not parsable.");
         }
         event.setEventTime(getStringField(item, event_time));
-        event.setGrade(Integer.toString(getIntField(item, event_grade)));
+        event.setGrade(getStringField(item, event_grade));
         event.setDeliveryMethod(getStringField(item, event_delivery_method));
         event.setNumberStudents(getIntField(item, event_number_students));
         event.setNotes(getStringField(item, event_notes));
@@ -709,7 +706,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                         .withString(event_teacher_id, teacherId)
                         .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
                         .withString(event_time, formData.getEventTime())
-                        .withInt(event_grade, Integer.parseInt(formData.getGrade()))
+                        .withString(event_grade, formData.getGrade())
                         .withString(event_delivery_method, formData.getDeliveryMethod())
                         .withInt(event_number_students, Integer.parseInt(formData.getNumberStudents()))
                         .withString(event_notes, formData.getNotes())
@@ -881,6 +878,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
             result.add(sortableTime.timeStr);
         }
         return result;
+    }
+
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return List.of("3rd Grade", "4th Grade");
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return List.of("In-Person", "Virtual");
     }
 
     @Override
@@ -1097,25 +1104,25 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException {
         try {
             dynamoDBHelper.insertIntoTable(tables.allowedDatesTable,
                     new ItemMaker(event_date_allowed, formData.getParsableDateStr()));
         } catch(PrimaryKeyAlreadyExistsException err) {
-            throw new AllowedDateAlreadyInUseException();
+            throw new AllowedValueAlreadyInUseException();
         }
     }
 
     @Override
-    public void insertNewAllowedTime(AddAllowedTimeFormData formData) throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException {
+    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         // -- Get the existing list of times so we can ensure they are properly sorted --
         List<String> allowedTimes = getAllowedTimes();
         // -- Make sure it's OK to insert --
-        if (!formData.getTimeToInsertBefore().isEmpty() && !allowedTimes.contains(formData.getTimeToInsertBefore())) {
-            throw new NoSuchAllowedTimeException();
+        if (!timeToInsertBefore.isEmpty() && !allowedTimes.contains(timeToInsertBefore)) {
+            throw new NoSuchAllowedValueException();
         }
-        if (allowedTimes.contains(formData.getAllowedTime())) {
-            throw new AllowedTimeAlreadyInUseException();
+        if (allowedTimes.contains(newAllowedTime)) {
+            throw new AllowedValueAlreadyInUseException();
         }
         // -- Delete existing values from the database --
         // NOTE: not even slightly threadsafe. Won't be a problem in practice.
@@ -1125,14 +1132,14 @@ public class DynamoDBDatabase implements DatabaseFacade {
         // -- Now insert the new values --
         int sortKey = 0;
         for (String allowedTime : allowedTimes) {
-            if (!formData.getTimeToInsertBefore().isEmpty() && formData.getTimeToInsertBefore().equals(allowedTime)) {
+            if (!timeToInsertBefore.isEmpty() && timeToInsertBefore.equals(allowedTime)) {
                 // - Now we insert the new one -
                 try {
                     dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
-                            new ItemMaker(event_time_allowed, formData.getAllowedTime())
+                            new ItemMaker(event_time_allowed, newAllowedTime)
                                     .withInt(event_time_sort_key, sortKey));
                 } catch(PrimaryKeyAlreadyExistsException err) {
-                    throw new AllowedTimeAlreadyInUseException();
+                    throw new AllowedValueAlreadyInUseException();
                 }
                 sortKey += 1;
             }
@@ -1142,12 +1149,22 @@ public class DynamoDBDatabase implements DatabaseFacade {
                             .withInt(event_time_sort_key, sortKey));
             sortKey += 1;
         }
-        if (formData.getTimeToInsertBefore().isEmpty()) {
+        if (timeToInsertBefore.isEmpty()) {
             // - Add the new one at the end -
             dynamoDBHelper.insertIntoTable(tables.allowedTimesTable,
-                    new ItemMaker(event_time_allowed, formData.getAllowedTime())
+                    new ItemMaker(event_time_allowed, newAllowedTime)
                             .withInt(event_time_sort_key, sortKey));
         }
+    }
+
+    @Override
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -1156,7 +1173,7 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 new PrimaryKey(event_id.name(), formData.getEventId()),
                 attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
                 attributeUpdate(event_time, formData.getEventTime()),
-                intAttributeUpdate(event_grade, Integer.parseInt(formData.getGrade())),
+                attributeUpdate(event_grade, formData.getGrade()),
                 attributeUpdate(event_delivery_method, formData.getDeliveryMethod()),
                 intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
                 attributeUpdate(event_notes, formData.getNotes()));
@@ -1189,12 +1206,22 @@ public class DynamoDBDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException {
+    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException {
         tables.allowedTimesTable.deleteItem(new PrimaryKey(event_time_allowed.name(), time));
     }
 
     @Override
-    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException {
+    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException {
         tables.allowedDatesTable.deleteItem(new PrimaryKey(event_date_allowed.name(), date.getParseable()));
     }
 
@@ -1219,14 +1246,16 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 volunteerIdsActuallySignedUp.add(event.getVolunteerId());
                 teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
             }
-            if (event.getGrade().equals("3")) {
+            // FIXME: This way of counting isn't valid now that the list of grades isn't fixed
+            if (event.getGrade().equals("3rd Grade")) {
                 num3rdGradeEvents += 1;
-            } else if (event.getGrade().equals("4")) {
+            } else if (event.getGrade().equals("4th Grade")) {
                 num4thGradeEvents += 1;
             }
-            if (event.getDeliveryMethod().equals("P")) {
+            // FIXME: This way of counting isn't valid now that the list of delivery methods isn't fixed
+            if (event.getDeliveryMethod().equals("In-Person")) {
                 numInPersonEvents += 1;
-            } else if (event.getDeliveryMethod().equals("V")) {
+            } else if (event.getDeliveryMethod().equals("Virtual")) {
                 numVirtualEvents += 1;
             }
         }

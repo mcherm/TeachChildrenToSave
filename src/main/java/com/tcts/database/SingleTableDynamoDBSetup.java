@@ -163,6 +163,8 @@ public class SingleTableDynamoDBSetup {
         insertSiteSettings();
         insertAllowedDates();
         insertAllowedTimes();
+        insertAllowedGrades();
+        insertAllowedDeliveryMethods();
         insertDocuments();
 
         final String aSchoolId = insertSchool("New Castle", "Appoquinimink", "Bunker Hill Elementary School", "N120", "1070 Bunker Hill Road", "Middletown", "DE", "19709", "302.378.5135", "15.4");
@@ -432,6 +434,40 @@ public class SingleTableDynamoDBSetup {
                                 "11|2:30 to 3:15 PM",
                                 "12|3:00 to 3:45 PM",
                                 "13|Flexible"
+                        )
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+    /**
+     * Insert the single record that has the starting values for allowed times.
+     */
+    private void insertAllowedGrades() {
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedGrades")
+                        .withStrings(
+                                allowed_grade_values_with_sort,
+                                "0|3rd Grade",
+                                "1|4th Grade"
+                        )
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+    /**
+     * Insert the single record that has the starting values for allowed times.
+     */
+    private void insertAllowedDeliveryMethods() {
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(new ItemBuilder("allowedDeliveryMethods")
+                        .withStrings(
+                                allowed_delivery_method_values_with_sort,
+                                "0|In-Person",
+                                "1|Virtual"
                         )
                         .build())
                 .build();

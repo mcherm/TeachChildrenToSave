@@ -72,6 +72,8 @@ public class CreateEventController {
     private String showFormWithErrors(Model model, SessionData sessionData, Errors errors) throws SQLException {
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
+        model.addAttribute("allowedGrades", database.getAllowedGrades());
+        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
         if (sessionData.getTeacher() != null)  {
             model.addAttribute("calledBy", "teacher");
         } else  if (sessionData.getSiteAdmin() != null) {

@@ -19,6 +19,12 @@ public enum SingleTableDbField {
     // AllowedTimes
     allowed_time_values_with_sort,
 
+    // AllowedGrades
+    allowed_grade_values_with_sort,
+
+    // AllowedDeliveryMethods
+    allowed_delivery_method_values_with_sort,
+
     // Bank
     bank_id, bank_name, min_lmi_for_cra, bank_specific_data_label,
     // Event

@@ -21,7 +21,6 @@ import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.exception.BankHasVolunteersException;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.formdata.AddAllowedDateFormData;
-import com.tcts.formdata.AddAllowedTimeFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
@@ -49,12 +48,10 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.AllowedDateAlreadyInUseException;
-import com.tcts.exception.AllowedTimeAlreadyInUseException;
+import com.tcts.exception.AllowedValueAlreadyInUseException;
 import com.tcts.exception.EmailAlreadyInUseException;
 import com.tcts.exception.InconsistentDatabaseException;
-import com.tcts.exception.NoSuchAllowedDateException;
-import com.tcts.exception.NoSuchAllowedTimeException;
+import com.tcts.exception.NoSuchAllowedValueException;
 import com.tcts.exception.NoSuchBankException;
 import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NoSuchSchoolException;
@@ -247,8 +244,8 @@ public class MySQLDatabase implements DatabaseFacade {
     private final static String getNumEventsSQL = "select count(*) from Event";
     private final static String getNumMatchedEventsSQL = "select count(*) from Event where volunteer_id is not null";
     private final static String getNumUnmatchedEventsSQL = "select count(*) from Event where volunteer_id is null";
-    private final static String getNum3rdGradeEventsSQL = "select count(*) from Event where grade = 3";
-    private final static String getNum4thGradeEventsSQL = "select count(*) from Event where grade = 4";
+    private final static String getNum3rdGradeEventsSQL = "select count(*) from Event where grade = '3rd Grade'";
+    private final static String getNum4thGradeEventsSQL = "select count(*) from Event where grade = '4th Grade'";
     private final static String getNumVolunteersSQL = "select count(*) from User where access_type = 'V'";
     private final static String getNumParticipatingTeachersSQL = "select count(distinct teacher_id) from Event";
     private final static String getNumParticipatingSchoolsSQL = "select count(distinct organization_id) from Event join User on teacher_id = user_id";
@@ -809,8 +806,18 @@ public class MySQLDatabase implements DatabaseFacade {
             closeSafely(connection, preparedStatement, resultSet);
         }
     }
-    		
-	private User insertNewUser(String hashedPassword, String salt, String email,
+
+    @Override
+    public List<String> getAllowedGrades() throws SQLException {
+        return List.of("3rd Grade", "4th Grade");
+    }
+
+    @Override
+    public List<String> getAllowedDeliveryMethods() throws SQLException {
+        return List.of("In-Person", "Virtual");
+    }
+
+    private User insertNewUser(String hashedPassword, String salt, String email,
 			String firstName, String lastName, UserType userType,
 			String organizationId, String phoneNumber)
         throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException
@@ -1426,7 +1433,7 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 	
 	@Override
-	public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedTimeException
+	public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException
 	{
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1442,9 +1449,19 @@ public class MySQLDatabase implements DatabaseFacade {
         }
 	}
 
+    @Override
+    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
 
     @Override
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedDateAlreadyInUseException {
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
+
+
+    @Override
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -1454,7 +1471,7 @@ public class MySQLDatabase implements DatabaseFacade {
             try {
                 preparedStatement.executeUpdate();
             } catch(SQLException err) {
-                throw new AllowedDateAlreadyInUseException();
+                throw new AllowedValueAlreadyInUseException();
             }
         }
         finally {
@@ -1464,8 +1481,8 @@ public class MySQLDatabase implements DatabaseFacade {
 
 
     @Override
-    public void insertNewAllowedTime(AddAllowedTimeFormData formData)
-            throws SQLException, AllowedTimeAlreadyInUseException, NoSuchAllowedTimeException
+    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore)
+            throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException
     {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -1474,7 +1491,7 @@ public class MySQLDatabase implements DatabaseFacade {
             connection = connectionFactory.getConnection();
 
             // --- Figure whether it goes before something or gets put at the end
-            boolean insertAtEnd = "".equals(formData.getTimeToInsertBefore());
+            boolean insertAtEnd = "".equals(timeToInsertBefore);
             int newItemSortOrder;
 
             if (insertAtEnd) {
@@ -1494,14 +1511,14 @@ public class MySQLDatabase implements DatabaseFacade {
 
                 // --- Figure out which ones need to be updated ---
                 preparedStatement = connection.prepareStatement(getSortOrderForAllowedTimeSQL);
-                preparedStatement.setString(1, formData.getTimeToInsertBefore());
+                preparedStatement.setString(1, timeToInsertBefore);
                 resultSet = preparedStatement.executeQuery();
                 newItemSortOrder = Integer.MIN_VALUE;
                 while(resultSet.next()) {
                     newItemSortOrder = resultSet.getInt("sort_order");
                 }
                 if (newItemSortOrder == Integer.MIN_VALUE) {
-                    throw new NoSuchAllowedTimeException();
+                    throw new NoSuchAllowedValueException();
                 }
                 resultSet.close();
                 preparedStatement.close();
@@ -1516,12 +1533,12 @@ public class MySQLDatabase implements DatabaseFacade {
 
             // --- Insert the new allowed time ---
             preparedStatement = connection.prepareStatement(insertAllowedTimeSQL);
-            preparedStatement.setString(1, formData.getAllowedTime());
+            preparedStatement.setString(1, newAllowedTime);
             preparedStatement.setInt(2, newItemSortOrder);
             try {
                 preparedStatement.executeUpdate();
             } catch(SQLException err) {
-                throw new AllowedTimeAlreadyInUseException();
+                throw new AllowedValueAlreadyInUseException();
             }
 
         } finally {
@@ -1530,8 +1547,18 @@ public class MySQLDatabase implements DatabaseFacade {
     }
 
 
-	@Override
-	public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedDateException
+    @Override
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+	public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException
 	{
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
