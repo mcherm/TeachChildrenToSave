@@ -3,6 +3,10 @@ package com.tcts.database;
 import com.tcts.common.Configuration;
 import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemBuilder;
+import com.tcts.exception.AppConfigurationException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
@@ -33,10 +37,13 @@ import static com.tcts.database.SingleTableDbField.*;
 public class SingleTableDynamoDBSetup {
     public static void main(String[] args) {
         System.out.println("Starting...");
+        String site = "FL";
         try {
             Configuration configuration = new Configuration();
             final DynamoDbClient dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
-            final String tableName = SingleTableDynamoDbDatabase.getTableName(configuration);
+            final String environment = configuration.getProperty("dynamoDB.environment", "dev");
+
+            final String tableName = "TCTS." + site + "." + environment;
 
             reinitializeDatabase(dynamoDbClient, tableName);
 

@@ -23,7 +23,7 @@ public class AboutController {
     public String aboutPage(Model model, HttpServletRequest httpServletRequest) {
         String serverName = httpServletRequest.getServerName();
         String site = sitesConfig.getProperty(serverName);
-        model.addAttribute("site", site); 
+        model.addAttribute("site", site);
         return "about"; // which .jsp to display
     }
 

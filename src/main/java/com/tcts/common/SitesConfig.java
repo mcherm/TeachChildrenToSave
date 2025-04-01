@@ -1,6 +1,8 @@
 package com.tcts.common;
 
 import org.springframework.stereotype.Component;
+import jakarta.servlet.http.HttpServletRequest;
+
 
 import java.io.IOException;
 import java.util.Properties;

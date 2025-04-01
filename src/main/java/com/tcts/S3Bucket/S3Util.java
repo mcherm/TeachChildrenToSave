@@ -8,8 +8,10 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.tcts.common.Configuration;
+import com.tcts.common.SitesConfig;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.exception.AppConfigurationException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +40,8 @@ public class S3Util {
     @Autowired
     private DatabaseFacade database;
 
+
+
     private AmazonS3Client amazonS3Client;
     private String bucketName; // the bucketname that the documents are stored in.  This is initialized upon object creation
 
@@ -52,21 +56,8 @@ public class S3Util {
                 configuration.getProperty("aws.access_key"),
                 configuration.getProperty("aws.secret_access_key"));
         amazonS3Client = new AmazonS3Client(credentials);
-        final Map<String,String> siteSettings;
-        try {
-            siteSettings = database.getSiteSettings();
-        } catch(SQLException err) {
-            throw new AppConfigurationException(
-                    "ERROR: At runtime, we are unable to determine which S3 bucket to read from because " +
-                    "we cannot read from the DB.");
-        }
-        final String proposedBucketName = siteSettings.get("DocumentBucketName");
-        if (proposedBucketName == null) {
-            throw new AppConfigurationException(
-                    "ERROR: At runtime, we are unable to configure the S3 bucket to read from because " +
-                    "'DocumentBucketName' is not configured in SiteSettings.");
-        }
-        bucketName = proposedBucketName;
+
+        bucketName = "teachchildrentosave-documents";
     }
 
 

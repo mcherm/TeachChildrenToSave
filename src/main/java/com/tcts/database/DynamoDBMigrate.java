@@ -39,7 +39,10 @@ public class DynamoDBMigrate {
         final Configuration configuration = new Configuration();
         dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
         multiTablePrefix = "TCTS.prod.";
-        singleTableName = SingleTableDynamoDbDatabase.getTableName(configuration);
+        //POTENTIAL ERROR GETTABLENAME: I DON"T KNOW WHen this is called/ if getTableName is called before a a request
+        //it will throw an exception
+
+        singleTableName = SingleTableDynamoDbDatabase.getTableName();
     }
 
     public void migrate() {

@@ -1,12 +1,16 @@
 package com.tcts.database;
 
 import com.tcts.common.Configuration;
+import com.tcts.common.SitesConfig;
 import com.tcts.database.dynamodb.DynamoDBHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+
 
 
 /**
@@ -18,6 +22,9 @@ public class DatabaseFactory implements ApplicationContextAware {
 
     private final Configuration configuration;
     private AutowireCapableBeanFactory beanFactory;
+    @Autowired
+    private SitesConfig sitesConfig;
+
 
     /**
      * Constructor.
@@ -35,6 +42,7 @@ public class DatabaseFactory implements ApplicationContextAware {
      * This retrieves the database implementation to use.
      */
     public DatabaseFacade getDatabaseImplementation() {
+//        System.out.println(request.getServerName());
         String databaseToUse = configuration.getProperty("databaseToUse");
         if ("CachingMySQLDB".equals(databaseToUse)) {
             MySQLDatabase mySQLDatabase = new MySQLDatabase();

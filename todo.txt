@@ -131,3 +131,9 @@ fix the "not loggin in exception error" that the user sees from "unexpected erro
 
 Difficult:
  N (NEW) Provide written notes and "training" on managing the site. Basically, it would cover how to Startup, Shutdown, and Deploy new versions.
+
+
+ rachel's todo
+
+ update error when server name is not in list
+ fix documents filename

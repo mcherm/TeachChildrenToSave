@@ -1,11 +1,14 @@
 package com.tcts.controller;
 
 import com.tcts.S3Bucket.S3Util;
+import com.tcts.common.Configuration;
 import com.tcts.common.SessionData;
+import com.tcts.common.SitesConfig;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Document;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.EditDocumentFormData;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 
 /**
@@ -28,11 +32,22 @@ import java.util.SortedSet;
  */
 @Controller
 public class DocumentController {
+
     @Autowired
     private DatabaseFacade database;
 
     @Autowired
     private S3Util s3Util;
+
+    @Autowired
+    private SitesConfig sitesConfig;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private Configuration configuration;
+
 
     /**
      * This displays the page on which the site admin can manage the documents available in the "Important Documents" link
@@ -52,12 +67,21 @@ public class DocumentController {
 
     private String showForm(Model model) throws SQLException {
         Set<String> bucketDocNames = s3Util.getAllDocuments();
+        String folder = sitesConfig.getProperty(request.getServerName()) + "/" + configuration.getProperty("dynamoDB.environment") + "/";
+
+        bucketDocNames = bucketDocNames.stream().filter(x -> x.contains(folder)).collect(Collectors.toSet());
+
         SortedSet<Document> dbDocuments = database.getDocuments();
         //find any documents that are listed in the database but have been deleted from the bucket and delete them
         //from the database
         Set<Document> docsToBeDeleted = new HashSet<Document>();
+        //String filename_dir = "DE/dev/";
+
+        System.out.println (folder);
+        bucketDocNames.remove(folder);
+        bucketDocNames.remove(sitesConfig.getProperty(request.getServerName()) + "/");
         for (Document doc : dbDocuments) {
-            if (!bucketDocNames.contains(doc.getName())) {
+            if (!bucketDocNames.contains( folder +doc.getName())) {
                 database.deleteDocument(doc.getName());
                 docsToBeDeleted.add(doc);
             }
@@ -68,7 +92,8 @@ public class DocumentController {
         // They will appear on the list shown to the siteAdmin but won't be added in the database until the siteAdmin edits the permissions
         Document dbDocument;
         for (String bucketName : bucketDocNames) {
-            dbDocument = new Document(bucketName, false, false, false);
+
+            dbDocument = new Document(bucketName.substring(folder.length()), false, false, false);
             if (!dbDocuments.contains(dbDocument)) {
                 dbDocuments.add(dbDocument);
 
