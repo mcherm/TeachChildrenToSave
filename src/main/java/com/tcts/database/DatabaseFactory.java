@@ -22,8 +22,6 @@ public class DatabaseFactory implements ApplicationContextAware {
 
     private final Configuration configuration;
     private AutowireCapableBeanFactory beanFactory;
-    @Autowired
-    private SitesConfig sitesConfig;
 
 
     /**

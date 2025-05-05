@@ -56,6 +56,8 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -153,13 +155,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * Static method to create the table name. Made public for use in SingleTableDynamoDBSetup.
      */
     public static String getTableName() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes == null){
-            throw new AppConfigurationException("Attempting to access database when there is not an active request.  This can't work because the choice of database depends on the site called from.");
-        }
-        HttpServletRequest request = attributes.getRequest();
+        final String site = sitesConfig.getSite();
         final String environment = configuration.getProperty("dynamoDB.environment", "dev");
-        final String site = sitesConfig.getProperty(request.getServerName());
         return "TCTS." + site + "." + environment;
     }
 
@@ -602,7 +599,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * is sorted using a vertical-bar.
      *
      * @param singletonItemName the name of the singleton item
-     * @param valuesWithSort the SingelTableDbField for the value
+     * @param valuesWithSort the SingleTableDbField for the value
      * @param nameOfItemInErrors a name for the singleton item in error messages
      * @return the List (in the correct order).
      */
@@ -624,7 +621,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 return Integer.compare(this.sortKey, o.sortKey);
             }
         }
-        return allowedValuesWithSort.ss().stream()
+        return readSetOfStrings(allowedValuesWithSort.ss()).stream()
                 .map(x -> {
                     String[] pieces = x.split("\\|",2); // split on first vertical-bar
                     return new SortKeyAndValue(Integer.parseInt(pieces[0]), pieces[1]);
@@ -666,7 +663,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder(singletonItemName)
-                        .withStrings(valuesWithSort, newAllowedValuesWithSort)
+                        .withStrings(valuesWithSort, storeSetOfStrings(newAllowedValuesWithSort))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
@@ -719,7 +716,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder(singletonItemName)
-                        .withStrings(valuesWithSort, newAllowedValuesWithSort)
+                        .withStrings(valuesWithSort, storeSetOfStrings(newAllowedValuesWithSort))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
@@ -1120,7 +1117,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         if (allowedDateValues == null) {
             throw new RuntimeException("No allowed dates found. DB may not be initialized.");
         }
-        final List<PrettyPrintingDate> result = allowedDateValues.ss().stream()
+        final List<PrettyPrintingDate> result = readSetOfStrings(allowedDateValues.ss()).stream()
                 .map(dateStr -> {
                     try {
                         return PrettyPrintingDate.fromParsableDate(dateStr);
@@ -1387,7 +1384,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder("allowedDates")
-                        .withStrings(allowed_date_values, newAllowedDates)
+                        .withStrings(allowed_date_values, storeSetOfStrings(newAllowedDates))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
@@ -1485,7 +1482,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder("allowedDates")
-                        .withStrings(allowed_date_values, newAllowedDates)
+                        .withStrings(allowed_date_values, storeSetOfStrings(newAllowedDates))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
@@ -1660,7 +1657,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             throw new RuntimeException("No site settings found. DB may not be initialized.");
         }
         final SortedMap<String,String> result = new TreeMap<>();
-        for (String entry : keyvalues.ss()) {
+        for (String entry : readSetOfStrings(keyvalues.ss())) {
             final String[] keyAndValue = entry.split("=",2);
             switch (keyAndValue.length) {
                 case 1: result.put(keyAndValue[0], ""); break;
@@ -1685,7 +1682,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder("siteSettings")
-                        .withStrings(site_setting_entries, siteSettingKeyValues)
+                        .withStrings(site_setting_entries, storeSetOfStrings(siteSettingKeyValues))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
@@ -1704,7 +1701,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             default -> throw new RuntimeException("Invalid data in documents.");
         };
         SortedSet<Document> result = new TreeSet<>();
-        for (String documentEntry : entries.ss()) {
+        for (String documentEntry : readSetOfStrings(entries.ss())) {
             final String[] fields = documentEntry.split("\\|",4);
             if (fields.length != 4) {
                 throw new RuntimeException("Invalid data in documents.");
@@ -1740,7 +1737,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder("documents")
-                        .withStrings(documents_values, documentsValues)
+                        .withStrings(documents_values, storeSetOfStrings(documentsValues))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
@@ -1766,9 +1763,52 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
                 .item(new ItemBuilder("documents")
-                        .withStrings(documents_values, documentsValues)
+                        .withStrings(documents_values, storeSetOfStrings(documentsValues))
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
     }
+
+    // ========== Helpers to Overcome DynamoDB Design Flaws ==========
+
+    // In several of these we use DynamoDB's StringSet type. But that type has a fatal flaw.
+    // It cannot store an empty set. So if we ever have an empty set of values and try to
+    // store that things will simply crash and fail to write -- or they would if we didn't
+    // have this workaround.
+    //
+    // Every place where we attempt to write or read a StringSet type we will run it through
+    // this pair of functions. If it detects an attempt to write an empty StringSet we will
+    // replace it with a dummy value that MEANS "empty". On reads, if it reads this special
+    // value then we will convert that dummy value to an empty list before returning it.
+    //
+    // The only remaining issue is the choice of dummy value. We SHOULD use some "out of band"
+    // value which would otherwise be illegal. I was considering using {""} (a set containing
+    // an empty string) which technically isn't valid for any of our use cases. But on
+    // second thought that's just ITCHING to create a problem later on when it gets
+    // misinterpreted by someone because it SEEMS like it would be valid. So instead we will
+    // use the value {"this-set-is-empty-but-dynamodb-can-not-store-an-empty-set"} which will
+    // NOT lead future developers to wonder what is happening. Technically this means that
+    // you can't use that particular string as a document name, a course time, or several
+    // other things, but we can live with that.
+
+    private final static String emptyStringSetDummyValue = "this-set-is-empty-but-dynamodb-can-not-store-an-empty-set";
+
+    /** Call this on a setOfStrings before writing it to DynamoDB. */
+    private static String[] storeSetOfStrings(String[] setOfStrings) {
+        if (setOfStrings.length == 0) {
+            return new String[]{emptyStringSetDummyValue};
+        } else {
+            return setOfStrings;
+        }
+    }
+
+    /** Call this on a setOfStrings after reading it from DynamoDB. */
+    private static List<String> readSetOfStrings(List<String> setOfStrings) {
+        if (setOfStrings.size() == 1 && setOfStrings.get(0).equals(emptyStringSetDummyValue)) {
+            return new ArrayList<String>();
+        } else {
+            return setOfStrings;
+        }
+    }
+
 }

@@ -21,8 +21,7 @@ public class AboutController {
 
     @RequestMapping(value = "/about.htm", method = RequestMethod.GET)
     public String aboutPage(Model model, HttpServletRequest httpServletRequest) {
-        String serverName = httpServletRequest.getServerName();
-        String site = sitesConfig.getProperty(serverName);
+        final String site = sitesConfig.getSite(httpServletRequest);
         model.addAttribute("site", site);
         return "about"; // which .jsp to display
     }

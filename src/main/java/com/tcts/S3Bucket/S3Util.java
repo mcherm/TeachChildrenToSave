@@ -62,6 +62,9 @@ public class S3Util {
 
 
 
+    // FIXME: This should be changed so that it is passed in a site and environment and only
+    //   retrieves documents within that particular site and environment! Getting ALL of them
+    //   is really bad design.
     /**
      * Retrieves the complete set of names of all documents that
      * are stored in the bucket.

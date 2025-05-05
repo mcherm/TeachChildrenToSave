@@ -24,6 +24,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +45,13 @@ public class SingleTableDynamoDBSetup {
             final String environment = configuration.getProperty("dynamoDB.environment", "dev");
 
             final String tableName = "TCTS." + site + "." + environment;
+
+            System.out.println("DO YOU MEAN TO RE-INITIALIZE " + tableName + "?");
+            final String response = new Scanner(System.in).nextLine();
+            if (!response.equalsIgnoreCase("y")) {
+                System.out.println("Exiting without doing anything!");
+                return;
+            }
 
             reinitializeDatabase(dynamoDbClient, tableName);
 
@@ -474,7 +482,14 @@ public class SingleTableDynamoDBSetup {
         dynamoDbClient.putItem(putItemRequest);
     }
 
-    /** Insert the single record that has the starting value for documents. */
+    /**
+     * Insert the single record that has the starting value for documents.
+     * <p>
+     *     WARNING FOR FUTURE MAINTAINERS OF THIS CODE: DynmoDB cannot support
+     *     a StringSet with zero strings in it. So don't populate this with
+     *     nothing!!
+     * </p>
+     */
     private void insertDocuments() {
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(tableName)

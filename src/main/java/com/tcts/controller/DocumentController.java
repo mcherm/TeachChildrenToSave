@@ -8,7 +8,6 @@ import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Document;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.formdata.EditDocumentFormData;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,9 +42,6 @@ public class DocumentController {
     private SitesConfig sitesConfig;
 
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
     private Configuration configuration;
 
 
@@ -66,37 +62,42 @@ public class DocumentController {
     }
 
     private String showForm(Model model) throws SQLException {
-        Set<String> bucketDocNames = s3Util.getAllDocuments();
-        String folder = sitesConfig.getProperty(request.getServerName()) + "/" + configuration.getProperty("dynamoDB.environment") + "/";
+        final String site = sitesConfig.getSite();
+        final String env = configuration.getProperty("dynamoDB.environment");
+        String folder = site + "/" + env + "/";
 
-        bucketDocNames = bucketDocNames.stream().filter(x -> x.contains(folder)).collect(Collectors.toSet());
+        final Set<String> allDocNamesFromBucket = s3Util.getAllDocuments();
+        final Set<String> bucketDocNames = allDocNamesFromBucket.stream()
+                .filter(x -> x.startsWith(folder) && x.length() > folder.length()) // in the folder & not the folder itself
+                .collect(Collectors.toSet());
 
-        SortedSet<Document> dbDocuments = database.getDocuments();
-        //find any documents that are listed in the database but have been deleted from the bucket and delete them
-        //from the database
-        Set<Document> docsToBeDeleted = new HashSet<Document>();
-        //String filename_dir = "DE/dev/";
+        final SortedSet<Document> dbDocuments = database.getDocuments();
 
-        System.out.println (folder);
-        bucketDocNames.remove(folder);
-        bucketDocNames.remove(sitesConfig.getProperty(request.getServerName()) + "/");
+        // Any documents that appear in the database but NOT in the bucket should be deleted
+        // from the database -- it won't do any good to know about it if the document doesn't
+        // exist! Doing this cleanup each time we touch it keeps the two lists in sync.
+        final Set<Document> docsToBeDeletedFromDb = new HashSet<Document>();
         for (Document doc : dbDocuments) {
-            if (!bucketDocNames.contains( folder +doc.getName())) {
-                database.deleteDocument(doc.getName());
-                docsToBeDeleted.add(doc);
+            if (!bucketDocNames.contains(folder + doc.getName())) {
+                database.deleteDocument(doc.getName()); // found in DB but not in bucket; delete from DB
+                docsToBeDeletedFromDb.add(doc);
             }
         }
-        dbDocuments.removeAll(docsToBeDeleted);
+        dbDocuments.removeAll(docsToBeDeletedFromDb); // remove it from our copy of the DB contents (AFTER iterating)
 
-        //find any documents that have been added to the bucket and add them to the db list with shownTo permissions set to false
-        // They will appear on the list shown to the siteAdmin but won't be added in the database until the siteAdmin edits the permissions
-        Document dbDocument;
+        // Any documents that appear in the bucket but not in the database should be added to
+        // the database with all the shownTo permissions set to false, so only the DB admin
+        // can see them. Doing this cleanup each time we touch it keeps the two lists in sync.
         for (String bucketName : bucketDocNames) {
-
-            dbDocument = new Document(bucketName.substring(folder.length()), false, false, false);
+            final Document dbDocument = new Document(bucketName.substring(folder.length()), false, false, false);
+            // Next line is weird but it works. We want to check whether the Document name (with ANY
+            // permissions) exists in the DB. Fortunately, the Document object compares for equality
+            // based only on the name, and NOT on the permissions, so a simple contains() will test
+            // whether it is there by name. If not, then we'll insert the one we built with all of the
+            // permissions set to false.
             if (!dbDocuments.contains(dbDocument)) {
                 dbDocuments.add(dbDocument);
-
+                database.createOrModifyDocument(dbDocument); // found in bucket & not DB; add to DB
             }
         }
 
