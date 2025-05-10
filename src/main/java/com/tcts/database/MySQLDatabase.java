@@ -1576,20 +1576,29 @@ public class MySQLDatabase implements DatabaseFacade {
 
     @Override
     public SiteStatistics getSiteStatistics() throws SQLException {
+        // FIXME: This has NOT been modified to populate numEventsByEventDate, numEventsByGrade,
+        //   numEventsByDeliveryMethod, or numEventsByEventTime because I plan to retire this.
         Connection connection = null;
         try {
             connection = connectionFactory.getConnection();
 
-            SiteStatistics siteStatistics = new SiteStatistics();
-            siteStatistics.setNumEvents(runSQLReturningInt(connection, getNumEventsSQL));
-            siteStatistics.setNumMatchedEvents(runSQLReturningInt(connection, getNumMatchedEventsSQL));
-            siteStatistics.setNumUnmatchedEvents(runSQLReturningInt(connection, getNumUnmatchedEventsSQL));
-            siteStatistics.setNum3rdGradeEvents(runSQLReturningInt(connection, getNum3rdGradeEventsSQL));
-            siteStatistics.setNum4thGradeEvents(runSQLReturningInt(connection, getNum4thGradeEventsSQL));
-            siteStatistics.setNumVolunteers(runSQLReturningInt(connection, getNumVolunteersSQL));
-            siteStatistics.setNumParticipatingTeachers(runSQLReturningInt(connection, getNumParticipatingTeachersSQL));
-            siteStatistics.setNumParticipatingSchools(runSQLReturningInt(connection, getNumParticipatingSchoolsSQL));
-            return siteStatistics;
+            return new SiteStatistics(
+                    runSQLReturningInt(connection, getNumEventsSQL),
+                    runSQLReturningInt(connection, getNumMatchedEventsSQL),
+                    runSQLReturningInt(connection, getNumUnmatchedEventsSQL),
+                    runSQLReturningInt(connection, getNum3rdGradeEventsSQL),
+                    runSQLReturningInt(connection, getNum4thGradeEventsSQL),
+                    0, // FIXME: Invalid
+                    0, // FIXME: Invalid
+                    runSQLReturningInt(connection, getNumVolunteersSQL),
+                    runSQLReturningInt(connection, getNumParticipatingTeachersSQL),
+                    runSQLReturningInt(connection, getNumParticipatingSchoolsSQL),
+                    Collections.emptyMap(),
+                    Collections.emptyMap(),
+                    Collections.emptyMap(),
+                    Collections.emptyMap()
+            );
+
         }
         finally {
             closeSafely(connection, null, null);

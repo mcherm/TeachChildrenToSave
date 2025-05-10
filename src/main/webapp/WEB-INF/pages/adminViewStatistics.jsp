@@ -9,7 +9,7 @@
         <title>Teach Children To Save - View Program Statistics</title>
         <%@include file="include/commonHead.jsp"%>
     </head>
-    <body class="">
+    <body class="adminViewStatistics">
 
         <a href="#main" class="ada-read">Skip to main content</a>
 
@@ -42,26 +42,6 @@
                     </p>
 
                     <p>
-                        <span>Number of 3rd Grade Classes: </span>
-                        <span><c:out value="${siteStatistics.num3rdGradeEvents}"/></span>
-                    </p>
-
-                    <p>
-                        <span>Number of 4th Grade Classes: </span>
-                        <span><c:out value="${siteStatistics.num4thGradeEvents}"/></span>
-                    </p>
-
-                    <p>
-                        <span>Number of In-Person Classes: </span>
-                        <span><c:out value="${siteStatistics.numInPersonEvents}"/></span>
-                    </p>
-
-                    <p>
-                        <span>Number of Virtual Classes: </span>
-                        <span><c:out value="${siteStatistics.numVirtualEvents}"/></span>
-                    </p>
-
-                    <p>
                         <span>Number of Volunteers Signed Up For a Class: </span>
                         <span><c:out value="${siteStatistics.numVolunteers}"/></span>
                     </p>
@@ -74,6 +54,54 @@
                     <p>
                         <span>Number of Participating Schools: </span>
                         <span><c:out value="${siteStatistics.numParticipatingSchools}"/></span>
+                    </p>
+
+                    <p>
+                        <div>Number of Classes by Date:</div>
+                        <table class="simple-table">
+                            <c:forEach items="${siteStatistics.numEventsByEventDate}" var="entry">
+                                <tr>
+                                    <td>${entry.key}</td>
+                                    <td>${entry.value}</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </p>
+
+                    <p>
+                        <div>Number of Classes by Grade:</div>
+                        <table class="simple-table">
+                            <c:forEach items="${siteStatistics.numEventsByGrade}" var="entry">
+                                <tr>
+                                    <td>${entry.key}</td>
+                                    <td>${entry.value}</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </p>
+
+                    <p>
+                        <div>Number of Classes by Delivery Method:</div>
+                        <table class="simple-table">
+                            <c:forEach items="${siteStatistics.numEventsByDeliveryMethod}" var="entry">
+                                <tr>
+                                    <td>${entry.key}</td>
+                                    <td>${entry.value}</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </p>
+
+                    <p>
+                    <div>Number of Classes by Time:</div>
+                        <table class="simple-table">
+                            <c:forEach items="${siteStatistics.numEventsByEventTime}" var="entry">
+                                <tr>
+                                    <td>${entry.key}</td>
+                                    <td>${entry.value}</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
                     </p>
                 </div>
 

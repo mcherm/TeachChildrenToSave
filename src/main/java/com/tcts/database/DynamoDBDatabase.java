@@ -1227,6 +1227,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
 
     @Override
     public SiteStatistics getSiteStatistics() throws SQLException {
+        // FIXME: This has NOT been modified to populate numEventsByEventDate, numEventsByGrade,
+        //   numEventsByDeliveryMethod, or numEventsByEventTime because I plan to retire this.
         int numEvents = 0;
         int numMatchedEvents = 0;
         int numUnmatchedEvents = 0;
@@ -1271,18 +1273,22 @@ public class DynamoDBDatabase implements DatabaseFacade {
         }
         int numParticipatingSchools = schoolIdsWithClassesThatHaveVolunteers.size();
 
-        SiteStatistics siteStatistics = new SiteStatistics();
-        siteStatistics.setNumEvents(numEvents);
-        siteStatistics.setNumMatchedEvents(numMatchedEvents);
-        siteStatistics.setNumUnmatchedEvents(numUnmatchedEvents);
-        siteStatistics.setNum3rdGradeEvents(num3rdGradeEvents);
-        siteStatistics.setNum4thGradeEvents(num4thGradeEvents);
-        siteStatistics.setNumInPersonEvents(numInPersonEvents);
-        siteStatistics.setNumVirtualEvents(numVirtualEvents);
-        siteStatistics.setNumVolunteers(numVolunteers);
-        siteStatistics.setNumParticipatingTeachers(numParticipatingTeachers);
-        siteStatistics.setNumParticipatingSchools(numParticipatingSchools);
-        return siteStatistics;
+        return new SiteStatistics(
+                numEvents,
+                numMatchedEvents,
+                numUnmatchedEvents,
+                num3rdGradeEvents,
+                num4thGradeEvents,
+                numInPersonEvents,
+                numVirtualEvents,
+                numVolunteers,
+                numParticipatingTeachers,
+                numParticipatingSchools,
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap(),
+                Collections.emptyMap()
+        );
     }
 
     @Override

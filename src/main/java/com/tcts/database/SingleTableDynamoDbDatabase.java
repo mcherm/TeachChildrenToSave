@@ -1499,6 +1499,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         int numVirtualEvents = 0;
         final Set<String> volunteerIdsActuallySignedUp = new HashSet<>();
         final Set<String> teacherIdsWithClassesThatHaveVolunteers = new HashSet<>();
+        final SortedMap<PrettyPrintingDate, Integer> numEventsByEventDate = new TreeMap<>();
+        final SortedMap<String, Integer> numEventsByGrade = new TreeMap<>();
+        final SortedMap<String, Integer> numEventsByDeliveryMethod = new TreeMap<>();
+        final SortedMap<String, Integer> numEventsByEventTime = new TreeMap<>();
 
         for (final Event event : getAllEvents()) {
             numEvents += 1;
@@ -1521,6 +1525,10 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             } else if (event.getDeliveryMethod().equals("Virtual")) {
                 numVirtualEvents += 1;
             }
+            numEventsByEventDate.put(event.getEventDate(), numEventsByEventDate.getOrDefault(event.getEventDate(), 0) + 1);
+            numEventsByGrade.put(event.getGrade(), numEventsByGrade.getOrDefault(event.getGrade(), 0) + 1);
+            numEventsByDeliveryMethod.put(event.getDeliveryMethod(), numEventsByDeliveryMethod.getOrDefault(event.getDeliveryMethod(), 0) + 1);
+            numEventsByEventTime.put(event.getEventTime(), numEventsByEventTime.getOrDefault(event.getEventTime(), 0) + 1);
         }
         final int numVolunteers = volunteerIdsActuallySignedUp.size();
         final int numParticipatingTeachers = teacherIdsWithClassesThatHaveVolunteers.size();
@@ -1534,18 +1542,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         }
         final int numParticipatingSchools = schoolIdsWithClassesThatHaveVolunteers.size();
 
-        final SiteStatistics siteStatistics = new SiteStatistics();
-        siteStatistics.setNumEvents(numEvents);
-        siteStatistics.setNumMatchedEvents(numMatchedEvents);
-        siteStatistics.setNumUnmatchedEvents(numUnmatchedEvents);
-        siteStatistics.setNum3rdGradeEvents(num3rdGradeEvents);
-        siteStatistics.setNum4thGradeEvents(num4thGradeEvents);
-        siteStatistics.setNumInPersonEvents(numInPersonEvents);
-        siteStatistics.setNumVirtualEvents(numVirtualEvents);
-        siteStatistics.setNumVolunteers(numVolunteers);
-        siteStatistics.setNumParticipatingTeachers(numParticipatingTeachers);
-        siteStatistics.setNumParticipatingSchools(numParticipatingSchools);
-        return siteStatistics;
+        return new SiteStatistics(
+                numEvents,
+                numMatchedEvents,
+                numUnmatchedEvents,
+                num3rdGradeEvents,
+                num4thGradeEvents,
+                numInPersonEvents,
+                numVirtualEvents,
+                numVolunteers,
+                numParticipatingTeachers,
+                numParticipatingSchools,
+                numEventsByEventDate,
+                numEventsByGrade,
+                numEventsByDeliveryMethod,
+                numEventsByEventTime
+        );
     }
 
     @Override

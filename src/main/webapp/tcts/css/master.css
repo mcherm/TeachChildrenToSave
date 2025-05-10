@@ -1447,6 +1447,10 @@ td.italic{
   min-width: 300px;
 }
 
+body.adminViewStatistics table.simple-table td {
+  border: 1px solid #ccc;
+  padding: 0.25em;
+}
 
 /*div.scrollable {*/
 /*  width: 200px;*/
