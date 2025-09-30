@@ -52,10 +52,10 @@ public class SitesConfig {
     }
 
     /**
-     * With no inputs, this returns a string indicating which site the  user is on
+     * With no inputs, this returns a string indicating which site the user is on
      * (eg: "DE" or "FL"). If the server name is not recognized then this will throw
      * an UnknownSiteException instead. The getSite() that takes an HttpServletRequest
-     * is slighly faster if that value is available.
+     * is slightly faster if that value is available.
      *
      * @return the site (eg: "DE" or "FL").
      * @throws UnknownSiteException if the server name is not recognized as being any particular site
