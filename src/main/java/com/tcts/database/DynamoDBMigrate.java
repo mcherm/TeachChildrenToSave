@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 
 /**
- * A "script" to migrate from the older, multi-table DynamoDB structure to the Single Table structutre.
+ * A "script" to migrate from the older, multi-table DynamoDB structure to the Single Table structure.
  */
 public class DynamoDBMigrate {
 
@@ -36,11 +36,10 @@ public class DynamoDBMigrate {
     public DynamoDBMigrate() {
         final Configuration configuration = new Configuration();
         dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
-        multiTablePrefix = "TCTS.prod."; // NOTE: The source is hard-coded here, while the destination comes from config
-        //POTENTIAL ERROR GETTABLENAME: I DON"T KNOW WHen this is called/ if getTableName is called before a a request
-        //it will throw an exception
-
-        singleTableName = SingleTableDynamoDbDatabase.getTableName();
+        multiTablePrefix = "TCTS.prod."; // NOTE: The source is hard-coded here, while SOME destination come from config
+        final String site = "DE"; // NOTE: The destination site is hard-coded here
+        final String environment = configuration.getProperty("dynamoDB.environment", "dev");
+        singleTableName = "TCTS." + site + "." + environment;
     }
 
     public void migrate() {
