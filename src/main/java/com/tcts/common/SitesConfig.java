@@ -35,7 +35,7 @@ public class SitesConfig {
 
     /**
      * Given an HttpServletRequest, this returns a string indicating which site the
-     * user is on (eg: "DE" or "FL"). If the server name is not recognized then this
+     * user is on (eg: "DE" or "FL"). If the server name is not recognized, then this
      * will throw an UnknownSiteException instead.
      *
      * @param request the current HTTP request
@@ -53,7 +53,7 @@ public class SitesConfig {
 
     /**
      * With no inputs, this returns a string indicating which site the user is on
-     * (eg: "DE" or "FL"). If the server name is not recognized then this will throw
+     * (eg: "DE" or "FL"). If the server name is not recognized, then this will throw
      * an UnknownSiteException instead. The getSite() that takes an HttpServletRequest
      * is slightly faster if that value is available.
      *
