@@ -6,6 +6,7 @@
 * Collapse SingleTableDbField and DatabaseField into just one class.
 * DatabaseFacade line 249 remove InconsistentDatabaseException from a few places where it isn't used.
 * Need to enable prefetching and cacheing in DatabaseFactory line 54.
+* Make sure Documents for the two sites are separate.
 
 -------- OPEN TASKS --------
 1)  List of States to Choose from?
