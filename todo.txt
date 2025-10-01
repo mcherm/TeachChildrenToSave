@@ -1,4 +1,3 @@
-DELETEME
 -------- NEW TASKS 2025 --------
 R Make the admin screen not crash if there are zero valid grades or delivery methods.
 R Make the grades and delivery methods become invisible if there is only one choice.
