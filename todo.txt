@@ -1,5 +1,4 @@
 -------- NEW TASKS 2025 --------
-R Make the admin screen not crash if there are zero valid grades or delivery methods.
 R Make the grades and delivery methods become invisible if there is only one choice.
 * In mvc-dispatcher-servlet.xml I seem to have broken document upload and must fix it.
 - Delete MySQL database support. Remove SQLException everywhere.
@@ -7,8 +6,11 @@ R Make the grades and delivery methods become invisible if there is only one cho
 - DatabaseFacade line 249 remove InconsistentDatabaseException from a few places where it isn't used.
 * Need to enable prefetching and cacheing in DatabaseFactory line 54.
 * Make sure Documents for the two sites are separate.
-M Upload the new school data from Jen's email.
 - Clean up old tables.
+
+-------- FINISHED TASKS --------
+M Upload the new school data from Jen's email.
+M Make the admin screen not crash if there are zero valid grades or delivery methods.
 
 -------- OPEN TASKS --------
 1)  List of States to Choose from?
