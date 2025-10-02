@@ -1,6 +1,7 @@
 package com.tcts.database;
 
 import com.tcts.common.Configuration;
+import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemBuilder;
 import com.tcts.datamodel.Document;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -8,6 +9,8 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -36,8 +39,8 @@ public class DynamoDBMigrate {
     public DynamoDBMigrate() {
         final Configuration configuration = new Configuration();
         dynamoDbClient = SingleTableDynamoDbDatabase.connectToDB(configuration);
-        multiTablePrefix = "TCTS.prod."; // NOTE: The source is hard-coded here, while SOME destination come from config
-        final String site = "DE"; // NOTE: The destination site is hard-coded here
+        multiTablePrefix = "TCTS.dev."; // NOTE: The destination is hard-coded here, while SOME source comes from config
+        final String site = "DE"; // NOTE: The source site is hard-coded here
         final String environment = configuration.getProperty("dynamoDB.environment", "dev");
         singleTableName = "TCTS." + site + "." + environment;
     }
@@ -47,6 +50,8 @@ public class DynamoDBMigrate {
         SingleTableDynamoDBSetup.reinitializeDatabase(dynamoDbClient, singleTableName);
         migrateAllowedDates();
         migrateAllowedTimes();
+        migrateAllowedGrades();
+        migrateAllowedDeliveryMethods();
         migrateSiteSettings();
         migrateDocuments();
         migrateSchool();
@@ -94,6 +99,30 @@ public class DynamoDBMigrate {
                 .tableName(singleTableName)
                 .item(new ItemBuilder("allowedTimes")
                         .withStrings(SingleTableDbField.allowed_time_values_with_sort, newAllowedTimesWithSort)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+    private void migrateAllowedGrades() {
+        final String[] newAllowedGradesWithSort = {"0|3rd Grade", "1|4th Grade"};
+        // --- write ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(singleTableName)
+                .item(new ItemBuilder("allowedGrades")
+                        .withStrings(SingleTableDbField.allowed_grade_values_with_sort, newAllowedGradesWithSort)
+                        .build())
+                .build();
+        dynamoDbClient.putItem(putItemRequest);
+    }
+
+    private void migrateAllowedDeliveryMethods() {
+        final String[] newAllowedDeliveryMethodsWithSort = {"0|In-Person", "1|Virtual"};
+        // --- write ---
+        final PutItemRequest putItemRequest = PutItemRequest.builder()
+                .tableName(singleTableName)
+                .item(new ItemBuilder("allowedDeliveryMethods")
+                        .withStrings(SingleTableDbField.allowed_delivery_method_values_with_sort, newAllowedDeliveryMethodsWithSort)
                         .build())
                 .build();
         dynamoDbClient.putItem(putItemRequest);
