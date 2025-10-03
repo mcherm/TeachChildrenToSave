@@ -16,6 +16,11 @@
         <servlet-name>mvc-dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+        <multipart-config>
+            <max-file-size>20971520</max-file-size> <!-- 20 MB -->
+            <max-request-size>52428800</max-request-size> <!-- 50 MB -->
+            <file-size-threshold>1048576</file-size-threshold> <!-- 1 MB -->
+        </multipart-config>
     </servlet>
 
     <servlet-mapping>
