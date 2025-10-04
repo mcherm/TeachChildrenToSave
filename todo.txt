@@ -5,7 +5,6 @@ R Make the grades and delivery methods become invisible if there is only one cho
 - DatabaseFacade line 249 remove InconsistentDatabaseException from a few places where it isn't used.
 * Need to enable prefetching and cacheing in DatabaseFactory line 54.
 - Clean up old tables.
-* Migrate off the remaining parts of the old AWS library (which will cease working in Dec 2025).
 * Bug: Teacher homepage doesn't show the class descriptions in the list of classes
 
 -------- FINISHED TASKS --------
@@ -15,6 +14,7 @@ M Make sure Documents for the two sites are separate.
 M Make documents correctly read/write inside site & environment folders
 M In mvc-dispatcher-servlet.xml I seem to have broken document upload and must fix it.
 M Bug: Can't edit or create classes!!
+M Migrate off the remaining parts of the old AWS library (which will cease working in Dec 2025).
 
 
 -------- OPEN TASKS --------
