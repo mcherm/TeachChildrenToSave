@@ -28,6 +28,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -946,15 +947,15 @@ public class DynamoDBDatabaseIntegrationTest {
         dynamoDBDatabase.insertNewAllowedTime(secondTime, "");
 
         // -- Update first event --
-        EventRegistrationFormData eventRegistrationFormData = new EventRegistrationFormData();
-        eventRegistrationFormData.setEventId(event.getEventId());
-        eventRegistrationFormData.setEventDate(secondDate);
-        eventRegistrationFormData.setEventTime(secondTime);
-        eventRegistrationFormData.setGrade("4th Grade");
-        eventRegistrationFormData.setDeliveryMethod("In-Person");
-        eventRegistrationFormData.setNumberStudents("16");
-        eventRegistrationFormData.setNotes("");
-        dynamoDBDatabase.modifyEvent(eventRegistrationFormData);
+        EditEventFormData editEventFormData = new EditEventFormData();
+        editEventFormData.setEventId(event.getEventId());
+        editEventFormData.setEventDate(secondDate);
+        editEventFormData.setEventTime(secondTime);
+        editEventFormData.setGrade("4th Grade");
+        editEventFormData.setDeliveryMethod("In-Person");
+        editEventFormData.setNumberStudents("16");
+        editEventFormData.setNotes("");
+        dynamoDBDatabase.modifyEvent(editEventFormData);
         List<Event> events = dynamoDBDatabase.getAllEvents();
         assertEquals(1, events.size());
         Event eventFetched = events.get(0);

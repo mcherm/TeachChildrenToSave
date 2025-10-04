@@ -44,4 +44,9 @@ public class Errors {
     public List<String> getErrorMessages() {
         return errorMessages;
     }
+
+    @Override
+    public String toString() {
+        return "Errors(" + (hasErrors() ? String.join("; ", errorMessages) : "NoErrors") + ")";
+    }
 }

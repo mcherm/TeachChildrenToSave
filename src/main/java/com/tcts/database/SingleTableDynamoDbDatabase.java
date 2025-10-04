@@ -24,6 +24,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -1405,8 +1406,31 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         insertNewSortedString(newAllowedDeliveryMethod, deliveryMethodToInsertBefore, getAllowedDeliveryMethods(), "allowedDeliveryMethods", allowed_delivery_method_values_with_sort);
     }
 
+    /** Convert a volunteerId (using null to indicate no volunteer) to the database format (using NO_VOLUNTEER). */
+    private String dbFormatVolunteerId(String volunteerId) {
+        if (volunteerId == null) {
+            return NO_VOLUNTEER;
+        } else {
+            return volunteerId;
+        }
+    }
+
     @Override
-    public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+        final String tableKey = "event:" + formData.getEventId();
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
+                .withString(event_volunteer_id, dbFormatVolunteerId(formData.getVolunteerId()))
+                .withStringFieldEqualsCondition(table_key, tableKey) // confirm it exists
+                .build();
+        try {
+            dynamoDbClient.updateItem(updateItemRequest);
+        } catch(ConditionalCheckFailedException err) {
+            throw new NoSuchEventException();
+        }
+    }
+
+    @Override
+    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException {
         final String tableKey = "event:" + formData.getEventId();
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
                 .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())

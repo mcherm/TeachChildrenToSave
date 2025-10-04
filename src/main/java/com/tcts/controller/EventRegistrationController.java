@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tcts.formdata.Errors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -82,7 +83,8 @@ public class EventRegistrationController {
     }
 
     /**
-     * A subroutine used to set up and then show the register teacher form. It
+     * A subroutine used to set up and then show the register teacher form, either with or
+     * without errors. (Pass null for Errors if we don't have errors to display.) It
      * returns the string, so you can invoke it as "return showForm(...)".
      */
     private String showForm(Model model, //contains list of attributes that is passed to the form
@@ -151,12 +153,18 @@ public class EventRegistrationController {
         if ((volunteer != null) && (volunteer.getApprovalStatus() == ApprovalStatus.SUSPENDED)) {
            throw new InvalidParameterFromGUIException("GUI should not let a suspended volunteer register for an event.");
         }
+
         // --- Validation Rules ---
-        // FIXME: There may not BE any validation needed!
+        final Errors errors = formData.validate();
+        if (errors.hasErrors()) {
+            // The eventRegistration page doesn't support showing errors. It only has clickable buttons,
+            // no user-controlled entry fields. So if there is a validation error it is a program issue,
+            // not a user entry issue.
+            throw new RuntimeException("Errors on a page that can't display errors: " + errors);
+        }
 
         // --- Create Event ---
-
-       database.volunteerForEvent(formData.eventId, volunteerId);
+        database.volunteerForEvent(formData.eventId, volunteerId);
 
 
         // --- Navigate onward ---
@@ -295,21 +303,11 @@ public class EventRegistrationController {
 
     /**
      * This method uses the database connection to verify whether the volunteer registration
-     * is open. It return true if it is open, false if not.
+     * is open. It returns true if it is open, false if not.
      */
     public static boolean isVolunteerSignupsOpen(DatabaseFacade database) throws SQLException {
         String setting = database.getSiteSettings().get("VolunteerSignupsOpen");
         return setting != null && setting.trim().toLowerCase().equals("yes");
     }
-    /**
-     * This method ensures that the volunteer registration is open, throwing an exception
-     * it is not.
-     */
-    public void ensureVolunteerSignupsIsOpen() throws SQLException {
-        if (!isVolunteerSignupsOpen(database)) {
-            throw new RuntimeException("Cannot register for classes if teacher registration is not open.");
-        }
-    }
-
 
 }

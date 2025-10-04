@@ -49,6 +49,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -1167,8 +1168,26 @@ public class DynamoDBDatabase implements DatabaseFacade {
         throw new RuntimeException("Not implemented");
     }
 
+    /** Convert a volunteerId (using null to indicate no volunteer) to the database format (using NO_VOLUNTEER). */
+    private String dbFormatVolunteerId(String volunteerId) {
+        if (volunteerId == null) {
+            return NO_VOLUNTEER;
+        } else {
+            return volunteerId;
+        }
+    }
+
     @Override
-    public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+
+        tables.eventTable.updateItem(
+                new PrimaryKey(event_id.name(), formData.getEventId()),
+                attributeUpdate(event_volunteer_id, dbFormatVolunteerId(formData.getVolunteerId()))
+        );
+    }
+
+    @Override
+    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException {
         tables.eventTable.updateItem(
                 new PrimaryKey(event_id.name(), formData.getEventId()),
                 attributeUpdate(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable()),
@@ -1176,7 +1195,8 @@ public class DynamoDBDatabase implements DatabaseFacade {
                 attributeUpdate(event_grade, formData.getGrade()),
                 attributeUpdate(event_delivery_method, formData.getDeliveryMethod()),
                 intAttributeUpdate(event_number_students, Integer.parseInt(formData.getNumberStudents())),
-                attributeUpdate(event_notes, formData.getNotes()));
+                attributeUpdate(event_notes, formData.getNotes())
+        );
     }
 
     @Override

@@ -30,6 +30,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -389,7 +390,13 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+        database.modifyEventRegistration(formData);
+        refreshEventList();
+    }
+
+    @Override
+    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException {
         database.modifyEvent(formData);
         refreshEventList();
     }

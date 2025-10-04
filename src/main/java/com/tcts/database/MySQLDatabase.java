@@ -25,6 +25,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -1096,9 +1097,13 @@ public class MySQLDatabase implements DatabaseFacade {
         }
     }
 
+    @Override
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+        throw new UnsupportedOperationException("MySQLDatabase is no longer supported and this method wasn't written.");
+    }
 
-	@Override
-	public void modifyEvent(EventRegistrationFormData formData) throws SQLException,
+    @Override
+	public void modifyEvent(EditEventFormData formData) throws SQLException,
 			NoSuchEventException {
 		Connection connection = null;
         PreparedStatement preparedStatement = null;
