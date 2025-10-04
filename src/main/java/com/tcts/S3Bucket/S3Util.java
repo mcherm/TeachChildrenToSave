@@ -1,24 +1,32 @@
 package com.tcts.S3Bucket;
 
-import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.tcts.common.Configuration;
 import com.tcts.common.SitesConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import java.time.Duration;
+
 
 /**
  * A component containing some utility functions for working with
@@ -34,7 +42,8 @@ public class S3Util {
     @Autowired
     private SitesConfig sitesConfig;
 
-    private AmazonS3Client amazonS3Client;
+    private S3Client s3Client;
+    private S3Presigner s3Presigner;
     private String bucketName; // the bucketname that the documents are stored in.  This is initialized upon object creation
 
     /**
@@ -44,11 +53,16 @@ public class S3Util {
      */
     @PostConstruct
     private void init() {
-        AWSCredentials credentials = new BasicAWSCredentials(
-                configuration.getProperty("aws.access_key"),
-                configuration.getProperty("aws.secret_access_key"));
-        amazonS3Client = new AmazonS3Client(credentials);
-
+        String accessKey = configuration.getProperty("aws.access_key");
+        String accessSecret = configuration.getProperty("aws.secret_access_key");
+        Region region = Region.US_EAST_1;
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, accessSecret);
+        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
+        s3Client = S3Client.builder()
+                .region(region)
+                .credentialsProvider(credentialsProvider)
+                .build();
+        s3Presigner = S3Presigner.create();
         bucketName = "teachchildrentosave-documents";
     }
 
@@ -69,11 +83,14 @@ public class S3Util {
     public Set<String> getAllDocuments() {
         final Set<String> files = new HashSet<>();
         final String folderName = getFolderName();
-        final ListObjectsV2Result result = amazonS3Client.listObjectsV2(bucketName, folderName);
-        assert !result.isTruncated(); // no WAY there will be too many for a single call
-        final List<S3ObjectSummary> objectSummaries = result.getObjectSummaries();
-        for (final S3ObjectSummary objectSummary : objectSummaries) {
-            final String key = objectSummary.getKey();
+        final ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
+                .bucket(bucketName)
+                .prefix(folderName)
+                .build();
+        final ListObjectsResponse response = s3Client.listObjects(listObjectsRequest);
+        assert !response.isTruncated();  // no WAY there will be too many for a single call
+        for (final S3Object s3Object : response.contents()) {
+            final String key = s3Object.key();
             assert key.startsWith(folderName);
             final String filename = key.substring(folderName.length());
             if (filename.length() == 0) {
@@ -90,7 +107,11 @@ public class S3Util {
      */
     public void deleteDocument(String documentName) {
         final String s3ObjectName = getFolderName() + documentName;
-        amazonS3Client.deleteObject(bucketName, s3ObjectName);
+        final DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3ObjectName)
+                .build();
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
     /**
@@ -99,7 +120,15 @@ public class S3Util {
      */
     public String makeS3URL(String documentName) {
         final String s3ObjectName = getFolderName() + documentName;
-       return amazonS3Client.getResourceUrl(bucketName, s3ObjectName);
+        final GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3ObjectName)
+                .build();
+        final GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(getObjectRequest)
+                .build();
+        return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 
     /**
@@ -108,14 +137,17 @@ public class S3Util {
      *
      * @param document - contains document to be uploaded
      * @throws IOException - if something went wrong with reading the Input Stream from the MultipartFile
-     * @throws SdkClientException - if something went wrong with uploading the file to Amazon
+     * @throws SdkException - if something went wrong with uploading the file to Amazon
      */
-    public void uploadDocument(MultipartFile document)  throws IOException, SdkClientException {
+    public void uploadDocument(MultipartFile document)  throws IOException {
         final String s3ObjectName = getFolderName() + document.getOriginalFilename();
-        final ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(document.getSize());
-        metadata.setContentType(document.getContentType());
-
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, s3ObjectName, document.getInputStream(), metadata));
+        final PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3ObjectName)
+                .contentType(document.getContentType())
+                .contentLength(document.getSize())
+                .build();
+        final RequestBody requestBody = RequestBody.fromInputStream(document.getInputStream(), document.getSize());
+        s3Client.putObject(putObjectRequest, requestBody); // throws SdkException on failure
     }
 }
