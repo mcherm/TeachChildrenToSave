@@ -4,21 +4,19 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
-
 import com.tcts.database.DatabaseFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.model.Body;
+import software.amazon.awssdk.services.ses.model.Content;
+import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.Message;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 import com.tcts.common.Configuration;
 import com.tcts.exception.AppConfigurationException;
 
@@ -58,47 +56,70 @@ public final class EmailUtil {
     }
     
     @SuppressWarnings("unchecked")
-	public void sendEmail(String text,Map<String,Object> model) throws IOException, AppConfigurationException {
+	public void sendEmail(String text, Map<String,Object> model) throws IOException, AppConfigurationException {
 
-        // Construct an object to contain the recipient address.
-    	Destination destination;
-    	if (model.get("to") != null)
-    		destination = new Destination().withToAddresses(new String[]{model.get("to").toString()});
-    	else {//fixme this is horrible
-    		Collection<String> toBccAddresses = (Collection<String>) model.get("bcc");
-    		destination = new Destination().withBccAddresses(toBccAddresses);
+        // New AWS SDK v2 code:
+        
+        // --- Construct the destination address(s) ---
+    	final Destination destination;
+    	if (model.get("to") != null) {
+    		destination = Destination.builder()
+    				.toAddresses(model.get("to").toString())
+    				.build();
+    	} else {
+            destination = Destination.builder()
+    				.bccAddresses((Collection<String>) model.get("bcc"))
+    				.build();
     	}
         
-        // Create the subject and body of the message.
-        Content subject = new Content().withData(model.get("subject").toString());
+        // --- Create the subject ---
+        final Content subject = Content.builder()
+        		.data(model.get("subject").toString())
+        		.build();
+
+        // --- Create the body of the message ---
+        final Content textBody = Content.builder()
+        		.data(text)
+        		.build();
+        final Body body = Body.builder()
+        		.html(textBody)
+        		.build();
         
-        Content textBody = new Content().withData(text);
+        // --- Create a message ---
+        final Message message = Message.builder()
+        		.subject(subject)
+        		.body(body)
+        		.build();
         
-        //Body body = new Body().withText(textBody);
-        Body body = new Body().withHtml(textBody);
-        
-        // Create a message with the specified subject and body.
-        Message message = new Message().withSubject(subject).withBody(body);
-        
-        // Assemble the email.
+        // --- Assemble the email ---
         final String from = getSiteEmail(database);
-       	SendEmailRequest request = new SendEmailRequest().withSource(from).withDestination(destination).withMessage(message);
-        AWSCredentials credentials = new BasicAWSCredentials(
+       	final SendEmailRequest request = SendEmailRequest.builder()
+       			.source(from)
+       			.destination(destination)
+       			.message(message)
+       			.build();
+       			
+        // --- Create SES client with credentials ---
+        final AwsBasicCredentials credentials = AwsBasicCredentials.create(
                 configuration.getProperty("aws.access_key"),
                 configuration.getProperty("aws.secret_access_key"));
-        AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient(credentials);
-        //AmazonSimpleEmailServiceClient client = new AmazonSimpleEmailServiceClient();
+        final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
 
-        // Choose the AWS region of the Amazon SES endpoint you want to connect to. Note that your production
-        // access status, sending limits, and Amazon SES identity-related settings are specific to a given
-        // AWS region, so be sure to select an AWS region in which you set up Amazon SES. Here, we are using
-        // the US East (N. Virginia) region.
+        // The try() statement guarantees that the sesClient is closed properly.
+        try (
+            final SesClient sesClient = SesClient.builder()
+        		.region(Region.US_EAST_1)
+        		.credentialsProvider(credentialsProvider)
+        		.build()
+        ) {
+            try {
+                // --- Send the email ---
+                sesClient.sendEmail(request);
+            } catch (SdkException err) {
+                throw new RuntimeException("Unable to send email.", err);
+            }
 
-        Region REGION = Region.getRegion(Regions.US_EAST_1);
-        client.setRegion(REGION);
-
-        // Send the email.
-        client.sendEmail(request);
+        }
     }
 
 }
