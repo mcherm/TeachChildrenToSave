@@ -1,7 +1,6 @@
 package com.tcts.database;
 
 import com.tcts.common.Configuration;
-import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemBuilder;
 import com.tcts.datamodel.Document;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -9,8 +8,6 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
-import java.sql.SQLException;
-import java.util.List;
 import java.util.function.Function;
 
 

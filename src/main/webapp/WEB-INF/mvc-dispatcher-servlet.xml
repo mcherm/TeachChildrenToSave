@@ -36,20 +36,6 @@
         </constructor-arg>
     </bean>
 
-    <!-- This would give us the MySQL database with caching:
-    <bean id="database" class="com.tcts.database.CachingDatabase">
-        <constructor-arg name="database">
-            <bean class="com.tcts.database.MySQLDatabase"/>
-        </constructor-arg>
-    </bean>
-    -->
-    <!-- This gives us the DynamoDB Database:
-    <bean id="database" class="com.tcts.database.DynamoDBDatabase">
-        <constructor-arg name="configuration" ref="configuration"/>
-        <constructor-arg name="dynamoDBHelper" ref="dynamoDBHelper"/>
-    </bean>
-    -->
-
     <bean id="database"
           class="com.tcts.database.DatabaseFacade"
           factory-bean="databaseFactory"

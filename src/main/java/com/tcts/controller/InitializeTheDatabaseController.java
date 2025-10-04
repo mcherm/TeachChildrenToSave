@@ -1,7 +1,7 @@
 package com.tcts.controller;
 
-import com.tcts.database.DynamoDBSetup;
 import com.tcts.database.MockDataCreator;
+import com.tcts.database.SingleTableDynamoDBSetup;
 import com.tcts.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +49,7 @@ public class InitializeTheDatabaseController {
         runInSeparateThreadAndWaitForItToFinish(new Runnable() {
             @Override
             public void run() {
-                DynamoDBSetup.main(null);
+                SingleTableDynamoDBSetup.main(null);
             }
         });
         throw new RuntimeException("DynamoDB Database Initialized");

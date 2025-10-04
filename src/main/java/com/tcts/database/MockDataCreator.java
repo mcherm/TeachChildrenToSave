@@ -283,7 +283,7 @@ public class MockDataCreator {
     public static void main(String[] args) {
         System.out.println("Starting");
         try {
-            DatabaseFacade database = new DynamoDBDatabase(new Configuration(), new DynamoDBHelper());
+            DatabaseFacade database = new SingleTableDynamoDbDatabase(new Configuration());
             MockDataCreator mockDataCreator = new MockDataCreator(database);
             mockDataCreator.populateWithData(600, 500);
         } catch(Exception err) {

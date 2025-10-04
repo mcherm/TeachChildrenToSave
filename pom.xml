@@ -104,13 +104,6 @@
             <version>1.12.592</version>
         </dependency>
 
-        <!-- Older version of AWS library; will drop support on Dec 31 2025. -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.12.592</version>
-        </dependency>
-
         <!-- Newer version of AWS library. -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
