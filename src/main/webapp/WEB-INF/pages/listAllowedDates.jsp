@@ -43,9 +43,11 @@
                     <thead>
                         <tr>
                             <th scope="col" class="time">Date</th>
-                            <th scope="col">
-                                <span class="ada-read">Column of Delete buttons</span>
-                            </th>
+                            <c:if test="${allowedDates.size() > 1}">
+                                <th scope="col">
+                                    <span class="ada-read">Column of Delete buttons</span>
+                                </th>
+                            </c:if>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,12 +57,14 @@
                         <c:forEach var="allowedDate" items="${allowedDates}">
                             <tr>
                                 <td class="dateColumn" data-title="Date"><c:out value="${allowedDate.pretty}"/></td>
-                                <td class="action">
-			                        <form method="POST" action="deleteAllowedDate.htm" modelAttribute="formData">
-			                                    <input type="hidden" name="parseableDateStr" value='<c:out value="${allowedDate.parseable}"/>' />
-			                                    <button type="submit" class="editOrRegister delete">Delete</button>
-			                        </form>
-		                    	</td>
+                                <c:if test="${allowedDates.size() > 1}">
+                                    <td class="action">
+                                        <form method="POST" action="deleteAllowedDate.htm" modelAttribute="formData">
+                                                    <input type="hidden" name="parseableDateStr" value='<c:out value="${allowedDate.parseable}"/>' />
+                                                    <button type="submit" class="editOrRegister delete">Delete</button>
+                                        </form>
+                                    </td>
+                                </c:if>
                             </tr>
                         </c:forEach>
                     </tbody>
