@@ -45,7 +45,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,13 +74,10 @@ public class PrefetchingDatabase implements DatabaseFacade {
     /** Constructor requires you to provide an actual database. */
     public PrefetchingDatabase(DatabaseFacade database) {
         this.database = database;
-        ThreadFactory threadFactory = new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread result = new Thread(r, "PrefetchThread");
-                result.setDaemon(true); // allow app to exit without this thread exiting
-                return result;
-            }
+        ThreadFactory threadFactory = r -> {
+            Thread result = new Thread(r, "PrefetchThread");
+            result.setDaemon(true); // allow app to exit without this thread exiting
+            return result;
         };
         this.threadPool = Executors.newFixedThreadPool(1, threadFactory);
         this.siteSettingsLock = new Object();
@@ -98,12 +94,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
      */
     private void refreshSiteSettings() {
         synchronized (siteSettingsLock) {
-            prefetchedSiteSettings = threadPool.submit(new Callable<Map<String,String>>() {
-                @Override
-                public Map<String,String> call() throws Exception {
-                    return database.getSiteSettings();
-                }
-            });
+            prefetchedSiteSettings = threadPool.submit(database::getSiteSettings);
         }
     }
 
@@ -112,12 +103,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
      */
     private void refreshDocuments() {
         synchronized (documentsLock) {
-            prefetchedDocuments = threadPool.submit(new Callable<SortedSet<Document>>() {
-                @Override
-                public SortedSet<Document> call() throws Exception {
-                    return database.getDocuments();
-                }
-            });
+            prefetchedDocuments = threadPool.submit(database::getDocuments);
         }
     }
 
@@ -126,12 +112,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
      */
     private void refreshEventList() {
         synchronized (eventListLock) {
-            prefetchedEventList = threadPool.submit(new Callable<List<Event>>() {
-                @Override
-                public List<Event> call() throws Exception {
-                    return database.getAllAvailableEvents();
-                }
-            });
+            prefetchedEventList = threadPool.submit(database::getAllAvailableEvents);
         }
     }
 
@@ -142,7 +123,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User getUserById(String userId) throws InconsistentDatabaseException {
+    public User getUserById(String userId) {
         return database.getUserById(userId);
     }
 
@@ -152,7 +133,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByTeacher(String teacherId) {
+    public List<Event> getEventsByTeacher(String teacherId) throws InconsistentDatabaseException {
         return database.getEventsByTeacher(teacherId);
     }
 
@@ -175,47 +156,47 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByVolunteer(String volunteerId) {
+    public List<Event> getEventsByVolunteer(String volunteerId) throws InconsistentDatabaseException {
         return database.getEventsByVolunteer(volunteerId);
     }
 
     @Override
-    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) {
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) throws InconsistentDatabaseException {
         return database.getEventsByVolunteerWithTeacherAndSchool(volunteerId);
     }
 
     @Override
-    public List<Volunteer> getVolunteersByBank(String bankId) {
+    public List<Volunteer> getVolunteersByBank(String bankId) throws InconsistentDatabaseException {
         return database.getVolunteersByBank(bankId);
     }
 
     @Override
-    public List<BankAdmin> getBankAdminsByBank(String bankId) {
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws InconsistentDatabaseException {
         return database.getBankAdminsByBank(bankId);
     }
 
     @Override
-    public Bank getBankById(String bankId) {
+    public Bank getBankById(String bankId) throws InconsistentDatabaseException {
         return database.getBankById(bankId);
     }
 
     @Override
-    public School getSchoolById(String schoolId) {
+    public School getSchoolById(String schoolId) throws InconsistentDatabaseException {
         return database.getSchoolById(schoolId);
     }
 
     @Override
-    public List<School> getAllSchools() {
+    public List<School> getAllSchools() throws InconsistentDatabaseException {
         return database.getAllSchools();
     }
 
     @Override
-    public List<Bank> getAllBanks() {
+    public List<Bank> getAllBanks() throws InconsistentDatabaseException {
         return database.getAllBanks();
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws InconsistentDatabaseException {
         return database.getAllUsers();
     }
 
@@ -240,7 +221,7 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<BankAdmin> getBankAdmins() {
+    public List<BankAdmin> getBankAdmins() throws InconsistentDatabaseException {
         return database.getBankAdmins();
     }
 
@@ -250,17 +231,17 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Event getEventById(String eventId) {
+    public Event getEventById(String eventId) throws InconsistentDatabaseException {
         return database.getEventById(eventId);
     }
 
     @Override
-    public SiteStatistics getSiteStatistics() {
+    public SiteStatistics getSiteStatistics() throws InconsistentDatabaseException {
         return database.getSiteStatistics();
     }
 
     @Override
-    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws EmailAlreadyInUseException {
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         database.modifyUserPersonalFields(formData);
         refreshEventList();
     }
@@ -278,7 +259,9 @@ public class PrefetchingDatabase implements DatabaseFacade {
 
 
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
+            throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException, InconsistentDatabaseException
+    {
         return database.insertNewTeacher(formData, hashedPassword, salt);
     }
 
@@ -289,7 +272,9 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchBankException, EmailAlreadyInUseException {
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
+            throws NoSuchBankException, EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         return database.insertNewVolunteer(formData, hashedPassword, salt);
     }
 
@@ -328,7 +313,9 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+    public void deleteBankAndBankVolunteers(String bankId)
+            throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException, InconsistentDatabaseException
+    {
         database.deleteBankAndBankVolunteers(bankId);
         refreshEventList();
     }
@@ -339,7 +326,9 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException {
+    public void deleteTeacher(String teacherId)
+            throws NoSuchUserException, TeacherHasEventsException, InconsistentDatabaseException
+    {
         database.deleteTeacher(teacherId);
     }
 
@@ -356,12 +345,16 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException {
+    public void insertNewBankAndAdmin(CreateBankFormData formData)
+            throws EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         database.insertNewBankAndAdmin(formData);
     }
 
     @Override
-    public void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException {
+    public void insertNewBankAdmin(NewBankAdminFormData formData)
+            throws EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         database.insertNewBankAdmin(formData);
     }
 
@@ -434,37 +427,37 @@ public class PrefetchingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteersWithBankData() {
+    public List<Volunteer> getVolunteersWithBankData() throws InconsistentDatabaseException {
         return database.getVolunteersWithBankData();
     }
 
     @Override
-    public List<Teacher> getTeachersWithSchoolData() {
+    public List<Teacher> getTeachersWithSchoolData() throws InconsistentDatabaseException {
         return database.getTeachersWithSchoolData();
     }
 
     @Override
-    public List<Teacher> getTeachersBySchool(String schoolId) {
+    public List<Teacher> getTeachersBySchool(String schoolId) throws InconsistentDatabaseException {
         return database.getTeachersBySchool(schoolId);
     }
 
     @Override
-    public List<Teacher> getMatchedTeachers() {
+    public List<Teacher> getMatchedTeachers() throws InconsistentDatabaseException {
         return database.getMatchedTeachers();
     }
 
     @Override
-    public List<Teacher> getUnMatchedTeachers() {
+    public List<Teacher> getUnMatchedTeachers() throws InconsistentDatabaseException {
         return database.getUnMatchedTeachers();
     }
 
     @Override
-    public List<Volunteer> getMatchedVolunteers() {
+    public List<Volunteer> getMatchedVolunteers() throws InconsistentDatabaseException {
         return database.getMatchedVolunteers();
     }
 
     @Override
-    public List<Volunteer> getUnMatchedVolunteers() {
+    public List<Volunteer> getUnMatchedVolunteers() throws InconsistentDatabaseException {
         return database.getUnMatchedVolunteers();
     }
 

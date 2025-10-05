@@ -18,19 +18,19 @@ public enum UserType {
     SITE_ADMIN("SA", "Site Admin", "siteAdminHome.htm");
 
 
-    private static Map<String,UserType> userTypeByDBValue = new HashMap<String,UserType>() {{
-        put("V", VOLUNTEER);
-        put("T", TEACHER);
-        put("BA", BANK_ADMIN);
-        put("SA", SITE_ADMIN);
-    }};
+    private static Map<String,UserType> userTypeByDBValue = Map.of(
+            "V", VOLUNTEER,
+            "T", TEACHER,
+            "BA", BANK_ADMIN,
+            "SA", SITE_ADMIN
+    );
 
     /**
      * Static factory method that returns the user type for the given
      * string or throws an exception if the string is not a valid
      * value.
      */
-    public static UserType fromDBValue(String dbValue) {
+    public static UserType fromDBValue(String dbValue) throws InconsistentDatabaseException {
         UserType result = userTypeByDBValue.get(dbValue);
         if (result == null) {
             throw new InconsistentDatabaseException("DB Value of '" + dbValue + "'.");

@@ -1,5 +1,4 @@
 -------- NEW TASKS 2025 --------
-- DatabaseFacade line 249 remove InconsistentDatabaseException from a few places where it isn't used.
 * Need to enable prefetching and cacheing in DatabaseFactory line 54.
 - Clean up old tables.
 * Bug: Teacher homepage doesn't show the class descriptions in the list of classes
@@ -16,3 +15,4 @@ M Don't allow admin to delete ALL of the allowedValues of any given type.
 M Delete MySQL database support. Remove SQLException everywhere.
 M Collapse SingleTableDbField and DatabaseField into just one class.
 R Make the grades and delivery methods become invisible if there is only one choice.
+M DatabaseFacade line 249 remove InconsistentDatabaseException from a few places where it isn't used.

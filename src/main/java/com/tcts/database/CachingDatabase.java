@@ -56,15 +56,15 @@ import com.tcts.formdata.VolunteerRegistrationFormData;
  */
 public class CachingDatabase implements DatabaseFacade {
 
-    private DatabaseFacade database;
+    private final DatabaseFacade database;
 
     /** Refresh values every 4 hours even if we think they're still accurate. */
-    private static long REFRESH_IN_MILLIS = 4 * 60 * 60 * 1000;
+    private static final long REFRESH_IN_MILLIS = 4 * 60 * 60 * 1000;
 
     private final CachedValue<List<PrettyPrintingDate>,RuntimeException> allowedDates =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<PrettyPrintingDate> generateValue( ) {
+                public List<PrettyPrintingDate> generateValue() {
                     return Collections.unmodifiableList(database.getAllowedDates());
                 }
             };
@@ -72,7 +72,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedValue<List<String>,RuntimeException> allowedTimes =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<String> generateValue( ) {
+                public List<String> generateValue() {
                     return Collections.unmodifiableList(database.getAllowedTimes());
                 }
             };
@@ -80,7 +80,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedValue<List<String>,RuntimeException> allowedGrades =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<String> generateValue( ) {
+                public List<String> generateValue() {
                     return Collections.unmodifiableList(database.getAllowedGrades());
                 }
             };
@@ -88,7 +88,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedValue<List<String>,RuntimeException> allowedDeliveryMethods =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<String> generateValue( ) {
+                public List<String> generateValue() {
                     return Collections.unmodifiableList(database.getAllowedDeliveryMethods());
                 }
             };
@@ -96,7 +96,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedValue<List<Bank>,RuntimeException> allBanks =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<Bank> generateValue( ) {
+                public List<Bank> generateValue() throws InconsistentDatabaseException {
                     return Collections.unmodifiableList(database.getAllBanks());
                 }
             };
@@ -104,7 +104,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedValue<List<School>,RuntimeException> allSchools =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<School> generateValue( ) {
+                public List<School> generateValue() throws InconsistentDatabaseException {
                     return Collections.unmodifiableList(database.getAllSchools());
                 }
             };
@@ -112,7 +112,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedList<Event, RuntimeException> availableEvents =
             new CachedList<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<Event> generateValue( ) {
+                public List<Event> generateValue() throws InconsistentDatabaseException {
                     return database.getAllAvailableEvents();
                 }
             };
@@ -120,7 +120,7 @@ public class CachingDatabase implements DatabaseFacade {
     private final CachedValue<Map<String,String>, RuntimeException> siteSettings =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public Map<String, String> generateValue( ) {
+                public Map<String, String> generateValue() {
                     return database.getSiteSettings();
                 }
             };
@@ -138,7 +138,7 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User getUserById(String userId) throws InconsistentDatabaseException {
+    public User getUserById(String userId) {
         return database.getUserById(userId);
     }
 
@@ -148,82 +148,82 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByTeacher(String teacherId ) {
+    public List<Event> getEventsByTeacher(String teacherId ) throws InconsistentDatabaseException {
         return database.getEventsByTeacher(teacherId);
     }
 
     @Override
-    public List<Event> getAllAvailableEvents( ) {
+    public List<Event> getAllAvailableEvents() throws InconsistentDatabaseException {
         return availableEvents.getCachedValue();
     }
 
     @Override
-    public List<Event> getEventsByVolunteer(String volunteerId ) {
+    public List<Event> getEventsByVolunteer(String volunteerId ) throws InconsistentDatabaseException {
         return database.getEventsByVolunteer(volunteerId);
     }
 
     @Override
-    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId ) {
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId ) throws InconsistentDatabaseException {
         return database.getEventsByVolunteerWithTeacherAndSchool(volunteerId);
     }
 
     @Override
-    public List<Volunteer> getVolunteersByBank(String bankId ) {
+    public List<Volunteer> getVolunteersByBank(String bankId ) throws InconsistentDatabaseException {
         return database.getVolunteersByBank(bankId);
     }
 
     @Override
-    public List<BankAdmin> getBankAdminsByBank(String bankId ) {
+    public List<BankAdmin> getBankAdminsByBank(String bankId ) throws InconsistentDatabaseException {
         return database.getBankAdminsByBank(bankId);
     }
 
     @Override
-    public Bank getBankById(String bankId ) {
+    public Bank getBankById(String bankId ) throws InconsistentDatabaseException {
         return database.getBankById(bankId);
     }
 
     @Override
-    public School getSchoolById(String schoolId ) {
+    public School getSchoolById(String schoolId ) throws InconsistentDatabaseException {
         return database.getSchoolById(schoolId);
     }
 
     @Override
-    public List<School> getAllSchools( ) {
+    public List<School> getAllSchools() throws InconsistentDatabaseException {
         return allSchools.getCachedValue();
     }
 
     @Override
-    public List<Bank> getAllBanks( ) {
+    public List<Bank> getAllBanks() throws InconsistentDatabaseException {
         return allBanks.getCachedValue();
     }
 
     @Override
-    public List<User> getAllUsers( ) {
+    public List<User> getAllUsers() throws InconsistentDatabaseException {
         return database.getAllUsers();
     }
 
     @Override
-    public List<PrettyPrintingDate> getAllowedDates( ) {
+    public List<PrettyPrintingDate> getAllowedDates() {
         return allowedDates.getCachedValue();
     }
 
     @Override
-    public List<String> getAllowedTimes( ) {
+    public List<String> getAllowedTimes() {
         return allowedTimes.getCachedValue();
     }
 
     @Override
-    public List<String> getAllowedGrades( ) {
+    public List<String> getAllowedGrades() {
         return allowedGrades.getCachedValue();
     }
 
     @Override
-    public List<String> getAllowedDeliveryMethods( ) {
+    public List<String> getAllowedDeliveryMethods() {
         return allowedDeliveryMethods.getCachedValue();
     }
 
     @Override
-    public List<BankAdmin> getBankAdmins( ) {
+    public List<BankAdmin> getBankAdmins() throws InconsistentDatabaseException {
         return database.getBankAdmins();
     }
 
@@ -233,17 +233,17 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Event getEventById(String eventId ) {
+    public Event getEventById(String eventId ) throws InconsistentDatabaseException {
         return database.getEventById(eventId);
     }
 
     @Override
-    public SiteStatistics getSiteStatistics( ) {
+    public SiteStatistics getSiteStatistics() throws InconsistentDatabaseException {
         return database.getSiteStatistics();
     }
 
     @Override
-    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws EmailAlreadyInUseException {
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         database.modifyUserPersonalFields(formData);
         availableEvents.refreshNow();
     }
@@ -262,7 +262,9 @@ public class CachingDatabase implements DatabaseFacade {
 
 
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
+            throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException, InconsistentDatabaseException
+    {
         return database.insertNewTeacher(formData, hashedPassword, salt);
     }
 
@@ -273,7 +275,9 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchBankException, EmailAlreadyInUseException {
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
+            throws NoSuchBankException, EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         return database.insertNewVolunteer(formData, hashedPassword, salt);
     }
 
@@ -304,18 +308,15 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void volunteerForEvent(final String eventId, String volunteerId) throws NoSuchEventException, EventAlreadyHasAVolunteerException {
+    public void volunteerForEvent(final String eventId, String volunteerId)
+            throws NoSuchEventException, EventAlreadyHasAVolunteerException
+    {
         database.volunteerForEvent(eventId, volunteerId);
         if (volunteerId == null) {
             // Withdrew someone from an event so we need to reload the list
             availableEvents.refreshNow();
         } else {
-            availableEvents.deleteItems(new CachedList.Filter<Event>() {
-                @Override
-                public boolean keep(Event item) {
-                    return !item.getEventId().equals(eventId);
-                }
-            });
+            availableEvents.deleteItems(item -> !item.getEventId().equals(eventId));
         }
     }
 
@@ -327,7 +328,9 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+    public void deleteBankAndBankVolunteers(String bankId)
+            throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException, InconsistentDatabaseException
+    {
         database.deleteBankAndBankVolunteers(bankId);
         allBanks.refreshNow();
         availableEvents.refreshNow();
@@ -339,7 +342,9 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException {
+    public void deleteTeacher(String teacherId)
+            throws NoSuchUserException, TeacherHasEventsException, InconsistentDatabaseException
+    {
         database.deleteTeacher(teacherId);
     }
 
@@ -357,13 +362,15 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException {
+    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         database.insertNewBankAndAdmin(formData);
         allBanks.refreshNow();
     }
 
     @Override
-    public void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException {
+    public void insertNewBankAdmin(NewBankAdminFormData formData)
+            throws EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         database.insertNewBankAdmin(formData);
         allBanks.refreshNow();
     }
@@ -444,42 +451,42 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteersWithBankData( ) {
+    public List<Volunteer> getVolunteersWithBankData() throws InconsistentDatabaseException {
         return database.getVolunteersWithBankData();
     }
     
     @Override
-    public List<Teacher> getTeachersWithSchoolData( ) {
+    public List<Teacher> getTeachersWithSchoolData() throws InconsistentDatabaseException {
         return database.getTeachersWithSchoolData();
     }
 
     @Override
-    public List<Teacher> getTeachersBySchool(String schoolId ) {
+    public List<Teacher> getTeachersBySchool(String schoolId) throws InconsistentDatabaseException {
         return database.getTeachersBySchool(schoolId);
     }
 
     @Override
-    public List<Teacher> getMatchedTeachers( ) {
+    public List<Teacher> getMatchedTeachers() throws InconsistentDatabaseException {
        return database.getMatchedTeachers();
     }
     
     @Override
-    public List<Teacher> getUnMatchedTeachers( ) {
+    public List<Teacher> getUnMatchedTeachers() throws InconsistentDatabaseException {
     	return database.getUnMatchedTeachers();
     }
     
     @Override
-    public List<Volunteer> getMatchedVolunteers( ) {
+    public List<Volunteer> getMatchedVolunteers() throws InconsistentDatabaseException {
     	return database.getMatchedVolunteers();
     }
     
     @Override
-    public List<Volunteer> getUnMatchedVolunteers( ) {
+    public List<Volunteer> getUnMatchedVolunteers() throws InconsistentDatabaseException {
     	return database.getUnMatchedVolunteers();
     }
 
     @Override
-    public Map<String, String> getSiteSettings( ) {
+    public Map<String, String> getSiteSettings() {
         return siteSettings.getCachedValue();
     }
 
@@ -490,7 +497,7 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public SortedSet<Document> getDocuments( ) {
+    public SortedSet<Document> getDocuments() {
         return database.getDocuments();
     }
 

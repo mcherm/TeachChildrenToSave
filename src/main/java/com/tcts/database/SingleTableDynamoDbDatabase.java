@@ -196,7 +196,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     /** An interface for passing a method reference a function to build an object from a DB item. */
     private interface CreateFunction<T> {
-        T create(Map<String,AttributeValue> item);
+        T create(Map<String,AttributeValue> item) throws InconsistentDatabaseException;
     }
 
     /**
@@ -244,7 +244,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         return school;
     }
 
-    static Event createEventFromDynamoDbItem(Map<String,AttributeValue> item) {
+    static Event createEventFromDynamoDbItem(Map<String,AttributeValue> item) throws InconsistentDatabaseException {
         if (item == null) {
             return null;
         }
@@ -290,7 +290,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * be of the appropriate concrete sub-type of User. If passed null, it returns null.
      * None of the linked data is filled in.
      */
-    private User createUserFromDynamoDbItem(Map<String,AttributeValue> item) {
+    private User createUserFromDynamoDbItem(Map<String,AttributeValue> item) throws InconsistentDatabaseException {
         if (item == null) {
             return null;
         }
@@ -389,7 +389,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * @return the object or null if no object of that type is found with the given id
      * @param <T> the type of the object to return (eg: School)
      */
-    private <T> T getObjectByUniqueId(String keyPrefix, CreateFunction<T> createFunction, String id) {
+    private <T> T getObjectByUniqueId(String keyPrefix, CreateFunction<T> createFunction, String id)
+            throws InconsistentDatabaseException
+    {
         // --- First, we look in the index to find out the key ---
         final String tableKey = keyPrefix + id;
         final GetItemRequest getItemRequest = GetItemRequest.builder()
@@ -419,7 +421,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      */
     private <T> List<T> getObjectsByIndexLookup(
             String indexName, DatabaseField keyField, String keyValue, CreateFunction<T> createFunction, Comparator<T> comparator
-    ) {
+    ) throws InconsistentDatabaseException {
         final QueryRequest queryRequest = QueryRequest.builder()
                 .tableName(getTableName())
                 .indexName(indexName)
@@ -464,7 +466,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      */
     private <T> List<T> getAllUsingIndexOrScan(
             String indexName, String keyPrefix, CreateFunction<T> createFunction, Comparator<T> comparator
-    ) {
+    ) throws InconsistentDatabaseException {
         // DESIGN NOTE:
         // There are 2 ways we could query this. In approach 1, we use an index. It is
         // either an index by the field we want to sort on (eg: ByUserType for finding
@@ -526,7 +528,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *                 asked for Volunteers; the 4 types are distinct.
      * @return a List of the users. They will all be of the appropriate subtype of User.
      */
-    private List<User> getUsersByTypeUsingScan(UserType userType) {
+    private List<User> getUsersByTypeUsingScan(UserType userType) throws InconsistentDatabaseException {
         final ScanRequest scanRequest = ScanRequest.builder()
                 .tableName(getTableName())
                 .filterExpression(
@@ -550,7 +552,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *                 asked for Volunteers; the 4 types are distinct.
      * @return a List of the users. They will all be of the appropriate subtype of User.
      */
-    private List<User> getUsersByTypeUsingIndex(UserType userType) {
+    private List<User> getUsersByTypeUsingIndex(UserType userType) throws InconsistentDatabaseException {
         return getObjectsByIndexLookup("ByUserType", user_type, userType.getDBValue(),
                 this::createUserFromDynamoDbItem, compareUsersByName);
     }
@@ -562,7 +564,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *                 asked for Volunteers; the 4 types are distinct.
      * @return a List of the users. They will all be of the appropriate subtype of User.
      */
-    private List<User> getUsersByType(UserType userType) {
+    private List<User> getUsersByType(UserType userType) throws InconsistentDatabaseException {
         // DESIGN NOTE:
         //
         // We use a different approach for the common types of users (a scan)
@@ -581,7 +583,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * @param userId the userId of the user who is allowed to be using this email or NULL if no one should be using it
      * @param email email to check if already in use
      */
-    private void verifyEmailNotInUseByAnyoneElse(String userId, String email) throws EmailAlreadyInUseException {
+    private void verifyEmailNotInUseByAnyoneElse(String userId, String email)
+            throws EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         if (email == null || email.isEmpty()) {
             throw new RuntimeException("Not a valid email: '" + email + "'.");
         }
@@ -744,7 +748,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User getUserById(String userId) throws InconsistentDatabaseException {
+    public User getUserById(String userId) {
         return getObjectByUniqueId("user:", this::createUserFromDynamoDbItem, userId);
     }
 
@@ -800,7 +804,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
+    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData)
+            throws EmailAlreadyInUseException, InconsistentDatabaseException
+    {
         verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         final String itemKey = "user:" + formData.getUserId();
         // Because emails are commonly case-insensitive, we store a lower-case version of the email
@@ -835,7 +841,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
+            throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException, InconsistentDatabaseException
+    {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
         // --- check for uniqueness ---
         verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
@@ -865,13 +873,13 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByTeacher(String teacherId) {
+    public List<Event> getEventsByTeacher(String teacherId) throws InconsistentDatabaseException {
         return getObjectsByIndexLookup("ByEventTeacherId", event_teacher_id, teacherId,
                 SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, compareEvents);
     }
 
     @Override
-    public List<Event> getAllAvailableEvents() {
+    public List<Event> getAllAvailableEvents() throws InconsistentDatabaseException {
         // NOTE: This is incredibly similar to getAllEvents(). Normally, I would try to make
         // the two of them share code. HOWEVER, this is the single most important function
         // in the whole interface -- it is the slow step that powers the signup process.
@@ -944,7 +952,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByVolunteer(String volunteerId) {
+    public List<Event> getEventsByVolunteer(String volunteerId) throws InconsistentDatabaseException {
         if (volunteerId == null) {
             throw new RuntimeException("This method doesn't handle null for volunteerId.");
             // NOTE: It *could* handle that if we wanted it to, but for now that's just basically an assert
@@ -954,7 +962,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) {
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws InconsistentDatabaseException {
         // --- Load the volunteer, since we know it'll be needed if there are ANY events ---
         final Volunteer volunteer = (Volunteer) getUserById(volunteerId);
         volunteer.setLinkedBank(getBankById(volunteer.getBankId()));
@@ -1014,7 +1022,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteersByBank(String bankId) {
+    public List<Volunteer> getVolunteersByBank(String bankId) throws InconsistentDatabaseException {
         // We look for users with this organization id
         final QueryRequest queryRequest = QueryRequest.builder()
                 .tableName(getTableName())
@@ -1032,7 +1040,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<BankAdmin> getBankAdminsByBank(String bankId) {
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws InconsistentDatabaseException {
         return getVolunteersByBank(bankId).stream()
                 .filter(volunteer -> volunteer instanceof BankAdmin)
                 .map(volunteer -> (BankAdmin) volunteer)
@@ -1040,7 +1048,8 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchBankException, EmailAlreadyInUseException {
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
+            throws NoSuchBankException, EmailAlreadyInUseException, InconsistentDatabaseException {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
         // --- check for uniqueness ---
         verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
@@ -1076,30 +1085,30 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Bank getBankById(String bankId) {
+    public Bank getBankById(String bankId) throws InconsistentDatabaseException {
         return getObjectByUniqueId("bank:", SingleTableDynamoDbDatabase::createBankFromDynamoDbItem, bankId);
     }
 
     @Override
-    public School getSchoolById(String schoolId) {
+    public School getSchoolById(String schoolId) throws InconsistentDatabaseException {
         return getObjectByUniqueId(
                 "school:", SingleTableDynamoDbDatabase::createSchoolFromDynamoDbItem, schoolId);
     }
 
     @Override
-    public List<School> getAllSchools() {
+    public List<School> getAllSchools() throws InconsistentDatabaseException {
         return getAllUsingIndexOrScan(
                 "BySchoolId", "school:", SingleTableDynamoDbDatabase::createSchoolFromDynamoDbItem, compareSchools);
     }
 
     @Override
-    public List<Bank> getAllBanks() {
+    public List<Bank> getAllBanks() throws InconsistentDatabaseException {
         return getAllUsingIndexOrScan(
                 "ByBankId", "bank:", SingleTableDynamoDbDatabase::createBankFromDynamoDbItem, compareBanks);
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws InconsistentDatabaseException {
         return getAllUsingIndexOrScan("ByUserEmail", "user:", this::createUserFromDynamoDbItem, compareUsersByName);
     }
 
@@ -1146,7 +1155,9 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+    public void deleteBankAndBankVolunteers(String bankId)
+            throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException, InconsistentDatabaseException
+    {
         // First, delete all the volunteers
         List<Volunteer> volunteers = getVolunteersByBank(bankId);
         for (Volunteer volunteer : volunteers) {
@@ -1170,7 +1181,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException {
+    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException, InconsistentDatabaseException {
         // Note: Does NOT verify whether the teacher exists and throw NoSuchSchoolException where appropriate
         if (!getEventsByTeacher(teacherId).isEmpty()) {
             throw new TeacherHasEventsException();
@@ -1235,7 +1246,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Event getEventById(String eventId) {
+    public Event getEventById(String eventId) throws InconsistentDatabaseException {
         return getObjectByUniqueId("event:", SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, eventId);
     }
 
@@ -1261,7 +1272,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException {
+    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         // FIXME: It might be nice to enforce that the bank name is unique
         // -- Insert bank --
         final String uniqueBankId = dynamoDBHelper.createUniqueId();
@@ -1288,7 +1299,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException {
+    public void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
         final String uniqueId = dynamoDBHelper.createUniqueId();
         final PutItemRequest putItemRequest = PutItemRequest.builder()
@@ -1505,7 +1516,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public SiteStatistics getSiteStatistics() {
+    public SiteStatistics getSiteStatistics() throws InconsistentDatabaseException {
         int numEvents = 0;
         int numMatchedEvents = 0;
         int numUnmatchedEvents = 0;
@@ -1577,7 +1588,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getTeachersWithSchoolData() {
+    public List<Teacher> getTeachersWithSchoolData() throws InconsistentDatabaseException {
         // Step 1: read in all the schools so we can easily add them in.
         //   (This would be inefficient if there were lots of schools with
         //   no teachers, but we expect instead that most schools have
@@ -1599,7 +1610,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getTeachersBySchool(String schoolId) {
+    public List<Teacher> getTeachersBySchool(String schoolId) throws InconsistentDatabaseException {
         return getObjectsByIndexLookup("ByUserOrganizationId", user_organization_id, schoolId,
                 item -> (Teacher) createUserFromDynamoDbItem(item),
                 compareUsersByName::compare
@@ -1607,7 +1618,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteersWithBankData() {
+    public List<Volunteer> getVolunteersWithBankData() throws InconsistentDatabaseException {
         // Step 1: read in all the Banks so we can easily add them in.
         //   (This would be inefficient if there were lots of Banks with
         //   no volunteers, but we expect instead that most banks have
@@ -1633,7 +1644,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getMatchedTeachers() {
+    public List<Teacher> getMatchedTeachers() throws InconsistentDatabaseException {
         return getAllEvents().stream()
                 .filter(event -> event.getLinkedVolunteer() != null)
                 .map(Event::getLinkedTeacher)
@@ -1642,7 +1653,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getUnMatchedTeachers() {
+    public List<Teacher> getUnMatchedTeachers() throws InconsistentDatabaseException {
         return getAllAvailableEvents().stream()
                 .map(Event::getLinkedTeacher)
                 .distinct()
@@ -1650,7 +1661,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getMatchedVolunteers() {
+    public List<Volunteer> getMatchedVolunteers() throws InconsistentDatabaseException {
         return getAllEvents().stream()
                 .map(Event::getLinkedVolunteer)
                 .filter(x -> x != null)
@@ -1659,7 +1670,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getUnMatchedVolunteers() {
+    public List<Volunteer> getUnMatchedVolunteers() throws InconsistentDatabaseException {
         final Set<Volunteer> matchedVolunteers = new HashSet<>(getMatchedVolunteers());
         return Stream.concat(
                 getUsersByType(UserType.VOLUNTEER).stream(),
@@ -1671,7 +1682,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<BankAdmin> getBankAdmins() {
+    public List<BankAdmin> getBankAdmins() throws InconsistentDatabaseException {
         return getUsersByType(UserType.BANK_ADMIN).stream()
                 .map(x -> (BankAdmin) x)
                 .toList();

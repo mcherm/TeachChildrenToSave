@@ -35,7 +35,7 @@ public abstract class CachedList<T,E extends Throwable> extends CachedValue<List
      * Delete from the cache certain items WITHOUT refreshing the list again.
      * Is passed a function which identifies items to delete.
      */
-    public void deleteItems(Filter<T> filter) throws E {
+    public void deleteItems(Filter<T> filter) {
         synchronized (this) {
             if (this.value != null) {
                 List<T> newItems = new ArrayList<T>(value.size());

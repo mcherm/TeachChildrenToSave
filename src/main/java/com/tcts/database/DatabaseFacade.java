@@ -61,7 +61,7 @@ public interface DatabaseFacade {
      * Return the user with this userId, or null if there is none. The actual class
      * returned will be an appropriate subclass of User.
      */
-    public User getUserById(String userId) throws InconsistentDatabaseException;
+    public User getUserById(String userId);
 
     /** Return the user with this email, or null if there is none. Whether the emails are treated as case
      * insensitive or not is determined by the database implementation .  The Dynamo Db implementation
@@ -104,7 +104,7 @@ public interface DatabaseFacade {
      * @throws NoSuchAlgorithmException
      */
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
-            throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException;
+            throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException, InconsistentDatabaseException;
 
 
     /**
@@ -112,7 +112,7 @@ public interface DatabaseFacade {
      * @param teacherId
      * @return A sorted list of Events created by this teacher.  Each event does not have the linked bank and volunteer.
      */
-    public List<Event> getEventsByTeacher(String teacherId);
+    public List<Event> getEventsByTeacher(String teacherId) throws InconsistentDatabaseException;
 
     /**
      * Return the list of all events that have null for a volunteer.
@@ -123,17 +123,17 @@ public interface DatabaseFacade {
      * linkedSchool set, so that a single call will retrieve all the data needed to
      * display data.
      */
-    public List<Event> getAllAvailableEvents();
+    public List<Event> getAllAvailableEvents() throws InconsistentDatabaseException;
 
     /**
      * Returns a list of events that the passed in volunteer is volunteering for.  Does not fill in the linked fields bank and school.
      * @param volunteerId
      * @return
      */
-    public List<Event> getEventsByVolunteer(String volunteerId);
+    public List<Event> getEventsByVolunteer(String volunteerId) throws InconsistentDatabaseException;
 
     /**Return the list of events that have a particular volunteer.  Fills in the linked teacher and school object */
-    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId);
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) throws InconsistentDatabaseException;
 
 
     /**
@@ -160,10 +160,10 @@ public interface DatabaseFacade {
     public void volunteerForEvent(String eventId, String volunteerId) throws NoSuchEventException, EventAlreadyHasAVolunteerException;
 
     /** Return the list of volunteers that have a particular bank. Includes BankAdmins at that bank. */
-    public List<Volunteer> getVolunteersByBank(String bankId);
+    public List<Volunteer> getVolunteersByBank(String bankId) throws InconsistentDatabaseException;
 
     /** Returns the list of all Bank Admins for the given bank. */
-    public List<BankAdmin> getBankAdminsByBank(String bankId);
+    public List<BankAdmin> getBankAdminsByBank(String bankId) throws InconsistentDatabaseException;
 
     /**
      * Insert a new Volunteer in the database, and return it. Expects that all
@@ -173,22 +173,22 @@ public interface DatabaseFacade {
      * @throws NoSuchBankException
      */
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
-            throws NoSuchBankException, EmailAlreadyInUseException;
+            throws NoSuchBankException, EmailAlreadyInUseException, InconsistentDatabaseException;
 
     /** Return the bank with this bankId, or null if there is none. */
-    public Bank getBankById(String bankId);
+    public Bank getBankById(String bankId) throws InconsistentDatabaseException;
 
     /** Return the school with this schoolId, or null if there is none. */
-    public School getSchoolById(String schoolId);
+    public School getSchoolById(String schoolId) throws InconsistentDatabaseException;
 
     /** Returns the full list of all schools. */
-    public List<School> getAllSchools();
+    public List<School> getAllSchools() throws InconsistentDatabaseException;
     
     /** Returns the full list of all banks. */
-    public List<Bank> getAllBanks();
+    public List<Bank> getAllBanks() throws InconsistentDatabaseException;
 
     /** Returns the full list of users (with only user data). */
-    public List<User> getAllUsers();
+    public List<User> getAllUsers() throws InconsistentDatabaseException;
 
     /** Returns the allowed dates. */
     public List<PrettyPrintingDate> getAllowedDates();
@@ -209,7 +209,7 @@ public interface DatabaseFacade {
      * This will delete a bank, the bank admin AND ALL Volunteers belonging to that bank. It will fail if
      * any volunteer from that bank is currently signed up for any classes.
      */
-    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException;
+    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException, InconsistentDatabaseException;
     
     /**
      * Delete volunteer from database. If the volunteer has signed up for any events,
@@ -221,7 +221,7 @@ public interface DatabaseFacade {
      * Deletes a teacher from the database. If the teacher has any events then it will
      * throw an exception.
      */
-    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException;
+    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException, InconsistentDatabaseException;
 
     /**
      * This deletes the indicated event, or throws NoSuchEventException if it does not exist.
@@ -240,21 +240,18 @@ public interface DatabaseFacade {
     public List<Event> getAllEvents() throws InconsistentDatabaseException;
 
     /** Returns the indicated event object, or null if it does not exist. */
-    public Event getEventById(String eventId);
+    public Event getEventById(String eventId) throws InconsistentDatabaseException;
 
-    // FIXME: All this stuff shouldn't throw InconsistentDatabaseException.
-    
     /**
      * Modifies fields of an existing school. 
      */
-
 	public void modifySchool(EditSchoolFormData school) throws NoSuchSchoolException;
 
     /** Inserts a new bank and the corresponding bank admin. Password is set to null. */
-	void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException;
+	void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException;
 
     /** Insert a new Bank Admin for a bank. Password is set to null. */
-    void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException;
+    void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException;
 
     /**
      * Modifies fields of an existing bank.
@@ -347,21 +344,21 @@ public interface DatabaseFacade {
 	public void deleteAllowedDate(PrettyPrintingDate date) throws NoSuchAllowedValueException;
 
     /** Retrieves a bunch of basic statistics about the database. */
-    public SiteStatistics getSiteStatistics();
+    public SiteStatistics getSiteStatistics() throws InconsistentDatabaseException;
 
     /**
      * Get list of teachers with their school details.
      * 
      * @return List<Teacher>
      */
-	public List<Teacher> getTeachersWithSchoolData();
+	public List<Teacher> getTeachersWithSchoolData() throws InconsistentDatabaseException;
 
     /**
      *  Get list of teachers from the specified school
      * @param schoolId
      * @return
      */
-    public List<Teacher> getTeachersBySchool(String schoolId);
+    public List<Teacher> getTeachersBySchool(String schoolId) throws InconsistentDatabaseException;
 
 
     /**
@@ -369,13 +366,13 @@ public interface DatabaseFacade {
      *
      * @return List<Volunteer>
      */
-	public List<Volunteer> getVolunteersWithBankData();
+	public List<Volunteer> getVolunteersWithBankData() throws InconsistentDatabaseException;
 	
 	/**
 	 * Get list of all the teachers who has at least one class which has a volunteer.  If there are none returns an empty list.
 	 * @return
 	 */
-	List<Teacher> getMatchedTeachers();
+	List<Teacher> getMatchedTeachers() throws InconsistentDatabaseException;
 	
 	/**
 	 * Get list of all the teachers who has at least one class which dooesn't have a volunteer.  If there are no teachers like this returns an empty list.
@@ -383,7 +380,7 @@ public interface DatabaseFacade {
 	 * @return
 	 */
 
-	List<Teacher> getUnMatchedTeachers();
+	List<Teacher> getUnMatchedTeachers() throws InconsistentDatabaseException;
 	
 	/**
 	 * Get list of all the volunteers who have signed-up for classes.  If there are no volunteers returns an empty list.
@@ -391,7 +388,7 @@ public interface DatabaseFacade {
 	 * @return List<Volunteer>
 	 */
 
-	List<Volunteer> getMatchedVolunteers();
+	List<Volunteer> getMatchedVolunteers() throws InconsistentDatabaseException;
 	
 	/**
 	 * Get list of all the volunteers who are not signed up for classes.  If there are no volunteers returns an empty list.
@@ -399,7 +396,7 @@ public interface DatabaseFacade {
 	 * @return
 	 */
 
-	List<Volunteer> getUnMatchedVolunteers();
+	List<Volunteer> getUnMatchedVolunteers() throws InconsistentDatabaseException;
 
     /**
      * Returns a list of all the bank admins.  If there are no bankadmins returns an empty list.
@@ -407,7 +404,7 @@ public interface DatabaseFacade {
      *
      * @return
      */
-    List<BankAdmin> getBankAdmins();
+    List<BankAdmin> getBankAdmins() throws InconsistentDatabaseException;
 
     /**
      * Retrieves the full collection of all site settings.
