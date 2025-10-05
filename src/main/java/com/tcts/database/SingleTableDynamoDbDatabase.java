@@ -55,10 +55,8 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -583,7 +581,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * @param userId the userId of the user who is allowed to be using this email or NULL if no one should be using it
      * @param email email to check if already in use
      */
-    private void verifyEmailNotInUseByAnyoneElse(String userId, String email) throws SQLException, EmailAlreadyInUseException {
+    private void verifyEmailNotInUseByAnyoneElse(String userId, String email) throws EmailAlreadyInUseException {
         if (email == null || email.isEmpty()) {
             throw new RuntimeException("Not a valid email: '" + email + "'.");
         }
@@ -644,7 +642,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             final List<String> oldAllowedValues,
             final String singletonItemName,
             final DatabaseField valuesWithSort
-    ) throws SQLException, NoSuchAllowedValueException {
+    ) throws NoSuchAllowedValueException {
         // --- check if the value is missing ---
         if (!oldAllowedValues.contains(valueToDelete)) {
             throw new NoSuchAllowedValueException();
@@ -685,7 +683,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             final List<String> oldAllowedValues,
             final String singletonItemName,
             final DatabaseField valuesWithSort
-    ) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+    ) throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         // --- check for invalid times ---
         if (newValue.equals("") || oldAllowedValues.contains(newValue)) {
             throw new AllowedValueAlreadyInUseException();
@@ -746,12 +744,12 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
+    public User getUserById(String userId) throws InconsistentDatabaseException {
         return getObjectByUniqueId("user:", this::createUserFromDynamoDbItem, userId);
     }
 
     @Override
-    public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
+    public User getUserByEmail(String email) throws InconsistentDatabaseException {
         // --- First, we look in the index to find out the key ---
         final QueryRequest queryRequest = QueryRequest.builder()
                 .tableName(getTableName())
@@ -783,7 +781,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         final String itemKey = "user:" + formData.getUserId();
         // Because emails are commonly case-insensitive, we store a lower-case version of the email
@@ -802,7 +800,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
+    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         verifyEmailNotInUseByAnyoneElse(formData.getUserId(), formData.getEmail());
         final String itemKey = "user:" + formData.getUserId();
         // Because emails are commonly case-insensitive, we store a lower-case version of the email
@@ -826,7 +824,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyTeacherSchool(String userId, String organizationId) throws SQLException, NoSuchSchoolException, NoSuchUserException {
+    public void modifyTeacherSchool(String userId, String organizationId) throws NoSuchSchoolException, NoSuchUserException {
         // NOTE: At the moment, this is NOT checking whether the user exists (it will create it if not, but with
         //   all the other fields missing) and it is not checking whether the school exists. Except in the case
         //   of bugs elsewhere, that should be fine.
@@ -837,7 +835,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
         // --- check for uniqueness ---
         verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
@@ -867,13 +865,13 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
+    public List<Event> getEventsByTeacher(String teacherId) {
         return getObjectsByIndexLookup("ByEventTeacherId", event_teacher_id, teacherId,
                 SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, compareEvents);
     }
 
     @Override
-    public List<Event> getAllAvailableEvents() throws SQLException {
+    public List<Event> getAllAvailableEvents() {
         // NOTE: This is incredibly similar to getAllEvents(). Normally, I would try to make
         // the two of them share code. HOWEVER, this is the single most important function
         // in the whole interface -- it is the slow step that powers the signup process.
@@ -946,7 +944,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
+    public List<Event> getEventsByVolunteer(String volunteerId) {
         if (volunteerId == null) {
             throw new RuntimeException("This method doesn't handle null for volunteerId.");
             // NOTE: It *could* handle that if we wanted it to, but for now that's just basically an assert
@@ -956,7 +954,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) throws SQLException {
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool(String volunteerId) {
         // --- Load the volunteer, since we know it'll be needed if there are ANY events ---
         final Volunteer volunteer = (Volunteer) getUserById(volunteerId);
         volunteer.setLinkedBank(getBankById(volunteer.getBankId()));
@@ -964,28 +962,24 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         // --- Now get the events ---
         return getEventsByVolunteer(volunteerId).stream()
                 .map(event -> {
-                    try {
-                        // --- populate the teacher ---
-                        final Teacher teacher = (Teacher) getUserById(event.getTeacherId());
-                        teacher.setLinkedSchool(getSchoolById(teacher.getSchoolId()));
-                        event.setLinkedTeacher(teacher);
+                    // --- populate the teacher ---
+                    final Teacher teacher = (Teacher) getUserById(event.getTeacherId());
+                    teacher.setLinkedSchool(getSchoolById(teacher.getSchoolId()));
+                    event.setLinkedTeacher(teacher);
 
-                        // --- populate the volunteer ---
-                        assert event.getVolunteerId().equals(volunteerId);
-                        event.setLinkedVolunteer(volunteer);
+                    // --- populate the volunteer ---
+                    assert event.getVolunteerId().equals(volunteerId);
+                    event.setLinkedVolunteer(volunteer);
 
-                        // --- the event is ready now ---
-                        return event;
-                    } catch(SQLException err) {
-                        throw new RuntimeException(err); // these things won't throw SQLException ANYWAY.
-                    }
+                    // --- the event is ready now ---
+                    return event;
                 })
                 .sorted(compareEvents)
                 .toList();
     }
 
     @Override
-    public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
+    public void insertEvent(String teacherId, CreateEventFormData formData) {
         final String uniqueId = dynamoDBHelper.createUniqueId();
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
@@ -1005,7 +999,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void volunteerForEvent(String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
+    public void volunteerForEvent(String eventId, String volunteerId) throws NoSuchEventException, EventAlreadyHasAVolunteerException {
         final String volunteerIdToUse = volunteerId == null ? NO_VOLUNTEER : volunteerId;
 
         final UpdateItemBuilder builder = new UpdateItemBuilder(getTableName(), "event:" + eventId)
@@ -1020,7 +1014,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
+    public List<Volunteer> getVolunteersByBank(String bankId) {
         // We look for users with this organization id
         final QueryRequest queryRequest = QueryRequest.builder()
                 .tableName(getTableName())
@@ -1038,7 +1032,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
+    public List<BankAdmin> getBankAdminsByBank(String bankId) {
         return getVolunteersByBank(bankId).stream()
                 .filter(volunteer -> volunteer instanceof BankAdmin)
                 .map(volunteer -> (BankAdmin) volunteer)
@@ -1046,7 +1040,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchBankException, EmailAlreadyInUseException {
         // NOTE: I'm choosing NOT to verify that the school ID is actually present in the database
         // --- check for uniqueness ---
         verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
@@ -1082,35 +1076,35 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Bank getBankById(String bankId) throws SQLException {
+    public Bank getBankById(String bankId) {
         return getObjectByUniqueId("bank:", SingleTableDynamoDbDatabase::createBankFromDynamoDbItem, bankId);
     }
 
     @Override
-    public School getSchoolById(String schoolId) throws SQLException {
+    public School getSchoolById(String schoolId) {
         return getObjectByUniqueId(
                 "school:", SingleTableDynamoDbDatabase::createSchoolFromDynamoDbItem, schoolId);
     }
 
     @Override
-    public List<School> getAllSchools() throws SQLException {
+    public List<School> getAllSchools() {
         return getAllUsingIndexOrScan(
                 "BySchoolId", "school:", SingleTableDynamoDbDatabase::createSchoolFromDynamoDbItem, compareSchools);
     }
 
     @Override
-    public List<Bank> getAllBanks() throws SQLException {
+    public List<Bank> getAllBanks() {
         return getAllUsingIndexOrScan(
                 "ByBankId", "bank:", SingleTableDynamoDbDatabase::createBankFromDynamoDbItem, compareBanks);
     }
 
     @Override
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers() {
         return getAllUsingIndexOrScan("ByUserEmail", "user:", this::createUserFromDynamoDbItem, compareUsersByName);
     }
 
     @Override
-    public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
+    public List<PrettyPrintingDate> getAllowedDates() {
         final Map<String,AttributeValue> item = getSingletonItem("allowedDates");
         final AttributeValue allowedDateValues = item.get(allowed_date_values.name());
         if (allowedDateValues == null) {
@@ -1130,29 +1124,29 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<String> getAllowedTimes() throws SQLException {
+    public List<String> getAllowedTimes() {
         return getSortedStrings("allowedTimes", allowed_time_values_with_sort, "allowed times");
     }
 
     @Override
-    public List<String> getAllowedGrades() throws SQLException {
+    public List<String> getAllowedGrades() {
         return getSortedStrings("allowedGrades", allowed_grade_values_with_sort, "allowed grades");
     }
 
     @Override
-    public List<String> getAllowedDeliveryMethods() throws SQLException {
+    public List<String> getAllowedDeliveryMethods() {
         return getSortedStrings("allowedDeliveryMethods", allowed_delivery_method_values_with_sort, "allowed delivery methods");
     }
 
     @Override
-    public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
+    public void deleteSchool(String schoolId) throws NoSuchSchoolException {
         // Note: Does NOT verify whether the school exists and throw NoSuchSchoolException where appropriate
         // Note: Does not verify whether the school is referenced anywhere.
         deleteItem("school:", schoolId);
     }
 
     @Override
-    public void deleteBankAndBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
         // First, delete all the volunteers
         List<Volunteer> volunteers = getVolunteersByBank(bankId);
         for (Volunteer volunteer : volunteers) {
@@ -1167,7 +1161,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
+    public void deleteVolunteer(String volunteerId) throws NoSuchUserException, VolunteerHasEventsException {
         List<Event> events = getEventsByVolunteer(volunteerId);
         if (!events.isEmpty()) {
             throw new VolunteerHasEventsException();
@@ -1176,7 +1170,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
+    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException {
         // Note: Does NOT verify whether the teacher exists and throw NoSuchSchoolException where appropriate
         if (!getEventsByTeacher(teacherId).isEmpty()) {
             throw new TeacherHasEventsException();
@@ -1185,12 +1179,12 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteEvent(String eventId) throws SQLException, NoSuchEventException {
+    public void deleteEvent(String eventId) throws NoSuchEventException {
         deleteItem("event:", eventId);
     }
 
     @Override
-    public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
+    public List<Event> getAllEvents() throws InconsistentDatabaseException {
         // --- get the schools ---
         Map<String,School> schools = getAllSchools().stream()
                 .collect(Collectors.toMap(
@@ -1241,12 +1235,12 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public Event getEventById(String eventId) throws SQLException {
+    public Event getEventById(String eventId) {
         return getObjectByUniqueId("event:", SingleTableDynamoDbDatabase::createEventFromDynamoDbItem, eventId);
     }
 
     @Override
-    public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
+    public void modifySchool(EditSchoolFormData school) throws NoSuchSchoolException {
         // This approach will CREATE the school if it doesn't exist.
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
@@ -1267,7 +1261,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
+    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException {
         // FIXME: It might be nice to enforce that the bank name is unique
         // -- Insert bank --
         final String uniqueBankId = dynamoDBHelper.createUniqueId();
@@ -1294,7 +1288,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException {
+    public void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException {
         verifyEmailNotInUseByAnyoneElse(null, formData.getEmail());
         final String uniqueId = dynamoDBHelper.createUniqueId();
         final PutItemRequest putItemRequest = PutItemRequest.builder()
@@ -1315,7 +1309,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
+    public void modifyBank(EditBankFormData formData) throws NoSuchBankException {
         // This approach will CREATE the bank if it doesn't exist instead of throwing an exception
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
@@ -1328,7 +1322,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void setUserType(String userId, UserType userType) throws SQLException {
+    public void setUserType(String userId, UserType userType) {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), "user:" + userId)
                 .withString(user_type, userType.getDBValue())
                 .build();
@@ -1336,7 +1330,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
+    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws NoSuchBankException {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), "bank:" + formData.getBankId())
                 .withString(bank_specific_data_label, formData.getBankSpecificFieldLabel())
                 .build();
@@ -1344,7 +1338,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
+    public void insertNewSchool(CreateSchoolFormData school) {
         final String uniqueId = dynamoDBHelper.createUniqueId();
         final PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(getTableName())
@@ -1366,7 +1360,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException {
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws AllowedValueAlreadyInUseException {
         // NOTE: Instead of checking for AllowedDateAlreadyInUseException, we will simply leave as-is if already in use
         // --- get the existing value ---
         final List<PrettyPrintingDate> oldAllowedDates = getAllowedDates();
@@ -1390,17 +1384,17 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+    public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore) throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         insertNewSortedString(newAllowedTime, timeToInsertBefore, getAllowedTimes(), "allowedTimes", allowed_time_values_with_sort);
     }
 
     @Override
-    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         insertNewSortedString(newAllowedGrade, gradeToInsertBefore, getAllowedGrades(), "allowedGrades", allowed_grade_values_with_sort);
     }
 
     @Override
-    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         insertNewSortedString(newAllowedDeliveryMethod, deliveryMethodToInsertBefore, getAllowedDeliveryMethods(), "allowedDeliveryMethods", allowed_delivery_method_values_with_sort);
     }
 
@@ -1414,7 +1408,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws NoSuchEventException {
         final String tableKey = "event:" + formData.getEventId();
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
                 .withString(event_volunteer_id, dbFormatVolunteerId(formData.getVolunteerId()))
@@ -1428,7 +1422,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEvent(EditEventFormData formData) throws NoSuchEventException {
         final String tableKey = "event:" + formData.getEventId();
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
                 .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())
@@ -1447,7 +1441,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException {
+    public void updateUserCredential(String userId, String hashedPassword, String salt) {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), "user:" + userId)
                 .withString(user_hashed_password, hashedPassword)
                 .withString(user_password_salt, salt)
@@ -1458,7 +1452,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException {
+    public void updateResetPasswordToken(String userId, String resetPasswordToken) {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), "user:" + userId)
                 .withString(user_reset_password_token, resetPasswordToken)
                 .withStringFieldEqualsCondition(table_key, "user:" + userId)
@@ -1467,7 +1461,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException {
+    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) {
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), "user:" + volunteerId)
                 .withInt(user_approval_status, approvalStatus.getDbValue())
                 .withStringFieldEqualsCondition(table_key, "user:" + volunteerId)
@@ -1476,22 +1470,22 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedTime(String time) throws NoSuchAllowedValueException {
         deleteFromSortedStrings(time, getAllowedTimes(), "allowedTimes", allowed_time_values_with_sort);
     }
 
     @Override
-    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedGrade(String grade) throws NoSuchAllowedValueException {
         deleteFromSortedStrings(grade, getAllowedGrades(), "allowedGrades", allowed_grade_values_with_sort);
     }
 
     @Override
-    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws NoSuchAllowedValueException {
         deleteFromSortedStrings(deliveryMethod, getAllowedDeliveryMethods(), "allowedDeliveryMethods", allowed_delivery_method_values_with_sort);
     }
 
     @Override
-    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedDate(PrettyPrintingDate date) throws NoSuchAllowedValueException {
         // --- get the existing value ---
         final List<PrettyPrintingDate> oldAllowedDates = getAllowedDates();
         // --- tweak it as needed ---
@@ -1511,7 +1505,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public SiteStatistics getSiteStatistics() throws SQLException {
+    public SiteStatistics getSiteStatistics() {
         int numEvents = 0;
         int numMatchedEvents = 0;
         int numUnmatchedEvents = 0;
@@ -1583,7 +1577,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getTeachersWithSchoolData() throws SQLException {
+    public List<Teacher> getTeachersWithSchoolData() {
         // Step 1: read in all the schools so we can easily add them in.
         //   (This would be inefficient if there were lots of schools with
         //   no teachers, but we expect instead that most schools have
@@ -1605,7 +1599,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException {
+    public List<Teacher> getTeachersBySchool(String schoolId) {
         return getObjectsByIndexLookup("ByUserOrganizationId", user_organization_id, schoolId,
                 item -> (Teacher) createUserFromDynamoDbItem(item),
                 compareUsersByName::compare
@@ -1613,7 +1607,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getVolunteersWithBankData() throws SQLException {
+    public List<Volunteer> getVolunteersWithBankData() {
         // Step 1: read in all the Banks so we can easily add them in.
         //   (This would be inefficient if there were lots of Banks with
         //   no volunteers, but we expect instead that most banks have
@@ -1639,7 +1633,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getMatchedTeachers() throws SQLException {
+    public List<Teacher> getMatchedTeachers() {
         return getAllEvents().stream()
                 .filter(event -> event.getLinkedVolunteer() != null)
                 .map(Event::getLinkedTeacher)
@@ -1648,7 +1642,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Teacher> getUnMatchedTeachers() throws SQLException {
+    public List<Teacher> getUnMatchedTeachers() {
         return getAllAvailableEvents().stream()
                 .map(Event::getLinkedTeacher)
                 .distinct()
@@ -1656,7 +1650,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getMatchedVolunteers() throws SQLException {
+    public List<Volunteer> getMatchedVolunteers() {
         return getAllEvents().stream()
                 .map(Event::getLinkedVolunteer)
                 .filter(x -> x != null)
@@ -1665,7 +1659,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
+    public List<Volunteer> getUnMatchedVolunteers() {
         final Set<Volunteer> matchedVolunteers = new HashSet<>(getMatchedVolunteers());
         return Stream.concat(
                 getUsersByType(UserType.VOLUNTEER).stream(),
@@ -1677,14 +1671,14 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public List<BankAdmin> getBankAdmins() throws SQLException {
+    public List<BankAdmin> getBankAdmins() {
         return getUsersByType(UserType.BANK_ADMIN).stream()
                 .map(x -> (BankAdmin) x)
                 .toList();
     }
 
     @Override
-    public Map<String, String> getSiteSettings() throws SQLException {
+    public Map<String, String> getSiteSettings() {
         final Map<String,AttributeValue> item = getSingletonItem("siteSettings");
         final AttributeValue keyvalues = item.get(site_setting_entries.name());
         if (keyvalues == null) {
@@ -1703,7 +1697,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
+    public void modifySiteSetting(String settingName, String settingValue) {
         // --- get existing values ---
         final Map<String,String> oldSiteSettings = getSiteSettings();
         // --- update it ---
@@ -1723,7 +1717,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public SortedSet<Document> getDocuments() throws SQLException {
+    public SortedSet<Document> getDocuments() {
         final Map<String,AttributeValue> item = getSingletonItem("documents");
         if (item == null) {
             throw new RuntimeException("No documents found. DB may not be initialized.");
@@ -1751,7 +1745,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void createOrModifyDocument(Document document) throws SQLException {
+    public void createOrModifyDocument(Document document) {
         // --- get existing documents ---
         final SortedSet<Document> documents = getDocuments();
         // --- modify as desired ---
@@ -1778,7 +1772,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteDocument(String documentName) throws SQLException {
+    public void deleteDocument(String documentName) {
         // --- get existing documents ---
         final SortedSet<Document> documents = getDocuments();
         // --- modify as desired ---

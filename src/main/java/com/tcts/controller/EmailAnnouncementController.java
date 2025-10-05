@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +52,7 @@ public class EmailAnnouncementController {
 
 
     @RequestMapping(value = "/emailAnnouncement.htm", method = RequestMethod.GET)
-    public String emailAnnouncement(HttpSession session, Model model) throws SQLException {
+    public String emailAnnouncement(HttpSession session, Model model) {
 		SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -65,7 +64,7 @@ public class EmailAnnouncementController {
      * A subroutine used to set up and then show the email announcement form. It
      * returns the string, so you can invoke it as "return showForm(...)".
      */
-    private String showFormWithErrors(Model model, Errors errors) throws SQLException {
+    private String showFormWithErrors(Model model, Errors errors) {
     	model.addAttribute("formData", new EmailAnnouncementFormData());
         model.addAttribute("errors", errors);
     	return "emailAnnouncement";
@@ -74,7 +73,7 @@ public class EmailAnnouncementController {
     @RequestMapping(value="/emailAnnouncement.htm", method=RequestMethod.POST)
     public String doEmailAnnouncement(HttpSession session, Model model, HttpServletRequest request,
                               @ModelAttribute("formData") EmailAnnouncementFormData formData)
-            throws SQLException, InconsistentDatabaseException
+            throws InconsistentDatabaseException
     {
     	SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -142,7 +141,7 @@ public class EmailAnnouncementController {
             try {
                 // Send Email Announcement
                 List<String> emailList = new ArrayList(emails);
-                Map<String, Object> emailModel = new HashMap<String, Object>();
+                Map<String, Object> emailModel = new HashMap<>();
                 emailModel.put("logoImage", logoImage);
                 emailModel.put("message", formData.getMessage());
                 emailModel.put("subject", "Message from teach children to save program!");
@@ -153,7 +152,7 @@ public class EmailAnnouncementController {
                     emailUtil.sendEmail(emailContent, emailModel);
                 }
                 // Send Email Announcement Receipt to Teach Children to Save Email
-                Map<String, Object> receiptModel = new HashMap<String, Object>();
+                Map<String, Object> receiptModel = new HashMap<>();
                 receiptModel.put("logoImage", logoImage);
                 receiptModel.put("message", formData.getMessage());
                 receiptModel.put("emails",emailList);
@@ -166,7 +165,6 @@ public class EmailAnnouncementController {
 
 
             } catch(AppConfigurationException err) {
-
                 // FIXME: Need to log or report this someplace more reliable.
                 System.err.println("Could not send email for email announcement " + err.getStackTrace());
                 throw new RuntimeException("Could not send email for email announcement:"  + err.getMessage(), err);

@@ -1,6 +1,5 @@
 package com.tcts.formdata;
 
-import java.sql.SQLException;
 
 /**
  * A class containing the fields used when an admin edits an event. The admin can edit all
@@ -18,7 +17,7 @@ public class EditEventFormData extends CreateEventFormData {
     }
 
     @Override
-    public void validationRules(Errors errors) throws SQLException {
+    public void validationRules(Errors errors) {
         super.validationRules(errors);
         if ((eventId == null) || (eventId.isEmpty())) {
             errors.addError("An event id is required.");

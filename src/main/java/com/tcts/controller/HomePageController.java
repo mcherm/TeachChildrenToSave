@@ -1,6 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -48,7 +47,7 @@ public class HomePageController {
      * This renders the default home page for someone who is not logged in.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String showDefaultHomePage(HttpServletRequest httpServletRequest, Model model) throws SQLException {
+    public String showDefaultHomePage(HttpServletRequest httpServletRequest, Model model) {
         if (httpServletRequest.getRequestURI().endsWith("/")) {
             String currentYear = database.getSiteSettings().get("CurrentYear");
             String eventDatesOnHomepage = database.getSiteSettings().get("EventDatesOnHomepage");
@@ -64,7 +63,7 @@ public class HomePageController {
      * Render the home page for a volunteer.
      */
     @RequestMapping(value = "volunteerHome.htm", method = RequestMethod.GET)
-    public String showVolunteerHomePage(HttpSession session, Model model) throws SQLException {
+    public String showVolunteerHomePage(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         Volunteer volunteer = sessionData.getVolunteer();
         if (volunteer == null) {
@@ -85,13 +84,6 @@ public class HomePageController {
                 volunteerDocs.add(document.getName());
             }
         }
-
-
-        // --- Get list of allowed grades ---
-        List<String> allowedGrades = database.getAllowedGrades();
-
-        // --- Get list of allowed delivery methods ---
-        List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
 
         // --- Display the page ---
         model.addAttribute("bank", bank);
@@ -115,7 +107,7 @@ public class HomePageController {
      * Render the home page for a teacher.
      */
     @RequestMapping(value = "teacherHome.htm", method = RequestMethod.GET)
-    public String showTeacherHomePage(HttpSession session, Model model) throws SQLException, InconsistentDatabaseException {
+    public String showTeacherHomePage(HttpSession session, Model model) throws InconsistentDatabaseException {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
         if (teacher == null) {
@@ -165,7 +157,7 @@ public class HomePageController {
      * Render the home page for a bankAdmin.
      */
     @RequestMapping(value = "bankAdminHome.htm", method = RequestMethod.GET)
-    public String showBankAdminHomePage(HttpSession session, Model model) throws SQLException {
+    public String showBankAdminHomePage(HttpSession session, Model model) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();
@@ -179,9 +171,9 @@ public class HomePageController {
 
         // --- Obtain and sort the volunteers ---
         List<Volunteer> volunteers = database.getVolunteersByBank(bankAdmin.getBankId());
-        List<Volunteer> newVolunteers = new ArrayList<Volunteer>();
-        List<Volunteer> normalVolunteers = new ArrayList<Volunteer>(volunteers.size());
-        List<Volunteer> suspendedVolunteers = new ArrayList<Volunteer>();
+        List<Volunteer> newVolunteers = new ArrayList<>();
+        List<Volunteer> normalVolunteers = new ArrayList<>(volunteers.size());
+        List<Volunteer> suspendedVolunteers = new ArrayList<>();
         for (Volunteer volunteer : volunteers) {
             if (volunteer.getApprovalStatus() == ApprovalStatus.UNCHECKED) {
                newVolunteers.add (volunteer);
@@ -199,8 +191,8 @@ public class HomePageController {
 
         //Load the list of important documents shown to volunteer and bank admin
         SortedSet<Document> documents = database.getDocuments();
-        List<String> volunteerDocs = new ArrayList<String>();
-        List<String> bankAdminDocs = new ArrayList<String>();
+        List<String> volunteerDocs = new ArrayList<>();
+        List<String> bankAdminDocs = new ArrayList<>();
         for (Document document : documents) {
             if (document.getShowToVolunteer()) {
                 volunteerDocs.add(document.getName());
@@ -248,7 +240,7 @@ public class HomePageController {
     /**
      * Looks at the site setting and returns true if the documents should be shown, false if not.
      */
-    private boolean getShowDocuments() throws SQLException {
+    private boolean getShowDocuments() {
         return database.getSiteSettings().get(SHOW_DOCUMENTS_SETTING).equalsIgnoreCase("yes");
     }
 }

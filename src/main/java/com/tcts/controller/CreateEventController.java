@@ -1,14 +1,11 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
 
 import com.tcts.exception.FormDataConstructionException;
 import com.tcts.formdata.CreateEventFormDataStrings;
 import jakarta.servlet.http.HttpSession;
 
-import org.apache.velocity.runtime.directive.Parse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +32,7 @@ public class CreateEventController {
     public String showPageCreateEventBySiteAdmin(
             HttpSession session,
             Model model
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -46,7 +43,7 @@ public class CreateEventController {
     }
 
     @RequestMapping(value="/createEvent.htm", method= RequestMethod.GET)
-    public String showPageCreateEventByTeacher(HttpSession session, Model model) throws SQLException {
+    public String showPageCreateEventByTeacher(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getTeacher() == null) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in teacher.");
@@ -60,7 +57,7 @@ public class CreateEventController {
      * A subroutine used to set up and then show the register teacher form. It
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
-    private String showFormWithErrors(Model model, SessionData sessionData, Errors errors) throws SQLException {
+    private String showFormWithErrors(Model model, SessionData sessionData, Errors errors) {
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
         List<String> allowedGrades = database.getAllowedGrades();
@@ -88,9 +85,8 @@ public class CreateEventController {
     public String createEvent(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") CreateEventFormDataStrings formDataStrings)
-        throws SQLException
-    {
+            @ModelAttribute("formData") CreateEventFormDataStrings formDataStrings
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
 
@@ -131,7 +127,7 @@ public class CreateEventController {
      * This method ensures that the volunteer registration is open, throwing an exception
      * it is not.
      */
-    public void ensureEventCreationIsOpen() throws SQLException {
+    public void ensureEventCreationIsOpen() {
         if (!isEventCreationOpen(database)) {
             throw new RuntimeException("Cannot register for classes if teacher registration is not open.");
         }
@@ -141,7 +137,7 @@ public class CreateEventController {
      * This method uses the database connection to verify whether the course creation
      * is open. It returns true if it is open, false if not.
      */
-    public static boolean isEventCreationOpen(DatabaseFacade database) throws SQLException {
+    public static boolean isEventCreationOpen(DatabaseFacade database) {
         String setting = database.getSiteSettings().get("CourseCreationOpen");
         return setting != null && setting.trim().toLowerCase().equals("yes");
     }

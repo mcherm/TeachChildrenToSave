@@ -1,7 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
-
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +40,7 @@ public class LoginController {
             @ModelAttribute("formData") LoginFormData formData,
             ModelMap model,
             HttpSession session
-        ) throws SQLException, InconsistentDatabaseException {
+        ) throws InconsistentDatabaseException {
         SessionData.ensureNoActiveSession(session);
 
         if (formData.getEmail() != null && !formData.getEmail().isEmpty()) {

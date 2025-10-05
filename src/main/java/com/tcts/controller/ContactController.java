@@ -2,7 +2,6 @@ package com.tcts.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,8 +57,7 @@ public class ContactController {
     public String doContactUs(
             HttpServletRequest request,
             @ModelAttribute("formData") ContactUsFormData formData
-        ) throws SQLException, InconsistentDatabaseException, UnsupportedEncodingException
-    {
+    ) throws InconsistentDatabaseException {
     	try {
     		Map<String,Object> emailModel = new HashMap<String, Object>();
     		String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;

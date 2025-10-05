@@ -1,6 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class BankController {
      * Render the bank edit page.
      */
     @RequestMapping(value = "viewEditBanks.htm", method = RequestMethod.GET)
-    public String showBanks(HttpSession session, Model model) throws SQLException {
+    public String showBanks(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -67,7 +66,7 @@ public class BankController {
      * A subroutine used to set up and then show the edit banks form. It
      * returns the string, so you can invoke it as "return showForm(...)".
      */
-    public String showForm(Model model) throws SQLException {
+    public String showForm(Model model) {
         List<Bank> banks = database.getAllBanks();
         for (Bank bank : banks) {
             List<BankAdmin> bankAdmins = database.getBankAdminsByBank(bank.getBankId());
@@ -87,8 +86,7 @@ public class BankController {
             @RequestParam("bankId") String bankId,
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -110,7 +108,7 @@ public class BankController {
             @RequestParam("bankId") String bankId,
             HttpSession session,
             HttpServletRequest request
-    ) throws SQLException, BankHasVolunteersException, VolunteerHasEventsException {
+    ) throws BankHasVolunteersException, VolunteerHasEventsException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -138,7 +136,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @RequestParam("bankId") String bankId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null && sessionData.getBankAdmin() == null) {
@@ -153,7 +151,7 @@ public class BankController {
     }
 
     /** Create an EditBankFormData loading everything from the DB (using the bankId). */
-    private EditBankFormData initializeNewEditBankFormData(String bankId) throws SQLException {
+    private EditBankFormData initializeNewEditBankFormData(String bankId) {
         Bank bank = database.getBankById(bankId);
         EditBankFormData formData = new EditBankFormData();
         formData.setBankId(bankId);
@@ -168,7 +166,6 @@ public class BankController {
      * returns the string, so you can invoke it as "return showEditBankWithErrors(...)".
      */
     public String showEditBankWithErrors(Model model, SessionData sessionData, EditBankFormData formData, Errors errors)
-            throws SQLException
     {
         String cancelURL = bankEditCancelURL(sessionData);
         List<BankAdmin> bankAdmins = database.getBankAdminsByBank(formData.getBankId());
@@ -205,8 +202,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditBankFormData formData
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null && sessionData.getBankAdmin() == null) {
@@ -244,8 +240,8 @@ public class BankController {
     public String enterDataToAddBank(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") CreateBankFormData formData // FIXME: Why? Where does this come from?
-    ) throws SQLException {
+            @ModelAttribute("formData") CreateBankFormData formData
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -260,8 +256,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") CreateBankFormData formData
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -289,7 +284,7 @@ public class BankController {
      * A subroutine used to set up and then show the add bank form. It
      * returns the string, so you can invoke it as "return showAddBankWithErrorMessage(...)".
      */
-    private String showAddBankWithErrors(Model model, Errors errors) throws SQLException {
+    private String showAddBankWithErrors(Model model, Errors errors) {
         model.addAttribute("errors", errors);
         return "addBank";
     }
@@ -300,7 +295,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @RequestParam("bankId") String bankId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -323,7 +318,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") NewBankAdminFormData formData
-    ) throws SQLException {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -378,7 +373,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @RequestParam("bankId") String bankId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -408,7 +403,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") MarkAsBankAdminFormData formData
-    ) throws SQLException {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -429,7 +424,7 @@ public class BankController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") MarkAsBankAdminFormData formData
-    ) throws SQLException {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();

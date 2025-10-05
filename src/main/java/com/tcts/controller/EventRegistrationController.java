@@ -1,16 +1,20 @@
 package com.tcts.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tcts.datamodel.ApprovalStatus;
+import com.tcts.datamodel.Event;
+import com.tcts.datamodel.School;
+import com.tcts.datamodel.Teacher;
+import com.tcts.datamodel.User;
+import com.tcts.datamodel.Volunteer;
 import com.tcts.formdata.Errors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import com.tcts.datamodel.*;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
 import com.tcts.util.EventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +56,7 @@ public class EventRegistrationController {
             HttpSession session,
             Model model,
             @RequestParam("userId") String userId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -66,7 +70,7 @@ public class EventRegistrationController {
     }
 
     @RequestMapping(value = "/eventRegistration.htm", method = RequestMethod.GET)
-    public String showEventRegistrationPage(HttpSession session, Model model) throws SQLException {
+    public String showEventRegistrationPage(HttpSession session, Model model) {
         Volunteer volunteer;
         SessionData sessionData = SessionData.fromSession(session);
 
@@ -88,11 +92,11 @@ public class EventRegistrationController {
      * without errors. (Pass null for Errors if we don't have errors to display.) It
      * returns the string, so you can invoke it as "return showForm(...)".
      */
-    private String showForm(Model model, //contains list of attributes that is passed to the form
-                            Volunteer volunteer, //the volunteer to be signed up for a class),
-                            SessionData sessionData)
-            throws SQLException {
-
+    private String showForm(
+            Model model, //contains list of attributes that is passed to the form
+            Volunteer volunteer, //the volunteer to be signed up for a class),
+            SessionData sessionData
+    ) {
         model.addAttribute ("volunteerId", volunteer.getUserId());
         model.addAttribute("volunteerFirstName",volunteer.getFirstName());
         model.addAttribute("volunteerLastName", volunteer.getLastName());
@@ -138,7 +142,7 @@ public class EventRegistrationController {
     @RequestMapping(value="/eventRegistration.htm", method=RequestMethod.POST)
     public String volunteerForEvent(HttpSession session, HttpServletRequest request,
                               @ModelAttribute("formData") EventRegistrationFormData formData)
-            throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException
+            throws NoSuchEventException, EventAlreadyHasAVolunteerException
     {
         SessionData sessionData = SessionData.fromSession(session);
         String volunteerId;
@@ -186,7 +190,7 @@ public class EventRegistrationController {
             if (null != event.getVolunteerId()) {
             try {
                 
-                Map<String,Object> emailModel = new HashMap<String, Object>();
+                Map<String,Object> emailModel = new HashMap<>();
                 String logoImage =  request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/tcts/img/logo-tcts.png";;
                 Teacher teacher = (Teacher) database.getUserById(event.getTeacherId());
                 School school = database.getSchoolById(teacher.getSchoolId());
@@ -311,7 +315,7 @@ public class EventRegistrationController {
      * This method uses the database connection to verify whether the volunteer registration
      * is open. It returns true if it is open, false if not.
      */
-    public static boolean isVolunteerSignupsOpen(DatabaseFacade database) throws SQLException {
+    public static boolean isVolunteerSignupsOpen(DatabaseFacade database) {
         String setting = database.getSiteSettings().get("VolunteerSignupsOpen");
         return setting != null && setting.trim().toLowerCase().equals("yes");
     }

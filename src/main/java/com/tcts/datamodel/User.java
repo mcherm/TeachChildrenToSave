@@ -1,7 +1,5 @@
 package com.tcts.datamodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * An object that corresponds to the "Users" table in the database.
@@ -17,28 +15,6 @@ public abstract class User {
     private String phoneNumber;
     private String resetPasswordToken;
 
-    /**
-     * This can be called to populate fields from the current row of a resultSet.
-     */
-    protected void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        populateFieldsFromResultSetRowWithPrefix(resultSet, "");
-    }
-
-    /**
-     * This is a variant of populateFieldsFromResultSet() for use when the field names
-     * have been given a prefix (usually because of some sort of self-join).
-     */
-    protected void populateFieldsFromResultSetRowWithPrefix(ResultSet resultSet, String prefix) throws SQLException {
-        setUserId(resultSet.getString(prefix + "user_id"));
-        setEmail(resultSet.getString(prefix + "email"));
-        setHashedPassword(resultSet.getString(prefix + "password_hash"));
-        setSalt(resultSet.getString(prefix + "password_salt"));
-        setFirstName(resultSet.getString(prefix + "first_name"));
-        setLastName(resultSet.getString(prefix + "last_name"));
-        setPhoneNumber(resultSet.getString(prefix + "phone_number"));
-        setResetPasswordToken(resultSet.getString(prefix + "reset_password_token"));
-        setUserType(UserType.fromDBValue(resultSet.getString(prefix + "access_type")));
-    }
 
     public String getUserId() {
         return userId;

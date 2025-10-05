@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -76,7 +75,7 @@ public class ResetPasswordController {
             ModelMap model,
             HttpSession session,
             @RequestParam("token") String token
-        ) throws SQLException, InconsistentDatabaseException, UnsupportedEncodingException
+        ) throws InconsistentDatabaseException, UnsupportedEncodingException
     {
         SessionData.ensureNoActiveSession(session);
         
@@ -141,8 +140,7 @@ public class ResetPasswordController {
             ModelMap model,
             HttpSession session,
             HttpServletRequest request
-        ) throws SQLException, InconsistentDatabaseException, UnsupportedEncodingException
-    {
+    ) throws InconsistentDatabaseException {
         SessionData.ensureNoActiveSession(session);
         
         User potentialUser = database.getUserByEmail(formData.getEmail());

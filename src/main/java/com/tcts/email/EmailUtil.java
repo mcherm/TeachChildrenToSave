@@ -1,7 +1,6 @@
 package com.tcts.email;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import com.tcts.database.DatabaseFacade;
@@ -45,7 +44,7 @@ public final class EmailUtil {
         final Map<String,String> siteSettings;
         try {
              siteSettings = database.getSiteSettings();
-        } catch (SQLException err) {
+        } catch (RuntimeException err) {
             throw new AppConfigurationException("Cannot read site settings from database.");
         }
         final String result = siteSettings.get("SiteEmail");

@@ -1,7 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
-
 import jakarta.servlet.http.HttpSession;
 
 import com.tcts.exception.EmailAlreadyInUseException;
@@ -34,10 +32,9 @@ public class EditPersonalDataController {
 
     /**
      * Render the page for editing personal data of teachers and site admins.
-     * @throws SQLException 
      */
     @RequestMapping(value="/editPersonalData.htm", method=RequestMethod.GET)
-    public String showEditPersonalDataPage(HttpSession session, Model model) throws SQLException {
+    public String showEditPersonalDataPage(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getVolunteer() != null) {
             throw new RuntimeException("Volunteers should be edited with /editVolunteerPersonalData.");
@@ -57,10 +54,9 @@ public class EditPersonalDataController {
     /**
      * Render the page for editing personal data of volunteers and bank admins (the difference being
      * that they may have a bankSpecificData field to fill in).
-     * @throws SQLException
      */
     @RequestMapping(value="/editVolunteerPersonalData.htm", method=RequestMethod.GET)
-    public String showEditVolunteerPersonalDataPage(HttpSession session, Model model) throws SQLException {
+    public String showEditVolunteerPersonalDataPage(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         Volunteer volunteer = sessionData.getVolunteer();
         EditVolunteerPersonalDataFormData formData = new EditVolunteerPersonalDataFormData();
@@ -114,8 +110,7 @@ public class EditPersonalDataController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditPersonalDataFormData formData
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         User user = sessionData.getUser();
         if (user == null) {
@@ -151,8 +146,7 @@ public class EditPersonalDataController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditVolunteerPersonalDataFormData formData
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         User user = sessionData.getUser();
         if (user == null) {

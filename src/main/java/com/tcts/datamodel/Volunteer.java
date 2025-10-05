@@ -1,7 +1,5 @@
 package com.tcts.datamodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * Represents a single volunteer. Contains data from one row of the Users table.
@@ -22,21 +20,6 @@ public class Volunteer extends User {
     // --- Linked data - loaded only when needed ---
     private Bank linkedBank;
 
-    /**
-     * This can be called to populate fields from the current row of a resultSet.
-     */
-    @Override
-    public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        populateFieldsFromResultSetRowWithPrefix(resultSet, "");
-    }
-
-    @Override
-    public void populateFieldsFromResultSetRowWithPrefix(ResultSet resultSet, String prefix) throws SQLException {
-        super.populateFieldsFromResultSetRowWithPrefix(resultSet, prefix);
-        setBankId(resultSet.getString(prefix + "organization_id"));
-        setApprovalStatus(ApprovalStatus.fromDBValue(resultSet.getInt(prefix + "user_status")));
-        setBankSpecificData(resultSet.getString(prefix + "bank_specific_data"));
-    }
 
     public String getBankId() {
         return bankId;

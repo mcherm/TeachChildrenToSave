@@ -3,12 +3,11 @@ package com.tcts.formdata;
 import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.DatabaseField;
 
-import java.sql.SQLException;
 
 /**
  * Data fields in the form used to create a new event.
  */
-public class CreateEventFormData extends ValidatedFormData<SQLException> {
+public class CreateEventFormData extends ValidatedFormData<RuntimeException> {
     private PrettyPrintingDate eventDate;
     private String eventTime;
     private String grade;
@@ -20,7 +19,7 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
 
 
     @Override
-    public void validationRules(Errors errors) throws SQLException {
+    public void validationRules(Errors errors) {
         if ((teacherId == null) || (teacherId.isEmpty())) {
             errors.addError("You must select a teacher from the list.");
         }

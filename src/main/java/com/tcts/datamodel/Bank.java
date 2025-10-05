@@ -1,7 +1,5 @@
 package com.tcts.datamodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,17 +14,6 @@ public class Bank {
 
     // --- Linked data - loaded only when needed ---
     private List<BankAdmin> linkedBankAdmins;
-
-
-    /**
-     * This can be called to populate fields from the current row of a resultSet.
-     */
-    public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        setBankId(resultSet.getString("bank_id"));
-        setBankName(resultSet.getString("bank_name"));
-        setMinLMIForCRA(resultSet.getBigDecimal("min_lmi_for_cra"));
-        setBankSpecificDataLabel(resultSet.getString("bank_specific_data_label"));
-    }
 
     public String getBankId() {
         return bankId;

@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 
-import java.sql.SQLException;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import com.tcts.exception.NoSuchUserException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.exception.VolunteerHasEventsException;
-import com.tcts.formdata.EditPersonalDataFormData;
 
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
 import com.tcts.formdata.Errors;
@@ -56,7 +54,7 @@ public class VolunteerController extends AuthenticationController{
      * Render the list of users .
      */
     @RequestMapping(value = "volunteers.htm", method = RequestMethod.GET)
-    public String showVolunteersList(HttpSession session, Model model) throws SQLException {
+    public String showVolunteersList(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -68,7 +66,7 @@ public class VolunteerController extends AuthenticationController{
      * A subroutine used to set up and then show the main volunteers list. It returns
      * a string so it can be called as "return showVolunteers(...);".
      */
-    public String showVolunteers(Model model) throws SQLException {
+    public String showVolunteers(Model model) {
         List<Volunteer> volunteers = database.getVolunteersWithBankData();
         model.addAttribute("volunteers", volunteers);
         return "volunteers";
@@ -80,9 +78,8 @@ public class VolunteerController extends AuthenticationController{
             @RequestParam("volunteerId") String volunteerId,
             HttpSession session,
             Model model,
-            HttpServletRequest request)
-        throws SQLException
-    {
+            HttpServletRequest request
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         
         if (!sessionData.isAuthenticated()) {
@@ -112,7 +109,7 @@ public class VolunteerController extends AuthenticationController{
             HttpSession session,
             Model model,
             @RequestParam("userId") String userId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -135,8 +132,7 @@ public class VolunteerController extends AuthenticationController{
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditVolunteerPersonalDataFormData formData
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         User user = sessionData.getUser();
         if (user == null) {
@@ -165,9 +161,7 @@ public class VolunteerController extends AuthenticationController{
      * A subroutine used to set up and then show the add user form. It
      * returns the string, so you can invoke it as "return showEditSchoolWithErrors(...)".
      */
-    public String showEditUserWithErrors(Model model, EditVolunteerPersonalDataFormData formData, Errors errors)
-            throws SQLException
-    {
+    public String showEditUserWithErrors(Model model, EditVolunteerPersonalDataFormData formData, Errors errors) {
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "editVolunteer";

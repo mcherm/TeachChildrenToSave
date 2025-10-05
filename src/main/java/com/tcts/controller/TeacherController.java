@@ -1,6 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +48,7 @@ public class TeacherController {
      */
 
     @RequestMapping(value = "/teachers.htm", method = RequestMethod.GET)
-    public String showTeachersList(HttpSession session, Model model) throws SQLException {
+    public String showTeachersList(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         
         if (sessionData.getSiteAdmin() == null) {
@@ -67,8 +66,7 @@ public class TeacherController {
             HttpSession session,
             Model model,
             HttpServletRequest request
-            ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (!sessionData.isAuthenticated()) {
             throw new RuntimeException("Cannot navigate to this page unless you are a logged-in volunteer.");
@@ -83,7 +81,7 @@ public class TeacherController {
  /** This method properly deletes a Teacher from the Database and Cancels Any Events the Teacher has created.  Cancelling an
     event involves sending a cancel email to the volunteer if one is signed up*/
 
-    public void deleteTeacherAndCancelEvents(String teacherId, HttpServletRequest request) throws SQLException {
+    public void deleteTeacherAndCancelEvents(String teacherId, HttpServletRequest request) {
 
         Teacher teacher = (Teacher) database.getUserById(teacherId);
         // --- First, delete any events ---
@@ -111,7 +109,7 @@ public class TeacherController {
             HttpSession session,
             Model model,
             @RequestParam("userId") String userId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -133,8 +131,7 @@ public class TeacherController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditPersonalDataFormData formData
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         User user = sessionData.getUser();
         if (user == null) {
@@ -166,9 +163,7 @@ public class TeacherController {
      * A subroutine used to set up and then show the add user form. It
      * returns the string, so you can invoke it as "return showEditSchoolWithErrors(...)".
      */
-    public String showEditUserWithErrors(Model model, EditPersonalDataFormData formData, Errors errors)
-            throws SQLException
-    {
+    public String showEditUserWithErrors(Model model, EditPersonalDataFormData formData, Errors errors) {
         model.addAttribute("formData", formData);
         model.addAttribute("errors", errors);
         return "editTeacher";

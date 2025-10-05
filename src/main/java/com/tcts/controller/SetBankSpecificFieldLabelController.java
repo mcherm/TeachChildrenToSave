@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 
 /**
  * A controller that handles the request to update the bank specific field label.
@@ -30,8 +29,7 @@ public class SetBankSpecificFieldLabelController {
     public String setBankSpecificFieldLabel(
             HttpSession session,
             @ModelAttribute("formData") SetBankSpecificFieldLabelFormData formData
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getBankAdmin() == null) {
             throw new NotLoggedInException();

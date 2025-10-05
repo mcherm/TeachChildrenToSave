@@ -3,13 +3,12 @@ package com.tcts.formdata;
 import com.tcts.database.DatabaseField;
 import com.tcts.exception.InvalidParameterFromGUIException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Fields needed to create an allowed Time/Date/DeliveryMethod.
  */
-public class AddAllowedValueFormData extends ValidatedFormData<SQLException> {
+public class AddAllowedValueFormData extends ValidatedFormData<RuntimeException> {
     /** One of "Time", "Date", "Delivery Method". */
     public String valueType;
 
@@ -22,7 +21,7 @@ public class AddAllowedValueFormData extends ValidatedFormData<SQLException> {
     public String valueToInsertBefore;
 
     @Override
-    protected void validationRules(Errors errors) throws SQLException {
+    protected void validationRules(Errors errors) {
         final DatabaseField dbField = switch (valueType) {
             case "Time" -> DatabaseField.event_time;
             case "Grade" -> DatabaseField.event_grade;

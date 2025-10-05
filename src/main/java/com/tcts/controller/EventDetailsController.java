@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 
 
 /**
@@ -48,8 +47,7 @@ public class EventDetailsController {
             Model model,
             @RequestParam("eventId") String eventId,
             @RequestParam("doneURL") String doneURL
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
 
         // --- Find the event ---

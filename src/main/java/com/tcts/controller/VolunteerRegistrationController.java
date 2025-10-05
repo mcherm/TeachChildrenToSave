@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 
-import java.sql.SQLException;
 import java.util.List;
 import jakarta.servlet.http.HttpSession;
 import com.tcts.formdata.Errors;
@@ -31,7 +30,7 @@ public class VolunteerRegistrationController {
     private DatabaseFacade database;
 
     @RequestMapping(value="/registerVolunteer.htm", method=RequestMethod.GET)
-    public String showRegisterVolunteerPage(HttpSession session, Model model) throws SQLException {
+    public String showRegisterVolunteerPage(HttpSession session, Model model) {
         SessionData.ensureNoActiveSession(session);
         model.addAttribute("formData", new VolunteerRegistrationFormData());
         return showFormWithErrors(model, null);
@@ -41,7 +40,7 @@ public class VolunteerRegistrationController {
      * A subroutine used to set up and then show the register teacher form. It
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
-    private String showFormWithErrors(Model model, Errors errors) throws SQLException {
+    private String showFormWithErrors(Model model, Errors errors) {
         List<Bank> banks = database.getAllBanks();
         model.addAttribute("banks", banks);
         model.addAttribute("errors", errors);
@@ -54,8 +53,7 @@ public class VolunteerRegistrationController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") VolunteerRegistrationFormData formData
-    ) throws SQLException
-    {
+    ) {
         SessionData.ensureNoActiveSession(session);
         // --- Validation rules ---
         Errors errors = formData.validate();

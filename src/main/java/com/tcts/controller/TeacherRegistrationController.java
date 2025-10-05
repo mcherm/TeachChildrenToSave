@@ -2,7 +2,6 @@ package com.tcts.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -35,7 +34,7 @@ public class TeacherRegistrationController {
     
 
     @RequestMapping(value="/registerTeacher.htm", method=RequestMethod.GET)
-    public String showRegisterTeacherPage(HttpSession session, Model model) throws SQLException {
+    public String showRegisterTeacherPage(HttpSession session, Model model) {
         SessionData.ensureNoActiveSession(session);
         model.addAttribute("formData", new TeacherRegistrationFormData());
         return showFormWithErrors(model, null);
@@ -45,7 +44,7 @@ public class TeacherRegistrationController {
      * A subroutine used to set up and then show the register teacher form. It
      * returns the string, so you can invoke it as "return showFormWithErrorMessage(...)".
      */
-    private String showFormWithErrors(Model model, Errors errors) throws SQLException {
+    private String showFormWithErrors(Model model, Errors errors) {
         List<School> schools = database.getAllSchools();
         model.addAttribute("schools", schools);
         model.addAttribute("errors", errors);
@@ -57,8 +56,7 @@ public class TeacherRegistrationController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") TeacherRegistrationFormData formData
-            ) throws SQLException
-    {
+    ) {
         SessionData.ensureNoActiveSession(session);
 
         // --- Validation rules ---

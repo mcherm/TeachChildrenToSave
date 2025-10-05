@@ -1,7 +1,5 @@
 package com.tcts.datamodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.math.BigDecimal;
 
 /**
@@ -20,23 +18,6 @@ public class School {
     private String phone;
     private BigDecimal lmiEligible;
     private String slc;
-
-    /**
-     * This can be called to populate fields from the current row of a resultSet.
-     */
-    public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        setSchoolId(resultSet.getString("school_id"));
-        setName(resultSet.getString("school_name"));
-        setAddressLine1(resultSet.getString("school_addr1"));
-        setCity(resultSet.getString("school_city"));
-        setState(resultSet.getString("school_state"));
-        setZip(resultSet.getString("school_zip"));
-        setCounty(resultSet.getString("school_county"));
-        setSchoolDistrict(resultSet.getString("school_district"));
-        setPhone(resultSet.getString("school_phone"));
-        setLmiEligible(resultSet.getBigDecimal("school_lmi_eligible"));
-        setSLC(resultSet.getString("school_SLC"));
-    }
 
     public String getSchoolId() {
         return schoolId;

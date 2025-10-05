@@ -2,7 +2,6 @@ package com.tcts.database;
 
 import com.tcts.common.Configuration;
 import com.tcts.common.PrettyPrintingDate;
-import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.datamodel.Bank;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.School;
@@ -16,9 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -36,8 +33,8 @@ import java.util.Random;
 public class MockDataCreator {
 
     // This salt and hash give "pass" as the password
-    private static String SALT = "AjVW337bQJs=";
-    private static String HASHED_PASSWORD = "jtZ3UlKhhAuyKpo98aGUfTiPy74=";
+    private final static String SALT = "AjVW337bQJs=";
+    private final static String HASHED_PASSWORD = "jtZ3UlKhhAuyKpo98aGUfTiPy74=";
 
 
     /** Inner class that returns random data. */
@@ -54,7 +51,7 @@ public class MockDataCreator {
         private final List<PrettyPrintingDate> eventDates;
 
         /** Constructor. */
-        public RandomDataSource(Random random) throws IOException, SQLException {
+        public RandomDataSource(Random random) throws IOException {
             this.random = random;
             this.firstNames = readListOfStringsFromFile("testdata/firstnames.txt");
             this.lastNames = readListOfStringsFromFile("testdata/lastnames.txt");
@@ -69,7 +66,7 @@ public class MockDataCreator {
 
         /** Utility to read a list of strings from a newline-separated file. */
         private List<String> readListOfStringsFromFile(String filename) throws IOException {
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line = br.readLine();
@@ -83,7 +80,7 @@ public class MockDataCreator {
         }
 
         /** Gets a list of all the bank IDs. */
-        private List<String> getBankIds() throws SQLException {
+        private List<String> getBankIds() {
             List<String> result = new ArrayList<String>();
             for (Bank bank : database.getAllBanks()) {
                 result.add(bank.getBankId());
@@ -93,7 +90,7 @@ public class MockDataCreator {
 
 
         /** Gets a list of all the school IDs. */
-        private List<String> getSchoolIds() throws SQLException {
+        private List<String> getSchoolIds() {
             List<String> result = new ArrayList<String>();
             for (School school : database.getAllSchools()) {
                 result.add(school.getSchoolId());
@@ -102,7 +99,7 @@ public class MockDataCreator {
         }
 
         /** Gets a list of the parsable string version of the allowed dates. */
-        private List<PrettyPrintingDate> getEventDates() throws SQLException {
+        private List<PrettyPrintingDate> getEventDates() {
             List<PrettyPrintingDate> result = new ArrayList<PrettyPrintingDate>();
             for (PrettyPrintingDate prettyPrintingDate : database.getAllowedDates()) {
                 result.add(prettyPrintingDate);
@@ -111,7 +108,7 @@ public class MockDataCreator {
         }
 
         /** Gets a list of the allowed times. */
-        private List<String> getEventTimes() throws SQLException {
+        private List<String> getEventTimes() {
             List<String> result = new ArrayList<String>();
             for (String time : database.getAllowedTimes()) {
                 result.add(time);
@@ -120,11 +117,11 @@ public class MockDataCreator {
         }
 
         /** Gets a list of the grades. */
-        private List<String> getGrades() throws SQLException {
+        private List<String> getGrades() {
             return database.getAllowedGrades();
         }
 
-        private List<String> getDeliveryMethods() throws SQLException {
+        private List<String> getDeliveryMethods() {
             return database.getAllowedDeliveryMethods();
         }
 
@@ -187,7 +184,7 @@ public class MockDataCreator {
     /**
      * Constructor.
      */
-    public MockDataCreator(DatabaseFacade database) throws IOException, SQLException {
+    public MockDataCreator(DatabaseFacade database) throws IOException {
         this.database = database;
         this.random = new Random();
         this.randomDataSource = new RandomDataSource(random);

@@ -3,7 +3,6 @@ package com.tcts.controller;
 import com.tcts.common.PrettyPrintingDate;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,7 +74,7 @@ public class ExcelDownloadController implements InitializingBean {
 
 
     @RequestMapping(value="/excel/{locationSpecName}.htm", method=RequestMethod.GET)
-    public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName) throws SQLException, IOException {
+    public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName) throws IOException {
         try {
             this.threadLocalSession.set(session);
             WorkbookSpec<CM_SM> workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
@@ -92,7 +91,7 @@ public class ExcelDownloadController implements InitializingBean {
     }
 
    @RequestMapping(value="/excel/{locationSpecName}/{parameter}.htm", method=RequestMethod.GET)
-   public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName, @PathVariable("parameter") String parameter) throws SQLException, IOException {
+   public void excelDownload(HttpServletResponse servletResponse, HttpSession session, @PathVariable("locationSpecName") String locationSpecName, @PathVariable("parameter") String parameter) throws IOException {
       WorkbookSpec<CM_PSM> workbookSpec = (WorkbookSpec)this.workbookSpecs.get(locationSpecName);
       ExtendedModelMap mockModel = new ExtendedModelMap();
       String pageWeWouldRender = (workbookSpec.controllerMethod).invoke(parameter, session, mockModel);
@@ -278,11 +277,11 @@ public class ExcelDownloadController implements InitializingBean {
     }
 
     public interface CM_PSM {
-        String invoke(String string, HttpSession session, Model model) throws SQLException;
+        String invoke(String string, HttpSession session, Model model);
     }
 
     public interface CM_SM {
-        String invoke(HttpSession session, Model model) throws SQLException;
+        String invoke(HttpSession session, Model model);
     }
 
     private static class MultiColSpec extends ColSpec {
@@ -361,13 +360,9 @@ public class ExcelDownloadController implements InitializingBean {
             ExtendedModelMap mockModel = new ExtendedModelMap();
             String volunteerId = v.getUserId();
 
-            try {
-                String pageToShow = bankAdminActionsController.detailCoursesForAVolunteer(session, mockModel, volunteerId);
-                assert pageToShow.equals("bankAdminHomeDetail");
-                return (List<Event>)mockModel.asMap().get("events");
-            } catch (SQLException err) {
-                return Collections.emptyList();
-            }
+            String pageToShow = bankAdminActionsController.detailCoursesForAVolunteer(session, mockModel, volunteerId);
+            assert pageToShow.equals("bankAdminHomeDetail");
+            return (List<Event>)mockModel.asMap().get("events");
         }
     }
 

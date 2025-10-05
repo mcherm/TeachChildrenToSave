@@ -1,6 +1,5 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +48,7 @@ public class EventController {
             @RequestParam("eventId") String eventId,
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -69,7 +67,7 @@ public class EventController {
      * Render the event edit page.
      */
     @RequestMapping(value = "viewEditEvents.htm", method = RequestMethod.GET)
-    public String showAllEvents(HttpSession session, Model model) throws SQLException {
+    public String showAllEvents(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -92,7 +90,7 @@ public class EventController {
             HttpSession session,
             Model model,
             @RequestParam("eventId") String eventId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         
@@ -118,9 +116,7 @@ public class EventController {
      * A subroutine used to set up and then show the add event form. It
      * returns the string, so you can invoke it as "return showEditEventWithErrorMessage(...)".
      */ // FIXME: This should be changed to accept an Errors object instead of a single string.
-    public String showEditEventWithErrorMessage(Model model, CreateEventFormData formData, String errorMessage)
-            throws SQLException
-    {
+    public String showEditEventWithErrorMessage(Model model, CreateEventFormData formData, String errorMessage) {
     	model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
         List<String> allowedGrades = database.getAllowedGrades();
@@ -153,8 +149,7 @@ public class EventController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditEventFormDataStrings formDataStrings
-        ) throws SQLException
-    {
+    ) {
         // --- Convert to the richer EditEventFormData object ---
         final EditEventFormData formData;
         try {

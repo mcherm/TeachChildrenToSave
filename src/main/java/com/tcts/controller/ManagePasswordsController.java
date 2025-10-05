@@ -12,8 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /** A controller for the admin screen where passwords and password resets are managed. */
@@ -24,7 +26,7 @@ public class ManagePasswordsController {
     private DatabaseFacade database;
 
     @RequestMapping(value = "/managePasswords.htm", method = RequestMethod.GET)
-    public String emailAnnouncement(HttpSession session, Model model, HttpServletRequest request) throws SQLException {
+    public String emailAnnouncement(HttpSession session, Model model, HttpServletRequest request) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();

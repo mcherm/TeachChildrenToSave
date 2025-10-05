@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -63,8 +62,7 @@ public class CancelWithdrawController {
             HttpSession session,
             Model model,
             @RequestParam(value = "eventId") String eventId
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in as a Volunteer ---
         SessionData sessionData = SessionData.fromSession(session);
         Volunteer loggedInVolunteer;
@@ -110,8 +108,7 @@ public class CancelWithdrawController {
             HttpSession session,
             HttpServletRequest request,
             @ModelAttribute("formData") WithdrawFormData formData
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in as a Volunteer ---
         SessionData sessionData = SessionData.fromSession(session);
 
@@ -157,8 +154,7 @@ public class CancelWithdrawController {
             Event event,
             HttpServletRequest request,
             String withdrawNotes
-    ) throws SQLException
-    {
+    ) {
         // --- Make sure we have called it where it makes sense ---
         if (event.getVolunteerId() == null) {
             throw new NoVolunteerOnThatEventException();
@@ -206,8 +202,7 @@ public class CancelWithdrawController {
             HttpSession session,
             Model model,
             @RequestParam(value = "eventId") String eventId
-    ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in as a Teacher ---
         SessionData sessionData = SessionData.fromSession(session);
         Teacher loggedInTeacher = sessionData.getTeacher();
@@ -246,8 +241,7 @@ public class CancelWithdrawController {
             HttpSession session,
             HttpServletRequest request,
             @ModelAttribute("formData") WithdrawFormData formData
-    ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in as a Teacher ---
         SessionData sessionData = SessionData.fromSession(session);
         Teacher loggedInTeacher = sessionData.getTeacher();
@@ -296,7 +290,7 @@ public class CancelWithdrawController {
             HttpServletRequest request,
             Teacher teacher,
             Event event,
-            String withdrawNotes) throws SQLException, NoSuchEventException {
+            String withdrawNotes) throws NoSuchEventException {
 
         // --- Send Emails ---
 

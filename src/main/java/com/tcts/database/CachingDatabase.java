@@ -2,7 +2,6 @@ package com.tcts.database;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,66 +61,66 @@ public class CachingDatabase implements DatabaseFacade {
     /** Refresh values every 4 hours even if we think they're still accurate. */
     private static long REFRESH_IN_MILLIS = 4 * 60 * 60 * 1000;
 
-    private final CachedValue<List<PrettyPrintingDate>,SQLException> allowedDates =
-            new CachedValue<List<PrettyPrintingDate>,SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedValue<List<PrettyPrintingDate>,RuntimeException> allowedDates =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<PrettyPrintingDate> generateValue() throws SQLException {
+                public List<PrettyPrintingDate> generateValue( ) {
                     return Collections.unmodifiableList(database.getAllowedDates());
                 }
             };
 
-    private final CachedValue<List<String>,SQLException> allowedTimes =
-            new CachedValue<List<String>,SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedValue<List<String>,RuntimeException> allowedTimes =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<String> generateValue() throws SQLException {
+                public List<String> generateValue( ) {
                     return Collections.unmodifiableList(database.getAllowedTimes());
                 }
             };
 
-    private final CachedValue<List<String>,SQLException> allowedGrades =
+    private final CachedValue<List<String>,RuntimeException> allowedGrades =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<String> generateValue() throws SQLException {
+                public List<String> generateValue( ) {
                     return Collections.unmodifiableList(database.getAllowedGrades());
                 }
             };
 
-    private final CachedValue<List<String>,SQLException> allowedDeliveryMethods =
+    private final CachedValue<List<String>,RuntimeException> allowedDeliveryMethods =
             new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<String> generateValue() throws SQLException {
+                public List<String> generateValue( ) {
                     return Collections.unmodifiableList(database.getAllowedDeliveryMethods());
                 }
             };
 
-    private final CachedValue<List<Bank>,SQLException> allBanks =
-            new CachedValue<List<Bank>,SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedValue<List<Bank>,RuntimeException> allBanks =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<Bank> generateValue() throws SQLException {
+                public List<Bank> generateValue( ) {
                     return Collections.unmodifiableList(database.getAllBanks());
                 }
             };
 
-    private final CachedValue<List<School>,SQLException> allSchools =
-            new CachedValue<List<School>,SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedValue<List<School>,RuntimeException> allSchools =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<School> generateValue() throws SQLException {
+                public List<School> generateValue( ) {
                     return Collections.unmodifiableList(database.getAllSchools());
                 }
             };
 
-    private final CachedList<Event, SQLException> availableEvents =
-            new CachedList<Event, SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedList<Event, RuntimeException> availableEvents =
+            new CachedList<>(REFRESH_IN_MILLIS) {
                 @Override
-                public List<Event> generateValue() throws SQLException {
+                public List<Event> generateValue( ) {
                     return database.getAllAvailableEvents();
                 }
             };
 
-    private final CachedValue<Map<String,String>, SQLException> siteSettings =
-            new CachedValue<Map<String,String>, SQLException>(REFRESH_IN_MILLIS) {
+    private final CachedValue<Map<String,String>, RuntimeException> siteSettings =
+            new CachedValue<>(REFRESH_IN_MILLIS) {
                 @Override
-                public Map<String, String> generateValue() throws SQLException {
+                public Map<String, String> generateValue( ) {
                     return database.getSiteSettings();
                 }
             };
@@ -139,173 +138,173 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public User getUserById(String userId) throws SQLException, InconsistentDatabaseException {
+    public User getUserById(String userId) throws InconsistentDatabaseException {
         return database.getUserById(userId);
     }
 
     @Override
-    public User getUserByEmail(String email) throws SQLException, InconsistentDatabaseException {
+    public User getUserByEmail(String email) throws InconsistentDatabaseException {
         return database.getUserByEmail(email);
     }
 
     @Override
-    public List<Event> getEventsByTeacher(String teacherId) throws SQLException {
+    public List<Event> getEventsByTeacher(String teacherId ) {
         return database.getEventsByTeacher(teacherId);
     }
 
     @Override
-    public List<Event> getAllAvailableEvents() throws SQLException {
+    public List<Event> getAllAvailableEvents( ) {
         return availableEvents.getCachedValue();
     }
 
     @Override
-    public List<Event> getEventsByVolunteer(String volunteerId) throws SQLException {
+    public List<Event> getEventsByVolunteer(String volunteerId ) {
         return database.getEventsByVolunteer(volunteerId);
     }
 
     @Override
-    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId) throws SQLException{
+    public List<Event> getEventsByVolunteerWithTeacherAndSchool (String volunteerId ) {
         return database.getEventsByVolunteerWithTeacherAndSchool(volunteerId);
     }
 
     @Override
-    public List<Volunteer> getVolunteersByBank(String bankId) throws SQLException {
+    public List<Volunteer> getVolunteersByBank(String bankId ) {
         return database.getVolunteersByBank(bankId);
     }
 
     @Override
-    public List<BankAdmin> getBankAdminsByBank(String bankId) throws SQLException {
+    public List<BankAdmin> getBankAdminsByBank(String bankId ) {
         return database.getBankAdminsByBank(bankId);
     }
 
     @Override
-    public Bank getBankById(String bankId) throws SQLException {
+    public Bank getBankById(String bankId ) {
         return database.getBankById(bankId);
     }
 
     @Override
-    public School getSchoolById(String schoolId) throws SQLException {
+    public School getSchoolById(String schoolId ) {
         return database.getSchoolById(schoolId);
     }
 
     @Override
-    public List<School> getAllSchools() throws SQLException {
+    public List<School> getAllSchools( ) {
         return allSchools.getCachedValue();
     }
 
     @Override
-    public List<Bank> getAllBanks() throws SQLException {
+    public List<Bank> getAllBanks( ) {
         return allBanks.getCachedValue();
     }
 
     @Override
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers( ) {
         return database.getAllUsers();
     }
 
     @Override
-    public List<PrettyPrintingDate> getAllowedDates() throws SQLException {
+    public List<PrettyPrintingDate> getAllowedDates( ) {
         return allowedDates.getCachedValue();
     }
 
     @Override
-    public List<String> getAllowedTimes() throws SQLException {
+    public List<String> getAllowedTimes( ) {
         return allowedTimes.getCachedValue();
     }
 
     @Override
-    public List<String> getAllowedGrades() throws SQLException {
+    public List<String> getAllowedGrades( ) {
         return allowedGrades.getCachedValue();
     }
 
     @Override
-    public List<String> getAllowedDeliveryMethods() throws SQLException {
+    public List<String> getAllowedDeliveryMethods( ) {
         return allowedDeliveryMethods.getCachedValue();
     }
 
     @Override
-    public List<BankAdmin> getBankAdmins() throws SQLException {
+    public List<BankAdmin> getBankAdmins( ) {
         return database.getBankAdmins();
     }
 
     @Override
-    public List<Event> getAllEvents() throws SQLException, InconsistentDatabaseException {
+    public List<Event> getAllEvents() throws InconsistentDatabaseException {
         return database.getAllEvents();
     }
 
     @Override
-    public Event getEventById(String eventId) throws SQLException {
+    public Event getEventById(String eventId ) {
         return database.getEventById(eventId);
     }
 
     @Override
-    public SiteStatistics getSiteStatistics() throws SQLException {
+    public SiteStatistics getSiteStatistics( ) {
         return database.getSiteStatistics();
     }
 
     @Override
-    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException {
+    public void modifyUserPersonalFields(EditPersonalDataFormData formData) throws EmailAlreadyInUseException {
         database.modifyUserPersonalFields(formData);
         availableEvents.refreshNow();
     }
 
     @Override
-    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws SQLException, EmailAlreadyInUseException, InconsistentDatabaseException {
+    public void modifyVolunteerPersonalFields(EditVolunteerPersonalDataFormData formData) throws EmailAlreadyInUseException, InconsistentDatabaseException {
         database.modifyVolunteerPersonalFields(formData);
         availableEvents.refreshNow();
     }
 
     @Override
-    public void modifyTeacherSchool(String userId, String schoolId) throws SQLException, NoSuchSchoolException, NoSuchUserException
+    public void modifyTeacherSchool(String userId, String schoolId) throws NoSuchSchoolException, NoSuchUserException
     {
        database.modifyTeacherSchool(userId, schoolId);
     }
 
 
     @Override
-    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException {
         return database.insertNewTeacher(formData, hashedPassword, salt);
     }
 
     @Override
-    public void insertEvent(String teacherId, CreateEventFormData formData) throws SQLException {
+    public void insertEvent(String teacherId, CreateEventFormData formData ) {
         database.insertEvent(teacherId, formData);
         availableEvents.refreshNow();
     }
 
     @Override
-    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws SQLException, NoSuchBankException, EmailAlreadyInUseException {
+    public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt) throws NoSuchBankException, EmailAlreadyInUseException {
         return database.insertNewVolunteer(formData, hashedPassword, salt);
     }
 
     @Override
-    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws SQLException, AllowedValueAlreadyInUseException {
+    public void insertNewAllowedDate(AddAllowedDateFormData formData) throws AllowedValueAlreadyInUseException {
         database.insertNewAllowedDate(formData);
         allowedDates.refreshNow();
     }
 
     @Override
     public void insertNewAllowedTime(String newAllowedTime, String timeToInsertBefore)
-            throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException
+            throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException
     {
         database.insertNewAllowedTime(newAllowedTime, timeToInsertBefore);
         allowedTimes.refreshNow();
     }
 
     @Override
-    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+    public void insertNewAllowedGrade(String newAllowedGrade, String gradeToInsertBefore) throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         database.insertNewAllowedGrade(newAllowedGrade, gradeToInsertBefore);
         allowedGrades.refreshNow();
     }
 
     @Override
-    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
+    public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore) throws AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         database.insertNewAllowedDeliveryMethod(newAllowedDeliveryMethod, deliveryMethodToInsertBefore);
         allowedDeliveryMethods.refreshNow();
     }
 
     @Override
-    public void volunteerForEvent(final String eventId, String volunteerId) throws SQLException, NoSuchEventException, EventAlreadyHasAVolunteerException {
+    public void volunteerForEvent(final String eventId, String volunteerId) throws NoSuchEventException, EventAlreadyHasAVolunteerException {
         database.volunteerForEvent(eventId, volunteerId);
         if (volunteerId == null) {
             // Withdrew someone from an event so we need to reload the list
@@ -321,187 +320,187 @@ public class CachingDatabase implements DatabaseFacade {
     }
 
     @Override
-    public void deleteSchool(String schoolId) throws SQLException, NoSuchSchoolException {
+    public void deleteSchool(String schoolId) throws NoSuchSchoolException {
         database.deleteSchool(schoolId);
         allSchools.refreshNow();
         availableEvents.refreshNow();
     }
 
     @Override
-    public void deleteBankAndBankVolunteers(String bankId) throws SQLException, NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
+    public void deleteBankAndBankVolunteers(String bankId) throws NoSuchBankException, BankHasVolunteersException, VolunteerHasEventsException {
         database.deleteBankAndBankVolunteers(bankId);
         allBanks.refreshNow();
         availableEvents.refreshNow();
     }
 
     @Override
-    public void deleteVolunteer(String volunteerId) throws SQLException, NoSuchUserException, VolunteerHasEventsException {
+    public void deleteVolunteer(String volunteerId) throws NoSuchUserException, VolunteerHasEventsException {
         database.deleteVolunteer(volunteerId);
     }
 
     @Override
-    public void deleteTeacher(String teacherId) throws SQLException, NoSuchUserException, TeacherHasEventsException {
+    public void deleteTeacher(String teacherId) throws NoSuchUserException, TeacherHasEventsException {
         database.deleteTeacher(teacherId);
     }
 
     @Override
-    public void deleteEvent(String eventId) throws SQLException, NoSuchEventException {
+    public void deleteEvent(String eventId) throws NoSuchEventException {
         database.deleteEvent(eventId);
         availableEvents.refreshNow();
     }
 
     @Override
-    public void modifySchool(EditSchoolFormData school) throws SQLException, NoSuchSchoolException {
+    public void modifySchool(EditSchoolFormData school) throws NoSuchSchoolException {
         database.modifySchool(school);
         availableEvents.refreshNow();
         allSchools.refreshNow();
     }
 
     @Override
-    public void insertNewBankAndAdmin(CreateBankFormData formData) throws SQLException, EmailAlreadyInUseException {
+    public void insertNewBankAndAdmin(CreateBankFormData formData) throws EmailAlreadyInUseException {
         database.insertNewBankAndAdmin(formData);
         allBanks.refreshNow();
     }
 
     @Override
-    public void insertNewBankAdmin(NewBankAdminFormData formData) throws SQLException, EmailAlreadyInUseException {
+    public void insertNewBankAdmin(NewBankAdminFormData formData) throws EmailAlreadyInUseException {
         database.insertNewBankAdmin(formData);
         allBanks.refreshNow();
     }
 
     @Override
-    public void modifyBank(EditBankFormData formData) throws SQLException, NoSuchBankException {
+    public void modifyBank(EditBankFormData formData) throws NoSuchBankException {
         database.modifyBank(formData);
         allBanks.refreshNow();
     }
 
     @Override
-    public void setUserType(String userId, UserType userType) throws SQLException {
+    public void setUserType(String userId, UserType userType ) {
         database.setUserType(userId, userType);
         allBanks.refreshNow();
     }
 
     @Override
-    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws SQLException, NoSuchBankException {
+    public void setBankSpecificFieldLabel(SetBankSpecificFieldLabelFormData formData) throws NoSuchBankException {
         database.setBankSpecificFieldLabel(formData);
         allBanks.refreshNow();
     }
 
     @Override
-    public void insertNewSchool(CreateSchoolFormData school) throws SQLException {
+    public void insertNewSchool(CreateSchoolFormData school ) {
         database.insertNewSchool(school);
         allSchools.refreshNow();
     }
 
     @Override
-    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws NoSuchEventException {
         database.modifyEventRegistration(formData);
         availableEvents.refreshNow();
     }
 
     @Override
-    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEvent(EditEventFormData formData) throws NoSuchEventException {
         database.modifyEvent(formData);
         availableEvents.refreshNow();
     }
 
     @Override
-    public void updateUserCredential(String userId, String hashedPassword, String salt) throws SQLException {
+    public void updateUserCredential(String userId, String hashedPassword, String salt ) {
         database.updateUserCredential(userId, hashedPassword, salt);
     }
 
     @Override
-    public void updateResetPasswordToken(String userId, String resetPasswordToken) throws SQLException {
+    public void updateResetPasswordToken(String userId, String resetPasswordToken ) {
         database.updateResetPasswordToken(userId, resetPasswordToken);
     }
 
     @Override
-    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus) throws SQLException {
+    public void updateApprovalStatusById(String volunteerId, ApprovalStatus approvalStatus ) {
         database.updateApprovalStatusById(volunteerId, approvalStatus);
     }
 
     @Override
-    public void deleteAllowedTime(String time) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedTime(String time) throws NoSuchAllowedValueException {
         allowedTimes.refreshNow();
         database.deleteAllowedTime(time);
     }
 
     @Override
-    public void deleteAllowedGrade(String grade) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedGrade(String grade) throws NoSuchAllowedValueException {
         allowedGrades.refreshNow();
         database.deleteAllowedGrade(grade);
     }
 
     @Override
-    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedDeliveryMethod(String deliveryMethod) throws NoSuchAllowedValueException {
         allowedDeliveryMethods.refreshNow();
         database.deleteAllowedDeliveryMethod(deliveryMethod);
     }
 
     @Override
-    public void deleteAllowedDate(PrettyPrintingDate date) throws SQLException, NoSuchAllowedValueException {
+    public void deleteAllowedDate(PrettyPrintingDate date) throws NoSuchAllowedValueException {
         allowedDates.refreshNow();
         database.deleteAllowedDate(date);
     }
 
     @Override
-    public List<Volunteer> getVolunteersWithBankData() throws SQLException {
+    public List<Volunteer> getVolunteersWithBankData( ) {
         return database.getVolunteersWithBankData();
     }
     
     @Override
-    public List<Teacher> getTeachersWithSchoolData() throws SQLException {
+    public List<Teacher> getTeachersWithSchoolData( ) {
         return database.getTeachersWithSchoolData();
     }
 
     @Override
-    public List<Teacher> getTeachersBySchool(String schoolId) throws SQLException {
+    public List<Teacher> getTeachersBySchool(String schoolId ) {
         return database.getTeachersBySchool(schoolId);
     }
 
     @Override
-    public List<Teacher> getMatchedTeachers() throws SQLException {
+    public List<Teacher> getMatchedTeachers( ) {
        return database.getMatchedTeachers();
     }
     
     @Override
-    public List<Teacher> getUnMatchedTeachers() throws SQLException {
+    public List<Teacher> getUnMatchedTeachers( ) {
     	return database.getUnMatchedTeachers();
     }
     
     @Override
-    public List<Volunteer> getMatchedVolunteers() throws SQLException {
+    public List<Volunteer> getMatchedVolunteers( ) {
     	return database.getMatchedVolunteers();
     }
     
     @Override
-    public List<Volunteer> getUnMatchedVolunteers() throws SQLException {
+    public List<Volunteer> getUnMatchedVolunteers( ) {
     	return database.getUnMatchedVolunteers();
     }
 
     @Override
-    public Map<String, String> getSiteSettings() throws SQLException {
+    public Map<String, String> getSiteSettings( ) {
         return siteSettings.getCachedValue();
     }
 
     @Override
-    public void modifySiteSetting(String settingName, String settingValue) throws SQLException {
+    public void modifySiteSetting(String settingName, String settingValue) {
         siteSettings.refreshNow();
         database.modifySiteSetting(settingName, settingValue);
     }
 
     @Override
-    public SortedSet<Document> getDocuments() throws SQLException{
+    public SortedSet<Document> getDocuments( ) {
         return database.getDocuments();
     }
 
     @Override
-    public void createOrModifyDocument (Document document) throws SQLException{
+    public void createOrModifyDocument (Document document ) {
         database.createOrModifyDocument(document);
     }
 
     @Override
-    public void deleteDocument(String documentName) throws SQLException{
+    public void deleteDocument(String documentName ) {
         database.deleteDocument(documentName);
     }
 

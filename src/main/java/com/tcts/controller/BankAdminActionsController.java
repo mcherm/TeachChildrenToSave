@@ -23,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.SortedSet;
 
 /**
  * Some pages (and fragments of pages) that are used by bank admins to manage the
@@ -36,12 +34,6 @@ public class BankAdminActionsController {
 
     @Autowired
     private DatabaseFacade database;
-
-    @Autowired
-    private TemplateUtil templateUtil;
-
-    @Autowired
-    private EmailUtil emailUtil;
 
     @Autowired
     private CancelWithdrawController cancelWithdrawController;
@@ -56,8 +48,7 @@ public class BankAdminActionsController {
             HttpSession session,
             Model model,
             @RequestParam("volunteerId") String volunteerId
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();
@@ -90,8 +81,7 @@ public class BankAdminActionsController {
             HttpSession session,
             HttpServletRequest request,
             @RequestParam("volunteerId") String volunteerId
-    ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();
@@ -120,8 +110,7 @@ public class BankAdminActionsController {
             HttpSession session,
             HttpServletRequest request,
             @RequestParam("volunteerId") String volunteerId
-    ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();
@@ -154,8 +143,7 @@ public class BankAdminActionsController {
             HttpSession session,
             HttpServletRequest request,
             @RequestParam("volunteerId") String volunteerId
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();
@@ -194,8 +182,7 @@ public class BankAdminActionsController {
     public String reinstateVolunteer(
             HttpSession session,
             @RequestParam("volunteerId") String volunteerId
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         BankAdmin bankAdmin = sessionData.getBankAdmin();

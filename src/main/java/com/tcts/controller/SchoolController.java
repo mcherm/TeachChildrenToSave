@@ -1,10 +1,8 @@
 package com.tcts.controller;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.math.BigDecimal;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -54,8 +52,7 @@ public class SchoolController {
     public String viewSchools(
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -73,7 +70,7 @@ public class SchoolController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") CreateSchoolFormData formData
-    ) throws SQLException {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -89,7 +86,7 @@ public class SchoolController {
             HttpSession session,
             Model model,
             @RequestParam("schoolId") String schoolId
-    ) throws SQLException {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -109,8 +106,7 @@ public class SchoolController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") CreateSchoolFormData formData
-    ) throws SQLException
-    {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -140,8 +136,7 @@ public class SchoolController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") EditSchoolFormData formData
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -170,7 +165,7 @@ public class SchoolController {
             @RequestParam("schoolId") String schoolId,
             HttpSession session,
             Model model
-    ) throws SQLException {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -194,14 +189,13 @@ public class SchoolController {
      *                         Any teacher not present in the map will have deleteme pre-selected.
      * @param errors the errors to display, or null
      * @return the string for the template to render
-     * @throws SQLException
      */
-    private String showDeleteSchoolWithErrors (Model model,
-                                               String schoolId,
-                                               Map<String,String> modifiedTeachers, // key  is teacherid, value is schoolid to move it to or deleteme as was passed in from the form
-                                               Errors errors)
-            throws SQLException
-    {
+    private String showDeleteSchoolWithErrors (
+            Model model,
+            String schoolId,
+            Map<String,String> modifiedTeachers, // key  is teacherid, value is schoolid to move it to or deleteme as was passed in from the form
+            Errors errors
+    ) {
         model.addAttribute ("school", database.getSchoolById(schoolId));
 
         List<School> schools = database.getAllSchools();
@@ -230,8 +224,7 @@ public class SchoolController {
             HttpSession session,
             Model model,
             HttpServletRequest request
-    ) throws SQLException, InvalidParameterFromGUIException
-    {
+    ) throws InvalidParameterFromGUIException {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -309,7 +302,7 @@ public class SchoolController {
      * A subroutine to set up for displaying the list of schools. It returns the
      * string for the next page so you can invoke it as "return showListOfSchools(...)".
      */
-    private String showListSchools(Model model) throws SQLException {
+    private String showListSchools(Model model) {
         model.addAttribute("schools", database.getAllSchools());
         return "schools";
     }
@@ -328,7 +321,7 @@ public class SchoolController {
      * A subroutine used to set up and then show the add school form. It
      * returns the string, so you can invoke it as "return showAddSchoolWithErrorMessage(...)".
      */
-    private String showAddSchoolWithErrors(Model model, Errors errors) throws SQLException {
+    private String showAddSchoolWithErrors(Model model, Errors errors) {
         model.addAttribute("errors", errors);
         return "addSchool";
     }

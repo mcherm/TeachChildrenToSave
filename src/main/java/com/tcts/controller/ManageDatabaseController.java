@@ -4,16 +4,17 @@ import com.tcts.common.SessionData;
 import com.tcts.database.DatabaseFacade;
 import com.tcts.datamodel.Event;
 import com.tcts.datamodel.User;
-import com.tcts.datamodel.UserType;
-import com.tcts.exception.*;
+import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.NotLoggedInException;
+import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.exception.VolunteerHasEventsException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.sql.SQLException;
 import java.util.List;
 
 
@@ -43,7 +44,7 @@ public class ManageDatabaseController {
     }
 
     @RequestMapping(value = "deleteUserDataConfirm.htm", method = RequestMethod.POST)
-    public String deleteUserData(HttpSession session) throws SQLException {
+    public String deleteUserData(HttpSession session) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();

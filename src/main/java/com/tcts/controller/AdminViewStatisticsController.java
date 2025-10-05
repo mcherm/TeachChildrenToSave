@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 
 /**
  * This renders a page that displays certain program-wide statistics for the site
@@ -32,8 +31,7 @@ public class AdminViewStatisticsController {
     public String detailCoursesForAVolunteer(
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         SiteAdmin siteAdmin = sessionData.getSiteAdmin();

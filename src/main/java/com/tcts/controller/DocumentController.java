@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
 
 
 /**
@@ -53,7 +51,7 @@ public class DocumentController {
      * any documents made available to volunteers will automatically also be displayed on the bank admin page.
      */
     @RequestMapping(value = "documents.htm", method = RequestMethod.GET)
-    public String showDocuments(HttpSession session, Model model) throws SQLException {
+    public String showDocuments(HttpSession session, Model model) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -61,7 +59,7 @@ public class DocumentController {
         return showForm(model);
     }
 
-    private String showForm(Model model) throws SQLException {
+    private String showForm(Model model) {
         final Set<String> s3DocumentNames = s3Util.getAllDocuments();
 
         final SortedSet<Document> dbDocuments = database.getDocuments();
@@ -102,7 +100,8 @@ public class DocumentController {
     @RequestMapping(value = "editDocument.htm", method = RequestMethod.POST)
     public String editDocument(
             @ModelAttribute("editDocumentFormData") EditDocumentFormData formData,
-            HttpSession session) throws SQLException {
+            HttpSession session
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
@@ -130,13 +129,12 @@ public class DocumentController {
      * @param documentName  - docoument name ot be deleted
      * @param session
      * @return
-     * @throws SQLException
      */
     @RequestMapping(value = "deleteDocument.htm", method = RequestMethod.POST)
     public String deleteDocument(
             @RequestParam("documentName") String documentName,
             HttpSession session
-    ) throws SQLException {
+    ) {
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();

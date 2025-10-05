@@ -1,7 +1,6 @@
 package com.tcts.controller;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.List;
 
 import com.tcts.formdata.AddAllowedValueFormData;
@@ -42,8 +41,7 @@ public class AdminEditController {
     public String listAllowedDates(
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
         return showListAllowedDatesPage(model);
     }
@@ -54,7 +52,7 @@ public class AdminEditController {
             @RequestParam("valueType") String valueType,
             HttpSession session,
             Model model
-    ) throws SQLException {
+    ) {
         ensureSiteAdminLoggedIn(session);
         model.addAttribute("valueType", valueType);
         final List<String> allowedValues = switch (valueType) {
@@ -75,8 +73,7 @@ public class AdminEditController {
     public String viewSiteSettings(
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
         return showViewSiteSettingsPage(model);
     }
@@ -86,8 +83,7 @@ public class AdminEditController {
     public String showAddAllowedDate(
             HttpSession session,
             Model model
-        )
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
         AddAllowedDateFormData formData = new AddAllowedDateFormData();
         return showAddAllowedDatePageWithErrors(model, formData, null);
@@ -99,8 +95,7 @@ public class AdminEditController {
             HttpSession session,
             Model model,
             @RequestParam("valueType") String valueType
-    ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
         final AddAllowedValueFormData formData = new AddAllowedValueFormData();
         formData.setValueType(valueType);
@@ -113,8 +108,7 @@ public class AdminEditController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") AddAllowedDateFormData formData
-        ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
 
         // --- Validation Rules ---
@@ -147,8 +141,7 @@ public class AdminEditController {
             HttpSession session,
             Model model,
             @ModelAttribute("formData") AddAllowedValueFormData formData
-    ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
 
         // --- Validation Rules ---
@@ -182,8 +175,7 @@ public class AdminEditController {
     public String deleteAllowedDate(
             @RequestParam("parseableDateStr") String parseableDateStr,
             HttpSession session
-        ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
 
         Date date;
@@ -207,8 +199,7 @@ public class AdminEditController {
             @RequestParam("valueType") String valueType,
             @RequestParam("allowedValue") String allowedValue,
             HttpSession session
-    ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
 
         try {
@@ -230,8 +221,7 @@ public class AdminEditController {
             @RequestParam("settingToEdit") String settingToEdit,
             HttpSession session,
             Model model
-        ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
         return showEditSiteSettingPage(model, settingToEdit);
     }
@@ -240,19 +230,18 @@ public class AdminEditController {
     public String editSiteSetting(
             @ModelAttribute("formData") EditSiteSettingFormData formData,
             HttpSession session
-        ) throws SQLException
-    {
+    ) {
         ensureSiteAdminLoggedIn(session);
         database.modifySiteSetting(formData.getSettingName(), formData.getSettingValue());
         return "redirect:viewSiteSettings.htm";
     }
 
-    public String showListAllowedDatesPage(Model model) throws SQLException {
+    public String showListAllowedDatesPage(Model model) {
         model.addAttribute("allowedDates", database.getAllowedDates());
         return "listAllowedDates";
     }
 
-    public String showViewSiteSettingsPage(Model model) throws SQLException {
+    public String showViewSiteSettingsPage(Model model) {
         model.addAttribute("siteSettings", database.getSiteSettings());
         return "viewSiteSettings";
     }
@@ -267,8 +256,7 @@ public class AdminEditController {
             Model model,
             AddAllowedValueFormData formData,
             Errors errors
-    ) throws SQLException
-    {
+    ) {
         assert formData.valueType != null;
         final List<String> allowedValues = switch(formData.valueType) {
             case "Time" -> database.getAllowedTimes();
@@ -286,7 +274,7 @@ public class AdminEditController {
     /**
      * A subroutine that launches the page for editing a site setting.
      */
-    public String showEditSiteSettingPage(Model model, String settingToEdit) throws SQLException {
+    public String showEditSiteSettingPage(Model model, String settingToEdit) {
         EditSiteSettingFormData formData = new EditSiteSettingFormData();
         formData.setSettingName(settingToEdit);
         formData.setSettingValue(database.getSiteSettings().get(settingToEdit));

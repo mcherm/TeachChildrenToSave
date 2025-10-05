@@ -2,9 +2,6 @@ package com.tcts.datamodel;
 
 import com.tcts.common.PrettyPrintingDate;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /**
  * An object that corresponds to the "Event" table in the database.
  */
@@ -24,31 +21,6 @@ public class Event {
     private Teacher linkedTeacher;
     private Volunteer linkedVolunteer;
 
-
-    /**
-     * This can be called to populate fields from the current row of a resultSet.
-     */
-    public void populateFieldsFromResultSetRow(ResultSet resultSet) throws SQLException {
-        setEventId(resultSet.getString("event_id"));
-        setTeacherId(resultSet.getString("teacher_id"));
-        setEventDate(new PrettyPrintingDate(resultSet.getDate("event_date")));
-        setEventTime(resultSet.getString("event_time"));
-        setGrade(resultSet.getString("grade"));
-        setDeliveryMethod(resultSet.getString("delivery_method"));
-        setNumberStudents(resultSet.getInt("number_students"));
-        setNotes(resultSet.getString("notes"));
-        setVolunteerId(resultSet.getString("volunteer_id"));
-    }
-
-    public void populateFieldsFromResultSetRowWithTeacherAndSchool (ResultSet resultSet) throws SQLException {
-        populateFieldsFromResultSetRow(resultSet);
-        Teacher teacher = new Teacher();
-        teacher.populateFieldsFromResultSetRow(resultSet);
-        setLinkedTeacher(teacher);
-        School school = new School();
-        school.populateFieldsFromResultSetRow(resultSet);
-        teacher.setLinkedSchool(school);
-    }
 
     public String getEventId() {
         return eventId;
