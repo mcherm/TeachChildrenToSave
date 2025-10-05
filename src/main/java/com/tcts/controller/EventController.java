@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import com.tcts.util.EventUtil;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -46,8 +48,8 @@ public class EventController {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
         binder.registerCustomEditor(Date.class, dateEditor);
-    }
-        
+                }
+
     /**
      * Deletes an event and all users associated with it.
      */
@@ -82,12 +84,15 @@ public class EventController {
             throw new NotLoggedInException();
         }
 
-        model.addAttribute("events", database.getAllEvents());
+        java.util.List<Event> events = database.getAllEvents();
+        model.addAttribute("events", events);
         model.addAttribute("calledByURL", "viewEditEvents.htm");
-        model.addAttribute("allowedDates", database.getAllowedDates());
-        model.addAttribute("allowedTimes", database.getAllowedTimes());
-        model.addAttribute("allowedGrades", database.getAllowedGrades());
-        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
+        java.util.List<String> allowedGrades = database.getAllowedGrades();
+        model.addAttribute("allowedGrades", allowedGrades);
+        model.addAttribute("showGradeColumn", EventUtil.hasMultipleGrades(database,events));
+        java.util.List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+        model.addAttribute("allowedDeliveryMethods", allowedDeliveryMethods);
+        model.addAttribute("showDeliveryMethodColumn", EventUtil.hasMultipleDeliveryMethods(database,events));
         return "sortedClasses";
     }
     
@@ -127,8 +132,12 @@ public class EventController {
     {
     	model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        model.addAttribute("allowedGrades", database.getAllowedGrades());
-        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
+        List<String> allowedGrades = database.getAllowedGrades();
+        model.addAttribute("allowedGrades", allowedGrades);
+        model.addAttribute("showGradeColumn", allowedGrades.size() >= 2);
+        List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+        model.addAttribute("allowedDeliveryMethods", allowedDeliveryMethods);
+        model.addAttribute("showDeliveryMethodColumn", allowedDeliveryMethods.size() >= 2);
         model.addAttribute("formData", formData);
         model.addAttribute("errorMessage", errorMessage);
         return "editEvent";
@@ -157,7 +166,7 @@ public class EventController {
                 if (!sessionData.getTeacher().getUserId().equals(event.getTeacherId())) {
                     throw new NotOwnedByYouException();
                 }
-        		
+
         	}
         }
 

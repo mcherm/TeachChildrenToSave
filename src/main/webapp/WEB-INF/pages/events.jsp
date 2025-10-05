@@ -42,8 +42,12 @@
                     <tr>
                         <th scope="col">Date</th>
                         <th scope="col">Time</th>
-                        <th scope="col" class="center">Grade</th>
-                        <th scope="col">Delivery Method</th>
+                        <c:if test="${showGradeColumn}">
+                            <th scope="col" class="center">Grade</th>
+                        </c:if>
+                        <c:if test="${showDeliveryMethodColumn}">
+                            <th scope="col">Delivery Method</th>
+                        </c:if>
                         <th scope="col" class="center">Students</th>
                         <th scope="col" >Notes</th>
                         <th scope="col">Teacher</th>
@@ -65,8 +69,12 @@
                         <tr>
                             <td data-title="Date"><c:out value="${event.eventDate.pretty}"/></td>
                             <td data-title="Time"><c:out value="${event.eventTime}"/></td>
-                            <td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
-                            <td data-title="Delivery Method"><c:out value="${event.deliveryMethodString}"/></td>
+                            <c:if test="${showGradeColumn}">
+                                <td class="center" data-title="Grade"><c:out value="${event.grade}"/></td>
+                            </c:if>
+                            <c:if test="${showDeliveryMethodColumn}">
+                                <td data-title="Delivery Method"><c:out value="${event.deliveryMethodString}"/></td>
+                            </c:if>
                             <td class="center" data-title="Students"><c:out value="${event.numberStudents}"/></td>
                             <td class="center" data-title="Notes"><div class="scrollable"><c:out value="${event.notes}"/></div> </td>
                             <td data-title="Teacher">

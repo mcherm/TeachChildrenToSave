@@ -69,33 +69,43 @@
                         </label>
                     </div>
 
-                    <div class="formElementCnt">
-                        <label>
-                            <div class="inputCnt">
-                                <div class="info">
-                                    Grade
+                    <c:if test="${showGradeColumn}">
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        Grade
+                                    </div>
+                                    <form:select path="grade">
+                                        <form:option value="" label="Select One..." />
+                                        <form:options items="${allowedGrades}"/>
+                                    </form:select>
                                 </div>
-                                <form:select path="grade">
-                                    <form:option value="" label="Select One..." />
-                                    <form:options items="${allowedGrades}"/>
-                                </form:select>
-                            </div>
-                        </label>
-                    </div>
+                            </label>
+                        </div>
+                    </c:if>
+                    <c:if test="${!showGradeColumn}">
+                        <input type="hidden" id="grade" name="grade" value="${allowedGrades[0]}"/>
+                    </c:if>
 
-                    <div class="formElementCnt">
-                        <label>
-                            <div class="inputCnt">
-                                <div class="info">
-                                    Delivery Method
+                    <c:if test="${showDeliveryMethodColumn}">
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        Delivery Method
+                                    </div>
+                                    <form:select path="deliveryMethod">
+                                        <form:option value="" label="Select One..." />
+                                        <form:options items="${allowedDeliveryMethods}"/>
+                                    </form:select>
                                 </div>
-                                <form:select path="deliveryMethod">
-                                    <form:option value="" label="Select One..." />
-                                    <form:options items="${allowedDeliveryMethods}"/>
-                                </form:select>
-                            </div>
-                        </label>
-                    </div>
+                            </label>
+                        </div>
+                    </c:if>
+                    <c:if test="${!showDeliveryMethodColumn}">
+                        <input type="hidden" id="deliveryMethod" name="deliveryMethod" value="${allowedDeliveryMethods[0]}"/>
+                    </c:if>
 
 
                     <div class="formElementCnt">

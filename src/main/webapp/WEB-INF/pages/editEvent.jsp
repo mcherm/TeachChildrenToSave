@@ -67,18 +67,20 @@
                         </label>
                     </div>
 
-                    <div class="formElementCnt">
-                        <label>
-                            <div class="inputCnt">
-                                <div class="info">
-                                    Delivery Method
+                    <c:if test="${showDeliveryMethodColumn}">
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        Delivery Method
+                                    </div>
+                                    <form:select path="deliveryMethod">
+                                        <form:options items="${allowedDeliveryMethods}"/>
+                                    </form:select>
                                 </div>
-                                <form:select path="deliveryMethod">
-                                    <form:options items="${allowedDeliveryMethods}"/>
-                                </form:select>
-                            </div>
-                        </label>
-                    </div>
+                            </label>
+                        </div>
+                    </c:if>
 
                     <div class="formElementCnt">
                         <label>

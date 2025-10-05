@@ -77,8 +77,12 @@
 		                        <th scope="col">Time</th>
 		                        <th scope="col">School</th>
 		                        <th scope="col">Teacher</th>
-		                        <th scope="col" class="center">Grade</th>
-								<th scope="col">Delivery Method</th>
+		                        <c:if test="${showGradeColumn}">
+		                            <th scope="col" class="center">Grade</th>
+		                        </c:if>
+								<c:if test="${showDeliveryMethodColumn}">
+								    <th scope="col">Delivery Method</th>
+								</c:if>
 		                        <th scope="col" class="center">Students</th>
                                 <c:if test="${bank.minLMIForCRA != null}">
                                     <th scope="col">CRA</th>
@@ -98,8 +102,12 @@
 		                            <td data-title="Time"><c:out value="${event.eventTime}"/></td>
 		                            <td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
 		                            <td data-title="Teacher"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
-		                            <td data-title="Grade" class="center"><c:out value="${event.grade}"/></td>
-									<td data-title="Delivery Method"><c:out value="${event.deliveryMethod}"/></td>
+		                            <c:if test="${showGradeColumn}">
+		                                <td data-title="Grade" class="center"><c:out value="${event.grade}"/></td>
+		                            </c:if>
+									<c:if test="${showDeliveryMethodColumn}">
+									    <td data-title="Delivery Method"><c:out value="${event.deliveryMethod}"/></td>
+									</c:if>
 		                            <td data-title="Students" class="center"><c:out value="${event.numberStudents}"/></td>
                                     <c:if test="${bank.minLMIForCRA != null}">
                                         <td data-title="CRA">

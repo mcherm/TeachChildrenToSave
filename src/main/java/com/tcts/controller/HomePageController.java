@@ -12,6 +12,7 @@ import com.tcts.S3Bucket.S3Util;
 import com.tcts.datamodel.ApprovalStatus;
 import com.tcts.datamodel.Document;
 import com.tcts.formdata.SetBankSpecificFieldLabelFormData;
+import com.tcts.util.EventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -86,9 +87,17 @@ public class HomePageController {
         }
 
 
+        // --- Get list of allowed grades ---
+        List<String> allowedGrades = database.getAllowedGrades();
+
+        // --- Get list of allowed delivery methods ---
+        List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+
         // --- Display the page ---
         model.addAttribute("bank", bank);
         model.addAttribute("events", events);
+        model.addAttribute("showGradeColumn",EventUtil.hasMultipleGrades(database, events));
+        model.addAttribute("showDeliveryMethodColumn",  EventUtil.hasMultipleDeliveryMethods(database, events));
         boolean volunteerSignupsOpen = EventRegistrationController.isVolunteerSignupsOpen(database);
         model.addAttribute("volunteerSignupsOpen", volunteerSignupsOpen);
 
@@ -138,6 +147,8 @@ public class HomePageController {
 
         boolean eventCreationOpen = CreateEventController.isEventCreationOpen(database);
         model.addAttribute("events", events);
+        model.addAttribute("showGradeColumn",EventUtil.hasMultipleGrades(database, events));
+        model.addAttribute("showDeliveryMethodColumn", EventUtil.hasMultipleDeliveryMethods(database, events));
         model.addAttribute("eventCreationOpen", eventCreationOpen);
         if (teacherDocs.size() == 0){
             model.addAttribute("showDocuments", false);
@@ -198,6 +209,12 @@ public class HomePageController {
             }
         }
 
+        // --- Check if we should show the grade column ---
+        List<String> allowedGrades = database.getAllowedGrades();
+
+        // --- Check if we should show the delivery method column ---
+        List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+
         // --- Show homepage ---
         model.addAttribute("bank", bank);
         model.addAttribute("normalVolunteers", normalVolunteers);
@@ -208,6 +225,8 @@ public class HomePageController {
         model.addAttribute("volunteerDocs",volunteerDocs);
         model.addAttribute("bankAdminDocs", bankAdminDocs);
         model.addAttribute("s3Util",s3Util);
+        model.addAttribute("showGradeColumn", allowedGrades.size() >= 2);
+        model.addAttribute("showDeliveryMethodColumn", allowedDeliveryMethods.size() >= 2);
         return "bankAdminHome";
     }
 

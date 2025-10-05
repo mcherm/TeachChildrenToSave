@@ -18,7 +18,9 @@
                         'eventDate': '<c:out value="${event.eventDate.pretty}"/>',
                         'eventTime': '<c:out value="${event.eventTime}"/>',
                         'grade': '<c:out value="${event.grade}"/>',
-                        'deliveryMethod': '<c:out value="${event.deliveryMethod}"/>',
+                        <c:if test="${showDeliveryMethodColumn}">
+                            'deliveryMethod': '<c:out value="${event.deliveryMethod}"/>',
+                        </c:if>
                         'numberStudents': '<c:out value="${event.numberStudents}"/>',
                         'notes': '<c:out value="${fn:forJavascriptString(event.notes)}"/>',
                         'email': '<c:out value="${fn:forJavascriptString(event.linkedTeacher.email)}"/>',
@@ -51,8 +53,12 @@
                     "<thead><tr>" +
                     "    <th data-title='Sort list by:' scope='col' class='sortable date' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
                     "    <th scope='col' class='sortable time' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
+                    <c:if test="${showGradeColumn}">
                     "    <th scope='col' class='sortable grade' id='col_for_grade'><button onclick='sortBy(\"grade\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
+                    </c:if>
+                    <c:if test="${showDeliveryMethodColumn}">
                     "    <th scope='col' class='sortable deliveryMethod' id='col_for_deliveryMethod'><button onclick='sortBy(\"deliveryMethod\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Delivery Method</button></th>" +
+                    </c:if>
                     "    <th scope='col' class='sortable students' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
                     "    <th scope='col' class='sortable teacher' id='col_for_firstName'><button onclick='sortBy(\"firstName\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
                     "    <th scope='col' class='sortable school' id='col_for_schoolName''><button onclick='sortBy(\"schoolName\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>School</button></th>" +
@@ -91,8 +97,12 @@
                             "<tr id='rowForEvent" + event.eventId + "'>" +
                             "    <td class='date' data-title='Date'>" + event.eventDate + "</td>" +
                             "    <td class='time' data-title='Time'>" + event.eventTime + "</td>" +
+                            <c:if test="${showGradeColumn}">
                             "    <td class='grade' class='center' data-title='Grade'>" + event.grade + "</td>" +
+                            </c:if>
+                            <c:if test="${showDeliveryMethodColumn}">
                             "    <td class='deliveryMethod' class='center' data-title='Delivery Method'>" + event.deliveryMethod + "</td>" +
+                            </c:if>
                             "    <td class='students' class='center' data-title='Number of students'>" + event.numberStudents + "</td>" +
                             "    <td class='teacher' data-title='Teacher'>" + event.firstName + " " + event.lastName + "</td>" +
                             "    <td class='school' data-title='School'>" + event.schoolName + "</td>" +
@@ -146,16 +156,20 @@
                     legend: 'County',
                     itemLabel: function(s) {return s;}
                 });
+                <c:if test="${showGradeColumn}">
                 createSelectionCheckboxes({
                     field: 'grade',
                     legend: 'Grade',
                     itemLabel: function(s) {return s;}
                 });
+                </c:if>
+                <c:if test="${showDeliveryMethodColumn}">
                 createSelectionCheckboxes({
                     field: 'deliveryMethod',
                     legend: 'Delivery Method',
                     itemLabel: function(s) {return s;}
                 });
+                </c:if>
                 <%-- FIXME: Here I should have another checkbox for selecting by CRA Eligible --%>
                 <%--
                 createSelectionCheckboxes({
@@ -218,8 +232,12 @@
                             <th scope="col">Time</th>
                             <th scope="col">School</th>
                             <th scope="col">Teacher</th>
-                            <th scope="col" class="center">Grade</th>
-                            <th scope="col">Delivery Method</th>
+                            <c:if test="${showGradeColumn}">
+                                <th scope="col" class="center">Grade</th>
+                            </c:if>
+                            <c:if test="${showDeliveryMethodColumn}">
+                                <th scope="col">Delivery Method</th>
+                            </c:if>
                             <th scope="col" class="center">Students</th>
                             <c:if test="${bank.minLMIForCRA != null}">
                                 <th scope="col">CRA</th>
@@ -245,8 +263,12 @@
                                 <td data-title="Time"><c:out value="${event.eventTime}"/></td>
                                 <td data-title="School"><c:out value="${event.linkedTeacher.linkedSchool.name}"/></td>
                                 <td data-title="Teacher"><c:out value="${event.linkedTeacher.firstName}"/> <c:out value="${event.linkedTeacher.lastName}"/></td>
-                                <td data-title="Grade" class="center"><c:out value="${event.grade}"/></td>
-                                <td data-title="Delivery Method"><c:out value="${event.deliveryMethod}"/></td>
+                                <c:if test="${showGradeColumn}">
+                                    <td data-title="Grade" class="center"><c:out value="${event.grade}"/></td>
+                                </c:if>
+                                <c:if test="${showDeliveryMethodColumn}">
+                                    <td data-title="Delivery Method"><c:out value="${event.deliveryMethod}"/></td>
+                                </c:if>
                                 <td data-title="Students" class="center"><c:out value="${event.numberStudents}"/></td>
                                 <c:if test="${bank.minLMIForCRA != null}">
                                     <td data-title="CRA">
@@ -296,7 +318,9 @@
                         <div id="eventTime_checkboxes"><%-- populated by javascript --%></div>
                         <div id="county_checkboxes"><%-- populated by javascript --%></div>
                         <div id="grade_checkboxes"><%-- populated by javascript --%></div>
-                        <div id="deliveryMethod_checkboxes"><%-- populated by javascript --%></div>
+                        <c:if test="${showDeliveryMethodColumn}">
+                            <div id="deliveryMethod_checkboxes"><%-- populated by javascript --%></div>
+                        </c:if>
                         <div id="lmiEligible_checkboxes"><%-- populated by javascript --%></div>
                     </div>
 
@@ -305,7 +329,9 @@
                         <div id="eventTime_select"><%-- populated by javascript --%></div>
                         <div id="county_select"><%-- populated by javascript --%></div>
                         <div id="grade_select"><%-- populated by javascript --%></div>
-                        <div id="deliveryMethod_select"><%-- populated by javascript --%></div>
+                        <c:if test="${showDeliveryMethodColumn}">
+                            <div id="deliveryMethod_select"><%-- populated by javascript --%></div>
+                        </c:if>
                         <div id="lmiEligible_select"><%-- populated by javascript --%></div>
                     </div>
 

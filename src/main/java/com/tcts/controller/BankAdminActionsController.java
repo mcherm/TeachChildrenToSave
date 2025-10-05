@@ -10,6 +10,7 @@ import com.tcts.datamodel.Volunteer;
 import com.tcts.exception.InvalidParameterFromGUIException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.email.EmailUtil;
+import com.tcts.util.EventUtil;
 import com.tcts.util.TemplateUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Some pages (and fragments of pages) that are used by bank admins to manage the
@@ -74,6 +76,8 @@ public class BankAdminActionsController {
         // --- Show the page (well, detail) ---
         model.addAttribute("bank", bank);
         model.addAttribute("events", events);
+        model.addAttribute("showGradeColumn", EventUtil.hasMultipleGrades(database, events));
+        model.addAttribute("showDeliveryMethodColumn", EventUtil.hasMultipleDeliveryMethods(database,events));
         return "bankAdminHomeDetail";
     }
 

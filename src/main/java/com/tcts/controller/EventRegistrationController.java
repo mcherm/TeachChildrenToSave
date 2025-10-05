@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 
 import com.tcts.datamodel.*;
 import com.tcts.exception.EventAlreadyHasAVolunteerException;
+import com.tcts.util.EventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -94,11 +95,16 @@ public class EventRegistrationController {
         model.addAttribute("volunteerFirstName",volunteer.getFirstName());
         model.addAttribute("volunteerLastName", volunteer.getLastName());
         model.addAttribute("bank", database.getBankById(volunteer.getBankId()));
-        model.addAttribute("events", database.getAllAvailableEvents());
+        List<Event> events = database.getAllAvailableEvents();
+        model.addAttribute("events", events);
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        model.addAttribute("allowedGrades", database.getAllowedGrades());
-        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
+        List<String> allowedGrades = database.getAllowedGrades();
+        model.addAttribute("allowedGrades", allowedGrades);
+        model.addAttribute("showGradeColumn",  EventUtil.hasMultipleGrades(database, events));
+        List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+        model.addAttribute("allowedDeliveryMethods", allowedDeliveryMethods);
+        model.addAttribute("showDeliveryMethodColumn", EventUtil.hasMultipleDeliveryMethods(database, events));
         boolean volunteerSignupsOpen = EventRegistrationController.isVolunteerSignupsOpen(database);
         model.addAttribute("volunteerSignupsOpen", volunteerSignupsOpen);
 

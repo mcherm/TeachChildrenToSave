@@ -50,8 +50,12 @@
                 "<thead><tr>" +
                 "    <th data-title='Sort list by:' scope='col' class='sortable date' id='col_for_eventDate'><button onclick='sortBy(\"eventDate\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Date</button></th>" +
                 "    <th scope='col' class='sortable time' id='col_for_eventTime'><button onclick='sortBy(\"eventTime\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Time</button></th>" +
+                <c:if test="${showGradeColumn}">
                 "    <th scope='col' class='sortable grade' id='col_for_grade'><button onclick='sortBy(\"grade\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Grade</button></th>" +
+                </c:if>
+                <c:if test="${showDeliveryMethodColumn}">
                 "    <th scope='col' class='sortable deliveryMethod' id='col_for_deliveryMethod'><button onclick='sortBy(\"deliveryMethod\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Delivery Method</button></th>" +
+                </c:if>
                 "    <th scope='col' class='sortable students' id='col_for_numberStudents'><button onclick='sortBy(\"numberStudents\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Students</button></th>" +
                 "    <th scope='col' class='sortable teacher' id='col_for_firstName'><button onclick='sortBy(\"firstName\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Teacher</button></th>" +
                 "    <th scope='col' class='sortable email' id='col_for_email'><button onclick='sortBy(\"email\", availableEvents)'><span class='ada-read'>Sort by&nbsp;</span>Teacher Email</button></th>" +
@@ -90,8 +94,12 @@
                         "<tr id='rowForEvent" + event.eventId + "'>" +
                         "    <td class='date' data-title='Date'>" + event.eventDate + "</td>" +
                         "    <td class='time' data-title='Time'>" + event.eventTime + "</td>" +
+                        <c:if test="${showGradeColumn}">
                         "    <td class='grade' class='center' data-title='Grade'>" + event.grade + "</td>" +
+                        </c:if>
+                        <c:if test="${showDeliveryMethodColumn}">
                         "    <td class='deliveryMethod' class='center' data-title='Delivery Method'>" + event.deliveryMethod + "</td>" +
+                        </c:if>
                         "    <td class='students' class='center' data-title='Number of students'>" + event.numberStudents + "</td>" +
                         "    <td class='teacher' data-title='Teacher'>" + event.firstName + " " + event.lastName + "</td>" +
                         "    <td class='teacher' data-title='TeacherEmail'>" + event.email + "</td>" +
@@ -147,16 +155,20 @@
                 legend: 'County',
                 itemLabel: function(s) {return s;}
             });
+            <c:if test="${showGradeColumn}">
             createSelectionCheckboxes({
                 field: 'grade',
                 legend: 'Grade',
                 itemLabel: function(s) {return s;}
             });
+            </c:if>
+            <c:if test="${showDeliveryMethodColumn}">
             createSelectionCheckboxes({
                 field: 'deliveryMethod',
                 legend: 'Delivery Method',
                 itemLabel: function(s) {return s;}
             });
+            </c:if>
             createSelectionCheckboxes({
                 field: 'available',
                 legend: 'Volunteering',

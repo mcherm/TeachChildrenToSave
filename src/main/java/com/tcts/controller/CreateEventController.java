@@ -39,7 +39,7 @@ public class CreateEventController {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
         binder.registerCustomEditor(Date.class, dateEditor);
-    }
+                }
     @RequestMapping(value = "/createEventBySiteAdmin.htm", method = RequestMethod.GET)
     public String showPageCreateEventBySiteAdmin(
             HttpSession session,
@@ -72,8 +72,12 @@ public class CreateEventController {
     private String showFormWithErrors(Model model, SessionData sessionData, Errors errors) throws SQLException {
         model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
-        model.addAttribute("allowedGrades", database.getAllowedGrades());
-        model.addAttribute("allowedDeliveryMethods", database.getAllowedDeliveryMethods());
+        List<String> allowedGrades = database.getAllowedGrades();
+        model.addAttribute("allowedGrades", allowedGrades);
+        model.addAttribute("showGradeColumn", allowedGrades.size() >= 2);
+        List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+        model.addAttribute("allowedDeliveryMethods", allowedDeliveryMethods);
+        model.addAttribute("showDeliveryMethodColumn", allowedDeliveryMethods.size() >= 2);
         if (sessionData.getTeacher() != null)  {
             model.addAttribute("calledBy", "teacher");
         } else  if (sessionData.getSiteAdmin() != null) {
