@@ -62,7 +62,10 @@ public class S3Util {
                 .region(region)
                 .credentialsProvider(credentialsProvider)
                 .build();
-        s3Presigner = S3Presigner.create();
+        s3Presigner = S3Presigner.builder()
+                .region(region)
+                .credentialsProvider(credentialsProvider)
+                .build();
         bucketName = "teachchildrentosave-documents";
     }
 
