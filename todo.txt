@@ -6,7 +6,6 @@ R Make the grades and delivery methods become invisible if there is only one cho
 * Need to enable prefetching and cacheing in DatabaseFactory line 54.
 - Clean up old tables.
 * Bug: Teacher homepage doesn't show the class descriptions in the list of classes
-* Don't allow admin to delete ALL of the allowedValues of any given type.
 
 -------- FINISHED TASKS --------
 M Upload the new school data from Jen's email.
@@ -16,6 +15,7 @@ M Make documents correctly read/write inside site & environment folders
 M In mvc-dispatcher-servlet.xml I seem to have broken document upload and must fix it.
 M Bug: Can't edit or create classes!!
 M Migrate off the remaining parts of the old AWS library (which will cease working in Dec 2025).
+M Don't allow admin to delete ALL of the allowedValues of any given type.
 
 
 -------- OPEN TASKS --------
