@@ -36,6 +36,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -311,7 +312,11 @@ public interface DatabaseFacade {
     public void insertNewAllowedDeliveryMethod(String newAllowedDeliveryMethod, String deliveryMethodToInsertBefore)
             throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException;
 
-    public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
+    /** Add or remove a volunteer from an event. */
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException;
+
+    /** Modify the fields of an event. */
+    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException;
 
 
 	/** Changes the password (and salt) for an existing user. */

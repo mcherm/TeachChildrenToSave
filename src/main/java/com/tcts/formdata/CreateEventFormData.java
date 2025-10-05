@@ -4,7 +4,6 @@ import com.tcts.common.PrettyPrintingDate;
 import com.tcts.database.DatabaseField;
 
 import java.sql.SQLException;
-import java.util.Date;
 
 /**
  * Data fields in the form used to create a new event.
@@ -22,7 +21,7 @@ public class CreateEventFormData extends ValidatedFormData<SQLException> {
 
     @Override
     public void validationRules(Errors errors) throws SQLException {
-        if ((teacherId == null) || (teacherId.isEmpty())){
+        if ((teacherId == null) || (teacherId.isEmpty())) {
             errors.addError("You must select a teacher from the list.");
         }
         if (!database.getAllowedDates().contains(eventDate)) {

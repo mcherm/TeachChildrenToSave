@@ -1,20 +1,19 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.tcts.exception.FormDataConstructionException;
+import com.tcts.formdata.EditEventFormData;
+import com.tcts.formdata.EditEventFormDataStrings;
+import com.tcts.formdata.Errors;
 import com.tcts.util.EventUtil;
-
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +28,6 @@ import com.tcts.exception.NoSuchEventException;
 import com.tcts.exception.NotLoggedInException;
 import com.tcts.exception.NotOwnedByYouException;
 import com.tcts.formdata.CreateEventFormData;
-import com.tcts.formdata.EventRegistrationFormData;
 
 /**
  * This is a controller for the "home page" for users. It renders substantially
@@ -42,13 +40,6 @@ public class EventController {
     @Autowired
     private DatabaseFacade database;
 
-
-    @InitBinder
-    private void initBinder(WebDataBinder binder) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
-        binder.registerCustomEditor(Date.class, dateEditor);
-                }
 
     /**
      * Deletes an event and all users associated with it.
@@ -119,14 +110,14 @@ public class EventController {
         }
 
         // --- Show the edit page ---
-        return showEditEventWithErrorMessage(model, transformEventData(event), "");
+        return showEditEventWithErrorMessage(model, createFormDataToEditEvent(event), "");
     }
 
 
     /**
      * A subroutine used to set up and then show the add event form. It
      * returns the string, so you can invoke it as "return showEditEventWithErrorMessage(...)".
-     */
+     */ // FIXME: This should be changed to accept an Errors object instead of a single string.
     public String showEditEventWithErrorMessage(Model model, CreateEventFormData formData, String errorMessage)
             throws SQLException
     {
@@ -161,9 +152,21 @@ public class EventController {
     public String doEditEvent(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") EventRegistrationFormData formData
+            @ModelAttribute("formData") EditEventFormDataStrings formDataStrings
         ) throws SQLException
     {
+        // --- Convert to the richer EditEventFormData object ---
+        final EditEventFormData formData;
+        try {
+            formData = formDataStrings.asFormData();
+        } catch(FormDataConstructionException err) {
+            final Errors errors = err.getErrors();
+            // We cannot re-display the page if we can't even parse the formData. And it will
+            // only happen due to application error, not user error. So the error handling will
+            // just be an exception.
+            throw new RuntimeException("Cannot create EditEventFormData: " + errors);
+        }
+
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
         if (sessionData.getSiteAdmin() == null) {
@@ -171,7 +174,7 @@ public class EventController {
         		throw new NotLoggedInException();
         	}
         	else {
-        		Event event = database.getEventById(formData.getEventId());
+                Event event = database.getEventById(formData.getEventId());
                 if (event == null) {
                     // No such event by that ID
                     throw new InvalidParameterFromGUIException();
@@ -216,20 +219,22 @@ public class EventController {
     }
 
 
-    
+
     /**
-     * Transform school modal data
+     * Given an Event, populate the fields of the data object needed to edit it.
      */
-    
-    private EventRegistrationFormData transformEventData(Event event) {
-    	EventRegistrationFormData formData = new EventRegistrationFormData();
+    private EditEventFormData createFormDataToEditEvent(Event event) {
+        EditEventFormData formData = new EditEventFormData();
         formData.setEventDate(event.getEventDate());
         formData.setEventTime(event.getEventTime());
         formData.setGrade(event.getGrade());
         formData.setDeliveryMethod(event.getDeliveryMethod());
         formData.setNotes(event.getNotes());
         formData.setEventId(event.getEventId());
-        formData.setNumberStudents(Integer.valueOf(event.getNumberStudents()==0?0:event.getNumberStudents()).toString());
+        // FIXME: WHY are we doing the complex, messy thing we do below? Is it needed?
+        formData.setNumberStudents(Integer.valueOf(
+                event.getNumberStudents() == 0 ? 0 : event.getNumberStudents()
+        ).toString());
         
         return formData;
     }

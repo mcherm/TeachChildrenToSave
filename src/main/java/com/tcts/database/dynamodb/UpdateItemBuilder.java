@@ -1,6 +1,6 @@
 package com.tcts.database.dynamodb;
 
-import com.tcts.database.SingleTableDbField;
+import com.tcts.database.DatabaseField;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tcts.database.SingleTableDbField.table_key;
+import static com.tcts.database.DatabaseField.table_key;
 
 /**
  * This is used to construct an UpdateItemRequest for performing an update to an
@@ -41,7 +41,7 @@ public class UpdateItemBuilder {
     /**
      * Adds another field of type String.
      */
-    public UpdateItemBuilder withString(SingleTableDbField field, String value) {
+    public UpdateItemBuilder withString(DatabaseField field, String value) {
         fieldsToSet.add(new StringFieldToSet(fieldsToSet.size(), field, value == null ? "" : value));
         return this;
     }
@@ -49,7 +49,7 @@ public class UpdateItemBuilder {
     /**
      * Adds another field of type int.
      */
-    public UpdateItemBuilder withInt(SingleTableDbField field, int value) {
+    public UpdateItemBuilder withInt(DatabaseField field, int value) {
         fieldsToSet.add(new IntFieldToSet(fieldsToSet.size(), field, value));
         return this;
     }
@@ -57,19 +57,19 @@ public class UpdateItemBuilder {
     /**
      * Adds another field of type set of strings.
      */
-    public UpdateItemBuilder withStrings(SingleTableDbField field, String[] value) {
+    public UpdateItemBuilder withStrings(DatabaseField field, String[] value) {
         fieldsToSet.add(new SetOfStringsFieldToSet(fieldsToSet.size(), field, value));
         return this;
     }
 
     /** Add a condition where some field is equal to a value. */
-    public UpdateItemBuilder withStringFieldEqualsCondition(SingleTableDbField field, String value) {
+    public UpdateItemBuilder withStringFieldEqualsCondition(DatabaseField field, String value) {
         conditions.add(new StringFieldEqualsCondition(conditions.size(), field, value));
         return this;
     }
 
     /** Add a condition where some field is not equal to a value. */
-    public UpdateItemBuilder withStringFieldNotEqualsCondition(SingleTableDbField field, String value) {
+    public UpdateItemBuilder withStringFieldNotEqualsCondition(DatabaseField field, String value) {
         conditions.add(new StringFieldNotEqualsCondition(conditions.size(), field, value));
         return this;
     }
@@ -101,10 +101,10 @@ public class UpdateItemBuilder {
     /** Internal data - parent of any field. */
     private static abstract class FieldToSet {
         protected final int index;
-        protected final SingleTableDbField field;
+        protected final DatabaseField field;
 
         /** Constructor. */
-        public FieldToSet(int index, SingleTableDbField field) {
+        public FieldToSet(int index, DatabaseField field) {
             this.index = index;
             this.field = field;
         }
@@ -127,7 +127,7 @@ public class UpdateItemBuilder {
         private final String value;
 
         /** Constructor. */
-        public StringFieldToSet(int index, SingleTableDbField field, String value) {
+        public StringFieldToSet(int index, DatabaseField field, String value) {
             super(index, field);
             this.value = value;
         }
@@ -143,7 +143,7 @@ public class UpdateItemBuilder {
         private final int value;
 
         /** Constructor. */
-        public IntFieldToSet(int index, SingleTableDbField field, int value) {
+        public IntFieldToSet(int index, DatabaseField field, int value) {
             super(index, field);
             this.value = value;
         }
@@ -159,7 +159,7 @@ public class UpdateItemBuilder {
         private final String[] value;
 
         /** Constructor. */
-        public SetOfStringsFieldToSet(int index, SingleTableDbField field, String[] value) {
+        public SetOfStringsFieldToSet(int index, DatabaseField field, String[] value) {
             super(index, field);
             this.value = value;
         }
@@ -193,11 +193,11 @@ public class UpdateItemBuilder {
 
     /** For conditions where field = value. */
     private static class StringFieldEqualsCondition extends Condition {
-        protected final SingleTableDbField field;
+        protected final DatabaseField field;
         protected final String value;
 
         /** Constructor. */
-        public StringFieldEqualsCondition(int index, SingleTableDbField field, String value) {
+        public StringFieldEqualsCondition(int index, DatabaseField field, String value) {
             super(index);
             this.field = field;
             this.value = value;
@@ -216,11 +216,11 @@ public class UpdateItemBuilder {
 
     /** For conditions where field != value. */
     private static class StringFieldNotEqualsCondition extends Condition {
-        protected final SingleTableDbField field;
+        protected final DatabaseField field;
         protected final String value;
 
         /** Constructor. */
-        public StringFieldNotEqualsCondition(int index, SingleTableDbField field, String value) {
+        public StringFieldNotEqualsCondition(int index, DatabaseField field, String value) {
             super(index);
             this.field = field;
             this.value = value;

@@ -24,6 +24,7 @@ import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
 import com.tcts.formdata.CreateSchoolFormData;
 import com.tcts.formdata.EditBankFormData;
+import com.tcts.formdata.EditEventFormData;
 import com.tcts.formdata.EditPersonalDataFormData;
 import com.tcts.formdata.EditSchoolFormData;
 import com.tcts.formdata.EditVolunteerPersonalDataFormData;
@@ -72,7 +73,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.tcts.database.SingleTableDbField.*;
+import static com.tcts.database.DatabaseField.*;
 
 
 /**
@@ -90,8 +91,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     /* Constants used for the field lengths. Only has the fields of type String, not int or ID. */
     private final Map<DatabaseField,Integer> FIELD_LENGTHS = new HashMap<>() {{
-        put(DatabaseField.site_setting_name, 30);
-        put(DatabaseField.site_setting_value, 100);
         put(DatabaseField.event_time, 30);
         put(DatabaseField.event_grade, 30);
         put(DatabaseField.event_delivery_method, 30);
@@ -168,7 +167,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * we do when storing the value, and is done because DynamoDB is not able to store
      * empty string values.
      */
-    private static String getStringField(Map<String,AttributeValue> item, SingleTableDbField field) {
+    private static String getStringField(Map<String,AttributeValue> item, DatabaseField field) {
         final AttributeValue fieldValue = item.get(field.name());
         return fieldValue == null ? "" : fieldValue.s();
     }
@@ -178,7 +177,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *
      * @throws NumberFormatException if the field is null or is not an integer
      */
-    private static int getIntField(Map<String,AttributeValue> item, SingleTableDbField field) {
+    private static int getIntField(Map<String,AttributeValue> item, DatabaseField field) {
         final AttributeValue attributeValue = item.get(field.name());
         if (attributeValue == null) {
             throw new NullPointerException("Numeric field " + field.name() + " is null");
@@ -192,7 +191,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      *
      * @throws NumberFormatException if the field is not an integer
      */
-    private static BigDecimal getDecimalField(Map<String,AttributeValue> item, SingleTableDbField field) {
+    private static BigDecimal getDecimalField(Map<String,AttributeValue> item, DatabaseField field) {
         final AttributeValue attributeValue = item.get(field.name());
         return attributeValue == null ? null : new BigDecimal(attributeValue.s());
     }
@@ -421,7 +420,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * @param <T> the type of the objects in the list
      */
     private <T> List<T> getObjectsByIndexLookup(
-            String indexName, SingleTableDbField keyField, String keyValue, CreateFunction<T> createFunction, Comparator<T> comparator
+            String indexName, DatabaseField keyField, String keyValue, CreateFunction<T> createFunction, Comparator<T> comparator
     ) {
         final QueryRequest queryRequest = QueryRequest.builder()
                 .tableName(getTableName())
@@ -599,13 +598,13 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
      * is sorted using a vertical-bar.
      *
      * @param singletonItemName the name of the singleton item
-     * @param valuesWithSort the SingleTableDbField for the value
+     * @param valuesWithSort the DatabaseField for the value
      * @param nameOfItemInErrors a name for the singleton item in error messages
      * @return the List (in the correct order).
      */
     private List<String> getSortedStrings(
             String singletonItemName,
-            SingleTableDbField valuesWithSort,
+            DatabaseField valuesWithSort,
             String nameOfItemInErrors
     ) {
         final Map<String,AttributeValue> item = getSingletonItem(singletonItemName);
@@ -644,7 +643,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             final String valueToDelete,
             final List<String> oldAllowedValues,
             final String singletonItemName,
-            final SingleTableDbField valuesWithSort
+            final DatabaseField valuesWithSort
     ) throws SQLException, NoSuchAllowedValueException {
         // --- check if the value is missing ---
         if (!oldAllowedValues.contains(valueToDelete)) {
@@ -685,7 +684,7 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
             final String valueToInsertBefore,
             final List<String> oldAllowedValues,
             final String singletonItemName,
-            final SingleTableDbField valuesWithSort
+            final DatabaseField valuesWithSort
     ) throws SQLException, AllowedValueAlreadyInUseException, NoSuchAllowedValueException {
         // --- check for invalid times ---
         if (newValue.equals("") || oldAllowedValues.contains(newValue)) {
@@ -1405,8 +1404,31 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         insertNewSortedString(newAllowedDeliveryMethod, deliveryMethodToInsertBefore, getAllowedDeliveryMethods(), "allowedDeliveryMethods", allowed_delivery_method_values_with_sort);
     }
 
+    /** Convert a volunteerId (using null to indicate no volunteer) to the database format (using NO_VOLUNTEER). */
+    private String dbFormatVolunteerId(String volunteerId) {
+        if (volunteerId == null) {
+            return NO_VOLUNTEER;
+        } else {
+            return volunteerId;
+        }
+    }
+
     @Override
-    public void modifyEvent(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+    public void modifyEventRegistration(EventRegistrationFormData formData) throws SQLException, NoSuchEventException {
+        final String tableKey = "event:" + formData.getEventId();
+        final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
+                .withString(event_volunteer_id, dbFormatVolunteerId(formData.getVolunteerId()))
+                .withStringFieldEqualsCondition(table_key, tableKey) // confirm it exists
+                .build();
+        try {
+            dynamoDbClient.updateItem(updateItemRequest);
+        } catch(ConditionalCheckFailedException err) {
+            throw new NoSuchEventException();
+        }
+    }
+
+    @Override
+    public void modifyEvent(EditEventFormData formData) throws SQLException, NoSuchEventException {
         final String tableKey = "event:" + formData.getEventId();
         final UpdateItemRequest updateItemRequest = new UpdateItemBuilder(getTableName(), tableKey)
                 .withString(event_date, PrettyPrintingDate.fromJavaUtilDate(formData.getEventDate()).getParseable())

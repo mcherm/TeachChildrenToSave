@@ -1,9 +1,5 @@
 package com.tcts.database.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.document.Expected;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
-import com.tcts.exception.PrimaryKeyAlreadyExistsException;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,26 +15,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Component
 public class DynamoDBHelper {
-
-    /**
-     * This method inserts a new item into a table. The ItemMaker provides a "fluent
-     * interface" for specifying the primary key and fields of the item to be inserted,
-     * very much like the fluent interface for AWS's Item class except that this also
-     * makes use of our DatabaseField class and handles nulls and empty strings (by
-     * not inserting either of them).
-     *
-     * @param table the table into which it should be inserted
-     * @param itemMaker describes the item to be inserted
-     */
-    public void insertIntoTable(Table table, ItemMaker itemMaker) throws PrimaryKeyAlreadyExistsException {
-        try {
-            table.putItem(itemMaker.getItem(),
-                    new Expected(itemMaker.getPrimaryKeyField().name()).notExist());
-        } catch(ConditionalCheckFailedException err) {
-            throw new PrimaryKeyAlreadyExistsException();
-        }
-    }
-
 
     /**
      * When this is called, it will create a single, unique ID, guaranteed

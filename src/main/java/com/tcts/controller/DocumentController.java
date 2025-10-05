@@ -62,23 +62,16 @@ public class DocumentController {
     }
 
     private String showForm(Model model) throws SQLException {
-        final String site = sitesConfig.getSite();
-        final String env = configuration.getProperty("dynamoDB.environment");
-        String folder = site + "/" + env + "/";
-
-        final Set<String> allDocNamesFromBucket = s3Util.getAllDocuments();
-        final Set<String> bucketDocNames = allDocNamesFromBucket.stream()
-                .filter(x -> x.startsWith(folder) && x.length() > folder.length()) // in the folder & not the folder itself
-                .collect(Collectors.toSet());
+        final Set<String> s3DocumentNames = s3Util.getAllDocuments();
 
         final SortedSet<Document> dbDocuments = database.getDocuments();
 
         // Any documents that appear in the database but NOT in the bucket should be deleted
         // from the database -- it won't do any good to know about it if the document doesn't
         // exist! Doing this cleanup each time we touch it keeps the two lists in sync.
-        final Set<Document> docsToBeDeletedFromDb = new HashSet<Document>();
+        final Set<Document> docsToBeDeletedFromDb = new HashSet<>();
         for (Document doc : dbDocuments) {
-            if (!bucketDocNames.contains(folder + doc.getName())) {
+            if (!s3DocumentNames.contains(doc.getName())) {
                 database.deleteDocument(doc.getName()); // found in DB but not in bucket; delete from DB
                 docsToBeDeletedFromDb.add(doc);
             }
@@ -88,8 +81,8 @@ public class DocumentController {
         // Any documents that appear in the bucket but not in the database should be added to
         // the database with all the shownTo permissions set to false, so only the DB admin
         // can see them. Doing this cleanup each time we touch it keeps the two lists in sync.
-        for (String bucketName : bucketDocNames) {
-            final Document dbDocument = new Document(bucketName.substring(folder.length()), false, false, false);
+        for (String s3DocumentName : s3DocumentNames) {
+            final Document dbDocument = new Document(s3DocumentName, false, false, false);
             // Next line is weird but it works. We want to check whether the Document name (with ANY
             // permissions) exists in the DB. Fortunately, the Document object compares for equality
             // based only on the name, and NOT on the permissions, so a simple contains() will test
@@ -128,7 +121,7 @@ public class DocumentController {
         if (sessionData.getSiteAdmin() == null) {
             throw new NotLoggedInException();
         }
-        s3Util.upLoadDocument(file);
+        s3Util.uploadDocument(file);
         return "redirect:documents.htm";
     }
 

@@ -1,11 +1,7 @@
 package com.tcts.database;
 
 import com.tcts.common.Configuration;
-import com.tcts.common.SitesConfig;
-import com.tcts.database.dynamodb.DynamoDBHelper;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -40,17 +36,8 @@ public class DatabaseFactory implements ApplicationContextAware {
      * This retrieves the database implementation to use.
      */
     public DatabaseFacade getDatabaseImplementation() {
-//        System.out.println(request.getServerName());
         String databaseToUse = configuration.getProperty("databaseToUse");
-        if ("CachingMySQLDB".equals(databaseToUse)) {
-            MySQLDatabase mySQLDatabase = new MySQLDatabase();
-            beanFactory.autowireBean(mySQLDatabase);
-            return new CachingDatabase(mySQLDatabase);
-        } else if ("DynamoDB".equals(databaseToUse)) {
-            return new DynamoDBDatabase(configuration, new DynamoDBHelper());
-        } else if ("PrefetchedDynamoDB".equals(databaseToUse)) {
-            return new PrefetchingDatabase(new DynamoDBDatabase(configuration, new DynamoDBHelper()));
-        } else if ("SingleTableDynamoDB".equals(databaseToUse)) {
+        if ("SingleTableDynamoDB".equals(databaseToUse)) {
             // FIXME: Should be new PrefetchingDatabase(new CachingDatabase(new SingleTableDynamoDbDatabase(configuration)))
             return new SingleTableDynamoDbDatabase(configuration);
         } else {

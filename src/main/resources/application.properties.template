@@ -2,9 +2,5 @@
 aws.access_key=xxx
 aws.secret_access_key=xxx
 googleMapsKey=xxx
-dynamoDB.connect=https://dynamodb.us-east-1.amazonaws.com
-dynamoDB.signingRegion=us-east-1
-#dynamodb.proxyhost=
-#dynamodb.proxyport=
 dynamoDB.environment=dev
 databaseToUse=SingleTableDynamoDB

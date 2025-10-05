@@ -1,19 +1,17 @@
 package com.tcts.controller;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.ParseException;
 import java.util.List;
 
+import com.tcts.exception.FormDataConstructionException;
+import com.tcts.formdata.CreateEventFormDataStrings;
 import jakarta.servlet.http.HttpSession;
 
+import org.apache.velocity.runtime.directive.Parse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,13 +31,6 @@ public class CreateEventController {
     @Autowired
     private DatabaseFacade database;
 
-
-    @InitBinder
-    private void initBinder(WebDataBinder binder) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        CustomDateEditor dateEditor = new CustomDateEditor(dateFormat, true);
-        binder.registerCustomEditor(Date.class, dateEditor);
-                }
     @RequestMapping(value = "/createEventBySiteAdmin.htm", method = RequestMethod.GET)
     public String showPageCreateEventBySiteAdmin(
             HttpSession session,
@@ -97,13 +88,23 @@ public class CreateEventController {
     public String createEvent(
             HttpSession session,
             Model model,
-            @ModelAttribute("formData") CreateEventFormData formData)
+            @ModelAttribute("formData") CreateEventFormDataStrings formDataStrings)
         throws SQLException
     {
         SessionData sessionData = SessionData.fromSession(session);
         Teacher teacher = sessionData.getTeacher();
-        String redirectTo;
 
+        // --- Convert to the richer CreateEventFormData object ---
+        final CreateEventFormData formData;
+        try {
+            formData = formDataStrings.asFormData();
+        } catch(FormDataConstructionException err) {
+            final Errors errors = err.getErrors();
+            return showFormWithErrors(model, sessionData, errors);
+        }
+
+        // --- Set Teacher & Decide where to go next ---
+        final String redirectTo;
         if (teacher != null) {
             ensureEventCreationIsOpen();
             formData.setTeacherId(teacher.getUserId());
@@ -113,7 +114,8 @@ public class CreateEventController {
         } else {
             throw new RuntimeException("Cannot navigate to this page unless you are logged in.");
         }
-            // --- Validation Rules ---
+
+        // --- Validation Rules ---
         Errors errors = formData.validate();
         if (errors.hasErrors()) {
             return showFormWithErrors(model, sessionData, errors);
@@ -137,7 +139,7 @@ public class CreateEventController {
 
     /**
      * This method uses the database connection to verify whether the course creation
-     * is open. It return true if it is open, false if not.
+     * is open. It returns true if it is open, false if not.
      */
     public static boolean isEventCreationOpen(DatabaseFacade database) throws SQLException {
         String setting = database.getSiteSettings().get("CourseCreationOpen");

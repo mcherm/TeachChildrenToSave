@@ -28,7 +28,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.tcts.database.SingleTableDbField.*;
+import static com.tcts.database.DatabaseField.*;
 
 
 /**
@@ -386,13 +386,12 @@ public class SingleTableDynamoDBSetup {
                 .item(new ItemBuilder("siteSettings")
                         .withStrings(
                                 site_setting_entries,
-                                "CourseCreationOpen=yes",
-                                "CurrentYear=2025",
-                                "EventDatesOnHomepage=April 25 - 29, 2024",
-                                "ShowDocuments=yes",
-                                "VolunteerSignupsOpen=yes",
-                                "SiteEmail=teach2save@udel.edu",
-                                "DocumentBucketName=teachchildrentosavede-documents"
+                                "CourseCreationOpen=No",
+                                "CurrentYear=2026",
+                                "EventDatesOnHomepage=April 27 - May 1, 2026",
+                                "ShowDocuments=Yes",
+                                "VolunteerSignupsOpen=No",
+                                "SiteEmail=teach2save@udel.edu"
                         )
                         .build())
                 .build();

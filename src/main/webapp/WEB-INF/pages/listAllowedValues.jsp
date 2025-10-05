@@ -43,9 +43,11 @@
           <thead>
             <tr>
               <th scope="col" class="time"><c:out value="${valueType}"/></th>
-              <th scope="col">
-                <span class="ada-read">Column of Delete buttons</span>
-              </th>
+              <c:if test="${allowedValues.size() > 1}">
+                <th scope="col">
+                  <span class="ada-read">Column of Delete buttons</span>
+                </th>
+              </c:if>
             </tr>
           </thead>
           <tbody>
@@ -55,13 +57,15 @@
             <c:forEach var="allowedValue" items="${allowedValues}">
               <tr>
                 <td class="valueColumn" data-title="<c:out value="${valueType}"/>"><c:out value="${allowedValue}"/></td>
-                <td class="action">
-                  <form method="POST" action="deleteAllowedValue.htm" modelAttribute="formData">
-                    <input type="hidden" name="valueType" value='<c:out value="${valueType}"/>' />
-                    <input type="hidden" name="allowedValue" value='<c:out value="${allowedValue}"/>' />
-                    <button type="submit" class="editOrRegister delete">Delete</button>
-                  </form>
-                </td>
+                <c:if test="${allowedValues.size() > 1}">
+                  <td class="action">
+                    <form method="POST" action="deleteAllowedValue.htm" modelAttribute="formData">
+                      <input type="hidden" name="valueType" value='<c:out value="${valueType}"/>' />
+                      <input type="hidden" name="allowedValue" value='<c:out value="${allowedValue}"/>' />
+                      <button type="submit" class="editOrRegister delete">Delete</button>
+                    </form>
+                  </td>
+                </c:if>
               </tr>
             </c:forEach>
           </tbody>
