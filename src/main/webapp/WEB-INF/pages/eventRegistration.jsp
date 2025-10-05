@@ -17,7 +17,9 @@
                         'eventId': '<c:out value="${event.eventId}"/>',
                         'eventDate': '<c:out value="${event.eventDate.pretty}"/>',
                         'eventTime': '<c:out value="${event.eventTime}"/>',
-                        'grade': '<c:out value="${event.grade}"/>',
+                        <c:if test="${showGradeColumn}">
+                            'grade': '<c:out value="${event.grade}"/>',
+                        </c:if>
                         <c:if test="${showDeliveryMethodColumn}">
                             'deliveryMethod': '<c:out value="${event.deliveryMethod}"/>',
                         </c:if>
@@ -317,7 +319,9 @@
                         <div id="eventDate_checkboxes"><%-- populated by javascript --%></div>
                         <div id="eventTime_checkboxes"><%-- populated by javascript --%></div>
                         <div id="county_checkboxes"><%-- populated by javascript --%></div>
-                        <div id="grade_checkboxes"><%-- populated by javascript --%></div>
+                        <c:if test="${showGradeColumn}">
+                            <div id="grade_checkboxes"><%-- populated by javascript --%></div>
+                        </c:if>
                         <c:if test="${showDeliveryMethodColumn}">
                             <div id="deliveryMethod_checkboxes"><%-- populated by javascript --%></div>
                         </c:if>
@@ -328,7 +332,9 @@
                         <div id="eventDate_select"><%-- populated by javascript --%></div>
                         <div id="eventTime_select"><%-- populated by javascript --%></div>
                         <div id="county_select"><%-- populated by javascript --%></div>
-                        <div id="grade_select"><%-- populated by javascript --%></div>
+                        <c:if test="${showGradeColumn}">
+                            <div id="grade_select"><%-- populated by javascript --%></div>
+                        </c:if>
                         <c:if test="${showDeliveryMethodColumn}">
                             <div id="deliveryMethod_select"><%-- populated by javascript --%></div>
                         </c:if>
