@@ -38,8 +38,9 @@ public class DatabaseFactory implements ApplicationContextAware {
     public DatabaseFacade getDatabaseImplementation() {
         String databaseToUse = configuration.getProperty("databaseToUse");
         if ("SingleTableDynamoDB".equals(databaseToUse)) {
-            // FIXME: Should be new PrefetchingDatabase(new CachingDatabase(new SingleTableDynamoDbDatabase(configuration)))
             return new SingleTableDynamoDbDatabase(configuration);
+        } else if ("CachedDB".equals(databaseToUse)) {
+            return new CachingDatabase(new SingleTableDynamoDbDatabase(configuration));
         } else {
             throw new RuntimeException("Value '" + databaseToUse + "' for property 'databaseToUse' is not recognized.");
         }

@@ -45,7 +45,7 @@ public class SiteStatistics {
     public int getNumUnmatchedEvents() {
         return numUnmatchedEvents;
     }
-    
+
     public int getNumVolunteers() {
         return numVolunteers;
     }

@@ -58,8 +58,8 @@ public class CachingDatabase implements DatabaseFacade {
 
     private final DatabaseFacade database;
 
-    /** Refresh values every 4 hours even if we think they're still accurate. */
-    private static final long REFRESH_IN_MILLIS = 4 * 60 * 60 * 1000;
+    /** Refresh values every 1 hour even if we think they're still accurate. */
+    private static final long REFRESH_IN_MILLIS = 60 * 60 * 1000;
 
     private final CachedValue<List<PrettyPrintingDate>,RuntimeException> allowedDates =
             new CachedValue<>(REFRESH_IN_MILLIS) {
@@ -258,6 +258,7 @@ public class CachingDatabase implements DatabaseFacade {
     public void modifyTeacherSchool(String userId, String schoolId) throws NoSuchSchoolException, NoSuchUserException
     {
        database.modifyTeacherSchool(userId, schoolId);
+       allSchools.refreshNow();
     }
 
 
@@ -265,7 +266,9 @@ public class CachingDatabase implements DatabaseFacade {
     public Teacher insertNewTeacher(TeacherRegistrationFormData formData, String hashedPassword, String salt)
             throws NoSuchSchoolException, EmailAlreadyInUseException, NoSuchAlgorithmException, UnsupportedEncodingException, InconsistentDatabaseException
     {
-        return database.insertNewTeacher(formData, hashedPassword, salt);
+        final Teacher result = database.insertNewTeacher(formData, hashedPassword, salt);
+        allSchools.refreshNow();
+        return result;
     }
 
     @Override
@@ -278,7 +281,9 @@ public class CachingDatabase implements DatabaseFacade {
     public Volunteer insertNewVolunteer(VolunteerRegistrationFormData formData, String hashedPassword, String salt)
             throws NoSuchBankException, EmailAlreadyInUseException, InconsistentDatabaseException
     {
-        return database.insertNewVolunteer(formData, hashedPassword, salt);
+        final Volunteer result = database.insertNewVolunteer(formData, hashedPassword, salt);
+        allBanks.refreshNow();
+        return result;
     }
 
     @Override
@@ -312,12 +317,7 @@ public class CachingDatabase implements DatabaseFacade {
             throws NoSuchEventException, EventAlreadyHasAVolunteerException
     {
         database.volunteerForEvent(eventId, volunteerId);
-        if (volunteerId == null) {
-            // Withdrew someone from an event so we need to reload the list
-            availableEvents.refreshNow();
-        } else {
-            availableEvents.deleteItems(item -> !item.getEventId().equals(eventId));
-        }
+        availableEvents.refreshNow();
     }
 
     @Override
@@ -339,6 +339,8 @@ public class CachingDatabase implements DatabaseFacade {
     @Override
     public void deleteVolunteer(String volunteerId) throws NoSuchUserException, VolunteerHasEventsException {
         database.deleteVolunteer(volunteerId);
+        allBanks.refreshNow();
+        availableEvents.refreshNow();
     }
 
     @Override
@@ -346,6 +348,8 @@ public class CachingDatabase implements DatabaseFacade {
             throws NoSuchUserException, TeacherHasEventsException, InconsistentDatabaseException
     {
         database.deleteTeacher(teacherId);
+        allSchools.refreshNow();
+        availableEvents.refreshNow();
     }
 
     @Override
@@ -428,26 +432,26 @@ public class CachingDatabase implements DatabaseFacade {
 
     @Override
     public void deleteAllowedTime(String time) throws NoSuchAllowedValueException {
-        allowedTimes.refreshNow();
         database.deleteAllowedTime(time);
+        allowedTimes.refreshNow();
     }
 
     @Override
     public void deleteAllowedGrade(String grade) throws NoSuchAllowedValueException {
-        allowedGrades.refreshNow();
         database.deleteAllowedGrade(grade);
+        allowedGrades.refreshNow();
     }
 
     @Override
     public void deleteAllowedDeliveryMethod(String deliveryMethod) throws NoSuchAllowedValueException {
-        allowedDeliveryMethods.refreshNow();
         database.deleteAllowedDeliveryMethod(deliveryMethod);
+        allowedDeliveryMethods.refreshNow();
     }
 
     @Override
     public void deleteAllowedDate(PrettyPrintingDate date) throws NoSuchAllowedValueException {
-        allowedDates.refreshNow();
         database.deleteAllowedDate(date);
+        allowedDates.refreshNow();
     }
 
     @Override
@@ -492,8 +496,8 @@ public class CachingDatabase implements DatabaseFacade {
 
     @Override
     public void modifySiteSetting(String settingName, String settingValue) {
-        siteSettings.refreshNow();
         database.modifySiteSetting(settingName, settingValue);
+        siteSettings.refreshNow();
     }
 
     @Override
