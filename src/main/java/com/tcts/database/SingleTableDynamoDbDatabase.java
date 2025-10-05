@@ -742,8 +742,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
 
     @Override
     public int getFieldLength(DatabaseField field) {
-        // FIXME: We made a new enum, and now this takes the wrong type! I should probably fix that,
-        //   but I'm not sure how.
         return FIELD_LENGTHS.get(field);
     }
 

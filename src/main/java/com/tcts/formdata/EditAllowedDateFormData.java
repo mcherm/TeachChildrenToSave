@@ -9,7 +9,7 @@ public class EditAllowedDateFormData extends AddAllowedDateFormData {
     @Override
     protected void validationRules(Errors errors) throws RuntimeException {
         super.validationRules(errors);
-        // FIXME: Make sure previous date exists and that date matches previosu date OR is different from all valid dates
+        // FIXME: Make sure previous date exists and that date matches previous date OR is different from all valid dates
     }
 
     public String getPreviousDate() {

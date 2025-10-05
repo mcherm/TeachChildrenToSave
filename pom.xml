@@ -64,12 +64,6 @@
             <version>8.0.25</version>
         </dependency>
 
-<!-- FIXME: 2024-03-29 mcherm Commenting out OLD version wiht javax.servlet and adding jakarta.servlet instead for Tomcat 10. -->
-<!--        <dependency>-->
-<!--            <groupId>javax.servlet</groupId>-->
-<!--            <artifactId>jstl</artifactId>-->
-<!--            <version>1.2</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
