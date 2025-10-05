@@ -211,19 +211,19 @@ Sussex,,The Jefferson School,N/A,22051 Wilson Road,Georgetown,DE,19947,302-856-3
 
                 final PutItemRequest putItemRequest = PutItemRequest.builder()
                     .tableName(singleTableName)
-                    .item(new ItemBuilder("school", SingleTableDbField.school_id, schoolId)
-                        .withString(SingleTableDbField.school_name, name)
-                        .withString(SingleTableDbField.school_addr1, address)
-                        .withString(SingleTableDbField.school_city, city)
-                        .withString(SingleTableDbField.school_state, state)
-                        .withString(SingleTableDbField.school_zip, zip)
-                        .withString(SingleTableDbField.school_county, county)
-                        .withString(SingleTableDbField.school_district, district)
-                        .withString(SingleTableDbField.school_phone, phone)
-                        .withString(SingleTableDbField.school_lmi_eligible, lmiStr)
-                        .withString(SingleTableDbField.school_slc, slc)
+                    .item(new ItemBuilder("school", DatabaseField.school_id, schoolId)
+                        .withString(DatabaseField.school_name, name)
+                        .withString(DatabaseField.school_addr1, address)
+                        .withString(DatabaseField.school_city, city)
+                        .withString(DatabaseField.school_state, state)
+                        .withString(DatabaseField.school_zip, zip)
+                        .withString(DatabaseField.school_county, county)
+                        .withString(DatabaseField.school_district, district)
+                        .withString(DatabaseField.school_phone, phone)
+                        .withString(DatabaseField.school_lmi_eligible, lmiStr)
+                        .withString(DatabaseField.school_slc, slc)
                         .build())
-                    .conditionExpression("attribute_not_exists(" + SingleTableDbField.table_key.name() + ")") // verify it is unique
+                    .conditionExpression("attribute_not_exists(" + DatabaseField.table_key.name() + ")") // verify it is unique
                     .build();
                 dynamoDbClient.putItem(putItemRequest);
             });

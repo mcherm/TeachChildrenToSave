@@ -1,7 +1,5 @@
 -------- NEW TASKS 2025 --------
 R Make the grades and delivery methods become invisible if there is only one choice.
-- Delete MySQL database support. Remove SQLException everywhere.
-- Collapse SingleTableDbField and DatabaseField into just one class.
 - DatabaseFacade line 249 remove InconsistentDatabaseException from a few places where it isn't used.
 * Need to enable prefetching and cacheing in DatabaseFactory line 54.
 - Clean up old tables.
@@ -16,6 +14,8 @@ M In mvc-dispatcher-servlet.xml I seem to have broken document upload and must f
 M Bug: Can't edit or create classes!!
 M Migrate off the remaining parts of the old AWS library (which will cease working in Dec 2025).
 M Don't allow admin to delete ALL of the allowedValues of any given type.
+M Delete MySQL database support. Remove SQLException everywhere.
+M Collapse SingleTableDbField and DatabaseField into just one class.
 
 
 -------- OPEN TASKS --------

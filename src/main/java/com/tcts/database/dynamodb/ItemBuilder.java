@@ -1,6 +1,6 @@
 package com.tcts.database.dynamodb;
 
-import com.tcts.database.SingleTableDbField;
+import com.tcts.database.DatabaseField;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * This provides a "fluent interface" for specifying the primary key and other fields
  * of an object to be created. It is very much like the fluent interface of Amazon's
- * Item class except that it also supports the SingleTableDbField class we use and has
+ * Item class except that it also supports the DatabaseField class we use and has
  * cleaner handling of null and empty-string values (neither will be inserted, which
  * would be an error if you tried it).
  * <p>
@@ -30,9 +30,9 @@ import java.util.Map;
  */
 public class ItemBuilder {
     private static abstract class NonEmptyField {
-        final SingleTableDbField field;
+        final DatabaseField field;
 
-        NonEmptyField(SingleTableDbField field) {
+        NonEmptyField(DatabaseField field) {
             this.field = field;
         }
 
@@ -42,7 +42,7 @@ public class ItemBuilder {
     private static class NonEmptyStringField extends NonEmptyField {
         final String value;
 
-        NonEmptyStringField(SingleTableDbField field, String value) {
+        NonEmptyStringField(DatabaseField field, String value) {
             super(field);
             this.value = value;
         }
@@ -56,7 +56,7 @@ public class ItemBuilder {
     private static class NonEmptyIntField extends NonEmptyField {
         final int value;
 
-        NonEmptyIntField(SingleTableDbField field, int value) {
+        NonEmptyIntField(DatabaseField field, int value) {
             super(field);
             this.value = value;
         }
@@ -70,7 +70,7 @@ public class ItemBuilder {
     private static class NonEmptySetOfStringsField extends NonEmptyField {
         final String[] value;
 
-        NonEmptySetOfStringsField(SingleTableDbField field, String[] value) {
+        NonEmptySetOfStringsField(DatabaseField field, String[] value) {
             super(field);
             this.value = value;
         }
@@ -103,7 +103,7 @@ public class ItemBuilder {
      * @param primaryKeyField the field which contains the key (eg: bank_id or event_id)
      * @param primaryKeyValue the value of the field containing the key (eg: "9384732")
      */
-    public ItemBuilder(String keyPrefix, SingleTableDbField primaryKeyField, String primaryKeyValue) {
+    public ItemBuilder(String keyPrefix, DatabaseField primaryKeyField, String primaryKeyValue) {
         if (primaryKeyValue == null || primaryKeyValue.isEmpty()) {
             throw new IllegalArgumentException("primaryKeyValue cannot be null or empty");
         }
@@ -115,7 +115,7 @@ public class ItemBuilder {
     /**
      * Adds another field of type String.
      */
-    public ItemBuilder withString(SingleTableDbField field, String value) {
+    public ItemBuilder withString(DatabaseField field, String value) {
         if (value != null && !value.isEmpty()) {
             nonEmptyFields.add(new NonEmptyStringField(field, value));
         }
@@ -125,7 +125,7 @@ public class ItemBuilder {
     /**
      * Adds another field of type int.
      */
-    public ItemBuilder withInt(SingleTableDbField field, int value) {
+    public ItemBuilder withInt(DatabaseField field, int value) {
         nonEmptyFields.add(new NonEmptyIntField(field, value));
         return this;
     }
@@ -133,14 +133,14 @@ public class ItemBuilder {
     /**
      * Adds another field of type set-of-strings.
      */
-    public ItemBuilder withStrings(SingleTableDbField field, String... values) {
+    public ItemBuilder withStrings(DatabaseField field, String... values) {
         nonEmptyFields.add(new NonEmptySetOfStringsField(field, values));
         return this;
     }
 
     public Map<String, AttributeValue> build() {
         final Map<String, AttributeValue> result = new HashMap<>();
-        result.put(SingleTableDbField.table_key.name(), AttributeValue.builder().s(tableKeyValue).build());
+        result.put(DatabaseField.table_key.name(), AttributeValue.builder().s(tableKeyValue).build());
         for (NonEmptyField nonEmptyField : this.nonEmptyFields) {
             nonEmptyField.addFieldToMap(result);
         }

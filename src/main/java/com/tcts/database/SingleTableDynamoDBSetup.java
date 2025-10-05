@@ -28,7 +28,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.tcts.database.SingleTableDbField.*;
+import static com.tcts.database.DatabaseField.*;
 
 
 /**
