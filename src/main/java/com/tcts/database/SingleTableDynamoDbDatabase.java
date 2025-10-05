@@ -18,7 +18,18 @@ import com.tcts.datamodel.Teacher;
 import com.tcts.datamodel.User;
 import com.tcts.datamodel.UserType;
 import com.tcts.datamodel.Volunteer;
-import com.tcts.exception.*;  //fixme
+import com.tcts.exception.AllowedValueAlreadyInUseException;
+import com.tcts.exception.BankHasVolunteersException;
+import com.tcts.exception.EmailAlreadyInUseException;
+import com.tcts.exception.EventAlreadyHasAVolunteerException;
+import com.tcts.exception.InconsistentDatabaseException;
+import com.tcts.exception.NoSuchAllowedValueException;
+import com.tcts.exception.NoSuchBankException;
+import com.tcts.exception.NoSuchEventException;
+import com.tcts.exception.NoSuchSchoolException;
+import com.tcts.exception.NoSuchUserException;
+import com.tcts.exception.TeacherHasEventsException;
+import com.tcts.exception.VolunteerHasEventsException;
 import com.tcts.formdata.AddAllowedDateFormData;
 import com.tcts.formdata.CreateBankFormData;
 import com.tcts.formdata.CreateEventFormData;
@@ -1518,10 +1529,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
         int numEvents = 0;
         int numMatchedEvents = 0;
         int numUnmatchedEvents = 0;
-        int num3rdGradeEvents = 0;
-        int num4thGradeEvents = 0;
-        int numInPersonEvents = 0;
-        int numVirtualEvents = 0;
         final Set<String> volunteerIdsActuallySignedUp = new HashSet<>();
         final Set<String> teacherIdsWithClassesThatHaveVolunteers = new HashSet<>();
         final SortedMap<PrettyPrintingDate, Integer> numEventsByEventDate = new TreeMap<>();
@@ -1537,18 +1544,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 numMatchedEvents += 1;
                 volunteerIdsActuallySignedUp.add(event.getVolunteerId());
                 teacherIdsWithClassesThatHaveVolunteers.add(event.getTeacherId());
-            }
-            // FIXME: This way of calculating grades is invalid now that the list of grades isn't fixed
-            if (event.getGrade().equals("3rd Grade")) {
-                num3rdGradeEvents += 1;
-            } else if (event.getGrade().equals("4th Grade")) {
-                num4thGradeEvents += 1;
-            }
-            // FIXME: This way of calculating delivery methods is invalid now that the list of grades isn't fixed
-            if (event.getDeliveryMethod().equals("In-Person")) {
-                numInPersonEvents += 1;
-            } else if (event.getDeliveryMethod().equals("Virtual")) {
-                numVirtualEvents += 1;
             }
             numEventsByEventDate.put(event.getEventDate(), numEventsByEventDate.getOrDefault(event.getEventDate(), 0) + 1);
             numEventsByGrade.put(event.getGrade(), numEventsByGrade.getOrDefault(event.getGrade(), 0) + 1);
@@ -1571,10 +1566,6 @@ public class SingleTableDynamoDbDatabase implements DatabaseFacade {
                 numEvents,
                 numMatchedEvents,
                 numUnmatchedEvents,
-                num3rdGradeEvents,
-                num4thGradeEvents,
-                numInPersonEvents,
-                numVirtualEvents,
                 numVolunteers,
                 numParticipatingTeachers,
                 numParticipatingSchools,
