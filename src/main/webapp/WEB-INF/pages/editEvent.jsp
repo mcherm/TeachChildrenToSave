@@ -53,19 +53,20 @@
                             </div>
                         </label>
                     </div>
-
-                    <div class="formElementCnt">
-                        <label>
-                            <div class="inputCnt">
-                                <div class="info">
-                                    Grade
+                    <c:if test="${showGradeColumn}">
+                        <div class="formElementCnt">
+                            <label>
+                                <div class="inputCnt">
+                                    <div class="info">
+                                        Grade
+                                    </div>
+                                    <form:select path="grade">
+                                        <form:options items="${allowedGrades}"/>
+                                    </form:select>
                                 </div>
-                                <form:select path="grade">
-                                    <form:options items="${allowedGrades}"/>
-                                </form:select>
-                            </div>
-                        </label>
-                    </div>
+                            </label>
+                        </div>
+                    </c:if>
 
                     <c:if test="${showDeliveryMethodColumn}">
                         <div class="formElementCnt">

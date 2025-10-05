@@ -3,8 +3,8 @@ package com.tcts.controller;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import com.tcts.util.EventUtil;
 
 import jakarta.servlet.http.HttpSession;
@@ -133,9 +133,22 @@ public class EventController {
     	model.addAttribute("allowedDates", database.getAllowedDates());
         model.addAttribute("allowedTimes", database.getAllowedTimes());
         List<String> allowedGrades = database.getAllowedGrades();
+        if (!allowedGrades.contains(formData.getGrade())) {
+            ArrayList<String> newAllowedGrades = new ArrayList<>();
+            newAllowedGrades.add(formData.getGrade());
+            newAllowedGrades.addAll(allowedGrades);
+            allowedGrades = newAllowedGrades;
+        }
         model.addAttribute("allowedGrades", allowedGrades);
         model.addAttribute("showGradeColumn", allowedGrades.size() >= 2);
         List<String> allowedDeliveryMethods = database.getAllowedDeliveryMethods();
+        if (!allowedDeliveryMethods.contains(formData.getDeliveryMethod())) {
+            ArrayList<String> newAllowedDeliveryMethods = new ArrayList<>();
+            newAllowedDeliveryMethods.add(formData.getDeliveryMethod());
+            newAllowedDeliveryMethods.addAll(allowedDeliveryMethods);
+            allowedDeliveryMethods = newAllowedDeliveryMethods;
+        }
+
         model.addAttribute("allowedDeliveryMethods", allowedDeliveryMethods);
         model.addAttribute("showDeliveryMethodColumn", allowedDeliveryMethods.size() >= 2);
         model.addAttribute("formData", formData);
