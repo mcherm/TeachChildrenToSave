@@ -21,6 +21,34 @@ public class CreateEventFormDataStrings {
     private String notes;
     private String teacherId;
 
+    public String getEventDate() {
+        return eventDate;
+    }
+
+    public String getEventTime() {
+        return eventTime;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public String getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
+    public String getNumberStudents() {
+        return numberStudents;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public String getTeacherId() {
+        return teacherId;
+    }
+
     public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }

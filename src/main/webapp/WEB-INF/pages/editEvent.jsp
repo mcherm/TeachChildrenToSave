@@ -67,6 +67,9 @@
                             </label>
                         </div>
                     </c:if>
+                    <c:if test="${!showGradeColumn}">
+                        <input type="hidden" id="grade" name="grade" value="${allowedGrades[0]}"/>
+                    </c:if>
 
                     <c:if test="${showDeliveryMethodColumn}">
                         <div class="formElementCnt">
@@ -81,6 +84,9 @@
                                 </div>
                             </label>
                         </div>
+                    </c:if>
+                    <c:if test="${!showDeliveryMethodColumn}">
+                        <input type="hidden" id="deliveryMethod" name="deliveryMethod" value="${allowedDeliveryMethods[0]}"/>
                     </c:if>
 
                     <div class="formElementCnt">

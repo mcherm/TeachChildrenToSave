@@ -169,20 +169,19 @@ public class EventController {
 
         // --- Ensure logged in ---
         SessionData sessionData = SessionData.fromSession(session);
+        final Event existingEvent = database.getEventById(formData.getEventId());
         if (sessionData.getSiteAdmin() == null) {
         	if (sessionData.getTeacher() == null) {
         		throw new NotLoggedInException();
         	}
         	else {
-                Event event = database.getEventById(formData.getEventId());
-                if (event == null) {
+                if (existingEvent == null) {
                     // No such event by that ID
                     throw new InvalidParameterFromGUIException();
                 }
-                if (!sessionData.getTeacher().getUserId().equals(event.getTeacherId())) {
+                if (!sessionData.getTeacher().getUserId().equals(existingEvent.getTeacherId())) {
                     throw new NotOwnedByYouException();
                 }
-
         	}
         }
 
@@ -194,10 +193,18 @@ public class EventController {
             return showEditEventWithErrorMessage(model, formData, "You must select a time from the list.");
         }
         if (!database.getAllowedGrades().contains(formData.getGrade())) {
-            return showEditEventWithErrorMessage(model, formData, "You must select a valid grade.");
+            if (formData.getGrade().equals(existingEvent.getGrade())) {
+                // Acceptable -- they are leaving unchanged a now-obsolete value for grade
+            } else {
+                return showEditEventWithErrorMessage(model, formData, "You must select a valid grade.");
+            }
         }
         if (!database.getAllowedDeliveryMethods().contains(formData.getDeliveryMethod())) {
-            return showEditEventWithErrorMessage(model, formData, "You must select a valid delivery method.");
+            if (formData.getDeliveryMethod().equals(existingEvent.getDeliveryMethod())) {
+                // Acceptable -- they are leaving unchanged a now-obsolete value for deliveryMethod
+            } else {
+                return showEditEventWithErrorMessage(model, formData, "You must select a valid delivery method.");
+            }
         }
 
         // --- Update the event ---

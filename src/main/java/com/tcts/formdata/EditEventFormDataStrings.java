@@ -13,6 +13,10 @@ import com.tcts.exception.FormDataConstructionException;
 public class EditEventFormDataStrings extends CreateEventFormDataStrings {
     private String eventId;
 
+    public String getEventId() {
+        return eventId;
+    }
+
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
