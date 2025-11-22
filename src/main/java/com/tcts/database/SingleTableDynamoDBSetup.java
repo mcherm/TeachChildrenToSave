@@ -3,10 +3,6 @@ package com.tcts.database;
 import com.tcts.common.Configuration;
 import com.tcts.database.dynamodb.DynamoDBHelper;
 import com.tcts.database.dynamodb.ItemBuilder;
-import com.tcts.exception.AppConfigurationException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
@@ -46,17 +42,21 @@ public class SingleTableDynamoDBSetup {
 
             final String tableName = "TCTS." + site + "." + environment;
 
-            System.out.println("DO YOU MEAN TO RE-INITIALIZE " + tableName + "?");
+            System.out.print("DO YOU MEAN TO RE-INITIALIZE " + tableName + "?  ");
             final String response = new Scanner(System.in).nextLine();
             if (!response.equalsIgnoreCase("y")) {
                 System.out.println("Exiting without doing anything!");
                 return;
+            } else {
+                System.out.printf("Starting...");
             }
 
             reinitializeDatabase(dynamoDbClient, tableName);
+            System.out.println("Database TCTS." + site + "." + environment + " wiped and re-initialized.");
 
             final SingleTableDynamoDBSetup instance = new SingleTableDynamoDBSetup(dynamoDbClient, tableName);
             instance.insertData();
+            System.out.println("New data loaded.");
         } catch(Exception err) {
             err.printStackTrace();
         }
@@ -375,6 +375,8 @@ public class SingleTableDynamoDBSetup {
         insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+BankAdmin@gmail.com","BankAdmin","Chermside","BA",aBankId,"610-810-1806",0);
         insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+Volunteer@gmail.com","Volunteer","Chermside","V",aBankId,"610-810-1806",0);
         insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","mcherm+Teacher@gmail.com","Teacher","Chermside","T",aSchoolId,"610-810-1806",0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","wbosshar@fau.edu","William","Bosshardt","SA",null,null,0);
+        insertUser("AjVW337bQJs=","jtZ3UlKhhAuyKpo98aGUfTiPy74=","brian.edwards@palmbeachschools.org","Brian","Edwards","SA",null,null,0);
     }
 
     /**
@@ -386,12 +388,12 @@ public class SingleTableDynamoDBSetup {
                 .item(new ItemBuilder("siteSettings")
                         .withStrings(
                                 site_setting_entries,
-                                "CourseCreationOpen=No",
+                                "CourseCreationOpen=Yes",
                                 "CurrentYear=2026",
                                 "EventDatesOnHomepage=April 27 - May 1, 2026",
                                 "ShowDocuments=Yes",
-                                "VolunteerSignupsOpen=No",
-                                "SiteEmail=teach2save@udel.edu"
+                                "VolunteerSignupsOpen=Yes",
+                                "SiteEmail=mcherm@mcherm.com"
                         )
                         .build())
                 .build();
@@ -407,11 +409,11 @@ public class SingleTableDynamoDBSetup {
                 .item(new ItemBuilder("allowedDates")
                         .withStrings(
                                 allowed_date_values,
-                                "2017-04-24",
-                                "2017-04-25",
-                                "2017-04-26",
-                                "2017-04-27",
-                                "2017-04-28"
+                                "2026-04-27",
+                                "2026-04-28",
+                                "2026-04-29",
+                                "2026-04-30",
+                                "2017-05-01"
                         )
                         .build())
                 .build();

@@ -7,6 +7,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Properties;
 
 
@@ -44,7 +45,7 @@ public class SitesConfig {
      */
     public String getSite(HttpServletRequest request) throws UnknownSiteException {
         final String serverName = request.getServerName();
-        final String site = this.properties.getProperty(serverName);
+        final String site = this.properties.getProperty(serverName.toLowerCase(Locale.ENGLISH));
         if (site == null) {
             throw new UnknownSiteException(serverName);
         }
