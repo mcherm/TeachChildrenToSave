@@ -1,9 +1,12 @@
 -------- NEW TASKS 2025 --------
-* Need to enable prefetching and cacheing in DatabaseFactory line 54.
-- Clean up old tables.
+* Bug: Need to customize the headers in header.jsp for individual sites
+* Should write some tests!! Maybe use Claude.
 * Bug: Teacher homepage doesn't show the class descriptions in the list of classes
+* Need to enable prefetching in DatabaseFactory?
+- Clean up old tables.
 
 -------- FINISHED TASKS --------
+M Need to review https://github.com/mcherm/TeachChildrenToSave/security/dependabot for security issues
 M Upload the new school data from Jen's email.
 M Make the admin screen not crash if there are zero valid grades or delivery methods.
 M Make sure Documents for the two sites are separate.

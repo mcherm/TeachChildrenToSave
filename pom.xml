@@ -8,7 +8,7 @@
     <name>teachchildrentosave Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <spring.version>6.1.5</spring.version>
+        <spring.version>7.0.1</spring.version>
         <jdk.version>17</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -56,12 +56,6 @@
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.25</version>
         </dependency>
 
         <dependency>
