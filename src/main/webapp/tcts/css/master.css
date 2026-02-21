@@ -197,6 +197,16 @@ header .dba {
 header .dba img {
   max-width: 158px;
 }
+
+header .fl-header {
+  display: flex;
+  justify-content: space-between;
+}
+header .fl-header img {
+  max-height: 100px;
+  width: auto;
+}
+
 header img {
   width: 100%;
   padding-left: 5px;

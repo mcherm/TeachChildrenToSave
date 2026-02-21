@@ -20,7 +20,7 @@
 
                 <h1>About Us</h1>
 
-                <jsp:include page="sites/${site}/aboutBody.jsp"/>
+                <jsp:include page="/WEB-INF/pages/sites/${site}/aboutBody.jsp"/>
 
                 <h2>Contact us</h2>
 

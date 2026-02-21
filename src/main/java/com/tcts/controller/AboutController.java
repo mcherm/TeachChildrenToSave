@@ -1,10 +1,6 @@
 package com.tcts.controller;
 
-import com.tcts.common.SitesConfig;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -16,13 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class AboutController {
-    @Autowired
-    private SitesConfig sitesConfig;
 
     @RequestMapping(value = "/about.htm", method = RequestMethod.GET)
-    public String aboutPage(Model model, HttpServletRequest httpServletRequest) {
-        final String site = sitesConfig.getSite(httpServletRequest);
-        model.addAttribute("site", site);
+    public String aboutPage() {
         return "about"; // which .jsp to display
     }
 

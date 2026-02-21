@@ -7,9 +7,13 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-	<mvc:annotation-driven/> 
+	<mvc:annotation-driven/>
 
 	<context:component-scan base-package="com.tcts"/>
+
+	<mvc:interceptors>
+		<bean class="com.tcts.common.SiteInterceptor"/>
+	</mvc:interceptors>
 
 
 	<bean id="viewResolver"
