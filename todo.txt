@@ -1,10 +1,8 @@
 -------- FL Setup 2026 --------
-* Add FAQ (content in email)
-* Use new logos (content in email)
-* Switch the email being used (use Brian's)
 * Fix the "Contact Us" page (details in email)
-* Add text when registering "if your bank is not listed please contact xxx"
+* Use new logos (content in email)
 * Bug in upload documents
+* Add FAQ (content in email)
 
 -------- NEW TASKS 2025 --------
 * Bug: Need to customize the headers in header.jsp for individual sites
@@ -14,6 +12,8 @@
 - Clean up old tables.
 
 -------- FINISHED TASKS --------
+M Switch the email being used (use Brian's)
+M Add text when registering "if your bank is not listed please contact xxx"
 M New text under History (content in email)
 M Fix “classroomâs” on About page.
 M Need to create TCTS.FL.prod tables

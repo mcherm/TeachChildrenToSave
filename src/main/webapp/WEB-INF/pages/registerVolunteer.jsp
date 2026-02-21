@@ -204,6 +204,10 @@
                                 <form:option value="0" label="- Select Bank -" />
                                 <form:options items="${banks}" itemValue="bankId" itemLabel="bankName" />
                             </form:select>
+
+                            <div>
+                                If your bank is not listed, please contact <c:out value="${siteEmail}"/>.
+                            </div>
                         </div>
                     </label>
                 </div>

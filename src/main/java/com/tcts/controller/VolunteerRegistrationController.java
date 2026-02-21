@@ -2,6 +2,8 @@ package com.tcts.controller;
 
 
 import java.util.List;
+
+import com.tcts.email.EmailUtil;
 import jakarta.servlet.http.HttpSession;
 import com.tcts.formdata.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ public class VolunteerRegistrationController {
      */
     private String showFormWithErrors(Model model, Errors errors) {
         List<Bank> banks = database.getAllBanks();
+        model.addAttribute("siteEmail", EmailUtil.getSiteEmail(database));
         model.addAttribute("banks", banks);
         model.addAttribute("errors", errors);
         return "registerVolunteer";
