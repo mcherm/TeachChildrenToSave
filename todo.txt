@@ -1,6 +1,5 @@
 -------- FL Setup 2026 --------
 * Fix the "Contact Us" page (details in email)
-* Use new logos (content in email)
 * Bug in upload documents
 * Add FAQ (content in email)
 
@@ -12,6 +11,7 @@
 - Clean up old tables.
 
 -------- FINISHED TASKS --------
+M Use new logos (content in email)
 M Switch the email being used (use Brian's)
 M Add text when registering "if your bank is not listed please contact xxx"
 M New text under History (content in email)
